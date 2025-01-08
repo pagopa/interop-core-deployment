@@ -35,9 +35,9 @@ module "k8s_deployment_monitoring" {
 }
 
 module "be_refactor_k8s_deployment_monitoring" {
-  for_each = local.deploy_be_refactor_infra ? toset(local.microservices_names) : {}
+  for_each = local.deploy_be_refactor_infra ? toset(local.microservices_names) : []
 
-  source = "git@github.com:pagopa/interop-infra-commons//terraform/modules/k8s-deployment-monitoring?ref=v1.4.5"
+  source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-deployment-monitoring?ref=v1.4.5"
 
   env                 = var.env
   eks_cluster_name    = var.eks_cluster_name
