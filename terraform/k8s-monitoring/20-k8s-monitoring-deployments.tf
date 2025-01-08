@@ -3,8 +3,7 @@ data "local_file" "microservices_list" {
 }
 
 locals {
-  microservices_names             = jsondecode(data.local_file.microservices_list.content)
-  be_refactor_microservices_names = local.deploy_be_refactor_infra ? jsondecode(data.local_file.microservices_list.content) : []
+  microservices_names = jsondecode(data.local_file.microservices_list.content)
 }
 
 module "k8s_deployment_monitoring" {
@@ -36,7 +35,7 @@ module "k8s_deployment_monitoring" {
 }
 
 module "be_refactor_k8s_deployment_monitoring" {
-  for_each = toset(local.microservices_names)
+  for_each = local.deploy_be_refactor_infra ? toset(local.microservices_names) : {}
 
   source = "git@github.com:pagopa/interop-infra-commons//terraform/modules/k8s-deployment-monitoring?ref=v1.4.5"
 
