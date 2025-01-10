@@ -1,0 +1,26 @@
+charts/
+Chart.lock
+out*
+.DS_Store
+**/*.compiled.yaml
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+
+# Ignore override files as they are usually used to override resources locally and so
+# are not checked in
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore JSON microservices list
+terraform/k8s-monitoring/assets/microservices-list.json
+terraform/k8s-monitoring/assets/cronjobs-list.json

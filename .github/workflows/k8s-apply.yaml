@@ -1,0 +1,51 @@
+name: K8s Apply
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        type: environment
+      force_restart:
+        description: 'Force Deployment Rollout Restart'
+        required: true
+        default: false
+        type: boolean
+      run_k8s_workflow:
+        description: 'Run K8s workflow'
+        required: true
+        default: true
+        type: boolean
+      run_tf_workflow:
+        description: 'Run TF workflow'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  print_inputs:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Print Inputs
+        id: print_inputs
+        run: |
+          echo "- environment: \`${{ inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- force_restart: \`${{ inputs.force_restart }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- run_k8s_workflow: \`${{ inputs.run_k8s_workflow }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- run_tf_workflow: \`${{ inputs.run_tf_workflow }}\`" >> $GITHUB_STEP_SUMMARY
+
+  tf_apply:
+    needs: [ initChecks ]
+    secrets: inherit
+    if: ${{ inputs.run_tf_workflow }}
+    uses: ./.github/workflows/tf-apply.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      timeout_seconds: 300
