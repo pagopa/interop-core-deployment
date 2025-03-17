@@ -1,0 +1,22 @@
+name: PR Validation - Main Starter
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:      
+  start_dev_workflow:
+    uses: ./.github/workflows/pr-validation-generic-env.yaml
+    secrets: inherit
+    with:
+      environment: dev
+  
+  diff_summary:
+    needs: [ start_dev_workflow ]
+    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
+    secrets: inherit
+    uses: ./.github/workflows/pr-validation-sub-print-summary.yaml

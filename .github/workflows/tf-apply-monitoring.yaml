@@ -1,0 +1,118 @@
+name: TF Apply Monitoring
+
+on: 
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Environment to run apply against'
+        required: true
+        type: string
+      timeout_seconds:
+        description: 'Terraform apply wait timeout in seconds'
+        required: true
+        type: number
+
+defaults:
+  run:
+    shell: bash
+
+jobs:  
+  workflow_setup:
+    name: Setup steps
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    outputs:
+      microservices: ${{ steps.set-outputs.outputs.microservices }}
+      cronjobs: ${{ steps.set-outputs.outputs.cronjobs }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+
+      - name: Normalize environment
+        id: norm_env
+        run: |
+          set -euo pipefail
+
+          GH_ENV="${{ inputs.environment }}"
+          NORM_ENV="$(echo "$GH_ENV" | sed -e 's/-tf//')"
+          echo "NORM_ENV=$NORM_ENV" >> $GITHUB_ENV
+
+      - id: set-outputs
+        run: |
+          set -euo pipefail
+
+          echo "microservices=$(find microservices -type f -path "*/$NORM_ENV/values.yaml" -exec yq '.name' {} \; | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
+          echo "cronjobs=$(find jobs -type f -path "*/$NORM_ENV/values.yaml" -exec yq '.name' {} \; | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
+
+  terraform_apply_monitoring:
+    name: Terraform Apply Monitoring
+    needs: workflow_setup 
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    environment: ${{ inputs.environment }}
+
+    steps:    
+      - name: Checkout
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+
+      - name: Create microservices JSON
+        working-directory: terraform/k8s-monitoring/
+        run: |
+          set -euo pipefail
+
+          mkdir assets
+          echo '${{ needs.workflow_setup.outputs.microservices }}' | jq -c 'sort' > assets/microservices-list.json
+          cat assets/microservices-list.json
+
+      - name: Create cronjobs JSON
+        working-directory: terraform/k8s-monitoring/
+        run: |
+          set -euo pipefail
+
+          echo '${{ needs.workflow_setup.outputs.cronjobs }}' | jq -c 'sort' > assets/cronjobs-list.json
+          cat assets/cronjobs-list.json
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          role-to-assume: ${{ secrets.TERRAFORM_IAM_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Read Terraform version
+        id: read-version
+        working-directory: terraform/
+        run: |
+          set -euo pipefail
+
+          echo "TERRAFORM_VERSION=$(cat ./.terraform-version)" >> $GITHUB_ENV
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@633666f66e0061ca3b725c73b2ec20cd13a8fdd1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Normalize environment
+        id: norm_env
+        run: |
+          set -euo pipefail
+
+          GH_ENV="${{ inputs.environment }}"
+          NORM_ENV="$(echo "$GH_ENV" | sed -e 's/-tf//')"
+          echo "NORM_ENV=$NORM_ENV" >> $GITHUB_ENV
+
+      - name: Terraform Init
+        id: terraform_init
+        working-directory: terraform/k8s-monitoring
+        run: |
+          set -euo pipefail
+
+          ./terraform.sh init "$NORM_ENV"
+
+      - name: Terraform Apply Monitoring
+        id: terraform_apply_monitoring
+        working-directory: terraform/k8s-monitoring
+        run: |
+          set -euo pipefail
+
+          terraform apply -var-file="./env/$NORM_ENV/terraform.tfvars" -auto-approve
