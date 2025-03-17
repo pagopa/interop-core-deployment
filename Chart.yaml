@@ -1,0 +1,12 @@
+apiVersion: v2
+name: interop-signalhub-deployment
+description: Interop SignalHub
+type: application
+version: 0.0.1
+dependencies:
+  - name: interop-eks-microservice-chart
+    version: 1.11.0
+    repository: "https://pagopa.github.io/interop-eks-microservice-chart"
+  - name: interop-eks-cronjob-chart
+    version: 1.5.2
+    repository: "https://pagopa.github.io/interop-eks-cronjob-chart"

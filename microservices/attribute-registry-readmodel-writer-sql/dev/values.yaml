@@ -1,0 +1,25 @@
+name: interop-be-attribute-registry-readmodel-writer-sql
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-attribute-registry-readmodel-writer-dev-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-attribute-registry-readmodel-writer-sql"
+
+deployment:
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    ATTRIBUTE_TOPIC: "common-kafka.ATTRIBUTE_TOPIC"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RW"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+  envFromSecrets:   
+    READMODEL_SQL_DB_USERNAME: "read-model-attribute-registry-rmw-user.username"
+    READMODEL_SQL_DB_PASSWORD: "read-model-attribute-registry-rmw-user.username"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"

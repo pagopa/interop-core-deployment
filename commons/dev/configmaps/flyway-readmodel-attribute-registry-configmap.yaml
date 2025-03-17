@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-attribute-registry
+  namespace: dev
+data:
+  V1__Init.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_attribute_registry";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute_registry" to
+      attribute_registry_readmodel_writer_user,
+      attribute_registry_process_user;
+      
