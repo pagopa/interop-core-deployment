@@ -1,4 +1,6 @@
 images:
   microservices:
+    attribute-registry-process:
+      tag: "develop"
     attribute-registry-readmodel-writer-sql:
       tag: "develop"
