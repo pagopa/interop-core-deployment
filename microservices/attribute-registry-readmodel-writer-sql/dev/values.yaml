@@ -17,9 +17,9 @@ deployment:
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
-  envFromSecrets:   
+  envFromSecrets:
     READMODEL_SQL_DB_USERNAME: "read-model-attribute-registry-rmw-user.username"
-    READMODEL_SQL_DB_PASSWORD: "read-model-attribute-registry-rmw-user.username"
+    READMODEL_SQL_DB_PASSWORD: "read-model-attribute-registry-rmw-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
