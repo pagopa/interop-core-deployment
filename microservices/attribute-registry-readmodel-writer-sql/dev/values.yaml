@@ -17,6 +17,7 @@ deployment:
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_NAMESPACE: "common-read-model-sql.DB_SCHEMA_NAMESPACE"
   envFromSecrets:
     READMODEL_SQL_DB_USERNAME: "read-model-attribute-registry-rmw-user.username"
     READMODEL_SQL_DB_PASSWORD: "read-model-attribute-registry-rmw-user.password"
