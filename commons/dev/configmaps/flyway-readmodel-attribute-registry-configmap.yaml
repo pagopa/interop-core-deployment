@@ -5,11 +5,11 @@ metadata:
   namespace: dev
 data:
   V1__Init.sql: |-
-    CREATE SCHEMA IF NOT EXISTS "readmodel_attribute";
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_readmodel_attribute";
 
     GRANT USAGE ON SCHEMA "readmodel_attribute" to
-      attribute_registry_rmw_user,
-      attribute_registry_process_user;
+      "${NAMESPACE}_attribute_registry_rmw_user",
+      "${NAMESPACE}_attribute_registry_process_user";
 
     CREATE TABLE IF NOT EXISTS readmodel_attribute.attribute (
       id UUID,
