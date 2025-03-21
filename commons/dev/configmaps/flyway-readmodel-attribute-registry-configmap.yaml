@@ -7,11 +7,11 @@ data:
   V1__Init.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_readmodel_attribute";
 
-    GRANT USAGE ON SCHEMA "readmodel_attribute" to
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_readmodel_attribute" to
       "${NAMESPACE}_attribute_registry_rmw_user",
       "${NAMESPACE}_attribute_registry_process_user";
 
-    CREATE TABLE IF NOT EXISTS readmodel_attribute.attribute (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_readmodel_attribute.attribute" (
       id UUID,
       metadata_version INTEGER NOT NULL,
       code VARCHAR,
