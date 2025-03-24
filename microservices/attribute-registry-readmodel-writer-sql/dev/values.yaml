@@ -17,7 +17,7 @@ deployment:
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
-    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "rcommon-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
     READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
     READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
     READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
