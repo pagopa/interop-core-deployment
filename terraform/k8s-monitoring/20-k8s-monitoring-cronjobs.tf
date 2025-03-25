@@ -33,3 +33,24 @@ resource "aws_cloudwatch_metric_alarm" "cronjob_errors" {
 
   tags = var.tags
 }
+
+module "k8s_cronjob_monitoring" {
+  for_each = toset(local.cronjobs_names)
+
+  source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-workload-monitoring?ref=v1.9.0"
+
+  env                 = var.env
+  eks_cluster_name    = var.eks_cluster_name
+  k8s_namespace       = var.env
+  kind                = "Cronjob"
+  k8s_workload_name = each.key
+  sns_topics_arns     = [data.aws_sns_topic.platform_alarms.arn]
+
+  create_performance_alarm      = false
+  create_app_logs_errors_alarm  = true
+
+  cloudwatch_app_logs_errors_metric_name      = try(data.external.cloudwatch_log_metric_filters.result.metricName, null)
+  cloudwatch_app_logs_errors_metric_namespace = try(data.external.cloudwatch_log_metric_filters.result.metricNamespace, null)
+
+  tags = var.tags
+}

@@ -9,13 +9,14 @@ locals {
 module "k8s_deployment_monitoring" {
   for_each = toset(local.microservices_names)
 
-  source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-deployment-monitoring?ref=v1.8.0"
+  source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-workload-monitoring?ref=v1.9.0"
 
-  env                 = var.env
-  eks_cluster_name    = var.eks_cluster_name
-  k8s_namespace       = var.env
-  k8s_deployment_name = each.key
-  sns_topics_arns     = [data.aws_sns_topic.platform_alarms.arn]
+  env               = var.env
+  eks_cluster_name  = var.eks_cluster_name
+  k8s_namespace     = var.env
+  kind              = "Deployment"
+  k8s_workload_name = each.key
+  sns_topics_arns   = [data.aws_sns_topic.platform_alarms.arn]
 
   create_pod_availability_alarm = false
   create_pod_readiness_alarm    = true
