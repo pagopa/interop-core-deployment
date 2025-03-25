@@ -27,9 +27,9 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "read-model-attribute-registry-rmw-user.username"
-    READMODEL_SQL_DB_PASSWORD: "read-model-attribute-registry-rmw-user.password"
+  envFromSecrets:   
+    READMODEL_SQL_DB_USERNAME: "platform-data-attribute-registry-rmw-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-attribute-registry-rmw-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
