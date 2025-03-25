@@ -17,9 +17,19 @@ deployment:
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
-  envFromSecrets:   
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
+    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
+    READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+  envFromSecrets:
     READMODEL_SQL_DB_USERNAME: "read-model-attribute-registry-rmw-user.username"
-    READMODEL_SQL_DB_PASSWORD: "read-model-attribute-registry-rmw-user.username"
+    READMODEL_SQL_DB_PASSWORD: "read-model-attribute-registry-rmw-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
