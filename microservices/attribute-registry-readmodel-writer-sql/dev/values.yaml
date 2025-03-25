@@ -8,6 +8,7 @@ service:
 
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-attribute-registry-readmodel-writer-sql"
+  TOPIC_STARTING_OFFSET: "earliest"
 
 deployment:
   envFromConfigmaps:
