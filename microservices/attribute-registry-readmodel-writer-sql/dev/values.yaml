@@ -13,7 +13,7 @@ configmap:
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "common-flyway-migrations"
+    migrationsConfigmap: "flyway-read-model-attribute-registry"
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
