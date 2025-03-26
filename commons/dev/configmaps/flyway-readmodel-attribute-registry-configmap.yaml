@@ -4,10 +4,21 @@ metadata:
   name: flyway-read-model-attribute-registry
   namespace: dev
 data:
-  V1__Init.sql: |-
-    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_attribute_registry";
+  V1__Init_Attribute.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_attribute";
 
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute_registry" to
-      attribute_registry_readmodel_writer_user,
-      attribute_registry_process_user;
-      
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to
+      "${NAMESPACE}_attribute_registry_rmw_user",
+      "${NAMESPACE}_attribute_registry_process_user";
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_attribute.attribute" (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      code VARCHAR,
+      kind VARCHAR NOT NULL,
+      description VARCHAR NOT NULL,
+      origin VARCHAR,
+      name VARCHAR NOT NULL,
+      creation_time TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id)
+    );
