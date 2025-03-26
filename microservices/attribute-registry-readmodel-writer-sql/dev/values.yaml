@@ -25,7 +25,7 @@ deployment:
       POSTGRES_PORT: "common-read-model-sql.DB_PORT"
       POSTGRES_DB: "common-read-model-sql.DB_NAME"
     envFromSecrets:
-      FLYWAY_USER: "signal-store-flyway-user.username"
+      FLYWAY_USER: "platform-data-flyway-user.username"
       FLYWAY_PASSWORD: "signal-store-flyway-user.password"
 
   envFromConfigmaps:
