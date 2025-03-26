@@ -1,0 +1,68 @@
+name: interop-be-attribute-registry-process
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-attribute-registry-process-dev-es1"
+
+service:
+  create: true
+
+configmap:
+  EVENTSTORE_DB_SCHEMA: "dev_attribute_registry"
+  PRODUCER_ALLOWED_ORIGINS: "IPA"
+  ACCEPTED_AUDIENCES: "dev.interop.pagopa.it/ui,dev.interop.pagopa.it/m2m,dev.interop.pagopa.it/internal"
+
+deployment:
+  flywayInitContainer:
+    create: true
+    env:
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
+      POSTGRES_DB: "{{.Values.locals.db.POSTGRES_DB}}"
+      POSTGRES_HOST: "{{.Values.locals.db.POSTGRES_HOST}}"
+      POSTGRES_PORT: "{{.Values.locals.db.POSTGRES_PORT}}"
+      FLYWAY_URL: "jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+    envFromConfigmaps:
+      EVENTSTORE_DB_SCHEMA: "interop-be-attribute-registry-process.EVENTSTORE_DB_SCHEMA"
+      PRODUCER_ALLOWED_ORIGINS: "interop-be-attribute-registry-process.PRODUCER_ALLOWED_ORIGINS"
+      ACCEPTED_AUDIENCES: "interop-be-attribute-registry-process.ACCEPTED_AUDIENCES"
+      FLYWAY_SCHEMAS: "interop-be-attribute-registry-process.EVENTSTORE_DB_SCHEMA"ù
+      FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "interop-be-attribute-registry-process.EVENTSTORE_DB_SCHEMA"
+    envFromSecrets:
+      FLYWAY_USER: "event-store.POSTGRES_USR"
+      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
+  livenessProbe:
+    httpGet:
+      path: /status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "2Gi"
+    limits:
+      cpu: "500m"
+      memory: "2Gi"
+  env:
+    EVENTSTORE_DB_USE_SSL: "true"
+    PORT: "8088"
+    HOST: "0.0.0.0"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
+    EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
+    EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+  envFromSecrets:   
+    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
+    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"

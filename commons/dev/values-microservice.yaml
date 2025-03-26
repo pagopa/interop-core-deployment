@@ -1,7 +1,14 @@
 namespace: "dev"
 techStack: "nodejs"
 
+service:
+  containerPort: 8088
+  targetPort: http
+  portName: "http"
+
 deployment:
+  flywayInitContainer:
+    migrationsConfigmap: "event-store-migrations"
   replicas: 1
   image:
     repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
@@ -17,3 +24,10 @@ deployment:
       memory: "2Gi"
   env:
     LOG_LEVEL: "info"
+
+
+locals:
+  db:
+    POSTGRES_HOST: "interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com"
+    POSTGRES_PORT: "5432"
+    POSTGRES_DB: "persistence_management"
