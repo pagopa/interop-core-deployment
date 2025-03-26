@@ -11,6 +11,23 @@ configmap:
   TOPIC_STARTING_OFFSET: "earliest"
 
 deployment:
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "common-flyway-migrations"
+    env:
+      FLYWAY_CREATE_SCHEMAS: true
+      FLYWAY_PLACEHOLDER_REPLACEMENT: true
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "dev"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_SCHEMAS: "dev_flyway,dev_attribute"
+    envFromConfigmaps:
+      POSTGRES_HOST: "common-read-model-sql.DB_HOST_RW"
+      POSTGRES_PORT: "common-read-model-sql.DB_PORT"
+      POSTGRES_DB: "common-read-model-sql.DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "signal-store-flyway-user.username"
+      FLYWAY_PASSWORD: "signal-store-flyway-user.password"
+
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     ATTRIBUTE_TOPIC: "common-kafka.ATTRIBUTE_TOPIC"
