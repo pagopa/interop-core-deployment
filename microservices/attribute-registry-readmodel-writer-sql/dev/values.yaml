@@ -26,7 +26,7 @@ deployment:
       POSTGRES_DB: "common-read-model-sql.DB_NAME"
     envFromSecrets:
       FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "signal-store-flyway-user.password"
+      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
