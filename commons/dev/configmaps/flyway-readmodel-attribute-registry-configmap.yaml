@@ -11,7 +11,7 @@ data:
       "${NAMESPACE}_attribute_registry_rmw_user",
       "${NAMESPACE}_attribute_registry_process_user";
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_attribute.attribute" (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_attribute"."attribute" (
       id UUID,
       metadata_version INTEGER NOT NULL,
       code VARCHAR,
