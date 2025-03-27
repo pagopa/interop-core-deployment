@@ -22,3 +22,5 @@ data:
       creation_time TIMESTAMP WITH TIME ZONE NOT NULL,
       PRIMARY KEY (id)
     );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_attribute"."attribute" TO "${NAMESPACE}_attribute_registry_rmw_user";
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_attribute"."attribute" TO "${NAMESPACE}_attribute_registry_process_user";
