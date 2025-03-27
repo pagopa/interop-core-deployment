@@ -23,4 +23,4 @@ data:
       PRIMARY KEY (id)
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_attribute"."attribute" TO "${NAMESPACE}_attribute_registry_rmw_user";
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_attribute"."attribute" TO "${NAMESPACE}_attribute_registry_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute"."attribute" TO "${NAMESPACE}_attribute_registry_process_user";
