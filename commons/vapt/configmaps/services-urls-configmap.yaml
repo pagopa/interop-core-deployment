@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-services-urls
+  namespace: vapt
+data:
+  AUTHORIZATION_MANAGEMENT_URL: "http://interop-be-authorization-management.vapt.svc.cluster.local:8088/authorization-management/0.0"
+  DELEGATION_PROCESS_URL: "http://interop-be-delegation-process.vapt.svc.cluster.local:8088"
+  AGREEMENT_PROCESS_URL: "http://interop-be-agreement-process.vapt.svc.cluster.local:8088"
+  PURPOSE_PROCESS_URL: "http://interop-be-purpose-process.vapt.svc.cluster.local:8088"
+  TENANT_PROCESS_URL: "http://interop-be-attribute-registry-process.vapt.svc.cluster.local:8088"
+  ATTRIBUTE_REGISTRY_PROCESS_URL: "http://interop-be-attribute-registry-process.vapt.svc.cluster.local:8088"
+  CATALOG_PROCESS_URL: "http://interop-be-catalog-process.vapt.svc.cluster.local:8088"
+  ESERVICE_TEMPLATE_PROCESS_URL: "http://interop-be-eservice-template-process.vapt.svc.cluster.local:8088"

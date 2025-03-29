@@ -1,0 +1,76 @@
+images:
+  microservices:
+    agreement-platformstate-writer:
+      tag: "2.2.1"
+    agreement-process:
+      tag: "2.0.25"
+    agreement-readmodel-writer:
+      tag: "2.0.25"
+    api-gateway:
+      tag: "2.0.25"
+    attribute-registry-process:
+      tag: "2.0.25"
+    attribute-registry-readmodel-writer:
+      tag: "2.0.25"
+    authorization-management:
+      tag: "1.0.18"
+    authorization-platformstate-writer:
+      tag: "2.2.1"
+    authorization-process:
+      tag: "2.0.25"
+    authorization-server:
+      tag: "1.0.14"
+    authorization-server-node:
+      tag: "2.2.1"
+    authorization-updater:
+      tag: "2.0.25"
+    backend-for-frontend:
+      tag: "2.0.25"
+    catalog-platformstate-writer:
+      tag: "2.2.1"
+    catalog-process:
+      tag: "2.0.25"
+    catalog-read-model-writer:
+      tag: "2.0.25"
+    client-purpose-updater:
+      tag: "2.0.25"
+    client-readmodel-writer:
+      tag: "2.0.25"
+    compute-agreements-consumer:
+      tag: "2.0.25"
+    delegation-items-archiver:
+      tag: "2.2.0-RC1"
+    delegation-process:
+      tag: "2.2.0-RC1"
+    delegation-readmodel-writer:
+      tag: "2.2.0-RC1"
+    eservice-descriptors-archiver:
+      tag: "2.0.25"
+    frontend:
+      tag: "1.0.90"
+    key-readmodel-writer:
+      tag: "2.0.25"
+    notifier:
+      tag: "1.0.19"
+    notifier-seeder:
+      tag: "2.0.25"
+    producer-key-readmodel-writer:
+      tag: "2.0.25"
+    producer-keychain-readmodel-writer:
+      tag: "2.0.25"
+    purpose-platformstate-writer:
+      tag: "2.0.21"
+    purpose-process:
+      tag: "2.0.25"
+    purpose-read-model-writer:
+      tag: "2.0.25"
+    tenant-process:
+      tag: "2.0.25"
+    tenant-readmodel-writer:
+      tag: "2.0.25"
+    token-details-persister:
+      tag: "2.0.21"
+
+  jobs:
+    token-details-persister:
+      tag: "1.0.32"
