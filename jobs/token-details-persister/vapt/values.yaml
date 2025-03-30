@@ -28,4 +28,4 @@ cronjob:
       memory: "2Gi"
     limits:
       cpu: "1"
-      memory: "2G"
+      memory: "2Gi"
