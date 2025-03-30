@@ -12,8 +12,8 @@ deployment:
     imagePullPolicy: Always
     tag: $IMAGE_TAG_PLACEHOLDER
     digest: $IMAGE_DIGEST_PLACEHOLDER
-  flyway:
-    commonsDbConfigmapName: "interop-be-db-commons"
+  env:
+    LOG_LEVEL: "info"
   resources:
     requests:
       cpu: "1000m"
