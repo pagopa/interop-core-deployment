@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: common-read-model
-  namespace: {{NAMESPACE}}
+  namespace: vapt
 data:
   READMODEL_DB_HOST: "interop-read-model-vapt.cluster-c1simiia6fq8.eu-south-1.docdb.amazonaws.com"
   READMODEL_DB_NAME: "read-model"
