@@ -12,3 +12,4 @@ data:
   ATTRIBUTE_REGISTRY_PROCESS_URL: "http://interop-be-attribute-registry-process.vapt.svc.cluster.local:8088"
   CATALOG_PROCESS_URL: "http://interop-be-catalog-process.vapt.svc.cluster.local:8088"
   ESERVICE_TEMPLATE_PROCESS_URL: "http://interop-be-eservice-template-process.vapt.svc.cluster.local:8088"
+  REDIS_URL: "http://redis.vapt.svc.cluster.local:6379"

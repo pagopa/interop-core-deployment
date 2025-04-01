@@ -7,3 +7,6 @@ data:
   READMODEL_DB_HOST: "interop-read-model-vapt.cluster-c1simiia6fq8.eu-south-1.docdb.amazonaws.com"
   READMODEL_DB_NAME: "read-model"
   READMODEL_DB_PORT: "27017"
+  READMODEL_REPLICA_SET: "rs0"
+  READMODEL_READ_PREFERENCE: "secondaryPreferred"
+    
