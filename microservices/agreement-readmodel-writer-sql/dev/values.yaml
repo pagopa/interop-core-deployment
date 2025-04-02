@@ -17,9 +17,9 @@ deployment:
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
-      FLYWAY_PLACEHOLDERS_NAMESPACE: "dev"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
-      FLYWAY_SCHEMAS: "dev_agreement"
+      FLYWAY_SCHEMAS: "{{.Values.namespace}}_agreement"
     envFromConfigmaps:
       POSTGRES_HOST: "common-read-model-sql.DB_HOST_RW"
       POSTGRES_PORT: "common-read-model-sql.DB_PORT"
