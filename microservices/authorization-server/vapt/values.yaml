@@ -21,7 +21,7 @@ service:
       targetPort: management
 
 configmap:
-  EC_KEYS_IDENTIFIERS: "{{.Values.local.interop_be_commons.EC_KEYS_IDENTIFIERS}}"
+  EC_KEYS_IDENTIFIERS: ""
   RSA_KEYS_IDENTIFIERS: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   GENERATED_M2M_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/m2m"
   GENERATED_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
