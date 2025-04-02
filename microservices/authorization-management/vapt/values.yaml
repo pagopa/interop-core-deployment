@@ -45,19 +45,6 @@ deployment:
     envFromSecrets:
       FLYWAY_USER: "postgres.POSTGRES_USR"
       FLYWAY_PASSWORD: "postgres.POSTGRES_PSW"
-  livenessProbe:
-    httpGet:
-      path: "/alive"
-      port: management
-    periodSeconds: 5
-    failureThreshold: 3
-    initialDelaySeconds: 30
-  readinessProbe:
-    httpGet:
-      path: "/ready"
-      port: management
-    periodSeconds: 5
-    failureThreshold: 3
   command: ["bin/interop-be-authorization-management"]
   args: ["-Dconfig.override_with_env_vars=true"]
   envFromFieldRef: 
@@ -77,3 +64,16 @@ deployment:
     POSTGRES_PSW: "postgres.POSTGRES_PSW"
     CQRS_PROJECTION_DB_USER: "documentdb.PROJECTION_USR"
     CQRS_PROJECTION_DB_PASSWORD: "documentdb.PROJECTION_PSW"
+  livenessProbe:
+    httpGet:
+      path: "/alive"
+      port: management
+    periodSeconds: 5
+    failureThreshold: 3
+    initialDelaySeconds: 30
+  readinessProbe:
+    httpGet:
+      path: "/ready"
+      port: management
+    periodSeconds: 5
+    failureThreshold: 3

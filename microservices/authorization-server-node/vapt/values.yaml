@@ -29,18 +29,6 @@ configmap:
 deployment:
   image:
     repositoryName: "interop-be-authorization-server"
-  livenessProbe:
-    httpGet:
-      path: /authorization-server/status
-      port: http
-    initialDelaySeconds: 15
-    periodSeconds: 5
-  readinessProbe:
-    httpGet:
-      path: /authorization-server/status
-      port: http
-    initialDelaySeconds: 15
-    periodSeconds: 5
   env:
     HOST: "0.0.0.0"
     PORT: "8088"
@@ -57,4 +45,16 @@ deployment:
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
+  livenessProbe:
+    httpGet:
+      path: /authorization-server/status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /authorization-server/status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
     

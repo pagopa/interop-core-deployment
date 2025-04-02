@@ -19,3 +19,7 @@ deployment:
     limits:
       cpu: "1000m"
       memory: "2Gi"
+
+local:
+  interop_be_commons:
+    DEV_ENDPOINTS_ENABLED: "false"

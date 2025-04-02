@@ -37,13 +37,24 @@ configmap:
   RATE_LIMITER_TIMEOUT: "300.milliseconds"
   JWT_FALLBACK_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   JWT_QUEUE_URL: "https://sqs.eu-central-1.amazonaws.com/565393043798/generated-jwt"
-  DEV_ENDPOINTS_ENABLED: "true"
+  DEV_ENDPOINTS_ENABLED: "{{.Values.local.interop_be_commons.DEV_ENDPOINTS_ENABLED}}"
 
 deployment:
   securityContext:
     runAsUser: 1001
   command: ["bin/interop-be-authorization-server"]
   args: ["-Dconfig.override_with_env_vars=true"]
+  env:
+    REQUIRED_CONTACT_POINT_NR: "1"
+    ENABLED_PROJECTIONS: "true"
+    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
+    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
+    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
   livenessProbe:
     httpGet:
       path: "/alive"
@@ -57,15 +68,4 @@ deployment:
       port: management
     periodSeconds: 5
     failureThreshold: 3
-  env:
-    REQUIRED_CONTACT_POINT_NR: "1"
-    ENABLED_PROJECTIONS: "true"
-    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
-    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
-  envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
-  envFromConfigmaps:
-    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
-    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
-    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
   
