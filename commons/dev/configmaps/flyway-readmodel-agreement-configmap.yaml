@@ -9,7 +9,8 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to
       "${NAMESPACE}_agreement_rmw_user",
-      "${NAMESPACE}_agreement_process_user";
+      "${NAMESPACE}_agreement_process_user",
+      readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement (
       id UUID,
@@ -32,6 +33,7 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement TO "${NAMESPACE}_agreement_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement TO readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_stamp (
       agreement_id UUID NOT NULL REFERENCES "${NAMESPACE}_agreement".agreement (id) ON DELETE CASCADE,
@@ -45,6 +47,7 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_stamp TO "${NAMESPACE}_agreement_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_stamp TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_stamp TO readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_attribute (
       agreement_id UUID NOT NULL REFERENCES "${NAMESPACE}_agreement".agreement (id) ON DELETE CASCADE,
@@ -56,6 +59,7 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_attribute TO "${NAMESPACE}_agreement_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_attribute TO "${NAMESPACE}_agreement_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_attribute TO readonly_user;    
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_consumer_document (
       id UUID,
@@ -71,6 +75,7 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_consumer_document TO "${NAMESPACE}_agreement_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_consumer_document TO "${NAMESPACE}_agreement_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_consumer_document TO readonly_user;    
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_contract (
       id UUID,
@@ -86,3 +91,4 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_contract TO "${NAMESPACE}_agreement_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_contract TO "${NAMESPACE}_agreement_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_contract TO readonly_user;    
