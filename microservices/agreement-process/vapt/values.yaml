@@ -26,7 +26,7 @@ deployment:
     envFromConfigmaps:
       FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
-      POSTGRES_DB: "common-event-store.POSTGRES_DB"
+      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
     envFromSecrets:
