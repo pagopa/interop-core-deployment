@@ -6,6 +6,7 @@ serviceAccount:
 
 service:
   create: true
+  containerPort: 8088
   additionalPorts:
     - name: monitoring
       containerPort: 9095

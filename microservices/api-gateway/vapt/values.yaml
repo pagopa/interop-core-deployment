@@ -3,6 +3,7 @@ techStack: "nodejs"
 
 service:
   create: true
+  containerPort: 8088
   albHealthCheck:
     path: "/api-gateway/1.0/status"
     protocol: "HTTP"
