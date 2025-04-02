@@ -33,7 +33,7 @@ deployment:
     PORT: "8088"
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
-    SERVICE_VERSION: "2.0.25"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"

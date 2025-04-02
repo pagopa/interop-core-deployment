@@ -32,7 +32,7 @@ deployment:
   env:
     HOST: "0.0.0.0"
     PORT: "8088"
-    SERVICE_VERSION: "2.2.1"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     POD_NAME: "metadata.name"

@@ -34,6 +34,7 @@ deployment:
     PORT: "8088"
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"

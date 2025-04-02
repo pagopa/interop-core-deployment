@@ -23,7 +23,7 @@ deployment:
   env:
     HOST: "0.0.0.0"
     PORT: "8088"
-    SERVICE_VERSION: "2.0.25"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
