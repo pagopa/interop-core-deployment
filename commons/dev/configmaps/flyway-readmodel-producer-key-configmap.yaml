@@ -9,7 +9,6 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_producer_jwk_key" to
       "${NAMESPACE}_producer_key_rmw_user",
-      "${NAMESPACE}_producer_key_process_user",
       readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_producer_jwk_key".producer_jwk_key (
@@ -24,5 +23,4 @@ data:
       PRIMARY KEY (producer_keychain_id, kid)
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_producer_jwk_key".producer_jwk_key TO "${NAMESPACE}_producer_key_rmw_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_producer_jwk_key".producer_jwk_key TO "${NAMESPACE}_producer_key_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_producer_jwk_key".producer_jwk_key TO readonly_user;
