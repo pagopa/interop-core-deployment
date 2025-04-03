@@ -64,6 +64,8 @@ images:
       tag: "2.0.25"
     purpose-read-model-writer:
       tag: "2.0.25"
+    redis:
+      tag: "7.0.4"
     tenant-process:
       tag: "2.0.25"
     tenant-readmodel-writer:
