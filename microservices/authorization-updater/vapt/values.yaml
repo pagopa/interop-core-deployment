@@ -10,19 +10,15 @@ service:
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-authorization-updater"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-authorization-updater"
-  INTERNAL_JWT_KID: "{{.Values.local.common_jwt.INTERNAL_JWT_KID}}"
-  INTERNAL_JWT_ISSUER: "{{.Values.local.common_jwt.INTERNAL_JWT_ISSUER}}"  
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "{{.Values.local.common_jwt.INTERNAL_JWT_AUDIENCE}}"  
-  INTERNAL_JWT_SECONDS_DURATION: "{{.Values.local.common_jwt.INTERNAL_JWT_SECONDS_DURATION}}"  
-  INTERNAL_JWT_SUBJECT: "{{.Values.local.common_jwt.INTERNAL_JWT_SUBJECT}}"  
+  INTERNAL_JWT_SECONDS_DURATION: "3600"  
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
 
 deployment:
   env:
-    LOG_LEVEL: "info"
     TOPIC_STARTING_OFFSET: "latest"
-    READMODEL_DB_HOST: "{{.Values.local.common_read_model.READMODEL_DB_HOST}}"
-    READMODEL_DB_NAME: "{{.Values.local.common_read_model.READMODEL_DB_NAME}}"
-    READMODEL_DB_PORT: "{{.Values.local.common_read_model.READMODEL_DB_PORT}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
@@ -32,13 +28,9 @@ deployment:
     PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
     AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
     AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-  resources:
-    requests:
-      cpu: "1000m"
-      memory: "2Gi"
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"
