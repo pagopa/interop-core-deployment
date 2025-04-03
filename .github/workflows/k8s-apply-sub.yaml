@@ -235,10 +235,11 @@ jobs:
 
           export PROJECT_DIR=$(pwd)
 
-          TEMPLATE=$($SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console)
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug -e ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console > template.yaml
           
-          K8S_NAMESPACE=$(echo $TEMPLATE | yq 'select(.kind == "CronJob") | .metadata.namespace')
-          CRONJOB_FULLNAME=$(echo $TEMPLATE | yq 'select(.kind == "CronJob") | .metadata.name')
+          K8S_NAMESPACE=$(cat template.yaml | yq 'select(.kind == "CronJob") | .metadata.namespace')
+          CRONJOB_FULLNAME=$(cat template.yaml | yq 'select(.kind == "CronJob") | .metadata.name')
   
           echo "INFO - Apply changes for $CRONJOB_FULLNAME."
           $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
+          
