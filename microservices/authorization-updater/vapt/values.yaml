@@ -1,0 +1,44 @@
+name: "interop-be-authorization-updater"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::565393043798:role/interop-be-authorization-updater-vapt-es1"
+
+service:
+  create: false
+  
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-authorization-updater"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-authorization-updater"
+  INTERNAL_JWT_KID: "{{.Values.local.common_jwt.INTERNAL_JWT_KID}}"
+  INTERNAL_JWT_ISSUER: "{{.Values.local.common_jwt.INTERNAL_JWT_ISSUER}}"  
+  INTERNAL_JWT_AUDIENCE: "{{.Values.local.common_jwt.INTERNAL_JWT_AUDIENCE}}"  
+  INTERNAL_JWT_SECONDS_DURATION: "{{.Values.local.common_jwt.INTERNAL_JWT_SECONDS_DURATION}}"  
+  INTERNAL_JWT_SUBJECT: "{{.Values.local.common_jwt.INTERNAL_JWT_SUBJECT}}"  
+
+deployment:
+  env:
+    LOG_LEVEL: "info"
+    TOPIC_STARTING_OFFSET: "latest"
+    READMODEL_DB_HOST: "{{.Values.local.common_read_model.READMODEL_DB_HOST}}"
+    READMODEL_DB_NAME: "{{.Values.local.common_read_model.READMODEL_DB_NAME}}"
+    READMODEL_DB_PORT: "{{.Values.local.common_read_model.READMODEL_DB_PORT}}"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
+    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
