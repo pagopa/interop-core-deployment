@@ -9,7 +9,6 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_client_jwk_key" to
       "${NAMESPACE}_key_rmw_user",
-      "${NAMESPACE}_key_process_user",
       readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client_jwk_key".client_jwk_key (
