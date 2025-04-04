@@ -12,7 +12,7 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-authorization-updater"
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
-  INTERNAL_JWT_AUDIENCE: "{{.Values.local.common_jwt.INTERNAL_JWT_AUDIENCE}}"  
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_SECONDS_DURATION: "3600"  
   INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
 
