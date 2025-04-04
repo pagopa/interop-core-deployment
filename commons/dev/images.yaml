@@ -4,5 +4,7 @@ images:
       tag: "develop"
     agreement-readmodel-writer-sql:
       tag: "develop"
+    producer-key-readmodel-writer-sql:
+      tag: "develop"      
     key-readmodel-writer-sql:
       tag: "develop"
