@@ -68,7 +68,7 @@ images:
       tag: "2.0.25"
     tenant-readmodel-writer:
       tag: "2.0.25"
-    token-details-persister:
+    token-details-persister-node:
       tag: "2.0.21"
 
   jobs:
