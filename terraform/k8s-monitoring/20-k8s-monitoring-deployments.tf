@@ -11,7 +11,6 @@ module "k8s_deployment_monitoring" {
 
   source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-workload-monitoring?ref=v1.9.0"
 
-  env               = var.env
   eks_cluster_name  = var.eks_cluster_name
   k8s_namespace     = var.env
   kind              = "Deployment"

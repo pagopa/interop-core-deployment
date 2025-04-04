@@ -128,8 +128,6 @@ jobs:
       - name: Deploy
         env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
-          MICROSERVICE_FULLNAME: interop-be-${{ matrix.microservice }}
-          K8S_NAMESPACE: ${{ inputs.environment }}
           TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
           FORCE_ROLLOUT: ${{ inputs.force_restart }}
 
@@ -137,10 +135,15 @@ jobs:
           set -euo pipefail
 
           TIMEOUT="${TIMEOUT_SECONDS}s"
-          
+
           export PROJECT_DIR=$(pwd)
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug -e ${{ inputs.environment }} -m $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console > template.yaml
+
+          K8S_NAMESPACE=$(cat template.yaml | yq 'select(.kind == "Deployment") | .metadata.namespace')
+          MICROSERVICE_FULLNAME=$(cat template.yaml | yq 'select(.kind == "Deployment") | .metadata.name')
+          
           echo "INFO - Apply changes for $MICROSERVICE_FULLNAME."
-          "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
 
           DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_FULLNAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
           echo "INFO - Desired replicas: $DESIRED_REPLICAS"
@@ -227,9 +230,16 @@ jobs:
       - name: Deploy
         env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
-          K8S_NAMESPACE: ${{ inputs.environment }}
         run: |
           set -euo pipefail
 
           export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console 
+
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug -e ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console > template.yaml
+          
+          K8S_NAMESPACE=$(cat template.yaml | yq 'select(.kind == "CronJob") | .metadata.namespace')
+          CRONJOB_FULLNAME=$(cat template.yaml | yq 'select(.kind == "CronJob") | .metadata.name')
+  
+          echo "INFO - Apply changes for $CRONJOB_FULLNAME."
+          $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
+          

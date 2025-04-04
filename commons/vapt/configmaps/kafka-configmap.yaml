@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-kafka
+  namespace: vapt
+data:
+  KAFKA_BROKERS: "b-2.interopplatformevents.mlfzz3.c3.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.mlfzz3.c3.kafka.eu-south-1.amazonaws.com:9098,b-1.interopplatformevents.mlfzz3.c3.kafka.eu-south-1.amazonaws.com:9098"
+
+  AGREEMENT_TOPIC: "event-store.vapt_agreement.events"
+  ATTRIBUTE_TOPIC: "event-store.vapt_attribute_registry.events"
+  AUTHORIZATION_TOPIC: "event-store.vapt_authorization.events"
+  CATALOG_TOPIC: "event-store.vapt_catalog.events"
+  DELEGATION_TOPIC: "event-store.vapt_delegation.events"
+  PURPOSE_TOPIC: "event-store.vapt_purpose.events"
+  TENANT_TOPIC: "event-store.vapt_tenant.events"
+
+  APPLICATION_AUDIT_TOPIC: "vapt_application.audit"
+  TOKEN_AUDITING_TOPIC: "vapt_authorization-server.generated-jwt"
