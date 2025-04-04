@@ -9,9 +9,10 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to
       "${NAMESPACE}_attribute_registry_rmw_user",
-      "${NAMESPACE}_attribute_registry_process_user";
+      "${NAMESPACE}_attribute_registry_process_user",
+      readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_attribute"."attribute" (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_attribute".attribute (
       id UUID,
       metadata_version INTEGER NOT NULL,
       code VARCHAR,
@@ -22,5 +23,6 @@ data:
       creation_time TIMESTAMP WITH TIME ZONE NOT NULL,
       PRIMARY KEY (id)
     );
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_attribute"."attribute" TO "${NAMESPACE}_attribute_registry_rmw_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_attribute"."attribute" TO "${NAMESPACE}_attribute_registry_process_user";
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_attribute".attribute TO "${NAMESPACE}_attribute_registry_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO "${NAMESPACE}_attribute_registry_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO readonly_user;
