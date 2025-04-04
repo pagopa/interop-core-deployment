@@ -6,3 +6,5 @@ images:
       tag: "develop"
     producer-key-readmodel-writer-sql:
       tag: "develop"      
+    key-readmodel-writer-sql:
+      tag: "develop"
