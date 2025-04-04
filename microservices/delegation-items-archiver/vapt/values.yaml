@@ -20,7 +20,7 @@ deployment:
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
-    TOPIC_STARTING_OFFSET: "earlieast"
+    TOPIC_STARTING_OFFSET: "earliest"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
