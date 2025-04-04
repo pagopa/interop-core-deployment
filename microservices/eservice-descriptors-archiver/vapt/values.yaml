@@ -22,7 +22,7 @@ deployment:
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
     AWS_ROLE_SESSION_NAME: "metadata.name"
-  eenvFromConfigmaps:
+  envFromConfigmaps:
     CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"

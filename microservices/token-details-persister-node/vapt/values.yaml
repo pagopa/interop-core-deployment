@@ -1,4 +1,4 @@
-name: "interop-be-token-details-persister"
+name: "interop-be-token-details-persister-node"
 techStack: "nodejs"
 
 service:
@@ -16,8 +16,6 @@ configmap:
   S3_BUCKET: "interop-generated-jwt-details-{{.Values.namespace}}-es1"
 
 deployment:
-  image:
-    repositoryName: "interop-be-token-details-persister"
   env:
     TOPIC_STARTING_OFFSET: "earliest"
   envFromFieldRef:

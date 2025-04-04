@@ -23,7 +23,7 @@ deployment:
     TOPIC_STARTING_OFFSET: "earlieast"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-  eenvFromConfigmaps:
+  envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
