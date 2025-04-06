@@ -1,5 +1,5 @@
 name: "interop-be-notifier"
-techStack: "nodejs"
+techStack: "scala"
 
 service:
   create: true
@@ -55,6 +55,10 @@ deployment:
       FLYWAY_USER: "postgres.POSTGRES_USR"
       FLYWAY_PASSWORD: "postgres.POSTGRES_PSW"
 
+
+  podTemplateMetadata:
+    labels:
+      actorSystemName: "{{.Values.name}}"
   command: ["bin/interop-be-notifier"]
   args: ["-Dconfig.override_with_env_vars=true"]
   securityContext:

@@ -1,5 +1,5 @@
 name: "interop-be-authorization-management"
-techStack: "nodejs"
+techStack: "scala"
 
 serviceAccount:
   roleArn: "arn:aws:iam::565393043798:role/interop-iam-service-vapt-interop-be-authorization-management-es1"
@@ -28,6 +28,9 @@ configmap:
   ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
 
 deployment:
+  podTemplateMetadata:
+    labels:
+      actorSystemName: "{{.Values.name}}"
   securityContext:
     runAsUser: 1001
   flywayInitContainer:
