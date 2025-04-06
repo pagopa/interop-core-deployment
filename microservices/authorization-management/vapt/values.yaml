@@ -1,0 +1,80 @@
+name: "interop-be-authorization-management"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::565393043798:role/interop-iam-service-vapt-interop-be-authorization-management-es1"
+
+service:
+  create: true
+  containerPort: 8088
+  additionalPorts:
+    - name: monitoring
+      containerPort: 9095
+      protocol: TCP
+      targetPort: monitoring
+    - name: management
+      containerPort: 8558
+      protocol: TCP
+      targetPort: management
+
+configmap:
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
+  POSTGRES_SCHEMA: "{{.Values.namespace}}_authz"
+  POSTGRES_DB: "persistence_management"
+  CQRS_PROJECTION_COLLECTION_NAME: "clients"
+  CQRS_KEYS_PROJECTION_COLLECTION_NAME: "keys"
+  CQRS_CLIENTS_PROJECTION_COLLECTION_NAME: "clients"
+  DEV_ENDPOINTS_ENABLED: "{{.Values.local.interop_be_commons.DEV_ENDPOINTS_ENABLED}}"
+  ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
+
+deployment:
+  securityContext:
+    runAsUser: 1001
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "common-db-migrations"
+    env:
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+    envFromConfigmaps:
+      FLYWAY_SCHEMAS: "{{.Values.name}}.POSTGRES_SCHEMA"
+      FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.POSTGRES_SCHEMA"
+      POSTGRES_DB: "{{.Values.name}}.POSTGRES_DB"
+      POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
+      POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+    envFromSecrets:
+      FLYWAY_USER: "postgres.POSTGRES_USR"
+      FLYWAY_PASSWORD: "postgres.POSTGRES_PSW"
+  command: ["bin/interop-be-authorization-management"]
+  args: ["-Dconfig.override_with_env_vars=true"]
+  envFromFieldRef: 
+    NAMESPACE: "metadata.namespace"
+  env: 
+    REQUIRED_CONTACT_POINT_NR: 1
+    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/565393043798/persistence-events.fifo"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
+    POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+    CQRS_PROJECTION_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    CQRS_PROJECTION_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    CQRS_PROJECTION_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+  envFromSecrets:
+    POSTGRES_USR: "postgres.POSTGRES_USR"
+    POSTGRES_PSW: "postgres.POSTGRES_PSW"
+    CQRS_PROJECTION_DB_USER: "documentdb.PROJECTION_USR"
+    CQRS_PROJECTION_DB_PASSWORD: "documentdb.PROJECTION_PSW"
+  livenessProbe:
+    httpGet:
+      path: "/alive"
+      port: management
+    periodSeconds: 5
+    failureThreshold: 3
+    initialDelaySeconds: 30
+  readinessProbe:
+    httpGet:
+      path: "/ready"
+      port: management
+    periodSeconds: 5
+    failureThreshold: 3

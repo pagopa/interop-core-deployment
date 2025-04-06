@@ -22,7 +22,7 @@ deployment:
     CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_NAME: "common-read-modelx.READMODEL_DB_NAME"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"

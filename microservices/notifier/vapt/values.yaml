@@ -36,9 +36,6 @@ configmap:
   INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_DURATION_SECONDS: "3600"
-  NOTIFICATION_DB_NAME: "persistence_management"
-  NOTIFICATION_DB_SERVER_NAME: "common-event-store.EVENTSTORE_DB_HOST"
-  NOTIFICATION_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
 
 deployment:
   flywayInitContainer:
@@ -57,6 +54,7 @@ deployment:
     envFromSecrets:
       FLYWAY_USER: "postgres.POSTGRES_USR"
       FLYWAY_PASSWORD: "postgres.POSTGRES_PSW"
+
   command: ["bin/interop-be-notifier"]
   args: ["-Dconfig.override_with_env_vars=true"]
   securityContext:
@@ -73,6 +71,9 @@ deployment:
     NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
     POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+    NOTIFICATION_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
+    NOTIFICATION_DB_SERVER_NAME: "common-event-store.EVENTSTORE_DB_HOST"
+    NOTIFICATION_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
     CQRS_PROJECTION_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     CQRS_PROJECTION_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     CQRS_PROJECTION_DB_NAME: "common-read-model.READMODEL_DB_NAME"

@@ -3,6 +3,7 @@ namespace: vapt
 service:
   targetPort: http
   portName: http
+
 deployment:
   replicas: 1
   image:
