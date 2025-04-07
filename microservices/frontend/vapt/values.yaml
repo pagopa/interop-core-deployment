@@ -5,7 +5,7 @@ service:
   create: true
   containerPort: 80
   targetPort: 80
-  healthcheck:
+  albHealthCheck:
     path: "/nginx-status"
     successCodes: "200"
 
