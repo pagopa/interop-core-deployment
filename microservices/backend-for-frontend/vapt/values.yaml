@@ -58,6 +58,7 @@ configmap:
   PRESIGNED_URL_PUT_DURATION_MINUTES: "2"
   PAGOPA_TENANT_ID: "69e2865e-65ab-4e48-a638-2037a9ee2ee7"
   INTEROP_SELFCARE_PRODUCT_NAME: "prod-interop"
+  DELEGATION_CONTRACTS_CONTAINER: "interop-application-import-export-vapt-es1"
 
 deployment:
   env:
@@ -70,7 +71,7 @@ deployment:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:    
-    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    WELL_KNOWN_URLS: "common-jwt.BFF_WELL_KNOWN_URLS"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
     AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"

@@ -45,7 +45,7 @@ images:
     delegation-readmodel-writer:
       tag: "2.2.0-RC1"
     eservice-descriptors-archiver:
-      tag: "2.2.0-RC1"
+      tag: "2.2.1-RC1"
     frontend:
       tag: "1.1.14"
     key-readmodel-writer:

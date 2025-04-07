@@ -5,3 +5,5 @@ metadata:
   namespace: vapt
 data:
   WELL_KNOWN_URLS: "https://vapt.interop.pagopa.it/.well-known/jwks.json"
+  SELFCARE_WELL_KNOWN_URLS: "https://uat.selfcare.pagopa.it/.well-known/jwks.json"
+  BFF_WELL_KNOWN_URLS: "https://vapt.interop.pagopa.it/.well-known/jwks.json,https://uat.selfcare.pagopa.it/.well-known/jwks.json"

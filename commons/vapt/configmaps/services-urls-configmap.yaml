@@ -15,4 +15,4 @@ data:
   PARTY_REGISTRY_PROXY_URL: "http://interop-be-party-registry-proxy.vapt.svc.cluster.local:8088/party-registry-proxy/1.0"
   PURPOSE_PROCESS_URL: "http://interop-be-purpose-process.vapt.svc.cluster.local:8088"
   REDIS_URL: "http://redis.vapt.svc.cluster.local:6379"
-  TENANT_PROCESS_URL: "http://interop-be-attribute-registry-process.vapt.svc.cluster.local:8088"
+  TENANT_PROCESS_URL: "http://interop-be-tenant-process.vapt.svc.cluster.local:8088"
