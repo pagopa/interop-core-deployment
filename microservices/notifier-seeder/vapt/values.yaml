@@ -1,0 +1,25 @@
+name: "interop-be-notifier-seeder"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::565393043798:role/interop-be-notifier-seeder-vapt-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-notifier-seeder"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-notifier-seeder"
+  NOTIFICATION_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/565393043798/persistence-events.fifo"
+
+deployment:
+  env:
+    TOPIC_STARTING_OFFSET: "latest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
+    AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
