@@ -8,5 +8,7 @@ images:
       tag: "develop"      
     key-readmodel-writer-sql:
       tag: "develop"
+    purpose-readmodel-writer-sql:
+      tag: "develop"
     client-readmodel-writer-sql:
       tag: "develop"
