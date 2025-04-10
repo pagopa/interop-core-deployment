@@ -2,7 +2,7 @@ name: "interop-be-authorization-management"
 techStack: "scala"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::TBD:role/interop-iam-service-qa-interop-be-authorization-management-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-iam-service-qa-interop-be-authorization-management-es1"
 
 service:
   create: true

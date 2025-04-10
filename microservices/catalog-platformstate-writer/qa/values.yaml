@@ -1,15 +1,15 @@
-name: "interop-be-agreement-platformstate-writer"
+name: "interop-be-catalog-platformstate-writer"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-agreement-platformstate-writer-qa-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-catalog-platformstate-writer-qa-es1"
 
 service:
   create: false
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-agreement-platformstate-writer"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-agreement-platformstate-writer"
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-catalog-platformstate-writer"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-catalog-platformstate-writer"
 
 deployment:
   env:
@@ -17,8 +17,7 @@ deployment:
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
-    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     TOKEN_GENERATION_READMODEL_TABLE_NAME_PLATFORM: "common-token-generation-read-model.TOKEN_READMODEL_PLATFORM_STATES_TABLE_NAME"
     TOKEN_GENERATION_READMODEL_TABLE_NAME_TOKEN_GENERATION: "common-token-generation-read-model.TOKEN_READMODEL_TOKEN_STATES_TABLE_NAME"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-  

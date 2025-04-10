@@ -2,7 +2,7 @@ name: "interop-be-authorization-server"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::TBD:role/interop-iam-service-qa-interop-be-authorization-server-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-iam-service-qa-interop-be-authorization-server-es1"
 
 service:
   create: true
@@ -37,7 +37,7 @@ configmap:
   RATE_LIMITER_RATE_INTERVAL: "1.second"
   RATE_LIMITER_TIMEOUT: "300.milliseconds"
   JWT_FALLBACK_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}"
-  JWT_QUEUE_URL: "https://sqs.eu-central-1.amazonaws.com/TBD/generated-jwt"
+  JWT_QUEUE_URL: "https://sqs.eu-central-1.amazonaws.com/755649575658/generated-jwt"
   DEV_ENDPOINTS_ENABLED: "{{.Values.local.interop_be_commons.DEV_ENDPOINTS_ENABLED}}"
   ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
 
