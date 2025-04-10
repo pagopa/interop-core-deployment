@@ -9,6 +9,7 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_client" to
       "${NAMESPACE}_client_rmw_user",
+      "${NAMESPACE}_authorization_process_user",
       readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client".client (
@@ -23,6 +24,7 @@ data:
       CONSTRAINT client_id_metadata_version_unique UNIQUE (id, metadata_version)
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client".client TO "${NAMESPACE}_client_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client TO "${NAMESPACE}_authorization_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_client".client TO readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client".client_user (
@@ -33,6 +35,7 @@ data:
       FOREIGN KEY (client_id, metadata_version) REFERENCES "${NAMESPACE}_client".client (id, metadata_version)
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client".client_user TO "${NAMESPACE}_client_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client_user TO "${NAMESPACE}_authorization_process_user";   
     GRANT SELECT ON TABLE "${NAMESPACE}_client".client_user TO readonly_user;    
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client".client_purpose (
@@ -43,6 +46,7 @@ data:
       FOREIGN KEY (client_id, metadata_version) REFERENCES "${NAMESPACE}_client".client (id, metadata_version)
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client".client_purpose TO "${NAMESPACE}_client_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client_purpose TO "${NAMESPACE}_authorization_process_user";      
     GRANT SELECT ON TABLE "${NAMESPACE}_client".client_purpose TO readonly_user;      
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client".client_key (
@@ -59,4 +63,5 @@ data:
       FOREIGN KEY (client_id, metadata_version) REFERENCES "${NAMESPACE}_client".client (id, metadata_version)
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client".client_key TO "${NAMESPACE}_client_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client_key TO "${NAMESPACE}_authorization_process_user";      
     GRANT SELECT ON TABLE "${NAMESPACE}_client".client_key TO readonly_user;      
