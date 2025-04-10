@@ -10,3 +10,5 @@ images:
       tag: "develop"
     producer-keychain-readmodel-writer-sql:
       tag: "develop"
+    client-readmodel-writer-sql:
+      tag: "develop"
