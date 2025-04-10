@@ -8,3 +8,5 @@ images:
       tag: "develop"      
     key-readmodel-writer-sql:
       tag: "develop"
+    producer-keychain-readmodel-writer-sql:
+      tag: "develop"
