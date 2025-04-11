@@ -1,0 +1,36 @@
+name: "interop-be-ipa-certified-attributes-importer"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-ipa-certified-attributes-importer-qa-es1"
+
+configmap:
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "qa.interop-m2m"
+  INTERNAL_JWT_ISSUER: "qa.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "qa.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "1800"
+  INSTITUTIONS_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/d09adf99-dc10-4349-8c53-27b1e5aa97b6?format=json"
+  AOO_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/cdaded04-f84e-4193-a720-47d6d5f422aa?format=json"
+  UO_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/b0aa1f6c-f135-4c8a-b416-396fed4e1a5d?format=json"
+  INSTITUTIONS_CATEGORIES_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/84ebb2e7-0e61-427b-a1dd-ab8bb2a84f07?format=json"
+  ATTRIBUTE_CREATION_WAIT_TIME: "5000"
+
+
+cronjob:
+  schedule: "30 7 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure    
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    MONGODB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
+    MONGODB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "documentdb.READONLY_USR"
+    READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"

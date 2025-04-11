@@ -1,0 +1,19 @@
+namespace: "qa"
+
+cronjob:
+  replicas: 1
+  image:
+    repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
+    imagePullPolicy: Always
+    tag: $IMAGE_TAG_PLACEHOLDER
+    digest: $IMAGE_DIGEST_PLACEHOLDER
+  env:
+    LOG_LEVEL: "info"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+
