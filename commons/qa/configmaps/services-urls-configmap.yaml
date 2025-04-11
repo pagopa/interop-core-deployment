@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-services-urls
+  namespace: qa
+data:
+  AGREEMENT_PROCESS_URL: "http://interop-be-agreement-process.qa.svc.cluster.local:8088"
+  ATTRIBUTE_REGISTRY_PROCESS_URL: "http://interop-be-attribute-registry-process.qa.svc.cluster.local:8088"
+  AUTHORIZATION_MANAGEMENT_URL: "http://interop-be-authorization-management.qa.svc.cluster.local:8088/authorization-management/1.0"
+  AUTHORIZATION_PROCESS_URL: "http://interop-be-authorization-process.qa.svc.cluster.local:8088"
+  CATALOG_PROCESS_URL: "http://interop-be-catalog-process.qa.svc.cluster.local:8088"
+  DELEGATION_PROCESS_URL: "http://interop-be-delegation-process.qa.svc.cluster.local:8088"
+  ESERVICE_TEMPLATE_PROCESS_URL: "http://interop-be-eservice-template-process.qa.svc.cluster.local:8088"
+  NOTIFIER_URL: "http://interop-be-notifier.qa.svc.cluster.local:8088/notifier/1.0"
+  PARTY_REGISTRY_PROXY_URL: "http://interop-be-party-registry-proxy.qa.svc.cluster.local:8088/party-registry-proxy/1.0"
+  PURPOSE_PROCESS_URL: http://interop-be-purpose-process.qa.svc.cluster.local:8088
+  REDIS_URL: "http://redis.qa.svc.cluster.local:6379"
+  TENANT_PROCESS_URL: "http://interop-be-tenant-process.qa.svc.cluster.local:8088"
