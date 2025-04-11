@@ -9,6 +9,9 @@ cronjob:
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
+  image:
+    repositoryPrefix: "docker.io"
+    repositoryName: "curlimages/curl"
   command: ["bin/sh"]
   args: ["-c", "echo \"Job Started\" && ./entrypoint.sh -X POST -sS $(PARTY_REGISTRY_PROXY_URL)/reload && echo \"Job Completed\""]
   envFromFieldRef:
