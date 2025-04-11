@@ -1,0 +1,106 @@
+images:
+  microservices:
+    agreement-platformstate-writer:
+      tag: "develop"
+    agreement-process:
+      tag: "develop"
+    agreement-readmodel-writer:
+      tag: "develop"
+    api-gateway:
+      tag: "develop"
+    attribute-registry-process:
+      tag: "develop"
+    attribute-registry-readmodel-writer:
+      tag: "develop"
+    authorization-management:
+      tag: "1.0.18"
+    authorization-platformstate-writer:
+      tag: "develop"
+    authorization-process:
+      tag: "develop"
+    authorization-server:
+      tag: "1.0.14"
+    authorization-server-node:
+      tag: "develop"
+    authorization-updater:
+      tag: "develop"
+    backend-for-frontend:
+      tag: "develop"
+    catalog-platformstate-writer:
+      tag: "develop"
+    catalog-process:
+      tag: "develop"
+    catalog-read-model-writer:
+      tag: "develop"
+    certified-email-sender:
+      tag: "develop"
+    client-readmodel-writer:
+      tag: "develop"
+    compute-agreements-consumer:
+      tag: "develop"
+    delegation-items-archiver:
+      tag: "develop"
+    delegation-process:
+      tag: "develop"
+    delegation-readmodel-writer:
+      tag: "develop"
+    eservice-descriptors-archiver:
+      tag: "develop"
+    eservice-template-instances-updater:
+      tag: "develop"
+    eservice-template-process:
+      tag: "develop"
+    eservice-template-readmodel-writer:
+      tag: "develop"
+    frontend_TODO:
+      tag: "dev-latest"
+    key-readmodel-writer:
+      tag: "develop"
+    notification-email-sender:
+      tag: "develop"
+    notifier:
+      tag: "1.0.19"
+    notifier-seeder:
+      tag: "develop"
+    party-registry-proxy:
+      tag: "1.0.15"
+    producer-key-readmodel-writer:
+      tag: "develop"
+    producer-keychain-readmodel-writer:
+      tag: "develop"
+    purpose-platformstate-writer:
+      tag: "develop"
+    purpose-process:
+      tag: "develop"
+    purpose-read-model-writer:
+      tag: "develop"
+    redis:
+      tag: "7.0.4"
+    tenant-process:
+      tag: "develop"
+    tenant-readmodel-writer:
+      tag: "develop"
+    token-details-persister-node:
+      tag: "develop"
+
+  jobs:
+    anac-certified-attributes-importer:
+      tag: "1.0.43"
+    datalake-data-export:
+      tag: "1.0.43"
+    dtd-catalog-exporter:
+      tag: "1.0.43"
+    ipa-certified-attributes-importer:
+      tag: "develop"
+    ivass-certified-attributes-importer:
+      tag: "1.0.43"
+    one-trust-notices:
+      tag: "1.0.43"
+    padigitale-report-generator:
+      tag: "1.0.32"
+    party-registry-proxy-refresher:
+      tag: "7.88.1"
+    pn-consumers:
+      tag: "develop"
+    token-details-persister:
+      tag: "1.0.32"
