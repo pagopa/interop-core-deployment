@@ -102,5 +102,7 @@ images:
       tag: "7.88.1"
     pn-consumers:
       tag: "develop"
+    token-generation-readmodel-checker:
+      tag: "develop"
     token-details-persister:
       tag: "1.0.32"
