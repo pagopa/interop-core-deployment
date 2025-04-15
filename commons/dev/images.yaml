@@ -5,7 +5,9 @@ images:
     agreement-readmodel-writer-sql:
       tag: "develop"
     producer-key-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
+    tenant-readmodel-writer-sql:
+      tag: "develop"
     key-readmodel-writer-sql:
       tag: "develop"
     producer-keychain-readmodel-writer-sql:
@@ -14,3 +16,4 @@ images:
       tag: "develop"
     client-readmodel-writer-sql:
       tag: "develop"
+      
