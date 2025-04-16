@@ -1,4 +1,4 @@
-name: K8s Apply (sub)
+name: Deploy (sub)
 
 on: 
   workflow_call:
@@ -102,17 +102,21 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
-      - name: Kubectl Diff
-        id: kubectl_diff
+      - name: Diff
+        id: diff
         env: 
           MICROSERVICE_NAME: ${{ matrix.microservice }}
         run: |
           set -euo pipefail
 
-          set +e
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          set +e
+          if [[ ${{inputs.environment}} == "vapt" ]]; then
+            $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          else
+            $SCRIPTS_FOLDER/helmDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          fi
 
           DIFF_EXIT_CODE=$?
           set -e
@@ -143,7 +147,11 @@ jobs:
           MICROSERVICE_FULLNAME=$(cat template.yaml | yq 'select(.kind == "Deployment") | .metadata.name')
           
           echo "INFO - Apply changes for $MICROSERVICE_FULLNAME."
-          "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
+          if [[ ${{inputs.environment}} == "vapt" ]]; then
+            "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
+          else
+            "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
+          fi
 
           DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_FULLNAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
           echo "INFO - Desired replicas: $DESIRED_REPLICAS"
@@ -205,8 +213,8 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
           $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console   
-      - name: Kubectl Diff
-        id: kubectl_diff
+      - name: Diff
+        id: diff
         env: 
           CRONJOB_NAME: ${{ matrix.cronjob }}
         run: |
@@ -215,7 +223,12 @@ jobs:
           export PROJECT_DIR=$(pwd)
 
           set +e
-          $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          if [[ ${{inputs.environment}} == "vapt" ]]; then
+            $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          else
+            $SCRIPTS_FOLDER/helmDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          fi
+          
           DIFF_EXIT_CODE=$?
           set -e
           
@@ -241,5 +254,9 @@ jobs:
           CRONJOB_FULLNAME=$(cat template.yaml | yq 'select(.kind == "CronJob") | .metadata.name')
   
           echo "INFO - Apply changes for $CRONJOB_FULLNAME."
-          $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
+          if [[ ${{inputs.environment}} == "vapt" ]]; then
+            $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
+          else
+            $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
+          fi
           
