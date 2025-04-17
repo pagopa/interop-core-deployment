@@ -24,24 +24,13 @@ data:
       is_signal_hub_enabled BOOLEAN,
       is_consumer_delegable BOOLEAN,
       is_client_access_delegable BOOLEAN,
+      template_id UUID,
       PRIMARY KEY (id),
       CONSTRAINT eservice_id_metadata_version_unique UNIQUE (id, metadata_version)
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice TO "${NAMESPACE}_catalog_process_user";    
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice TO readonly_user;     
-
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_catalog".eservice_template_ref (
-      eservice_template_id UUID NOT NULL,
-      eservice_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice (id) ON DELETE CASCADE,
-      metadata_version INTEGER NOT NULL,
-      instance_label VARCHAR,
-      PRIMARY KEY (eservice_template_id, eservice_id),
-      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
-    );
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_template_ref TO "${NAMESPACE}_catalog_rmw_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_template_ref TO "${NAMESPACE}_catalog_process_user";    
-    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_template_ref TO readonly_user;     
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_catalog".eservice_descriptor (
       id UUID,
