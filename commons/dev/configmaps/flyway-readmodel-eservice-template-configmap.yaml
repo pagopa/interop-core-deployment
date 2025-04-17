@@ -24,7 +24,7 @@ data:
       mode VARCHAR NOT NULL,
       is_signal_hub_enabled BOOLEAN,
       PRIMARY KEY (id),
-      CONSTRAINT eservice_template_id_metadata_version_unique UNIQUE (id, metadata_version)
+      CONSTRAINT eservice_template_id_metadata_version_unique UNIQUE (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template TO "${NAMESPACE}_eservice_template_process_user";
@@ -46,7 +46,7 @@ data:
       suspended_at TIMESTAMP WITH TIME ZONE,
       deprecated_at TIMESTAMP WITH TIME ZONE,
       PRIMARY KEY (id),
-      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version)
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_teservice_template_versionemplate TO "${NAMESPACE}_eservice_template_process_user";
@@ -64,7 +64,7 @@ data:
       checksum VARCHAR NOT NULL,
       upload_date TIMESTAMP WITH TIME ZONE NOT NULL,
       PRIMARY KEY (id),
-      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version)
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface TO "${NAMESPACE}_eservice_template_process_user";
@@ -82,7 +82,7 @@ data:
       checksum VARCHAR NOT NULL,
       upload_date TIMESTAMP WITH TIME ZONE NOT NULL,
       PRIMARY KEY (id),
-      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version)
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_document TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_document TO "${NAMESPACE}_eservice_template_process_user";
@@ -97,7 +97,7 @@ data:
       kind VARCHAR NOT NULL,
       group_id INTEGER NOT NULL,
       PRIMARY KEY (attribute_id, version_id, group_id),
-      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version)
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_attribute TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_attribute TO "${NAMESPACE}_eservice_template_process_user";
@@ -112,7 +112,7 @@ data:
       risk_analysis_form_id UUID UNIQUE NOT NULL,
       risk_analysis_form_version VARCHAR NOT NULL,
       PRIMARY KEY (id),
-      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version)
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis TO "${NAMESPACE}_eservice_template_process_user";
@@ -127,7 +127,7 @@ data:
       key VARCHAR NOT NULL,
       value VARCHAR ARRAY NOT NULL,
       PRIMARY KEY (id),
-      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version)
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO "${NAMESPACE}_eservice_template_process_user";
