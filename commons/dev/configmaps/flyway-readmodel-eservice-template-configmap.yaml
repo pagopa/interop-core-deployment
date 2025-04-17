@@ -24,7 +24,7 @@ data:
       mode VARCHAR NOT NULL,
       is_signal_hub_enabled BOOLEAN,
       PRIMARY KEY (id),
-      CONSTRAINT eservice_template_id_metadata_version_unique UNIQUE (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+      CONSTRAINT eservice_template_id_metadata_version_unique UNIQUE (id, metadata_version)
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template TO "${NAMESPACE}_eservice_template_process_user";
