@@ -18,4 +18,5 @@ images:
       tag: "develop"
     client-readmodel-writer-sql:
       tag: "develop"
-      
+    eservice-template-readmodel-writer-sql:
+      tag: "develop"
