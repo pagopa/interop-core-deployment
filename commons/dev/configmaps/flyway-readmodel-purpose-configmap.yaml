@@ -93,3 +93,9 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO "${NAMESPACE}_purpose_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO readonly_user;
+
+  V1.1__Purpose_Constraint_RiskAnalysisForm.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer DROP CONSTRAINT purpose_risk_analysis_answer_risk_analysis_form_id_fkey;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form DROP CONSTRAINT purpose_risk_analysis_form_pkey;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form ADD PRIMARY KEY (id, purpose_id);
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ADD FOREIGN KEY (risk_analysis_form_id, purpose_id) REFERENCES "${NAMESPACE}_purpose".purpose_risk_analysis_form (id, purpose_id);    
