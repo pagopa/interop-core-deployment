@@ -47,7 +47,7 @@ images:
     eservice-descriptors-archiver:
       tag: "2.2.1-RC1"
     frontend:
-      tag: "1.1.14"
+      tag: "1.1.17"
     key-readmodel-writer:
       tag: "2.2.0-RC1"
     notifier:
