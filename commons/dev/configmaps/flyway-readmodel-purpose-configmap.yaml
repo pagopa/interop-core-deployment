@@ -98,7 +98,7 @@ data:
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer DROP CONSTRAINT purpose_risk_analysis_answer_risk_analysis_form_id_fkey;
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form DROP CONSTRAINT purpose_risk_analysis_form_pkey;
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form ADD PRIMARY KEY (id, purpose_id);
-    ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ADD FOREIGN KEY (risk_analysis_form_id, purpose_id) REFERENCES "${NAMESPACE}_purpose".purpose_risk_analysis_form (id, purpose_id);
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ADD FOREIGN KEY (risk_analysis_form_id, purpose_id) REFERENCES "${NAMESPACE}_purpose".purpose_risk_analysis_form (id, purpose_id) ON DELETE CASCADE;
 
   V1.2__Purpose_Constraint_RiskAnalysisAnswer.sql: |-
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer DROP CONSTRAINT purpose_risk_analysis_answer_pkey;
