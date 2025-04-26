@@ -1,0 +1,34 @@
+name: "interop-be-notification-email-sender"
+techStack: "nodejs"
+
+service:
+  create: false
+ 
+serviceAccount:
+  roleArn: "arn:aws:iam::565393043798:role/interop-be-notification-email-sender-vapt-es1"
+
+configmap:
+  INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
+  AWS_SES_ENDPOINT: "https://email.eu-south-1.amazonaws.com"
+  SENDER_MAIL: "noreply@notifiche.vapt.interop.pagopa.it"
+  SENDER_LABEL: "PDND Interop noreply-{{.Values.namespace}}"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-email-sender"
+
+deployment:
+  env:
+    TOPIC_STARTING_OFFSET: latest
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
