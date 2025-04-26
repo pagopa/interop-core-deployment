@@ -1,0 +1,38 @@
+name: interop-be-eservice-template-instances-updater
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::565393043798:role/interop-be-eservice-template-instances-updater-vapt-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-eservice-template-instances-updater"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-eservice-template-instances-updater"
+  ESERVICE_DOCUMENTS_CONTAINER: "interop-application-documents-vapt-es1"
+  ESERVICE_DOCUMENTS_PATH: "eservices/docs"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "3600"
+
+
+deployment:
+  env:
+    TOPIC_STARTING_OFFSET: "latest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
+    ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"
+    ESERVICE_TEMPLATE_PROCESS_URL: "common-services-urls.ESERVICE_TEMPLATE_PROCESS_URL"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+

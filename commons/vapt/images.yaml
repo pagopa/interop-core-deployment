@@ -25,7 +25,7 @@ images:
     authorization-updater:
       tag: "2.2.0-RC1"
     backend-for-frontend:
-      tag: "2.2.0-RC1"
+      tag: "2.3.2-RC2"
     catalog-platformstate-writer:
       tag: "2.2.0-RC1"
     catalog-process:
@@ -46,10 +46,18 @@ images:
       tag: "2.2.0-RC1"
     eservice-descriptors-archiver:
       tag: "2.2.1-RC1"
+    eservice-template-instances-updater:
+      tag: "2.3.2-RC1"
+    eservice-template-process:
+      tag: "2.3.2-RC1"
+    eservice-template-readmodel-writer:
+      tag: "2.3.2-RC1"
     frontend:
       tag: "1.1.17"
     key-readmodel-writer:
       tag: "2.2.0-RC1"
+    notifcation-email-sender:
+      tag: "2.3.1"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
