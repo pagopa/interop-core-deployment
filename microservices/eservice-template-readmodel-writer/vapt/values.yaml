@@ -1,4 +1,5 @@
 name: interop-be-eservice-template-readmodel-writer
+techStack: "nodejs"
 
 serviceAccount:
   roleArn: "arn:aws:iam::565393043798:role/interop-be-eservice-template-readmodel-writer-vapt-es1"
