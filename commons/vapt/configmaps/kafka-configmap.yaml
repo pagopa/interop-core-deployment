@@ -11,6 +11,7 @@ data:
   AUTHORIZATION_TOPIC: "event-store.vapt_authorization.events"
   CATALOG_TOPIC: "event-store.vapt_catalog.events"
   DELEGATION_TOPIC: "event-store.vapt_delegation.events"
+  ESERVICE_TEMPLATE_TOPIC: "event-store.vapt_eservice_template.events"
   PURPOSE_TOPIC: "event-store.vapt_purpose.events"
   TENANT_TOPIC: "event-store.vapt_tenant.events"
 
