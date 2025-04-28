@@ -140,12 +140,12 @@ jobs:
 # Note: always() is required because the following job has a dependency with 'tf_apply_secrets' job.
 # In case we don’t want to deploy secrets to k8s, the 'tf_apply_secrets' job would be skipped and the current job would be skipped as well.
 # So, always() overrides this dependency, helping to execute the following job even when 'tf_apply_secrets' job is skipped.
-
+ 
   deploy:
     needs: [ create_runner, tf_apply_secrets ]
     secrets: inherit
     if: ${{ always() && (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success'))) }}
-    uses: ./.github/workflows/k8s-apply-sub.yaml
+    uses: ./.github/workflows/deploy-sub.yaml
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 180
