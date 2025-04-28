@@ -30,6 +30,7 @@ deployment:
     CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
     ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"
     ESERVICE_TEMPLATE_PROCESS_URL: "common-services-urls.ESERVICE_TEMPLATE_PROCESS_URL"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
   envFromSecrets:
