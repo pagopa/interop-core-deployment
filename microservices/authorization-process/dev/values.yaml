@@ -1,0 +1,86 @@
+name: "interop-be-authorization-process"
+techStack: "nodejs"
+
+service:
+  create: true
+  containerPort: 8088
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-authorization-process-dev-es1"
+
+configmap:
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
+  MAX_KEYS_PER_CLIENT: "100"
+  MAX_KEYS_PER_PRODUCER_KEYCHAIN: "30"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_authorization"
+
+deployment:
+  flywayInitContainer: 
+    create: true
+    migrationsConfigmap: "event-store-migrations"
+    env:
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+    envFromConfigmaps:
+      FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
+      FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
+      POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
+      POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "event-store.POSTGRES_USR"
+      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+      requests:
+        cpu: "10m"
+        memory: "64Mi"
+  env:
+    PORT: "8088"
+    HOST: "0.0.0.0"
+    EVENTSTORE_DB_USE_SSL: "true"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+  envFromFieldRef:
+    POD_NAME: "metadata.name"
+    NODE_IP: "status.hostIP"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
+    EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
+    EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
+    EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+  envFromSecrets:
+    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
+    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
+    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+  livenessProbe:
+    httpGet:
+      path: /status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "2Gi"
+    requests:
+      cpu: "500m"
+      memory: "2Gi"

@@ -1,0 +1,81 @@
+name: "interop-be-api-gateway"
+techStack: "nodejs"
+
+service:
+  create: true
+  containerPort: 8088
+  albHealthCheck:
+    path: "/api-gateway/0.0/status"
+    protocol: "HTTP"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-api-gateway-dev-es1"
+
+configmap:
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
+  BASE_URL: "api.{{.Values.namespace}}.interop.pagopa.it"
+  API_GATEWAY_INTERFACE_VERSION: "0.0"
+  RATE_LIMITER_MAX_REQUESTS: "9999999"
+  RATE_LIMITER_BURST_PERCENTAGE: "1.0"
+  RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
+  RATE_LIMITER_TIMEOUT_MILLIS: "300"
+  
+deployment:
+  replicas: 2
+  env:
+    HOST: "0.0.0.0"
+    PORT: "8088"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
+  envFromFieldRef:
+    POD_NAME: "metadata.name"
+    NODE_IP: "status.hostIP"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
+    ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
+    AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
+    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
+    DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
+    NOTIFIER_URL:  "common-services-urls.NOTIFIER_URL"
+    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    PARTY_REGISTRY_PROXY_URL: "common-services-urls.PARTY_REGISTRY_PROXY_URL"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READ_MODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READ_MODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READ_MODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READ_MODEL_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
+    READ_MODEL_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
+    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
+    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    READ_MODEL_DB_USER: "documentdb.READONLY_USR"
+    READ_MODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
+  livenessProbe:
+    httpGet:
+      path: "/api-gateway/0.0/status"
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: "/api-gateway/0.0/status"
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "2Gi"
+    requests:
+      cpu: "500m"
+      memory: "2Gi"

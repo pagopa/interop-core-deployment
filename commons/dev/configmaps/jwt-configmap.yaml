@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-jwt
+  namespace: dev
+data:
+  WELL_KNOWN_URLS: https://dev.interop.pagopa.it/.well-known/jwks.json
