@@ -1,6 +1,5 @@
 images:
   microservices:
-    # TODO aggiungere servizi -sql
     agreement-outbound-writer:
       tag: "develop"
     agreement-readmodel-writer:
@@ -9,9 +8,13 @@ images:
       tag: "develop"
     agreement-process:
       tag: "develop"
+    agreement-readmodel-writer-sql:
+      tag: "develop"
     api-gateway:
       tag: "develop"
     attribute-registry-readmodel-writer:
+      tag: "develop"
+    attribute-registry-readmodel-writer-sql:
       tag: "develop"
     attribute-registry-process:
       tag: "develop"
@@ -33,6 +36,8 @@ images:
       tag: "develop"
     catalog-readmodel-writer:
       tag: "develop"
+    catalog-readmodel-writer-sql:
+      tag: "develop"
     catalog-platformstate-writer:
       tag: "develop"
     catalog-process:
@@ -42,6 +47,8 @@ images:
     client-purpose-updater:
       tag: "develop"
     client-readmodel-writer:
+      tag: "develop"
+    client-readmodel-writer-sql:
       tag: "develop"
     compute-agreements-consumer:
       tag: "develop"      
@@ -55,17 +62,23 @@ images:
       tag: "develop"
     delegation-readmodel-writer:
       tag: "develop"
+    delegation-readmodel-writer-sql:
+      tag: "develop"
     eservice-descriptors-archiver:
       tag: "develop"
     eservice-template-process:
       tag: "develop"
     eservice-template-readmodel-writer:
       tag: "develop"
+    eservice-template-readmodel-writer-sql:
+      tag: "develop"
     eservice-template-instances-updater:
       tag: "develop"
     frontend:
       tag: "dev-latest"
     key-readmodel-writer:
+      tag: "develop"
+    key-readmodel-writer-sql:
       tag: "develop"
     notification-email-sender:
       tag: "develop"
@@ -77,11 +90,17 @@ images:
       tag: "develop"
     producer-key-readmodel-writer:
       tag: "develop"
+    producer-key-readmodel-writer-sql:
+      tag: "develop"
+    producer-keychain-readmodel-writer-sql:
+      tag: "develop"
     party-registry-proxy:
       tag: "1.0.x-latest"
     purpose-outbound-writer:
       tag: "develop"
     purpose-readmodel-writer:
+      tag: "develop"
+    purpose-readmodel-writer-sql:
       tag: "develop"
     purpose-platformstate-writer:
       tag: "develop"
@@ -92,6 +111,8 @@ images:
     tenant-process:
       tag: "develop"
     tenant-readmodel-writer:
+      tag: "develop"
+    tenant-readmodel-writer-sql:
       tag: "develop"
     tenant-outbound-writer:
       tag: "develop"

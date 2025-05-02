@@ -1,4 +1,5 @@
 name: interop-be-attribute-registry-readmodel-writer-sql
+techStack: nodejs
 
 serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-attribute-registry-readmodel-writer-dev-es1"
