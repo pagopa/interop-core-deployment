@@ -1,0 +1,41 @@
+name: "interop-be-ivass-certified-attributes-importer"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-ivass-certified-attributes-importer-dev-es1"
+
+configmap:
+  SOURCE_URL: "https://infostat-ivass.bancaditalia.it/RIGAInquiry-public/getAreaDownloadExport.do?referenceDate=&product=VFLUSSO_IMPRESE&language=IT&exportType=CSV&username=OBLIXANONYMOUS&isCompressed=S"
+  HISTORY_BUCKET_NAME: "interop-ivass-dev-es1"
+  INTERNAL_JWT_KID: "41e3a8e9-5982-4a6d-b531-850774bfd961"
+  INTERNAL_JWT_SUBJECT: "dev.interop-m2m"
+  INTERNAL_JWT_ISSUER: "dev.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "dev.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "1800"
+  IVASS_TENANT_ID: "9e2528e5-b9bd-4eee-8ea0-161040daff47"
+  RECORDS_PROCESS_BATCH_SIZE: "100"
+
+cronjob:
+  schedule: "15 5,11,17,23 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    MONGODB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
+    MONGODB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "documentdb.READONLY_USR"
+    READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
+  resources:
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+    requests:
+      cpu: "1"
+      memory: "2Gi"
