@@ -29,8 +29,6 @@ images:
       tag: "develop"
     backend-for-frontend:
       tag: "develop"
-
-    # TODO 
     catalog-outbound-writer:
       tag: "develop"
     catalog-readmodel-writer:
@@ -39,7 +37,6 @@ images:
       tag: "develop"
     catalog-process:
       tag: "develop"
-    # TODO
     certified-email-sender:
       tag: "develop"
     client-purpose-updater:
@@ -48,10 +45,8 @@ images:
       tag: "develop"
     compute-agreements-consumer:
       tag: "develop"      
-    # TODO
     datalake-interface-exporter:
       tag: "develop"
-    # TODO
     delegation-outbound-writer:
       tag: "develop"
     delegation-process:
@@ -82,10 +77,8 @@ images:
       tag: "develop"
     producer-key-readmodel-writer:
       tag: "develop"
-    # TODO
     party-registry-proxy:
       tag: "1.0.x-latest"
-    # TODO
     purpose-outbound-writer:
       tag: "develop"
     purpose-readmodel-writer:
@@ -94,14 +87,12 @@ images:
       tag: "develop"
     purpose-process:
       tag: "develop"
-    # TODO
     selfcare-onboarding-consumer:
       tag: "develop"
     tenant-process:
       tag: "develop"
     tenant-readmodel-writer:
       tag: "develop"
-    # TODO
     tenant-outbound-writer:
       tag: "develop"
     token-details-persister:
