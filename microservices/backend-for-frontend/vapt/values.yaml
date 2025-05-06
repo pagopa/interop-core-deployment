@@ -58,7 +58,7 @@ configmap:
   PRESIGNED_URL_PUT_DURATION_MINUTES: "2"
   PAGOPA_TENANT_ID: "69e2865e-65ab-4e48-a638-2037a9ee2ee7"
   INTEROP_SELFCARE_PRODUCT_NAME: "prod-interop"
-  DELEGATION_CONTRACTS_CONTAINER: "interop-application-import-export-vapt-es1"
+  DELEGATION_CONTRACTS_CONTAINER: "interop-application-documents-vapt-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-vapt-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
 
