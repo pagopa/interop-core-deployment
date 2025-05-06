@@ -1,0 +1,30 @@
+name: "interop-be-dtd-catalog-exporter"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-dtd-catalog-exporter-qa-es1"
+
+configmap:
+  TENANTS_COLLECTION_NAME: "tenants"
+  ATTRIBUTES_COLLECTION_NAME: "attributes"
+  ESERVICES_COLLECTION_NAME: "eservices"
+  DTD_CATALOG_STORAGE_BUCKET: "interop-public-catalog-qa-es1"
+  DTD_CATALOG_STORAGE_PATH: "catalog"
+  FILENAME: "catalog.json"
+
+cronjob:
+  schedule: "0 */3 * * *"
+  suspend: true
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  env:
+    ENVIRONMENT: "qa"
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READ_MODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READ_MODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READ_MODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+  envFromSecrets:
+    READ_MODEL_DB_USER: "documentdb.READONLY_USR"
+    READ_MODEL_DB_PASSWORD: "documentdb.READONLY_PSW"

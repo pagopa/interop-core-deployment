@@ -1,0 +1,71 @@
+name: "interop-be-party-registry-proxy"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-party-registry-proxy-qa-es1"
+
+service:
+  create: true
+  containerPort: 8088
+  additionalPorts:
+    - name: monitoring
+      containerPort: 9095
+      protocol: TCP
+      targetPort: monitoring
+    - name: management
+      containerPort: 8558
+      protocol: TCP
+      targetPort: management
+
+configmap:
+  PARTY_REGISTRY_CATEGORIES_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/84ebb2e7-0e61-427b-a1dd-ab8bb2a84f07?format=json"
+  PARTY_REGISTRY_INSTITUTIONS_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/d09adf99-dc10-4349-8c53-27b1e5aa97b6?format=json"
+  PARTY_REGISTRY_AOO_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/cdaded04-f84e-4193-a720-47d6d5f422aa?format=json"
+  PARTY_REGISTRY_UO_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/b0aa1f6c-f135-4c8a-b416-396fed4e1a5d?format=json"  
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/internal,{{.Values.namespace}}.interop.pagopa.it/m2m"
+
+deployment:
+  env:
+    REQUIRED_CONTACT_POINT_NR: "1"
+    DEV_ENDPOINTS_ENABLED: "{{.Values.local.interop_be_commons.DEV_ENDPOINTS_ENABLED}}"
+    ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmap:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
+    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
+  securityContext:
+    runAsUser: 1001
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: management
+    periodSeconds: 5
+    failureThreshold: 3
+  livenessProbe:
+    httpGet:
+      path: "/alive"
+      port: management
+    periodSeconds: 5
+    failureThreshold: 3
+    initialDelaySeconds: 30
+  volumes:
+    - name: categories-index-volume
+      emptyDir: {}
+    - name: institutions-index-volume
+      emptyDir: {}
+    - name: aoo-index-volume
+      emptyDir: {}
+    - name: uo-index-volume
+      emptyDir: {}
+  volumeMounts:
+    - name: categories-index-volume
+      mountPath: /opt/docker/index/categories
+    - name: institutions-index-volume
+      mountPath: /opt/docker/index/institutions
+    - name: aoo-index-volume
+      mountPath: /opt/docker/index/aoo
+    - name: uo-index-volume
+      mountPath: /opt/docker/index/uo
+  

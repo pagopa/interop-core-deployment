@@ -1,0 +1,101 @@
+name: "interop-be-backend-for-frontend"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-backend-for-frontend-qa-es1"
+  
+service:
+  create: true
+  containerPort: 8088
+  albHealthCheck:
+    path: /backend-for-frontend/1.0/status
+    port: "8088"
+    protocol: HTTP
+
+configmap:
+  BACKEND_FOR_FRONTEND_INTERFACE_VERSION: "1.0"
+  GENERATED_JWT_KID:  "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  GENERATED_JWT_SECONDS_DURATION: "86400"
+  GENERATED_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  GENERATED_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/ui"
+  CLIENT_ASSERTION_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,selfcare.{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "3600"
+  CONSUMER_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  CONSUMER_DOCUMENTS_PATH: "{{.Values.namespace}}/agreement/consumer-docs"
+  ESERVICE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  ESERVICE_DOCUMENTS_PATH: "eservices/docs"
+  RISK_ANALYSIS_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
+  ALLOW_LIST_CONTAINER: "interop-allow-list-{{.Values.namespace}}-es1"
+  ALLOW_LIST_PATH: "allowlist"
+  ALLOW_LIST_FILE_NAME: "allowlist.txt"
+  TENANT_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,PDND_INFOCAMERE-SCP"
+  PRIVACY_NOTICES_DYNAMO_TABLE_NAME: "interop-privacy-notices-{{.Values.namespace}}"
+  PRIVACY_NOTICES_USERS_DYNAMO_TABLE_NAME: "interop-privacy-notices-acceptances-{{.Values.namespace}}"
+  PRIVACY_NOTICES_PP_UUID: "0df21ff6-3e8f-4320-af8f-23dea9135d57"
+  PRIVACY_NOTICES_TOS_UUID: "6bf8412a-41a7-41a0-82dc-26286ce61b1a"
+  PRIVACY_NOTICES_CONTAINER: "interop-privacy-notices-content-{{.Values.namespace}}-es1"
+  PRIVACY_NOTICES_PATH: "consent"
+  PRIVACY_NOTICES_PP_FILE_NAME: "pp.json"
+  PRIVACY_NOTICES_TOS_FILE_NAME: "tos.json"
+  RATE_LIMITER_MAX_REQUESTS: "9999999"
+  RATE_LIMITER_BURST_PERCENTAGE: "1.0"
+  RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
+  RATE_LIMITER_TIMEOUT_MILLIS: "300"
+  SAML_AUDIENCE: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
+  SAML_CALLBACK_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/ui/it/assistenza/scelta-ente"
+  SAML_CALLBACK_ERROR_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/ui/it/assistenza/errore"
+  IMPORT_ESERVICE_CONTAINER: "interop-application-import-export-{{.Values.namespace}}-es1"
+  IMPORT_ESERVICE_PATH: "{{.Values.namespace}}/eservices-import"
+  EXPORT_ESERVICE_CONTAINER: "interop-application-import-export-{{.Values.namespace}}-es1"
+  EXPORT_ESERVICE_PATH: "{{.Values.namespace}}/eservices-export"
+  PRESIGNED_URL_GET_DURATION_MINUTES: "2"
+  PRESIGNED_URL_PUT_DURATION_MINUTES: "2"
+  PAGOPA_TENANT_ID: "69e2865e-65ab-4e48-a638-2037a9ee2ee7"
+  INTEROP_SELFCARE_PRODUCT_NAME: "prod-interop-coll"
+  DELEGATION_CONTRACTS_CONTAINER: "interop-application-import-export-{{.Values.namespace}}-es1"
+
+deployment:
+  env:
+    HOST: "0.0.0.0"
+    PORT: "8088"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+  envFromFieldRef:
+    POD_NAME: "metadata.name"
+    NODE_IP: "status.hostIP"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
+  envFromConfigmaps:    
+    WELL_KNOWN_URLS: "common-jwt.BFF_WELL_KNOWN_URLS"
+    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
+    ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
+    AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
+    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
+    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
+    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
+    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"    
+  envFromSecrets:
+    SAML_PUBLIC_KEY: "support-saml.SUPPORT_SAML_PUBLIC_KEY"
+    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
+  livenessProbe:
+    httpGet:
+      path: "/backend-for-frontend/1.0/status"
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: "/backend-for-frontend/1.0/status"
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
