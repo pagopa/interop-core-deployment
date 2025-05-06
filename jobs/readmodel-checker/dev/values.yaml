@@ -1,0 +1,76 @@
+name: "interop-be-readmodel-checker"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-readmodel-checker-dev-es1" # TO CHECK
+
+service:
+  create: false
+
+configmap:
+  READMODEL_DB_HOST: "localhost"
+  READMODEL_DB_NAME: "readmodel"
+  READMODEL_DB_USERNAME: "root"
+  READMODEL_DB_PASSWORD: "example"
+  READMODEL_DB_PORT: 27017
+
+  READMODEL_SQL_DB_HOST: localhost
+  READMODEL_SQL_DB_PORT: 6002
+  READMODEL_SQL_DB_USERNAME: root
+  READMODEL_SQL_DB_PASSWORD: root
+  READMODEL_SQL_DB_NAME: root
+  READMODEL_SQL_DB_USE_SSL: false
+
+  READMODEL_SQL_DB_SCHEMA_AGREEMENT: "readmodel_agreement"
+  READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "readmodel_attribute"
+  READMODEL_SQL_DB_SCHEMA_CATALOG: "readmodel_catalog"
+  READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "readmodel_client_jwk_key"
+  READMODEL_SQL_DB_SCHEMA_CLIENT: "readmodel_client"
+  READMODEL_SQL_DB_SCHEMA_DELEGATION: "readmodel_delegation"
+  READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "readmodel_eservice_template"
+  READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "readmodel_producer_jwk_key"
+  READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "readmodel_producer_keychain"
+  READMODEL_SQL_DB_SCHEMA_PURPOSE: "readmodel_purpose"
+  READMODEL_SQL_DB_SCHEMA_TENANT: "readmodel_tenant"
+
+cronjob:
+  schedule: "0 */1 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  command: ["bin/interop-be-token-details-persister"]
+  args: ["-Dconfig.override_with_env_vars=true"]
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  env:
+    JWT_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/565393043798/generated-jwt"
+  resources:
+    requests:
+      cpu: "1"
+      memory: "2Gi"
+    limits:
+      cpu: "1"
+      memory: "2Gi"
+
+
+name: "signalhub-be-batch-cleanup"
+
+configmap:
+  SIGNALS_RETENTION_HOURS: "720"
+
+cronjob:
+  schedule: "0 * * * *"
+  concurrencyPolicy: "Forbid"
+  activeDeadlineSeconds: null
+  env:
+    LOG_LEVEL: DEBUG
+  envFromConfigmaps:
+    SH_DB_HOST: "common-signal-store.DB_HOST_RW"
+    SH_DB_NAME: "common-signal-store.DB_NAME"
+    SH_DB_PORT: "common-signal-store.DB_PORT"
+    SH_DB_SIGNALHUB_SCHEMA: "common-signal-store.DB_SIGNALHUB_SCHEMA"
+    SH_DB_INTEROP_SCHEMA: "common-signal-store.DB_INTEROP_SCHEMA"
+    SH_DB_USE_SSL: "common-signal-store.DB_USE_SSL"
+  envFromSecrets:
+    SH_DB_USERNAME: "signal-store-batch-cleanup-user.username"
+    SH_DB_PASSWORD: "signal-store-batch-cleanup-user.password"
