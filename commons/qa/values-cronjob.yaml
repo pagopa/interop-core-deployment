@@ -1,7 +1,6 @@
 namespace: "qa"
 
 cronjob:
-  replicas: 1
   image:
     repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
