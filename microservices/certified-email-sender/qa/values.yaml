@@ -1,4 +1,4 @@
-name: "interop-be-w"
+name: "interop-be-certified-email-sender"
 techStack: "nodejs"
 
 serviceAccount:
@@ -16,6 +16,7 @@ configmap:
   INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
 
 deployment:
+  replicas: 0
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:
