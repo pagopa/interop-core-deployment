@@ -6,7 +6,7 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-authorization-process-vapt-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-authorization-process-qa-es1"
 
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m"
