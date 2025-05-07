@@ -75,6 +75,8 @@ deployment:
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    READMODEL_SQL_DB_USERNAME: "platform-data-eservice-template-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-template-process-user.password"   
   livenessProbe:
     httpGet:
       path: /status
