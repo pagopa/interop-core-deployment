@@ -16,3 +16,8 @@ cronjob:
       cpu: "500m"
       memory: "1Gi"
 
+local:
+  interop_be_commons:
+    RSA_KEYS_IDENTIFIERS: "17d3f3c0-5730-45a9-be8a-655e77bf3555"
+    DEV_ENDPOINTS_ENABLED: "true"
+    ENABLED_PROJECTIONS: "true"
