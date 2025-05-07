@@ -52,7 +52,7 @@ images:
       tag: "develop"
     eservice-template-readmodel-writer:
       tag: "develop"
-    frontend_TODO:
+    frontend:
       tag: "dev-latest"
     key-readmodel-writer:
       tag: "develop"
