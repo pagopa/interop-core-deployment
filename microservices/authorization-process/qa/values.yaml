@@ -6,7 +6,7 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-authorization-process-vapt-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-authorization-process-vapt-es1"
 
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m"
@@ -74,6 +74,8 @@ deployment:
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    READMODEL_SQL_DB_USERNAME: "platform-data-authorization-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-authorization-process-user.password"  
   livenessProbe:
     httpGet:
       path: /status

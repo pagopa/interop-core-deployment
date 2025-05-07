@@ -1,4 +1,4 @@
-name: "interop-be-w"
+name: "interop-be-certified-email-sender"
 techStack: "nodejs"
 
 serviceAccount:
@@ -9,13 +9,14 @@ service:
 
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-certified-email-sender"
-  KAFKA_GROUP_ID: "{{Values.namespace}}-certified-email-sender"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-certified-email-sender"
   PEC_SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
   PEC_SMTP_PORT: "5025"
   PEC_SMTP_SECURE: "false"
   INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
 
 deployment:
+  replicas: 0
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:

@@ -7,7 +7,7 @@ service:
 deployment:
   replicas: 1
   image:
-    repositoryPrefix: "755649575658.dkr.ecr.eu-south-1.amazonaws.com"
+    repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
     tag: $IMAGE_TAG_PLACEHOLDER
     digest: $IMAGE_DIGEST_PLACEHOLDER

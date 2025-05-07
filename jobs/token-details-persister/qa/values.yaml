@@ -15,21 +15,10 @@ cronjob:
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
+  automountServiceAccountToken: false
   command: ["bin/interop-be-token-details-persister"]
   args: ["-Dconfig.override_with_env_vars=true"]
   env:
     JWT_QUEUE_URL: "https://sqs.eu-central-1.amazonaws.com/755649575658/generated-jwt"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
-  
-              
-  envFromConfigmaps:
-    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "documentdb.READONLY_USR"
-    READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
-    MAIL_RECIPIENTS: "token-details-persister.MAIL_RECIPIENTS"
-    SMTP_USER: "smtp-reports.SMTP_USER"
-    SMTP_PASSWORD: "smtp-reports.SMTP_PASSWORD"
