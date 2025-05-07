@@ -116,7 +116,7 @@ jobs:
           if [[ ${{inputs.environment}} == "vapt" ]]; then
             $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
           else
-            $SCRIPTS_FOLDER/helmDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+            $SCRIPTS_FOLDER/helmDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
           fi
 
           DIFF_EXIT_CODE=$?
@@ -229,7 +229,7 @@ jobs:
           if [[ ${{inputs.environment}} == "vapt" ]]; then
             $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
           else
-            $SCRIPTS_FOLDER/helmDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+            $SCRIPTS_FOLDER/helmDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
           fi
           
           DIFF_EXIT_CODE=$?
