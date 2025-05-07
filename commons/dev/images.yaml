@@ -22,3 +22,7 @@ images:
       tag: "develop"
     catalog-read-model-writer-sql:
       tag: "develop"
+
+  jobs:
+    readmodel-checker:
+      tag: "develop"
