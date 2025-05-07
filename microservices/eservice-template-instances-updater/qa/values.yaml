@@ -19,9 +19,10 @@ configmap:
   INTERNAL_JWT_SECONDS_DURATION: "3600"
 
 deployment:
+  env:
+    TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-    TOPIC_STARTING_OFFSET: "latest"
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"

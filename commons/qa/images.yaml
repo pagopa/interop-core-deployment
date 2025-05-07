@@ -62,8 +62,6 @@ images:
       tag: "1.0.19"
     notifier-seeder:
       tag: "develop"
-    party-registry-proxy:
-      tag: "1.0.15"
     producer-key-readmodel-writer:
       tag: "develop"
     producer-keychain-readmodel-writer:
@@ -98,8 +96,6 @@ images:
       tag: "1.0.43"
     padigitale-report-generator:
       tag: "1.0.32"
-    party-registry-proxy-refresher:
-      tag: "7.88.1"
     pn-consumers:
       tag: "develop"
     token-generation-readmodel-checker:
