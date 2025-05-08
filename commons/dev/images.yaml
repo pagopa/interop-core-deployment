@@ -1,24 +1,26 @@
 images:
   microservices:
-    attribute-registry-readmodel-writer-sql:
-      tag: "develop"
     agreement-readmodel-writer-sql:
       tag: "develop"
-    producer-key-readmodel-writer-sql:
+    attribute-registry-readmodel-writer-sql:
       tag: "develop"
-    tenant-readmodel-writer-sql:
-      tag: "develop"
-    key-readmodel-writer-sql:
-      tag: "develop"
-    producer-keychain-readmodel-writer-sql:
-      tag: "develop"
-    delegation-readmodel-writer-sql:
-      tag: "develop"      
-    purpose-readmodel-writer-sql:
+    catalog-read-model-writer-sql:
       tag: "develop"
     client-readmodel-writer-sql:
       tag: "develop"
+    delegation-readmodel-writer-sql:
+      tag: "develop"
     eservice-template-readmodel-writer-sql:
       tag: "develop"
-    catalog-read-model-writer-sql:
+    key-readmodel-writer-sql:
+      tag: "develop"
+    m2m-gateway:
+      tag: "develop"
+    producer-key-readmodel-writer-sql:
+      tag: "develop"
+    producer-keychain-readmodel-writer-sql:
+      tag: "develop"
+    purpose-readmodel-writer-sql:
+      tag: "develop"
+    tenant-readmodel-writer-sql:
       tag: "develop"
