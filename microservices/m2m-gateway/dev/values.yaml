@@ -21,6 +21,8 @@ configmap:
 
 deployment:
   env:
+    HOST: "0.0.0.0"
+    PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
   envFromFieldRef:
     POD_NAME: "metadata.name"
@@ -40,5 +42,16 @@ deployment:
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
 
-
+  livenessProbe:
+    httpGet:
+      path: "/m2m-gateway/v2/status"
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: "/m2m-gateway/v2/status"
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
 
