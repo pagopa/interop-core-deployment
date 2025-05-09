@@ -4,7 +4,7 @@ techStack: "nodejs"
 service:
   create: true
   containerPort: 8088
- 
+
 serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-eservice-template-process-dev-es1"
 
@@ -17,6 +17,7 @@ configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   FEATURE_FLAG_SIGNALHUB_WHITELIST: "true"
   SIGNALHUB_WHITELIST_PRODUCER: "69e2865e-65ab-4e48-a638-2037a9ee2ee7"
+  FEATURE_FLAG_SQL: "true"
 
 deployment:
   flywayInitContainer:
@@ -83,7 +84,7 @@ deployment:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-eservice-template-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-template-process-user.password"   
+    READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-template-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

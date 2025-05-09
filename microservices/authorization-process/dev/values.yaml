@@ -13,9 +13,10 @@ configmap:
   MAX_KEYS_PER_CLIENT: "100"
   MAX_KEYS_PER_PRODUCER_KEYCHAIN: "30"
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_authorization"
+  FEATURE_FLAG_SQL: "true"
 
 deployment:
-  flywayInitContainer: 
+  flywayInitContainer:
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
@@ -81,7 +82,7 @@ deployment:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-authorization-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-authorization-process-user.password"  
+    READMODEL_SQL_DB_PASSWORD: "platform-data-authorization-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
