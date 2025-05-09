@@ -1,6 +1,6 @@
 name: "interop-frontend"
 techStack: "frontend"
-# TODO
+
 service:
   create: true
   containerPort: 80
