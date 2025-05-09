@@ -19,7 +19,8 @@ configmap:
   RATE_LIMITER_BURST_PERCENTAGE: "1.0"
   RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
   RATE_LIMITER_TIMEOUT_MILLIS: "300"
-  
+  FEATURE_FLAG_SQL: "true"
+
 deployment:
   replicas: 2
   env:
@@ -39,7 +40,7 @@ deployment:
     AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
     CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
     DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
-    NOTIFIER_URL:  "common-services-urls.NOTIFIER_URL"
+    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
     PARTY_REGISTRY_PROXY_URL: "common-services-urls.PARTY_REGISTRY_PROXY_URL"
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
