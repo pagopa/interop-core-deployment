@@ -4,7 +4,7 @@ techStack: "nodejs"
 service:
   create: true
   containerPort: 8088
- 
+
 serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-catalog-process-dev-es1"
 
@@ -13,16 +13,17 @@ configmap:
   ESERVICE_DOCUMENTS_PATH: "eservices/docs"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
   PRODUCER_ALLOWED_ORIGINS: "IPA"
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"  
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   FEATURE_FLAG_SIGNALHUB_WHITELIST: "true"
   SIGNALHUB_WHITELIST_CONSUMER: "69e2865e-65ab-4e48-a638-2037a9ee2ee7,e79a24cd-8edc-441e-ae8d-e87c3aea0059"
   SIGNALHUB_WHITELIST_PRODUCER: "69e2865e-65ab-4e48-a638-2037a9ee2ee7"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "true"
+  FEATURE_FLAG_SQL: "true"
 
 deployment:
-  flywayInitContainer: 
+  flywayInitContainer:
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
