@@ -1,28 +1,166 @@
 images:
   microservices:
-    attribute-registry-readmodel-writer-sql:
+    agreement-outbound-writer:
+      tag: "develop"
+    agreement-readmodel-writer:
+      tag: "develop"
+    agreement-platformstate-writer:
+      tag: "develop"
+    agreement-process:
       tag: "develop"
     agreement-readmodel-writer-sql:
       tag: "develop"
-    producer-key-readmodel-writer-sql:
+    api-gateway:
       tag: "develop"
-    tenant-readmodel-writer-sql:
+    attribute-registry-readmodel-writer:
       tag: "develop"
-    key-readmodel-writer-sql:
+    attribute-registry-readmodel-writer-sql:
       tag: "develop"
-    producer-keychain-readmodel-writer-sql:
+    attribute-registry-process:
       tag: "develop"
-    delegation-readmodel-writer-sql:
-      tag: "develop"      
-    purpose-readmodel-writer-sql:
+    authorization-management:
+      tag: "1.0.x-latest"
+    authorization-process:
+      tag: "develop"
+    authorization-platformstate-writer:
+      tag: "develop"
+    authorization-server:
+      tag: "1.0.x-latest"
+    authorization-server-node:
+      tag: "develop"
+    authorization-updater:
+      tag: "develop"
+    backend-for-frontend:
+      tag: "develop"
+    catalog-outbound-writer:
+      tag: "develop"
+    catalog-readmodel-writer:
+      tag: "develop"
+    catalog-readmodel-writer-sql:
+      tag: "develop"
+    catalog-platformstate-writer:
+      tag: "develop"
+    catalog-process:
+      tag: "develop"
+    certified-email-sender:
+      tag: "develop"
+    client-purpose-updater:
+      tag: "develop"
+    client-readmodel-writer:
       tag: "develop"
     client-readmodel-writer-sql:
       tag: "develop"
+    compute-agreements-consumer:
+      tag: "develop"      
+    datalake-interface-exporter:
+      tag: "develop"
+    delegation-outbound-writer:
+      tag: "develop"
+    delegation-process:
+      tag: "develop"
+    delegation-items-archiver:
+      tag: "develop"
+    delegation-readmodel-writer:
+      tag: "develop"
+    delegation-readmodel-writer-sql:
+      tag: "develop"
+    eservice-descriptors-archiver:
+      tag: "develop"
+    eservice-template-process:
+      tag: "develop"
+    eservice-template-readmodel-writer:
+      tag: "develop"
     eservice-template-readmodel-writer-sql:
       tag: "develop"
-    catalog-read-model-writer-sql:
+    eservice-template-instances-updater:
+      tag: "develop"
+    frontend:
+      tag: "dev-latest"
+    key-readmodel-writer:
+      tag: "develop"
+    key-readmodel-writer-sql:
+      tag: "develop"
+    notification-email-sender:
+      tag: "develop"
+    notifier:
+      tag: "1.0.x-latest"
+    notifier-seeder:
+      tag: "develop"
+    producer-keychain-readmodel-writer:
+      tag: "develop"
+    producer-key-readmodel-writer:
+      tag: "develop"
+    producer-key-readmodel-writer-sql:
+      tag: "develop"
+    producer-keychain-readmodel-writer-sql:
+      tag: "develop"
+    party-registry-proxy:
+      tag: "1.0.x-latest"
+    purpose-outbound-writer:
+      tag: "develop"
+    purpose-readmodel-writer:
+      tag: "develop"
+    purpose-readmodel-writer-sql:
+      tag: "develop"
+    purpose-platformstate-writer:
+      tag: "develop"
+    purpose-process:
+      tag: "develop"
+    selfcare-onboarding-consumer:
+      tag: "develop"
+    tenant-process:
+      tag: "develop"
+    tenant-readmodel-writer:
+      tag: "develop"
+    tenant-readmodel-writer-sql:
+      tag: "develop"
+    tenant-outbound-writer:
+      tag: "develop"
+    token-details-persister:
       tag: "develop"
 
   jobs:
+    anac-certified-attributes-importer:
+      tag: "develop"
+    datalake-data-export:
+      tag: "develop"  
+    dtd-catalog-exporter:
+      tag: "develop"
+    ipa-certified-attributes-importer:
+      tag: "develop"
+    ivass-certified-attributes-importer:
+      tag: "develop"
+    one-trust-notices:
+      tag: "develop"
+    padigitale-report-generator:
+      tag: "1.0.x-latest"
+    pn-consumers:
+      tag: "develop"
+    token-details-persister:
+      tag: "1.0.x-latest"
+    token-generation-readmodel-checker:
+      tag: "develop"
+
+  jobs:
+    anac-certified-attributes-importer:
+      tag: "develop"
+    datalake-data-export:
+      tag: "develop"
+    dtd-catalog-exporter:
+      tag: "develop"
+    ipa-certified-attributes-importer:
+      tag: "develop"
+    ivass-certified-attributes-importer:  
+      tag: "develop"
+    one-trust-notices:  
+      tag: "develop"
+    padigitale-report-generator:  
+      tag: "1.0.x-latest"
+    pn-consumers:
+      tag: "develop"
     readmodel-checker:
+      tag: "develop"
+    token-details-persister:
+      tag: "1.0.x-latest"
+    token-generation-readmodel-checker:
       tag: "develop"
