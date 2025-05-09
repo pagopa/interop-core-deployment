@@ -86,7 +86,7 @@ data:
       content_type VARCHAR NOT NULL,
       path VARCHAR NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-      PRIMARY KEY (id),
+      PRIMARY KEY (agreement_id, id),
       FOREIGN KEY (agreement_id, metadata_version) REFERENCES "${NAMESPACE}_agreement".agreement (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_contract TO "${NAMESPACE}_agreement_rmw_user";
