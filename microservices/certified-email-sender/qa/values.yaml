@@ -1,0 +1,37 @@
+name: "interop-be-certified-email-sender"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-certified-email-sender-qa-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-certified-email-sender"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-certified-email-sender"
+  PEC_SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
+  PEC_SMTP_PORT: "5025"
+  PEC_SMTP_SECURE: "false"
+  INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
+
+deployment:
+  replicas: 0
+  env:
+    TOPIC_STARTING_OFFSET: "latest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+  envFromSecrets:
+    PEC_SENDER_MAIL: "smtp-certified.PEC_SMTP_SENDER"
+    PEC_SENDER_LABEL: "smtp-certified.PEC_SMTP_SENDER"
+    PEC_SMTP_USERNAME: "smtp-certified.PEC_SMTP_USER"
+    PEC_SMTP_PASSWORD: "smtp-certified.PEC_SMTP_PASSWORD"
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"

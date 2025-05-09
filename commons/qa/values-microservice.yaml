@@ -1,0 +1,29 @@
+namespace: qa
+
+service:
+  targetPort: http
+  portName: http
+
+deployment:
+  enableRolloutAnnotations: true
+  replicas: 1
+  image:
+    repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
+    imagePullPolicy: Always
+    tag: $IMAGE_TAG_PLACEHOLDER
+    digest: $IMAGE_DIGEST_PLACEHOLDER
+  env:
+    LOG_LEVEL: "info"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+
+local:
+  interop_be_commons:
+    RSA_KEYS_IDENTIFIERS: "17d3f3c0-5730-45a9-be8a-655e77bf3555"
+    DEV_ENDPOINTS_ENABLED: "true"
+    ENABLED_PROJECTIONS: "true"

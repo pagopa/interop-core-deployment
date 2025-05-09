@@ -1,0 +1,29 @@
+name: "interop-be-padigitale-report-generator"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-padigitale-report-generator-qa-es1"
+
+configmap:
+  INTERFACES_CONTAINER: "interop-application-documents-qa-es1"
+  PA_DIGITALE_CONTAINER: "interop-platform-metrics-qa-es1"
+  PA_DIGITALE_STORAGE_PATH: "pa-digitale"
+  ESERVICES_COLLECTION_NAME: "eservices"
+  TENANTS_COLLECTION_NAME: "tenants"
+
+cronjob:
+  schedule: "0 9 * * *"
+  suspend: true
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  command: ["bin/interop-be-padigitale-report-generator"]
+  args: ["-Dconfig.override_with_env_vars=true"]
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READ_MODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READ_MODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READ_MODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+  envFromSecrets:
+    READ_MODEL_DB_USER: "documentdb.READONLY_USR"
+    READ_MODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
