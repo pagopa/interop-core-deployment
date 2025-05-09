@@ -40,7 +40,7 @@ data:
       version VARCHAR NOT NULL,
       risk_analysis_id UUID,
       PRIMARY KEY (id, purpose_id),
-      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version)
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form TO "${NAMESPACE}_purpose_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form TO "${NAMESPACE}_purpose_process_user";
@@ -56,7 +56,7 @@ data:
       value VARCHAR ARRAY,
       PRIMARY KEY (id, purpose_id),
       FOREIGN KEY (risk_analysis_form_id, purpose_id) REFERENCES "${NAMESPACE}_purpose".purpose_risk_analysis_form (id, purpose_id) ON DELETE CASCADE,
-      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version)
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer TO "${NAMESPACE}_purpose_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer TO "${NAMESPACE}_purpose_process_user";
@@ -74,7 +74,7 @@ data:
       first_activation_at TIMESTAMP WITH TIME ZONE,
       suspended_at TIMESTAMP WITH TIME ZONE,
       PRIMARY KEY (id),
-      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version)
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version TO "${NAMESPACE}_purpose_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version TO "${NAMESPACE}_purpose_process_user";
@@ -88,8 +88,8 @@ data:
       content_type VARCHAR NOT NULL,
       path VARCHAR NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-      PRIMARY KEY (id),
-      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version)
+      PRIMARY KEY (id, purpose_version_id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO "${NAMESPACE}_purpose_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO "${NAMESPACE}_purpose_process_user";
