@@ -97,3 +97,6 @@ data:
 
   V1.1__Permission_Process_Purpose.sql: |-
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_authorization_process_user";
+
+  V1.2__Grant_Usage_Schema_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_authorization_process_user";    

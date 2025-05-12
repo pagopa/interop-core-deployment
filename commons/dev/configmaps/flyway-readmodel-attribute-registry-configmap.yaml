@@ -32,3 +32,10 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_catalog_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_eservice_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_tenant_process_user";
+
+  V1.2__Grant_Usage_Schema_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_agreement_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_catalog_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_eservice_template_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_tenant_process_user";
+    
