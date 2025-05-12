@@ -132,3 +132,6 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_feature TO "${NAMESPACE}_tenant_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_feature TO "${NAMESPACE}_tenant_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_feature TO readonly_user;      
+
+  V1.1__Permission_Process_Tenant.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_agreement_process_user";

@@ -26,3 +26,6 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_attribute".attribute TO "${NAMESPACE}_attribute_registry_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO "${NAMESPACE}_attribute_registry_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO readonly_user;
+
+  V1.1__Permission_Process_Attribute.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_agreement_process_user";
