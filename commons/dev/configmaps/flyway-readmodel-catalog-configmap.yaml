@@ -51,7 +51,7 @@ data:
       deprecated_at TIMESTAMP WITH TIME ZONE,
       archived_at TIMESTAMP WITH TIME ZONE,
       PRIMARY KEY (id),
-      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version)
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor TO "${NAMESPACE}_catalog_process_user";    
@@ -79,7 +79,7 @@ data:
       descriptor_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice_descriptor (id) ON DELETE CASCADE,
       rejection_reason VARCHAR NOT NULL,
       rejected_at TIMESTAMP WITH TIME ZONE NOT NULL,
-      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version)
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_rejection_reason TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_rejection_reason TO "${NAMESPACE}_catalog_process_user";    
@@ -97,7 +97,7 @@ data:
       checksum VARCHAR NOT NULL,
       upload_date TIMESTAMP WITH TIME ZONE NOT NULL,
       PRIMARY KEY (id),
-      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version)
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_interface TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_interface TO "${NAMESPACE}_catalog_process_user";    
@@ -115,7 +115,7 @@ data:
       checksum VARCHAR NOT NULL,
       upload_date TIMESTAMP WITH TIME ZONE NOT NULL,
       PRIMARY KEY (id),
-      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version)
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_document TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_document TO "${NAMESPACE}_catalog_process_user";    
@@ -130,7 +130,7 @@ data:
       kind VARCHAR NOT NULL,
       group_id INTEGER NOT NULL,
       PRIMARY KEY (attribute_id, descriptor_id, group_id),
-      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version)
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute TO "${NAMESPACE}_catalog_process_user";    
@@ -142,10 +142,11 @@ data:
       metadata_version INTEGER NOT NULL,
       name VARCHAR NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-      risk_analysis_form_id UUID UNIQUE NOT NULL,
+      risk_analysis_form_id UUID NOT NULL,
       risk_analysis_form_version VARCHAR NOT NULL,
-      PRIMARY KEY (id),
-      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version)
+      PRIMARY KEY (id, eservice_id),
+      UNIQUE (risk_analysis_form_id, eservice_id),
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis TO "${NAMESPACE}_catalog_process_user";    
@@ -155,12 +156,13 @@ data:
       id UUID,
       eservice_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
-      risk_analysis_form_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice_risk_analysis (risk_analysis_form_id) ON DELETE CASCADE,
+      risk_analysis_form_id UUID NOT NULL,
       kind VARCHAR NOT NULL,
       key VARCHAR NOT NULL,
       value VARCHAR ARRAY NOT NULL,
-      PRIMARY KEY (id),
-      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version)
+      PRIMARY KEY (id, eservice_id),
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED,
+      FOREIGN KEY (risk_analysis_form_id, eservice_id) REFERENCES "${NAMESPACE}_catalog".eservice_risk_analysis (risk_analysis_form_id, eservice_id) ON DELETE CASCADE
     );   
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO "${NAMESPACE}_catalog_process_user";    

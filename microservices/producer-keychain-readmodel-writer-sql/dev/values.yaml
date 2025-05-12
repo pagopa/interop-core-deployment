@@ -1,4 +1,5 @@
 name: interop-be-producer-keychain-readmodel-writer-sql
+techStack: nodejs
 
 serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-producer-keychain-readmodel-writer-dev-es1"

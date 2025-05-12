@@ -37,7 +37,7 @@ data:
       "when" TIMESTAMP WITH TIME ZONE NOT NULL,
       kind VARCHAR NOT NULL,
       PRIMARY KEY (delegation_id, kind),
-      FOREIGN KEY (delegation_id, metadata_version) REFERENCES "${NAMESPACE}_delegation".delegation (id, metadata_version)
+      FOREIGN KEY (delegation_id, metadata_version) REFERENCES "${NAMESPACE}_delegation".delegation (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_delegation".delegation_stamp TO "${NAMESPACE}_delegation_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_stamp TO "${NAMESPACE}_delegation_process_user";
@@ -54,7 +54,7 @@ data:
       created_at TIMESTAMP WITH TIME ZONE NOT NULL,
       kind VARCHAR NOT NULL,
       PRIMARY KEY (id),
-      FOREIGN KEY (delegation_id, metadata_version) REFERENCES "${NAMESPACE}_delegation".delegation (id, metadata_version),
+      FOREIGN KEY (delegation_id, metadata_version) REFERENCES "${NAMESPACE}_delegation".delegation (id, metadata_version) DEFERRABLE INITIALLY DEFERRED,
       CONSTRAINT delegation_contract_document_delegation_id_kind_unique UNIQUE (delegation_id, kind)
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_delegation".delegation_contract_document TO "${NAMESPACE}_delegation_rmw_user";

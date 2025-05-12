@@ -152,7 +152,11 @@ jobs:
           if [[ ${{inputs.environment}} == "vapt" ]]; then
             "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
           else
-            "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
+            HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
+            if [[ ${{ vars.ENABLE_HELM_FORCE_UPGRADE }} == "true" ]]; then
+              HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
+            fi
+            "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
           fi
 
           DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_FULLNAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
@@ -261,6 +265,10 @@ jobs:
           if [[ ${{inputs.environment}} == "vapt" ]]; then
             $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
           else
-            $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
+            HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
+            if [[ ${{ vars.ENABLE_HELM_FORCE_UPGRADE }} == "true" ]]; then
+              HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
+            fi
+            $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
           fi
           
