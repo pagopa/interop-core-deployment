@@ -75,7 +75,7 @@ deployment:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:    
-    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    WELL_KNOWN_URLS: "common-jwt.BFF_WELL_KNOWN_URLS"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
     AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
