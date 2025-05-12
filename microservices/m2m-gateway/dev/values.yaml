@@ -42,6 +42,8 @@ deployment:
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
+    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
 
   livenessProbe:
     httpGet:
