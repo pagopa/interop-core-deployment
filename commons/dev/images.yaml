@@ -80,6 +80,8 @@ images:
       tag: "develop"
     key-readmodel-writer-sql:
       tag: "develop"
+    m2m-gateway:
+      tag: "develop"
     notification-email-sender:
       tag: "develop"
     notifier:
