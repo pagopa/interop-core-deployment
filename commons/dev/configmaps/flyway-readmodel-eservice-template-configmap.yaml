@@ -135,3 +135,6 @@ data:
 
   V1.1__Permission_Process_Template.sql: |-
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_catalog_process_user";
+
+  V1.2__Grant_Usage_Schema_Template.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";        
