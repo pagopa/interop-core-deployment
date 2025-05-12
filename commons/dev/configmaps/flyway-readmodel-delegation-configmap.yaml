@@ -63,3 +63,4 @@ data:
 
   V1.1__Permission_Process_Delegation.sql: |-
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_catalog_process_user";
