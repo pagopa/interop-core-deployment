@@ -6,7 +6,7 @@ serviceAccount:
 
 service:
   create: true
-  containerport: 8088
+  containerPort: 8088
   albHealthCheck:
     path: /m2m-gateway/v2/status
     port: "8088"
