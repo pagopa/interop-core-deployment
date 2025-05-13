@@ -7,7 +7,7 @@ serviceAccount:
 service:
   create: true
   containerPort: 8088
- 
+
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_agreement"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
@@ -16,7 +16,7 @@ configmap:
   CONSUMER_DOCUMENTS_PATH: "{{.Values.namespace}}/agreement/consumer-docs"
 
 deployment:
-  flywayInitContainer: 
+  flywayInitContainer:
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
@@ -76,7 +76,7 @@ deployment:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-agreement-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-agreement-process-user.password"  
+    READMODEL_SQL_DB_PASSWORD: "platform-data-agreement-process-user.password"
   livenessProbe:
     httpGet:
       path: "/status"

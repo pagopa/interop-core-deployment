@@ -53,6 +53,7 @@ deployment:
     READ_MODEL_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"

@@ -14,9 +14,8 @@ configmap:
   RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
 
-
 deployment:
-  flywayInitContainer: 
+  flywayInitContainer:
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
@@ -74,7 +73,7 @@ deployment:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-purpose-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-process-user.password"    
+    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

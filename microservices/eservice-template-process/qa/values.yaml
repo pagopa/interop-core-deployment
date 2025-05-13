@@ -7,12 +7,12 @@ serviceAccount:
 service:
   create: true
   containerPort: 8088
-  
+
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_eservice_template"
+  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
   PRODUCER_ALLOWED_ORIGINS: "IPA"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   
@@ -32,6 +32,7 @@ deployment:
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
       FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+      FEATURE_FLAG_SIGNALHUB_WHITELIST: "common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST"
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
@@ -53,8 +54,8 @@ deployment:
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
@@ -76,7 +77,7 @@ deployment:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-eservice-template-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-template-process-user.password"   
+    READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-template-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

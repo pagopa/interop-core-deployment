@@ -14,7 +14,7 @@ configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
 
 deployment:
-  flywayInitContainer: 
+  flywayInitContainer:
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
@@ -36,11 +36,11 @@ deployment:
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
-  envFromFieldRef:   
+  envFromFieldRef:
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
-    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
@@ -72,7 +72,7 @@ deployment:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-attribute-registry-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-attribute-registry-process-user.password"  
+    READMODEL_SQL_DB_PASSWORD: "platform-data-attribute-registry-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
