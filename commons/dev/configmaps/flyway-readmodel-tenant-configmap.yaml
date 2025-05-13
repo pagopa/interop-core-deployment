@@ -149,3 +149,12 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_eservice_template_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_purpose_process_user";    
  
+  V1.3__Index_Schema_Tenant.sql: |-
+    CREATE INDEX idx_tenant_mail_tenant_id ON "${NAMESPACE}_tenant".tenant_mail (tenant_id);
+    CREATE INDEX idx_tenant_feature_tenant_id ON "${NAMESPACE}_tenant".tenant_feature (tenant_id);
+    CREATE INDEX idx_tenant_certified_attribute_tenant_id ON "${NAMESPACE}_tenant".tenant_certified_attribute (tenant_id);
+    CREATE INDEX idx_tenant_declared_attribute_tenant_id ON "${NAMESPACE}_tenant".tenant_declared_attribute (tenant_id);
+    CREATE INDEX idx_tenant_verified_attribute_tenant_id ON "${NAMESPACE}_tenant".tenant_verified_attribute (tenant_id);
+    CREATE INDEX idx_verifier_attr_id ON "${NAMESPACE}_tenant".tenant_verified_attribute_verifier (tenant_verified_attribute_id);
+    CREATE INDEX idx_revoker_attr_id ON "${NAMESPACE}_tenant".tenant_verified_attribute_revoker (tenant_verified_attribute_id);
+  
