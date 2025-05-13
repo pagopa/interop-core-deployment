@@ -19,7 +19,6 @@ configmap:
   RATE_LIMITER_BURST_PERCENTAGE: "1.0"
   RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
   RATE_LIMITER_TIMEOUT_MILLIS: "300"
-  FEATURE_FLAG_SQL: "true"
 
 deployment:
   replicas: 2
@@ -56,6 +55,7 @@ deployment:
     READ_MODEL_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
