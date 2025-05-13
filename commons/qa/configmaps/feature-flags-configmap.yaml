@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: common-feature-flags
-  namespace: dev
+  namespace: qa
 data:
   FEATURE_FLAG_SQL: "false"
   FEATURE_FLAG_SIGNALHUB_WHITELIST: "false"
