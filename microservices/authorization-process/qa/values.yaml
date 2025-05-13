@@ -13,7 +13,6 @@ configmap:
   MAX_KEYS_PER_CLIENT: "100"
   MAX_KEYS_PER_PRODUCER_KEYCHAIN: "30"
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_authorization"
-  FEATURE_FLAG_SQL: "false"
 
 deployment:
   flywayInitContainer: 
@@ -29,6 +28,7 @@ deployment:
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
+      FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"

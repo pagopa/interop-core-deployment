@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-feature-flags
+  namespace: dev
+data:
+  FEATURE_FLAG_SQL: "false"
+  FEATURE_FLAG_SIGNALHUB_WHITELIST: "false"
+  FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "true"
