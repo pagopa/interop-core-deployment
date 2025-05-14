@@ -5,7 +5,7 @@ metadata:
   namespace: qa
 data:
   DB_HOST_RO: "interop-platform-data-qa.cluster-ro-cwgb5whmdqov.eu-south-1.rds.amazonaws.com"
-  DB_HOST_RW: "interop-platform-data-qa.CHANGE-THIS!!!.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RW: "interop-platform-data-qa.cluster-cwgb5whmdqov.eu-south-1.rds.amazonaws.com"
   DB_NAME: "read_model"
   DB_PORT: "5432"
   DB_SCHEMA_AGREEMENT: "qa_agreement"
