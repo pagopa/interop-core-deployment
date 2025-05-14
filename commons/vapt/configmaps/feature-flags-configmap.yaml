@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-feature-flags
+  namespace: vapt
+data:
+  FEATURE_FLAG_SIGNALHUB_WHITELIST: "true"
