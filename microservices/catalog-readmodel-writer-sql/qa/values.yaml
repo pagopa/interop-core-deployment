@@ -1,0 +1,55 @@
+name: interop-be-catalog-readmodel-writer-sql
+techStack: nodejs
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-catalog-readmodel-writer-qa-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-catalog-readmodel-writer-sql"
+  TOPIC_STARTING_OFFSET: "earliest"
+
+deployment:
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "flyway-read-model-catalog"
+    env:
+      FLYWAY_CREATE_SCHEMAS: true
+      FLYWAY_PLACEHOLDER_REPLACEMENT: true
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_SCHEMAS: "{{.Values.namespace}}_catalog"
+    envFromConfigmaps:
+      POSTGRES_HOST: "common-read-model-sql.DB_HOST_RW"
+      POSTGRES_PORT: "common-read-model-sql.DB_PORT"
+      POSTGRES_DB: "common-read-model-sql.DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "platform-data-flyway-user.username"
+      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
+
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RW"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
+    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
+    READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
+    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+  envFromSecrets:   
+    READMODEL_SQL_DB_USERNAME: "platform-data-catalog-rmw-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-rmw-user.password"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"

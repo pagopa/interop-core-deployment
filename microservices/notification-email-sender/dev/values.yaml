@@ -1,11 +1,11 @@
 name: "interop-be-notification-email-sender"
 techStack: "nodejs"
 
-service:
-  create: false
- 
 serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-notification-email-sender-dev-es1"
+
+service:
+  create: false
 
 configmap:
   INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
@@ -22,8 +22,8 @@ deployment:
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:
-    AWS_ROLE_SESSION_NAME: "metadata.name"
     NAMESPACE: "metadata.namespace"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
     CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"

@@ -16,7 +16,7 @@ configmap:
   DELEGATIONS_ALLOWED_ORIGINS: "IPA"
 
 deployment:
-  flywayInitContainer: 
+  flywayInitContainer:
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
@@ -74,7 +74,7 @@ deployment:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-delegation-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-process-user.password"    
+    READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

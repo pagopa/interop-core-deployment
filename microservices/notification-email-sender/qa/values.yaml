@@ -8,15 +8,15 @@ service:
   create: false
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-notification-email-sender"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-email-sender"
+  INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
   AWS_SES_ENDPOINT: "http://ses-mock.{{.Values.namespace}}.svc.cluster.local:8005"
+  SENDER_MAIL: "noreply@notifiche.{{.Values.namespace}}.interop.pagopa.it"
+  SENDER_LABEL: "noreply-{{.Values.namespace}}"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-email-sender"
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-notification-email-sender"
   SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
   SMTP_PORT: "5025"
   SMTP_SECURE: "false"
-  SENDER_MAIL: "noreply@notifiche.{{.Values.namespace}}.interop.pagopa.it"
-  SENDER_LABEL: "noreply-{{.Values.namespace}}"
-  INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
 
 deployment:
   env:
@@ -33,7 +33,7 @@ deployment:
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
   envFromSecrets:
-    SMTP_USERNAME: "smtp-notifications.SMTP_USER"
-    SMTP_PASSWORD: "smtp-notifications.SMTP_PASSWORD"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    SMTP_USERNAME: "smtp-notifications.SMTP_USER"
+    SMTP_PASSWORD: "smtp-notifications.SMTP_PASSWORD"

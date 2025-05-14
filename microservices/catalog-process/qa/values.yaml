@@ -4,7 +4,7 @@ techStack: "nodejs"
 service:
   create: true
   containerPort: 8088
- 
+
 serviceAccount:
   roleArn: "arn:aws:iam::755649575658:role/interop-be-catalog-process-qa-es1"
 
@@ -18,7 +18,7 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
 
 deployment:
-  flywayInitContainer: 
+  flywayInitContainer:
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
@@ -32,6 +32,7 @@ deployment:
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
       FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+      FEATURE_FLAG_SIGNALHUB_WHITELIST: "common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST"
       FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
@@ -77,7 +78,7 @@ deployment:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-catalog-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-process-user.password"    
+    READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
