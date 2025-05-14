@@ -30,7 +30,7 @@ images:
       tag: "2.2.0-RC1"
     catalog-process:
       tag: "2.2.0-RC1"
-    catalog-read-model-writer:
+    catalog-readmodel-writer:
       tag: "2.2.0-RC1"
     client-purpose-updater:
       tag: "2.2.0-RC1"
@@ -70,7 +70,7 @@ images:
       tag: "2.2.0-RC1"
     purpose-process:
       tag: "2.2.0-RC1"
-    purpose-read-model-writer:
+    purpose-readmodel-writer:
       tag: "2.2.0-RC1"
     redis:
       tag: "7.0.4"

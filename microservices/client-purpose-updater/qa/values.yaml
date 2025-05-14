@@ -1,0 +1,42 @@
+name: "interop-be-client-purpose-updater"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-client-purpose-updater-qa-es1"
+
+service:
+  create: false
+  
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-client-purpose-updater"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-client-purpose-updater"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "1800"
+
+deployment:
+  env:
+    PORT: "8088"
+    HOST: "0.0.0.0"
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
+    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
+    READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"

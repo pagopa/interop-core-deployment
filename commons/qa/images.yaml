@@ -6,12 +6,16 @@ images:
       tag: "develop"
     agreement-readmodel-writer:
       tag: "develop"
+    agreement-readmodel-writer-sql:
+      tag: "develop"      
     api-gateway:
       tag: "develop"
     attribute-registry-process:
       tag: "develop"
     attribute-registry-readmodel-writer:
       tag: "develop"
+    attribute-registry-readmodel-writer-sql:
+      tag: "develop"      
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
@@ -30,10 +34,14 @@ images:
       tag: "develop"
     catalog-process:
       tag: "develop"
-    catalog-read-model-writer:
+    catalog-readmodel-writer:
       tag: "develop"
+    catalog-readmodel-writer-sql:
+      tag: "develop"      
     certified-email-sender:
       tag: "develop"
+    client-purpose-updater:
+      tag: "develop"      
     client-readmodel-writer:
       tag: "develop"
     compute-agreements-consumer:
@@ -44,6 +52,8 @@ images:
       tag: "develop"
     delegation-readmodel-writer:
       tag: "develop"
+    delegation-readmodel-writer-sql:
+      tag: "develop"      
     eservice-descriptors-archiver:
       tag: "develop"
     eservice-template-instances-updater:
@@ -52,6 +62,8 @@ images:
       tag: "develop"
     eservice-template-readmodel-writer:
       tag: "develop"
+    eservice-template-readmodel-writer-sql:
+      tag: "develop"      
     frontend:
       tag: "dev-latest"
     key-readmodel-writer:
@@ -64,19 +76,27 @@ images:
       tag: "develop"
     producer-key-readmodel-writer:
       tag: "develop"
+    producer-key-readmodel-writer-sql:
+      tag: "develop"      
     producer-keychain-readmodel-writer:
+      tag: "develop"
+    producer-keychain-readmodel-writer-sql:
       tag: "develop"
     purpose-platformstate-writer:
       tag: "develop"
     purpose-process:
       tag: "develop"
-    purpose-read-model-writer:
+    purpose-readmodel-writer:
+      tag: "develop"
+    purpose-readmodel-writer-sql:
       tag: "develop"
     redis:
       tag: "7.0.4"
     tenant-process:
       tag: "develop"
     tenant-readmodel-writer:
+      tag: "develop"
+    tenant-readmodel-writer-sql:
       tag: "develop"
     token-details-persister-node:
       tag: "develop"
@@ -98,6 +118,8 @@ images:
       tag: "1.0.32"
     pn-consumers:
       tag: "develop"
+    readmodel-checker:
+      tag: "develop"      
     token-generation-readmodel-checker:
       tag: "develop"
     token-details-persister:
