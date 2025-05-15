@@ -138,7 +138,7 @@ jobs:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
           TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
           FORCE_ROLLOUT: ${{ inputs.force_restart }}
-
+          ENABLE_HELM_FORCE_UPGRADE: ${{ vars.ENABLE_HELM_FORCE_UPGRADE }}
         run: |
           set -euo pipefail
 
@@ -156,7 +156,8 @@ jobs:
             "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
           else
             HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ ${{ vars.ENABLE_HELM_FORCE_UPGRADE }} == "true" ]]; then
+            
+            if [[ "${ENABLE_HELM_FORCE_UPGRADE:-false}" == "true" ]]; then
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
@@ -256,6 +257,7 @@ jobs:
         if: ${{ steps.diff.outputs.diff_exit_code != '0' }}
         env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
+          ENABLE_HELM_FORCE_UPGRADE: ${{ vars.ENABLE_HELM_FORCE_UPGRADE }}
         run: |
           set -euo pipefail
 
@@ -272,7 +274,7 @@ jobs:
             $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
           else
             HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ ${{ vars.ENABLE_HELM_FORCE_UPGRADE }} == "true" ]]; then
+            if [[ "${ENABLE_HELM_FORCE_UPGRADE:-false}" == "true" ]]; then
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
