@@ -33,7 +33,6 @@ deployment:
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
-      FEATURE_FLAG_SIGNALHUB_WHITELIST: "common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST"
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
@@ -57,6 +56,7 @@ deployment:
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    FEATURE_FLAG_SIGNALHUB_WHITELIST: "common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
