@@ -9,7 +9,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::755649575658:role/interop-be-authorization-process-qa-es1"
 
 configmap:
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m"
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   MAX_KEYS_PER_CLIENT: "100"
   MAX_KEYS_PER_PRODUCER_KEYCHAIN: "30"
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_authorization"
