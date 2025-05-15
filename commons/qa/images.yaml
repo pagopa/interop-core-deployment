@@ -44,6 +44,8 @@ images:
       tag: "develop"      
     client-readmodel-writer:
       tag: "develop"
+    client-readmodel-writer-sql:
+      tag: "develop"      
     compute-agreements-consumer:
       tag: "develop"
     delegation-items-archiver:
@@ -68,6 +70,8 @@ images:
       tag: "dev-latest"
     key-readmodel-writer:
       tag: "develop"
+    key-readmodel-writer-sql:
+      tag: "develop"      
     notification-email-sender:
       tag: "develop"
     notifier:
