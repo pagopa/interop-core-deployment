@@ -124,7 +124,7 @@ jobs:
           
           if [[ $DIFF_EXIT_CODE == 0 ]]; then
             echo "Diff Output: No diff has been found for ${MICROSERVICE_NAME}"
-          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+          elif [[ $DIFF_EXIT_CODE == 1 || $DIFF_EXIT_CODE == 2 ]]; then
             echo "Diff Output: Diff has been found for ${MICROSERVICE_NAME}"
           else
             echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
@@ -241,7 +241,7 @@ jobs:
           
           if [[ $DIFF_EXIT_CODE == 0 ]]; then
             echo "Diff Output: No diff has been found for ${CRONJOB_NAME}"
-          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+          elif [[ $DIFF_EXIT_CODE == 1 || $DIFF_EXIT_CODE == 2 ]]; then
             echo "Diff Output: Diff has been found for ${CRONJOB_NAME}"
           else
             echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
