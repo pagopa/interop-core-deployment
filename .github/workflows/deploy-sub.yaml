@@ -11,7 +11,12 @@ on:
         description: 'Kubectl apply wait timeout in seconds for Deployments'
         required: true
         type: number
-  
+      force_restart:
+          description: 'Force Deployment Rollout Restart'
+          required: true
+          default: false
+          type: boolean
+
 defaults:
   run:
     shell: bash
