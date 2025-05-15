@@ -133,7 +133,7 @@ jobs:
 
           echo "diff_exit_code=$DIFF_EXIT_CODE" >> $GITHUB_OUTPUT
       - name: Deploy
-        if: ${{ steps.diff.outputs.diff_exit_code != '0' }}
+        if: ${{ steps.diff.outputs.diff_exit_code != '0' || (vars.ENABLE_HELM_FORCE_UPGRADE || '') == 'true' }}
         env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
           TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
@@ -254,7 +254,7 @@ jobs:
 
           echo "diff_exit_code=$DIFF_EXIT_CODE" >> $GITHUB_OUTPUT
       - name: Deploy
-        if: ${{ steps.diff.outputs.diff_exit_code != '0' }}
+        if: ${{ steps.diff.outputs.diff_exit_code != '0' || (vars.ENABLE_HELM_FORCE_UPGRADE || '') == 'true' }}
         env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
           ENABLE_HELM_FORCE_UPGRADE: ${{ vars.ENABLE_HELM_FORCE_UPGRADE }}
