@@ -11,7 +11,12 @@ on:
         description: 'Kubectl apply wait timeout in seconds for Deployments'
         required: true
         type: number
-  
+      force_restart:
+          description: 'Force Deployment Rollout Restart'
+          required: true
+          default: false
+          type: boolean
+
 defaults:
   run:
     shell: bash
@@ -124,18 +129,21 @@ jobs:
           
           if [[ $DIFF_EXIT_CODE == 0 ]]; then
             echo "Diff Output: No diff has been found for ${MICROSERVICE_NAME}"
-          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+          elif [[ $DIFF_EXIT_CODE == 1 || $DIFF_EXIT_CODE == 2 ]]; then
             echo "Diff Output: Diff has been found for ${MICROSERVICE_NAME}"
           else
             echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
             exit $DIFF_EXIT_CODE
           fi
+
+          echo "diff_exit_code=$DIFF_EXIT_CODE" >> $GITHUB_OUTPUT
       - name: Deploy
+        if: ${{ steps.diff.outputs.diff_exit_code != '0' || (vars.ENABLE_HELM_FORCE_UPGRADE || '') == 'true' || inputs.force_restart == 'true' }}
         env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
           TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
           FORCE_ROLLOUT: ${{ inputs.force_restart }}
-
+          ENABLE_HELM_FORCE_UPGRADE: ${{ vars.ENABLE_HELM_FORCE_UPGRADE }}
         run: |
           set -euo pipefail
 
@@ -153,7 +161,8 @@ jobs:
             "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
           else
             HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ ${{ vars.ENABLE_HELM_FORCE_UPGRADE }} == "true" ]]; then
+            
+            if [[ "${ENABLE_HELM_FORCE_UPGRADE:-false}" == "true" ]]; then
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
@@ -241,15 +250,19 @@ jobs:
           
           if [[ $DIFF_EXIT_CODE == 0 ]]; then
             echo "Diff Output: No diff has been found for ${CRONJOB_NAME}"
-          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+          elif [[ $DIFF_EXIT_CODE == 1 || $DIFF_EXIT_CODE == 2 ]]; then
             echo "Diff Output: Diff has been found for ${CRONJOB_NAME}"
           else
             echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
             exit $DIFF_EXIT_CODE
           fi
+
+          echo "diff_exit_code=$DIFF_EXIT_CODE" >> $GITHUB_OUTPUT
       - name: Deploy
+        if: ${{ steps.diff.outputs.diff_exit_code != '0' || (vars.ENABLE_HELM_FORCE_UPGRADE || '') == 'true' || inputs.force_restart == 'true' }}
         env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
+          ENABLE_HELM_FORCE_UPGRADE: ${{ vars.ENABLE_HELM_FORCE_UPGRADE }}
         run: |
           set -euo pipefail
 
@@ -266,7 +279,7 @@ jobs:
             $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
           else
             HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ ${{ vars.ENABLE_HELM_FORCE_UPGRADE }} == "true" ]]; then
+            if [[ "${ENABLE_HELM_FORCE_UPGRADE:-false}" == "true" ]]; then
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml

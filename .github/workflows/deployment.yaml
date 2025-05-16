@@ -149,6 +149,7 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 180
+      force_restart: ${{ inputs.force_restart }}
 
   delete_runner:
     name: Delete Self-Hosted Runner
