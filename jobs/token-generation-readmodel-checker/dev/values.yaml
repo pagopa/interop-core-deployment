@@ -1,7 +1,7 @@
 name: "interop-be-token-generation-readmodel-checker"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-iam-service-dev-interop-be-token-generation-readmodel-checker-es1"
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-token-generation-readmodel-checker-dev-es1"
 
 configmap:
   AGREEMENTS_TO_SKIP: ""

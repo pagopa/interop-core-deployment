@@ -15,7 +15,7 @@ service:
 configmap:
   AUDIT_FALLBACK_S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
-  GENERATED_INTEROP_TOKEN_KID: "41e3a8e9-5982-4a6d-b531-850774bfd961"
+  GENERATED_INTEROP_TOKEN_KID: "65ce3bd3-88ed-40c1-9787-0a55e7f35332"
   GENERATED_INTEROP_TOKEN_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   GENERATED_INTEROP_TOKEN_M2M_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/m2m"
   GENERATED_INTEROP_TOKEN_M2M_DURATION_SECONDS: "99999999"
