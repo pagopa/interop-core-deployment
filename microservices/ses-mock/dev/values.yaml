@@ -1,4 +1,5 @@
 name: "ses-mock"
+techStack: nodejs
 
 service:
   create: true
