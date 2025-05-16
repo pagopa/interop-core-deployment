@@ -1,0 +1,11 @@
+name: "ses-mock"
+
+service:
+  create: true
+  portName: ses-mock
+  containerPort: 8005
+
+deployment:
+  repositoryPrefix: "docker.io"
+  command: "/bin/bash"
+  args: ["-c", "npm install -g aws-ses-v2-local; aws-ses-v2-local --port=8005 --host=0.0.0.0"]
