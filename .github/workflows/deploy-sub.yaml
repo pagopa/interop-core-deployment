@@ -16,13 +16,13 @@ on:
         required: true
         default: false
         type: boolean
-      helm_force_upgrade_cronjob_csv:
-        description: 'Comma-separated cronjob names to apply --force'
+      helm_force_upgrade_microservices_csv:
+        description: 'Comma-separated microservices names to apply --force'
         required: false
         default: ''
         type: string
-      helm_force_upgrade_microservices_csv:
-        description: 'Comma-separated microservices names to apply --force'
+      helm_force_upgrade_cronjob_csv:
+        description: 'Comma-separated cronjob names to apply --force'
         required: false
         default: ''
         type: string
@@ -45,10 +45,6 @@ jobs:
     outputs:
       microservices: ${{ steps.set-outputs.outputs.microservices }}
       cronjobs: ${{ steps.set-outputs.outputs.cronjobs }}
-      forced_microservices: ${{ steps.split_ms.outputs.forced_microservices }}
-      forced_cronjobs: ${{ steps.split_cj.outputs.forced_cronjobs }}
-      force_all_microservices: ${{ steps.split_ms.outputs.all_microservices }}
-      force_all_cronjobs: ${{ steps.split_cj.outputs.all_cronjobs }}
     steps:
       - name: Checkout
         id: checkout
@@ -57,54 +53,6 @@ jobs:
         run: |
           echo "microservices=$(find microservices -type f -path "*/$TARGET_ENVIRONMENT/values.yaml" -exec dirname {} \; | awk -F'/' '{print $2}' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
           echo "cronjobs=$(find jobs -type f -path "*/$TARGET_ENVIRONMENT/values.yaml" -exec dirname {} \; | awk -F'/' '{print $2}' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
-      - name: Split Microservices CSV into JSON array
-        id: split_ms
-        shell: bash
-        run: |
-          MS_CSV="${{ inputs.helm_force_upgrade_microservices_csv }}"
-          declare -a ms_arr
-          if [[ "$MS_CSV" == "*" ]]; then
-            # All microservices, no need to split
-            echo "force_all_microservices=true" >> $GITHUB_OUTPUT
-          elif [[ -z "$MS_CSV" ]]; then
-            # Empty input, no services
-            ms_arr=()
-            echo "force_all_microservices=false" >> $GITHUB_OUTPUT
-          else
-            # Read comma-separated list
-            IFS=',' read -ra ms_arr <<< "$MS_CSV"
-            echo "force_all_microservices=false" >> $GITHUB_OUTPUT
-          fi
-
-          # Build a JSON array like ["svc1","svc2",…]
-          s=$(printf '"%s",' "${ms_arr[@]}")
-          forced_microservices="[${s%,}]"
-
-          echo "forced_microservices=$forced_microservices" >> $GITHUB_OUTPUT
-      - name: Split Cronjobs CSV into JSON array
-        id: split_cj
-        shell: bash
-        run: |
-          CJ_CSV="${{ inputs.helm_force_upgrade_cronjob_csv }}"
-          declare -a cj_arr
-          if [[ "$CJ_CSV" == "*" ]]; then
-            # All cronjobs, no need to split
-            echo "force_all_cronjobs=true" >> $GITHUB_OUTPUT
-          elif [[ -z "$CJ_CSV" ]]; then
-            # Empty input, no cronjobs
-            cj_arr=()
-            echo "force_all_cronjobs=false" >> $GITHUB_OUTPUT
-          else
-            # Read comma-separated list
-            IFS=',' read -ra cj_arr <<< "$CJ_CSV"
-            echo "force_all_cronjobs=false" >> $GITHUB_OUTPUT
-          fi
-
-          # Build a JSON array like ["cj1","cj2",…]
-          s=$(printf '"%s",' "${cj_arr[@]}")
-          forced_cronjobs="[${s%,}]"
-
-          echo "forced_cronjobs=$forced_cronjobs" >> $GITHUB_OUTPUT
   
 
   deploy_common_configmaps:
@@ -204,7 +152,7 @@ jobs:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
           TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
           FORCE_ROLLOUT: ${{ inputs.force_restart }}
-          ENABLE_FORCE_UPGRADE: ${{ needs.workflow_setup.outputs.force_all_microservices == 'true' || contains(needs.workflow_setup.outputs.forced_microservices, matrix.microservice) }}
+          ENABLE_FORCE_UPGRADE: ${{ inputs.helm_force_upgrade_microservices_csv == '*' || contains(inputs.helm_force_upgrade_microservices_csv, matrix.microservice) }}
         run: |
           set -euo pipefail
 
@@ -319,7 +267,7 @@ jobs:
       - name: Deploy
         env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
-          ENABLE_FORCE_UPGRADE: ${{ needs.workflow_setup.outputs.force_all_cronjobs == 'true' || contains(needs.workflow_setup.outputs.forced_cronjobs, matrix.cronjob) }}
+          ENABLE_FORCE_UPGRADE: ${{ inputs.helm_force_upgrade_cronjob_csv == '*' || contains(inputs.helm_force_upgrade_cronjob_csv, matrix.cronjob) }}
         run: |
           set -euo pipefail
 
