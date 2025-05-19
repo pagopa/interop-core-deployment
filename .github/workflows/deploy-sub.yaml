@@ -11,6 +11,22 @@ on:
         description: 'Kubectl apply wait timeout in seconds for Deployments'
         required: true
         type: number
+      force_restart:
+        description: 'Force Deployment Rollout Restart'
+        required: true
+        default: false
+        type: boolean
+      helm_force_upgrade_microservices_csv:
+        description: 'Comma-separated microservices names to apply --force'
+        required: false
+        default: ''
+        type: string
+      helm_force_upgrade_cronjob_csv:
+        description: 'Comma-separated cronjob names to apply --force'
+        required: false
+        default: ''
+        type: string
+
   
 defaults:
   run:
@@ -37,6 +53,7 @@ jobs:
         run: |
           echo "microservices=$(find microservices -type f -path "*/$TARGET_ENVIRONMENT/values.yaml" -exec dirname {} \; | awk -F'/' '{print $2}' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
           echo "cronjobs=$(find jobs -type f -path "*/$TARGET_ENVIRONMENT/values.yaml" -exec dirname {} \; | awk -F'/' '{print $2}' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
+  
 
   deploy_common_configmaps:
     name: Deploy Common Configmaps
@@ -124,7 +141,7 @@ jobs:
           
           if [[ $DIFF_EXIT_CODE == 0 ]]; then
             echo "Diff Output: No diff has been found for ${MICROSERVICE_NAME}"
-          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+          elif [[ $DIFF_EXIT_CODE == 1 || $DIFF_EXIT_CODE == 2 ]]; then
             echo "Diff Output: Diff has been found for ${MICROSERVICE_NAME}"
           else
             echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
@@ -135,7 +152,7 @@ jobs:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
           TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
           FORCE_ROLLOUT: ${{ inputs.force_restart }}
-
+          ENABLE_FORCE_UPGRADE: ${{ inputs.helm_force_upgrade_microservices_csv == '*' || contains(inputs.helm_force_upgrade_microservices_csv, matrix.microservice) }}
         run: |
           set -euo pipefail
 
@@ -153,7 +170,7 @@ jobs:
             "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
           else
             HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ ${{ vars.ENABLE_HELM_FORCE_UPGRADE }} == "true" ]]; then
+            if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
@@ -241,7 +258,7 @@ jobs:
           
           if [[ $DIFF_EXIT_CODE == 0 ]]; then
             echo "Diff Output: No diff has been found for ${CRONJOB_NAME}"
-          elif [[ $DIFF_EXIT_CODE == 1 ]]; then
+          elif [[ $DIFF_EXIT_CODE == 1 || $DIFF_EXIT_CODE == 2 ]]; then
             echo "Diff Output: Diff has been found for ${CRONJOB_NAME}"
           else
             echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
@@ -250,6 +267,7 @@ jobs:
       - name: Deploy
         env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
+          ENABLE_FORCE_UPGRADE: ${{ inputs.helm_force_upgrade_cronjob_csv == '*' || contains(inputs.helm_force_upgrade_cronjob_csv, matrix.cronjob) }}
         run: |
           set -euo pipefail
 
@@ -266,7 +284,7 @@ jobs:
             $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
           else
             HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ ${{ vars.ENABLE_HELM_FORCE_UPGRADE }} == "true" ]]; then
+            if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml

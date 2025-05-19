@@ -46,6 +46,8 @@ jobs:
           echo "- run_k8s_workflow: \`${{ inputs.run_k8s_workflow }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- run_tf_apply_monitoring_workflow: \`${{ inputs.run_tf_apply_monitoring_workflow }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- run_tf_apply_secrets_workflow: \`${{ inputs.run_tf_apply_secrets_workflow }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- HELM_FORCE_UPGRADE_MICROSERVICES_CSV: \`${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- HELM_FORCE_UPGRADE_CRONJOB_CSV: \`${{ vars.HELM_FORCE_UPGRADE_CRONJOB_CSV }}\`" >> $GITHUB_STEP_SUMMARY
 
   initChecks:
     runs-on: ubuntu-22.04
@@ -149,6 +151,9 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 180
+      force_restart: ${{ inputs.force_restart }}
+      helm_force_upgrade_microservices_csv: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}
+      helm_force_upgrade_cronjob_csv: ${{ vars.HELM_FORCE_UPGRADE_CRONJOB_CSV }}
 
   delete_runner:
     name: Delete Self-Hosted Runner
