@@ -4,9 +4,9 @@ serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-one-trust-notices-dev-es1"
 
 configmap:
-  PRIVACY_NOTICES_LANGS: "it"
-  PRIVACY_NOTICES_CONTENT_STORAGE_BUCKET: "interop-privacy-notices-content-dev-es1"
-  PRIVACY_NOTICES_HISTORY_STORAGE_BUCKET: "interop-privacy-notices-history-dev-es1"
+  LANGS: "it"
+  CONTENT_STORAGE_BUCKET: "interop-privacy-notices-content-dev-es1"
+  HISTORY_STORAGE_BUCKET: "interop-privacy-notices-history-dev-es1"
   PRIVACY_NOTICES_UPDATER_PRIVACY_POLICY_UUID: "0df21ff6-3e8f-4320-af8f-23dea9135d57"
   PRIVACY_NOTICES_UPDATER_TERMS_OF_SERVICE_UUID: "6bf8412a-41a7-41a0-82dc-26286ce61b1a"
 
@@ -15,7 +15,6 @@ cronjob:
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
-  automountServiceAccountToken: false
   env:
     ENVIRONMENT: "dev"
     TERMS_OF_SERVICE_NOTICE_ID: ""
@@ -23,10 +22,6 @@ cronjob:
     PRIVACY_NOTICES_DYNAMO_TABLE_NAME: "interop-privacy-notices-dev"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
-  envFromConfigmaps:
-    LANGS: "interop-be-one-trust-notices.PRIVACY_NOTICES_LANGS"
-    CONTENT_STORAGE_BUCKET: "interop-be-one-trust-notices.PRIVACY_NOTICES_CONTENT_STORAGE_BUCKET"
-    HISTORY_STORAGE_BUCKET: "interop-be-one-trust-notices.PRIVACY_NOTICES_HISTORY_STORAGE_BUCKET"
   envFromSecrets:
     ONETRUST_CLIENT_ID: "onetrust.ONETRUST_CLIENT_ID"
     ONETRUST_CLIENT_SECRET: "onetrust.ONETRUST_CLIENT_SECRET"
