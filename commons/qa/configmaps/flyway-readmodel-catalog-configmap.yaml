@@ -36,7 +36,7 @@ data:
       id UUID,
       eservice_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
-      version VARCHAR NOT NULL,
+      version INTEGER NOT NULL,
       description VARCHAR,
       state VARCHAR NOT NULL,
       audience VARCHAR ARRAY NOT NULL,
