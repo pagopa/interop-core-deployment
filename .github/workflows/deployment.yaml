@@ -151,6 +151,9 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 180
+      force_restart: ${{ inputs.force_restart }}
+      helm_force_upgrade_microservices_csv: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}
+      helm_force_upgrade_cronjob_csv: ${{ vars.HELM_FORCE_UPGRADE_CRONJOB_CSV }}
 
   delete_runner:
     name: Delete Self-Hosted Runner

@@ -11,6 +11,22 @@ on:
         description: 'Kubectl apply wait timeout in seconds for Deployments'
         required: true
         type: number
+      force_restart:
+        description: 'Force Deployment Rollout Restart'
+        required: true
+        default: false
+        type: boolean
+      helm_force_upgrade_cronjob_csv:
+        description: 'Comma-separated cronjob names to apply --force'
+        required: false
+        default: ''
+        type: string
+      helm_force_upgrade_microservices_csv:
+        description: 'Comma-separated microservices names to apply --force'
+        required: false
+        default: ''
+        type: string
+
   
 defaults:
   run:
@@ -45,7 +61,7 @@ jobs:
         id: split_ms
         shell: bash
         run: |
-          MS_CSV="${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}"
+          MS_CSV="${{ inputs.helm_force_upgrade_microservices_csv }}"
           declare -a ms_arr
           if [[ "$MS_CSV" == "*" ]]; then
             # All microservices, no need to split
@@ -69,7 +85,7 @@ jobs:
         id: split_cj
         shell: bash
         run: |
-          CJ_CSV="${{ github.event.inputs.helm_force_upgrade_cronjob_csv }}"
+          CJ_CSV="${{ inputs.helm_force_upgrade_cronjob_csv }}"
           declare -a cj_arr
           if [[ "$CJ_CSV" == "*" ]]; then
             # All cronjobs, no need to split
