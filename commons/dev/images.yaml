@@ -113,9 +113,9 @@ images:
     selfcare-onboarding-consumer:
       tag: "develop"
     ses-mock:
-      tag: "node:20"
+      tag: "20"
     smtp-mock:
-      tag: "fake-smtp-server:1.10.4"
+      tag: "1.10.4"
     tenant-process:
       tag: "develop"
     tenant-readmodel-writer:

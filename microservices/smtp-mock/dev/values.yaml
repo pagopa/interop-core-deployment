@@ -11,7 +11,8 @@ service:
       protocol: TCP
 
   deployment:
-    repositoryPrefix: docker.io/gessnerfl
+    repositoryPrefix: docker.io
+    repositoryName: "gessnerfl/fake-smtp-server"
     env:
       fakesmtp.authentication.username: username
       fakesmtp.authentication.password: password
