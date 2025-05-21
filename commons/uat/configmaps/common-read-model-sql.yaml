@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-read-model-sql
+  namespace: dev
+data:
+  DB_HOST_RW: "interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "interop-platform-data-dev.cluster-ro-cevisn7oellx.eu-south-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "read_model"
+  DB_USE_SSL: "true"
+  DB_SCHEMA_AGREEMENT: "dev_agreement"
+  DB_SCHEMA_ATTRIBUTE: "dev_attribute"
+  DB_SCHEMA_CATALOG: "dev_catalog"
+  DB_SCHEMA_CLIENT_JWK_KEY: "dev_client_jwk_key"
+  DB_SCHEMA_CLIENT: "dev_client"
+  DB_SCHEMA_DELEGATION: "dev_delegation"
+  DB_SCHEMA_ESERVICE_TEMPLATE: "dev_eservice_template"
+  DB_SCHEMA_PRODUCER_JWK_KEY: "dev_producer_jwk_key"
+  DB_SCHEMA_PRODUCER_KEYCHAIN: "dev_producer_keychain"
+  DB_SCHEMA_PURPOSE: "dev_purpose"
+  DB_SCHEMA_TENANT: "dev_tenant"

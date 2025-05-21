@@ -1,0 +1,30 @@
+images:
+  microservices:
+    agreement-readmodel-writer-sql:
+      tag: "1.x.x"
+    attribute-registry-readmodel-writer-sql:
+      tag: "1.x.x"
+    catalog-readmodel-writer-sql:
+      tag: "1.x.x"
+    catalog-platformstate-writer:
+      tag: "1.x.x"
+    client-readmodel-writer-sql:
+      tag: "1.x.x"
+    delegation-readmodel-writer-sql:
+      tag: "1.x.x"
+    eservice-template-readmodel-writer-sql:
+      tag: "1.x.x"
+    key-readmodel-writer-sql:
+      tag: "1.x.x"
+    producer-key-readmodel-writer-sql:
+      tag: "1.x.x"
+    producer-keychain-readmodel-writer-sql:
+      tag: "1.x.x"
+    purpose-readmodel-writer-sql:
+      tag: "1.x.x"
+    tenant-readmodel-writer-sql:
+      tag: "1.x.x"
+
+  jobs:
+    readmodel-checker:
+      tag: "1.x.x"
