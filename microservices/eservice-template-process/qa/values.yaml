@@ -15,7 +15,6 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   PRODUCER_ALLOWED_ORIGINS: "IPA"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  
 
 deployment:
   flywayInitContainer:
