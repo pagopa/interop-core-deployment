@@ -4,7 +4,7 @@ metadata:
   name: common-read-model
   namespace: test
 data:
-  READMODEL_DB_HOST: "CHECK-THISinterop-read-model-test.cluster-cwgb5whmdqov.eu-south-1.docdb.amazonaws.com" # CHECK
+  READMODEL_DB_HOST: "interop-read-model-test.cluster-ciwztfqful5r.eu-south-1.docdb.amazonaws.com"
   READMODEL_DB_NAME: "read-model"
   READMODEL_DB_PORT: "27017"
   READMODEL_REPLICA_SET: "rs0"

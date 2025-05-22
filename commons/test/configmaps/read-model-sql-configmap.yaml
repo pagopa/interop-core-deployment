@@ -4,8 +4,8 @@ metadata:
   name: common-read-model-sql
   namespace: test
 data:
-  DB_HOST_RO: "interop-platform-data-test.cluster-ro-cwgb5whmdqov.eu-south-1.rds.amazonaws.com" # CHECK
-  DB_HOST_RW: "interop-platform-data-test.cluster-cwgb5whmdqov.eu-south-1.rds.amazonaws.com" # CHECK
+  DB_HOST_RO: "interop-platform-data-test.cluster-ro-ciwztfqful5r.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RW: "interop-platform-data-test.cluster-ciwztfqful5r.eu-south-1.rds.amazonaws.com"
   DB_NAME: "read_model"
   DB_PORT: "5432"
   DB_SCHEMA_AGREEMENT: "test_agreement"
