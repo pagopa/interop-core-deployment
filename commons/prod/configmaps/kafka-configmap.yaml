@@ -15,7 +15,7 @@ data:
   DELEGATION_TOPIC: "event-store.prod_delegation.events"
   ESERVICE_TEMPLATE_OUTBOUND_TOPIC: "outbound.prod_eservice_template.events"
   ESERVICE_TEMPLATE_TOPIC: "event-store.prod_eservice_template.events"
-  KAFKA_BROKERS: "b-1.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,b-2.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098"
+  KAFKA_BROKERS: "b-1.interopplatformevents.gfkljw.c4.kafka.eu-south-1.amazonaws.com:9098,b-2.interopplatformevents.gfkljw.c4.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.gfkljw.c4.kafka.eu-south-1.amazonaws.com:9098"
   PURPOSE_OUTBOUND_TOPIC: "outbound.prod_purpose.events"
   PURPOSE_TOPIC: "event-store.prod_purpose.events"
   TENANT_OUTBOUND_TOPIC: "outbound.prod_tenant.events"

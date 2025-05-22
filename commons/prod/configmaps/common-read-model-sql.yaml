@@ -4,8 +4,8 @@ metadata:
   name: common-read-model-sql
   namespace: prod
 data:
-  DB_HOST_RW: "interop-platform-data-CHANGE-THIS.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com"
-  DB_HOST_RO: "interop-platform-data-CHANGE-THIS.cluster-ro-cevisn7oellx.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RW: "interop-platform-data-prod.cluster-cgo3fcsduspu.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "interop-platform-data-prod.cluster-ro-cgo3fcsduspu.eu-south-1.rds.amazonaws.com"
   DB_PORT: "5432"
   DB_NAME: "read_model"
   DB_USE_SSL: "true"

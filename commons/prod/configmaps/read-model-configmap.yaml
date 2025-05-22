@@ -4,7 +4,7 @@ metadata:
   name: common-read-model
   namespace: prod
 data:
-  READMODEL_DB_HOST: "interop-read-model-CHANGE-THIS.cluster-cevisn7oellx.eu-south-1.docdb.amazonaws.com"
+  READMODEL_DB_HOST: "interop-read-model-prod.cluster-cgo3fcsduspu.eu-south-1.docdb.amazonaws.com"
   READMODEL_DB_NAME: "read-model"
   READMODEL_DB_PORT: "27017"
   READMODEL_REPLICA_SET: "rs0"

@@ -2,7 +2,7 @@ name: interop-be-client-readmodel-writer-sql
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::CHANGE_THIS_FOR_PROD:role/interop-be-client-readmodel-writer-prod-es1"
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-client-readmodel-writer-prod-es1"
 
 service:
   create: false
