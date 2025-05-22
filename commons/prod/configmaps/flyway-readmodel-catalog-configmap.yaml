@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-read-model-catalog
-  namespace: dev
+  namespace: prod
 data:
   V1__Init_Catalog.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_catalog";
@@ -168,18 +168,16 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO "${NAMESPACE}_catalog_process_user";    
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO readonly_user; 
 
-  V1.1__Permission_Process_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_agreement_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_authorization_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_delegation_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_tenant_process_user";
+         
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_agreement_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_authorization_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_delegation_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_eservice_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_tenant_process_user";
-
-  V1.2__Grant_Usage_Schema_Catalog.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_agreement_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_authorization_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_delegation_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_tenant_process_user";    

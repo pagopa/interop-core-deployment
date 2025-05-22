@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-read-model-producer-keychain
-  namespace: dev
+  namespace: prod
 data:
   V1__Init_ProducerKeychain.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_producer_keychain";

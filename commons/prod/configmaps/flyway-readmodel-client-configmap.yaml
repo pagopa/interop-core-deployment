@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-read-model-client
-  namespace: dev
+  namespace: prod
 data:
   V1__Init_Client.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_client";

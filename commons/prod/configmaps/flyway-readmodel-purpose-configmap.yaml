@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-read-model-purpose
-  namespace: dev
+  namespace: prod
 data:
   V1__Init_Purpose.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_purpose";
@@ -95,8 +95,6 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO readonly_user;
 
-  V1.1__Permission_Process_Purpose.sql: |-
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_authorization_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_authorization_process_user";      
 
-  V1.2__Grant_Usage_Schema_Purpose.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_authorization_process_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_authorization_process_user";

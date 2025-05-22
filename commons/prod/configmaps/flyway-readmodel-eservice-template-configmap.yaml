@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-read-model-eservice-template
-  namespace: dev
+  namespace: prod
 data:
   V1__Init_EserviceTemplate.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_eservice_template";
@@ -131,10 +131,8 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO "${NAMESPACE}_eservice_template_process_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO readonly_user;        
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO readonly_user;
 
-  V1.1__Permission_Process_Template.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";
+    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_catalog_process_user";
-
-  V1.2__Grant_Usage_Schema_Template.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";        

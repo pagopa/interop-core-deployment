@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-read-model-key
-  namespace: dev
+  namespace: prod
 data:
   V1__Init_ClientJWKKey.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_client_jwk_key";
