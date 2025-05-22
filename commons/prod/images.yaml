@@ -6,8 +6,6 @@ images:
       tag: "1.x.x"
     catalog-readmodel-writer-sql:
       tag: "1.x.x"
-    catalog-platformstate-writer:
-      tag: "1.x.x"
     client-readmodel-writer-sql:
       tag: "1.x.x"
     delegation-readmodel-writer-sql:

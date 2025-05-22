@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: common-redis
-  namespace: dev
-data:
-  REDIS_HOST: "redis.dev.svc.cluster.local"
-  REDIS_PORT: "6379"

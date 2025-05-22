@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: common-selfcare
-  namespace: dev
-data:
-  SELFCARE_V2_URL: "https://api.uat.selfcare.pagopa.it/external/v2"
