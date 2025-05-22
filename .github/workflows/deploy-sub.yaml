@@ -99,109 +99,33 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
-      - name: Checkout scripts repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+
+      - name: Check Kubectl Enabled
+        id: check-kubectl-enabled
+        run: |
+          use_kubectl_diff=false
+          use_kubectl_apply=false
+
+          if [[ "${{ inputs.environment }}" == "vapt" ]]; then
+            use_kubectl_diff=true
+            use_kubectl_apply=true
+          fi
+          echo "use_kubectl_diff=$use_kubectl_diff" >> $GITHUB_OUTPUT
+          echo "use_kubectl_apply=$use_kubectl_apply" >> $GITHUB_OUTPUT
+
+      - name: Deploy Microservice
+        uses: pagopa/interop-infra-commons/github/actions/deploy@${{ vars.INFRA_COMMONS_ACTIONS_DEPLOY_TAG }} # Aggiungere var?
         with:
-          repository: pagopa/interop-infra-commons
-          path: interop-infra-commons 
-          fetch-depth: 0
-          sparse-checkout: 'scripts/helm'
-          ref: ${{ vars.INFRA_COMMONS_TAG }}
-      - name: Set kubeconfig
-        run: |
-          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
-      - name: Microservice Helm Template
-        id: microservice_helm_template
-        env: 
-          MICROSERVICE_NAME: ${{ matrix.microservice }}
-        run: |
-          set -euo pipefail
-          
-          export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
-      - name: Diff
-        id: diff
-        env: 
-          MICROSERVICE_NAME: ${{ matrix.microservice }}
-        run: |
-          set -euo pipefail
-
-          export PROJECT_DIR=$(pwd)
-
-          set +e
-          # TODO: temporary condition - will be removed
-          if [[ ${{inputs.environment}} == "vapt" ]]; then
-            $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
-          else
-            $SCRIPTS_FOLDER/helmDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
-          fi
-
-          DIFF_EXIT_CODE=$?
-          set -e
-          
-          if [[ $DIFF_EXIT_CODE == 0 ]]; then
-            echo "Diff Output: No diff has been found for ${MICROSERVICE_NAME}"
-          elif [[ $DIFF_EXIT_CODE == 1 || $DIFF_EXIT_CODE == 2 ]]; then
-            echo "Diff Output: Diff has been found for ${MICROSERVICE_NAME}"
-          else
-            echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
-            exit $DIFF_EXIT_CODE
-          fi
-      - name: Deploy
-        env:
-          MICROSERVICE_NAME: ${{ matrix.microservice }}
-          TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
-          FORCE_ROLLOUT: ${{ inputs.force_restart }}
-          ENABLE_FORCE_UPGRADE: ${{ inputs.helm_force_upgrade_microservices_csv == '*' || contains(inputs.helm_force_upgrade_microservices_csv, matrix.microservice) }}
-        run: |
-          set -euo pipefail
-
-          TIMEOUT="${TIMEOUT_SECONDS}s"
-
-          export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug -e ${{ inputs.environment }} -m $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console > template.yaml
-
-          K8S_NAMESPACE=$(cat template.yaml | yq 'select(.kind == "Deployment") | .metadata.namespace')
-          MICROSERVICE_FULLNAME=$(cat template.yaml | yq 'select(.kind == "Deployment") | .metadata.name')
-          
-          echo "INFO - Apply changes for $MICROSERVICE_FULLNAME."
-          # TODO: temporary condition - will be removed
-          if [[ ${{inputs.environment}} == "vapt" ]]; then
-            "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
-          else
-            HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
-              HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
-            fi
-            "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
-          fi
-
-          DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_FULLNAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
-          echo "INFO - Desired replicas: $DESIRED_REPLICAS"
-          if [ "$DESIRED_REPLICAS" -eq 0 ]; then
-            echo "::info::INFO - Desired replicas for $MICROSERVICE_FULLNAME are 0. Stopping further operations."
-            exit 0
-          fi
-
-          # Check if the force rollout flag is true
-          if [ "$FORCE_ROLLOUT" = true ]; then
-            echo "::info::INFO - Force rollout restart requested $MICROSERVICE_FULLNAME."
-            if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_FULLNAME" --watch=false >/dev/null 2>&1; then
-              echo "::info::INFO - Rollout already active for $MICROSERVICE_FULLNAME. No force restart needed."
-            else
-              echo "INFO - No rollout in progress, forcing a rollout restart."
-              kubectl rollout restart -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_FULLNAME"
-            fi
-          fi
-
-          echo "INFO - Wait for the rollout of the $MICROSERVICE_FULLNAME to finish (Max $TIMEOUT)."
-          if ! kubectl rollout status -n "$K8S_NAMESPACE" "deployment/$MICROSERVICE_FULLNAME" --timeout="$TIMEOUT" --watch >/dev/null 2>&1; then
-            echo "::error::ERROR - Rollout for $MICROSERVICE_FULLNAME failed or exceeded $TIMEOUT."
-            exit 1
-          fi
-
-          echo "INFO - Rollout for $MICROSERVICE_FULLNAME completed successfully."
-
+          environment: ${{ inputs.environment }}
+          timeout_seconds: ${{ inputs.timeout_seconds }}
+          force_restart: ${{ inputs.force_restart }}
+          kind: "microservice"
+          target: "${{ matrix.microservice }}"
+          infra_commons_tag: ${{ vars.INFRA_COMMONS_TAG }}
+          helm_force_upgrade: ${{ inputs.helm_force_upgrade_microservices_csv == '*' || contains(inputs.helm_force_upgrade_microservices_csv, matrix.microservice) }}
+          use_kubectl_diff: ${{ steps.check-kubectl-enabled.outputs.use_kubectl_diff }}
+          use_kubectl_apply: ${{ steps.check-kubectl-enabled.outputs.use_kubectl_apply }}
+      
   deploy_cj:
     name: ${{ matrix.cronjob }}
     runs-on: [ self-hosted, "run_id:${{ inputs.environment }}-${{ github.run_id }}" ]
@@ -216,77 +140,30 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
-      - name: Checkout scripts repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+      
+      - name: Check Kubectl Enabled
+        id: check-kubectl-enabled
+        run: |
+          use_kubectl_diff=false
+          use_kubectl_apply=false
+
+          if [[ "${{ inputs.environment }}" == "vapt" ]]; then
+            use_kubectl_diff=true
+            use_kubectl_apply=true
+          fi
+          echo "use_kubectl_diff=$use_kubectl_diff" >> $GITHUB_OUTPUT
+          echo "use_kubectl_apply=$use_kubectl_apply" >> $GITHUB_OUTPUT
+      
+      - name: Deploy Cronjob
+        uses: pagopa/interop-infra-commons/github/actions/deploy@${{ vars.INFRA_COMMONS_ACTIONS_DEPLOY_TAG }} # Aggiungere var?
         with:
-          repository: pagopa/interop-infra-commons
-          path: interop-infra-commons 
-          fetch-depth: 0
-          sparse-checkout: 'scripts/helm'
-          ref: ${{ vars.INFRA_COMMONS_TAG }}
-      - name: Set kubeconfig
-        run: |
-          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
-      - name: Cronjob Helm Template
-        id: cronjob_helm_template
-        env: 
-          CRONJOB_NAME: ${{ matrix.cronjob }}
-        run: |
-          set -euo pipefail
-          
-          export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console   
-      - name: Diff
-        id: diff
-        env: 
-          CRONJOB_NAME: ${{ matrix.cronjob }}
-        run: |
-          set -euo pipefail
-
-          export PROJECT_DIR=$(pwd)
-
-          set +e
-          # TODO: temporary condition - will be removed
-          if [[ ${{inputs.environment}} == "vapt" ]]; then
-            $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
-          else
-            $SCRIPTS_FOLDER/helmDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
-          fi
-          
-          DIFF_EXIT_CODE=$?
-          set -e
-          
-          if [[ $DIFF_EXIT_CODE == 0 ]]; then
-            echo "Diff Output: No diff has been found for ${CRONJOB_NAME}"
-          elif [[ $DIFF_EXIT_CODE == 1 || $DIFF_EXIT_CODE == 2 ]]; then
-            echo "Diff Output: Diff has been found for ${CRONJOB_NAME}"
-          else
-            echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
-            exit $DIFF_EXIT_CODE
-          fi
-      - name: Deploy
-        env:
-          CRONJOB_NAME: ${{ matrix.cronjob }}
-          ENABLE_FORCE_UPGRADE: ${{ inputs.helm_force_upgrade_cronjob_csv == '*' || contains(inputs.helm_force_upgrade_cronjob_csv, matrix.cronjob) }}
-        run: |
-          set -euo pipefail
-
-          export PROJECT_DIR=$(pwd)
-
-          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug -e ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console > template.yaml
-          
-          K8S_NAMESPACE=$(cat template.yaml | yq 'select(.kind == "CronJob") | .metadata.namespace')
-          CRONJOB_FULLNAME=$(cat template.yaml | yq 'select(.kind == "CronJob") | .metadata.name')
-  
-          echo "INFO - Apply changes for $CRONJOB_FULLNAME."
-          # TODO: temporary condition - will be removed
-          if [[ ${{inputs.environment}} == "vapt" ]]; then
-            $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
-          else
-            HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
-              HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
-            fi
-            $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
-          fi
-          
+          environment: ${{ inputs.environment }}
+          timeout_seconds: ${{ inputs.timeout_seconds }}
+          force_restart: ${{ inputs.force_restart }}
+          kind: "cronjob"
+          target: "${{ matrix.cronjob }}"
+          infra_commons_tag: ${{ vars.INFRA_COMMONS_TAG }}
+          helm_force_upgrade: ${{ inputs.helm_force_upgrade_cronjob_csv == '*' || contains(inputs.helm_force_upgrade_cronjob_csv, matrix.cronjob) }}
+          use_kubectl_diff: ${{ steps.check-kubectl-enabled.outputs.use_kubectl_diff }}
+          use_kubectl_apply: ${{ steps.check-kubectl-enabled.outputs.use_kubectl_apply }}
+        
