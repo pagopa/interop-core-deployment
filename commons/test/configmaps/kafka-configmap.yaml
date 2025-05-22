@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-kafka
+  namespace: test
+data:
+  AGREEMENT_OUTBOUND_TOPIC: "outbound.uat_agreement.events"
+  AGREEMENT_TOPIC: "event-store.uat_agreement.events"
+  APPLICATION_AUDIT_TOPIC: "uat_application.audit"
+  ATTRIBUTE_TOPIC: "event-store.uat_attribute_registry.events"
+  AUTHORIZATION_TOPIC: "event-store.uat_authorization.events"
+  CATALOG_OUTBOUND_TOPIC: "outbound.uat_catalog.events"
+  CATALOG_TOPIC: "event-store.uat_catalog.events"
+  DELEGATION_TOPIC: "event-store.uat_delegation.events"
+  ESERVICE_TEMPLATE_TOPIC: "event-store.uat_eservice_template.events"
+  KAFKA_BROKERS: "CHECK-THIS-b-2.interopplatformevents.js15v7.c4.kafka.eu-south-1.amazonaws.com:9098,b-1.interopplatformevents.js15v7.c4.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.js15v7.c4.kafka.eu-south-1.amazonaws.com:9098" # CHECK
+  PURPOSE_OUTBOUND_TOPIC: "outbound.uat_purpose.events"
+  PURPOSE_TOPIC: "event-store.uat_purpose.events"
+  TENANT_OUTBOUND_TOPIC: "outbound.uat_tenant.events"
+  TENANT_TOPIC: "event-store.uat_tenant.events"
+  TOKEN_AUDITING_TOPIC: "uat_authorization-server.generated-jwt"
