@@ -13,7 +13,7 @@ data:
   CATALOG_TOPIC: "event-store.test_catalog.events"
   DELEGATION_TOPIC: "event-store.test_delegation.events"
   ESERVICE_TEMPLATE_TOPIC: "event-store.test_eservice_template.events"
-  KAFKA_BROKERS: "CHECK-THIS-b-2.interopplatformevents.js15v7.c4.kafka.eu-south-1.amazonaws.com:9098,b-1.interopplatformevents.js15v7.c4.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.js15v7.c4.kafka.eu-south-1.amazonaws.com:9098" # CHECK
+  KAFKA_BROKERS: "b-1.interopplatformevents.9r48hf.c3.kafka.eu-south-1.amazonaws.com:9098,b-2.interopplatformevents.9r48hf.c3.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.9r48hf.c3.kafka.eu-south-1.amazonaws.com:9098"
   PURPOSE_OUTBOUND_TOPIC: "outbound.test_purpose.events"
   PURPOSE_TOPIC: "event-store.test_purpose.events"
   TENANT_OUTBOUND_TOPIC: "outbound.test_tenant.events"
