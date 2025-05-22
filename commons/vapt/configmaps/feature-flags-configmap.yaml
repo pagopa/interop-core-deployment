@@ -4,4 +4,4 @@ metadata:
   name: common-feature-flags
   namespace: vapt
 data:
-  FEATURE_FLAG_SIGNALHUB_WHITELIST: "true"
+  FEATURE_FLAG_SIGNALHUB_WHITELIST: "false"

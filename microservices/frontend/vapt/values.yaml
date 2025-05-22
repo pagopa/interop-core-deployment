@@ -60,7 +60,7 @@ frontend:
         SELFCARE_BASE_URL : "https://uat.selfcare.pagopa.it",
         API_SIGNAL_HUB_PUSH_INTERFACE_URL : "https://raw.githubusercontent.com/pagopa/interop-signalhub-core/refs/heads/develop/docs/openAPI/push-signals.yaml",
         API_SIGNAL_HUB_PULL_INTERFACE_URL : "https://raw.githubusercontent.com/pagopa/interop-signalhub-core/refs/heads/develop/docs/openAPI/pull-signals.yaml",
-        FEATURE_FLAG_SIGNALHUB_WHITELIST : "true",
+        FEATURE_FLAG_SIGNALHUB_WHITELIST : "false",
         SIGNALHUB_WHITELIST_CONSUMER : "",
         SIGNALHUB_WHITELIST_PRODUCER : ""
       }
