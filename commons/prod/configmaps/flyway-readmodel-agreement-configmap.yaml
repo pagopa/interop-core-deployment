@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-read-model-agreement
-  namespace: qa
+  namespace: prod
 data:
   V1__Init_Agreement.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_agreement";
