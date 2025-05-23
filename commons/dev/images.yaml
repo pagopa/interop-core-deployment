@@ -112,6 +112,10 @@ images:
       tag: "7.0.4"      
     selfcare-onboarding-consumer:
       tag: "develop"
+    ses-mock:
+      tag: "20"
+    smtp-mock:
+      tag: "1.10.4"
     tenant-process:
       tag: "develop"
     tenant-readmodel-writer:
