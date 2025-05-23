@@ -10,11 +10,11 @@ service:
       containerPort: 8080
       protocol: TCP
 
-  deployment:
-    image:
-      repositoryPrefix: docker.io
-      repositoryName: "gessnerfl/fake-smtp-server"
-    env:
-      fakesmtp.authentication.username: username
-      fakesmtp.authentication.password: password
-      SERVER_PORT: "8080"
+deployment:
+  image:
+    repositoryPrefix: docker.io
+    repositoryName: "gessnerfl/fake-smtp-server"
+  env:
+    fakesmtp.authentication.username: username
+    fakesmtp.authentication.password: password
+    SERVER_PORT: "8080"
