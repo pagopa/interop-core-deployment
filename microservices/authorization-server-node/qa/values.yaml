@@ -26,6 +26,8 @@ configmap:
   RATE_LIMITER_TIMEOUT_MILLIS: "300"
   PRODUCER_KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-authorization-process"
   CLIENT_ASSERTION_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
+  FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
+  FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS: "common-feature-flags.FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS"
 
 deployment:
   image:
