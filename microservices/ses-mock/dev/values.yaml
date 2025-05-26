@@ -5,6 +5,7 @@ service:
   create: true
   portName: ses-mock
   containerPort: 8005
+  targetPort: 8005
 
 deployment:
   image:
