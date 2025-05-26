@@ -37,7 +37,7 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:
-    READ_MODEL_DB_USER: "documentdb.READONLY_USR"
-    READ_MODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
+    READMODEL_DB_USERNAME: "documentdb.READONLY_USR"
+    READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
