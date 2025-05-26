@@ -5,6 +5,7 @@ service:
   create: true
   portName: smtp-mock
   containerPort: 5025
+  targetPort: 5025
   additionalPorts:
     - name: web-ui
       containerPort: 8080
