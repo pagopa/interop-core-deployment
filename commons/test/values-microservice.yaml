@@ -8,7 +8,7 @@ deployment:
   enableRolloutAnnotations: true
   replicas: 1
   image:
-    repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com" # CHECK
+    repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
     tag: $IMAGE_TAG_PLACEHOLDER
     digest: $IMAGE_DIGEST_PLACEHOLDER
@@ -24,6 +24,6 @@ deployment:
 
 local:
   interop_be_commons:
-    RSA_KEYS_IDENTIFIERS: "17d3f3c0-5730-45a9-be8a-655e77bf3555" # CHECK
-    DEV_ENDPOINTS_ENABLED: "true"
+    RSA_KEYS_IDENTIFIERS: "cdb52532-dd94-40ef-824d-9c55b10e6bc9"
+    DEV_ENDPOINTS_ENABLED: "false"
     ENABLED_PROJECTIONS: "true"
