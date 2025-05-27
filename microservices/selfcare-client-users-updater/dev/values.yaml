@@ -44,7 +44,7 @@ deployment:
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
     SELFCARE_TOPIC: "common-selfcare.SELFCARE_CONTRACTS_TOPIC"
   envFromSecrets:
-    KAFKA_BROKER_CONNECTION_STRING: "TBD"
+    # KAFKA_BROKER_CONNECTION_STRING: "TBD"
     READMODEL_DB_USERNAME: "documentdb.READONLY_USR"
     READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
