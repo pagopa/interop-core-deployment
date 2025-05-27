@@ -107,6 +107,12 @@ jobs:
           fetch-depth: 0
           sparse-checkout: 'scripts/helm'
           ref: ${{ vars.INFRA_COMMONS_TAG }}
+      - name: Restore Charts Cache
+        id: restore_charts_cache_ms
+        uses: actions/cache@v3
+        with:
+          key: charts-${{ hashFiles('Chart.yaml') }}
+          path: ./charts
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
@@ -201,6 +207,12 @@ jobs:
           fi
 
           echo "INFO - Rollout for $MICROSERVICE_FULLNAME completed successfully."
+      - name: Save Cache
+        if: steps.restore_charts_cache_ms.outputs.cache-hit != 'true'
+        uses: actions/cache@v3
+        with:
+            path: ./charts
+            key: charts-${{ hashFiles('Chart.yaml') }}
 
   deploy_cj:
     name: ${{ matrix.cronjob }}
@@ -224,6 +236,12 @@ jobs:
           fetch-depth: 0
           sparse-checkout: 'scripts/helm'
           ref: ${{ vars.INFRA_COMMONS_TAG }}
+      - name: Restore Charts Cache
+        id: restore_charts_cache_cj
+        uses: actions/cache@v3
+        with:
+            key: charts-${{ hashFiles('Chart.yaml') }}
+            path: ./charts
       - name: Set kubeconfig
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
@@ -289,4 +307,9 @@ jobs:
             fi
             $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
           fi
-          
+      - name: Save Cache
+        if: steps.restore_charts_cache_cj.outputs.cache-hit != 'true'
+        uses: actions/cache@v3
+        with:
+            path: ./charts
+            key: charts-${{ hashFiles('Chart.yaml') }}
