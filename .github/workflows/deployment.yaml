@@ -1,4 +1,5 @@
 name: Interop Core Deployment
+run-name: "${{ github.ref_name }} / ${{ inputs.environment }} - Interop Core Deployment"
 
 on: 
   workflow_dispatch:
