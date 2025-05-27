@@ -14,8 +14,8 @@ configmap:
   INTERNAL_JWT_SECONDS_DURATION: "3600"
   INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
   INTEROP_PRODUCT: "prod-interop"
-  KAFKA_CLIENT_ID: "interop-dev"
-  KAFKA_GROUP_ID: "interop-users-dev"
+  KAFKA_CLIENT_ID: "interop-{{.Values.namespace}}"
+  KAFKA_GROUP_ID: "interop-users-{{.Values.namespace}}"
 
 deployment:
   env:
