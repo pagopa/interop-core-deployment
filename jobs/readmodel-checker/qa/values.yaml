@@ -37,10 +37,3 @@ cronjob:
     READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"   
-  resources:
-    requests:
-      cpu: "2000m"
-      memory: "4Gi"
-    limits:
-      cpu: "2000m"
-      memory: "4Gi"
