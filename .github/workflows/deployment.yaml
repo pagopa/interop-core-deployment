@@ -3,7 +3,7 @@ run-name: "${{ github.ref_name }} / ${{ inputs.environment }} - Interop Core Dep
 
 concurrency:
   group: "${{ inputs.environment }}"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 on: 
   workflow_dispatch:
