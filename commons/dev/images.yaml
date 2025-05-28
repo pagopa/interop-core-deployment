@@ -110,6 +110,8 @@ images:
       tag: "develop"
     redis:
       tag: "7.0.4"      
+    selfcare-client-users-updater:
+      tag: "develop"
     selfcare-onboarding-consumer:
       tag: "develop"
     ses-mock:
