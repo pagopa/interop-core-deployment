@@ -1,6 +1,10 @@
 name: Interop Core Deployment
 run-name: "${{ github.ref_name }} / ${{ inputs.environment }} - Interop Core Deployment"
 
+concurrency:
+  group: "${{ inputs.environment }}"
+  cancel-in-progress: false
+
 on: 
   workflow_dispatch:
     inputs:
