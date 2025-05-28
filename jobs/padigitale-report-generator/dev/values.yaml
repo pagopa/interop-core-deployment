@@ -25,6 +25,5 @@ cronjob:
     READ_MODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     READ_MODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
   envFromSecrets:
-    READ_MODEL_DB_USER: "documentdb.READONLY_USR"
-    READ_MODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
-    
+    READ_MODEL_DB_USER: "read-model.READONLY_USR"
+    READ_MODEL_DB_PASSWORD: "read-model.READONLY_PSW"
