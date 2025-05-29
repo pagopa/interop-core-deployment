@@ -8,15 +8,15 @@ permissions:
   id-token: write
   contents: read
 
-jobs:      
-  start_dev_workflow:
-    uses: ./.github/workflows/pr-validation-generic-env.yaml
-    secrets: inherit
-    with:
-      environment: dev
-  
-  diff_summary:
-    needs: [ start_dev_workflow ]
-    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
-    secrets: inherit
-    uses: ./.github/workflows/pr-validation-sub-print-summary.yaml
+jobs:
+   validation:
+     name: "Validation – ${{ matrix.environment }}"
+     secrets: inherit
+     strategy:
+       matrix:
+         environment: [dev, qa, vapt]
+     # dovrà puntare alla github action che fa la validazione centralizzata sul repo interop-infra-commons
+     uses: pagopa/interop-infra-commons/.github/workflows/deployment-values-validation.yaml@main
+     with:
+       environment: ${{ matrix.environment }}
+
