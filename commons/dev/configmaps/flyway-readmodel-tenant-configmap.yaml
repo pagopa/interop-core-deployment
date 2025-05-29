@@ -161,4 +161,3 @@ data:
   V1.3.1__Grant_Tenant_on_ClientUserUpdater.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_selfcare_client_users_updater_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant TO "${NAMESPACE}_selfcare_client_users_updater_user";
-    
