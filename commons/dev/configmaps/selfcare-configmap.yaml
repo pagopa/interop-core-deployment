@@ -5,3 +5,6 @@ metadata:
   namespace: dev
 data:
   SELFCARE_V2_URL: "https://api.uat.selfcare.pagopa.it/external/v2"
+  SELFCARE_KAFKA_BROKERS: "selc-u-eventhub-ns.servicebus.windows.net:9093"
+  SELFCARE_CONTRACTS_TOPIC: "sc-contracts"
+  SELFCARE_USERS_TOPIC: "sc-users"
