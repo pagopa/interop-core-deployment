@@ -47,11 +47,6 @@ deployment:
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    READ_MODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READ_MODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    READ_MODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-    READ_MODEL_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
-    READ_MODEL_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
@@ -73,8 +68,6 @@ deployment:
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READ_MODEL_DB_USER: "documentdb.READONLY_USR"
-    READ_MODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
   livenessProbe:
