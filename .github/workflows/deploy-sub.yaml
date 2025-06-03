@@ -283,5 +283,4 @@ jobs:
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
-          fi
-          
+          fi 
