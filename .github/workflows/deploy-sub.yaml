@@ -157,7 +157,7 @@ jobs:
           set -euo pipefail
           
           echo "matrix.microservice: ${{ matrix.microservice }}"
-          echo "inputs.helm_force_upgrade_microservices_csv: ${{ inputs.helm_force_upgrade_microservices_csv"
+          echo "inputs.helm_force_upgrade_microservices_csv: ${{ inputs.helm_force_upgrade_microservices_csv }}"
           echo "ENABLE_FORCE_UPGRADE: $ENABLE_FORCE_UPGRADE"
 
           TIMEOUT="${TIMEOUT_SECONDS}s"
