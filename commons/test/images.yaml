@@ -4,6 +4,8 @@ images:
       tag: "2.4.0-RC2"
     attribute-registry-readmodel-writer-sql:
       tag: "2.4.0-RC2"
+    authorization-server-node:
+      tag: "2.4.0-RC2" 
     catalog-readmodel-writer-sql:
       tag: "2.4.0-RC2"
     client-readmodel-writer-sql:
