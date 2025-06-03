@@ -36,6 +36,7 @@ permissions:
 jobs:
   print_inputs:
     runs-on: ubuntu-24.04
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Print Inputs
