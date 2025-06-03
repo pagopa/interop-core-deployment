@@ -150,6 +150,7 @@ jobs:
     secrets: inherit
     if: ${{ always() && (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success'))) }}
     uses: ./.github/workflows/deploy-sub.yaml
+    environment: ${{ inputs.environment }}
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 300
