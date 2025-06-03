@@ -171,6 +171,7 @@ jobs:
           else
             HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
             if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
+              echo "Force upgrade requested for $MICROSERVICE_FULLNAME"
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
