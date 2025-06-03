@@ -49,7 +49,7 @@ jobs:
           echo "- run_tf_apply_monitoring_workflow: \`${{ inputs.run_tf_apply_monitoring_workflow }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- run_tf_apply_secrets_workflow: \`${{ inputs.run_tf_apply_secrets_workflow }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- HELM_FORCE_UPGRADE_MICROSERVICES_CSV: \`${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- HELM_FORCE_UPGRADE_CRONJOB_CSV: \`${{ vars.HELM_FORCE_UPGRADE_CRONJOB_CSV }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- HELM_FORCE_UPGRADE_CRONJOBS_CSV: \`${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}\`" >> $GITHUB_STEP_SUMMARY
 
   initChecks:
     runs-on: ubuntu-22.04
@@ -150,7 +150,6 @@ jobs:
     secrets: inherit
     if: ${{ always() && (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success'))) }}
     uses: ./.github/workflows/deploy-sub.yaml
-    environment: ${{ inputs.environment }}
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 300
