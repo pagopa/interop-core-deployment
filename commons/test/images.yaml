@@ -1,28 +1,28 @@
 images:
   microservices:
     agreement-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     catalog-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     client-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     delegation-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     eservice-template-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     key-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     producer-key-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     purpose-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
     tenant-readmodel-writer-sql:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
 
   jobs:
     readmodel-checker:
-      tag: "2.4.0-RC1"
+      tag: "2.4.0-RC2"
