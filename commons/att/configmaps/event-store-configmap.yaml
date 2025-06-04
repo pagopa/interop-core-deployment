@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-event-store
+  namespace: att
+data:
+  EVENTSTORE_DB_HOST: interop-platform-data-att.cluster-c5mm6mwy4v3q.eu-south-1.rds.amazonaws.com
+  EVENTSTORE_DB_NAME: persistence_management
+  EVENTSTORE_DB_PORT: '5432'

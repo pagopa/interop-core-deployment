@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-attribute-registry
+  namespace: att
+data:
+  V1__Init_Attribute.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_attribute";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to
+      "${NAMESPACE}_attribute_registry_rmw_user",
+      "${NAMESPACE}_attribute_registry_process_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_attribute".attribute (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      code VARCHAR,
+      kind VARCHAR NOT NULL,
+      description VARCHAR NOT NULL,
+      origin VARCHAR,
+      name VARCHAR NOT NULL,
+      creation_time TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_attribute".attribute TO "${NAMESPACE}_attribute_registry_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO "${NAMESPACE}_attribute_registry_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO readonly_user;
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_agreement_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_catalog_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_eservice_template_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_tenant_process_user";
+    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_tenant_process_user";
+    
