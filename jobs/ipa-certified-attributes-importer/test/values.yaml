@@ -23,7 +23,7 @@ cronjob:
   restartPolicy: OnFailure
   automountServiceAccountToken: false
   env:
-    ENVIRONMENT: "dev"
+    ENVIRONMENT: "test"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
