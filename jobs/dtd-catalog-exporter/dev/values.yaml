@@ -14,8 +14,8 @@ configmap:
   DTD_CATALOG_CSV_FILENAME: "catalog.csv"
   DTD_TENANTS_CSV_FILENAME: "tenants.csv"
   DTD_TENANTS_JSON_FILENAME: "tenants.json"
-  GITHUB_REPO: "some repo to CHECK!"
-  GITHUB_REPO_OWNER: "some owner to CHECK!"
+  GITHUB_REPO: "interop-metrics-deploy-test"
+  GITHUB_REPO_OWNER: "pagopa"
 
 cronjob:
   schedule: "0 */3 * * *"
@@ -52,4 +52,4 @@ cronjob:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
-    GITHUB_ACCESS_TOKEN: "secret.toCHECK"
+    GITHUB_ACCESS_TOKEN: "metrics-reports.BOT_DTD_OPENDATA_GITHUB_ACCESS_TOKEN"
