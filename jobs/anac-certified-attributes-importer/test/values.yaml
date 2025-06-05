@@ -7,7 +7,7 @@ configmap:
   SFTP_PORT: "22"
   SFTP_PATH: "Collaudo"
   SFTP_FILENAME_PREFIX: "collaudo"
-  INTERNAL_JWT_KID: "CHANGE-THIS"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_SUBJECT: "uat.interop-m2m"
   INTERNAL_JWT_ISSUER: "uat.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "uat.interop.pagopa.it/internal"
