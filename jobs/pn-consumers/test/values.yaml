@@ -1,30 +1,23 @@
-name: "interop-be-dtd-catalog-exporter"
+name: "interop-be-pn-consumers"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-dtd-catalog-exporter-dev-es1"
+  roleArn: "arn:aws:iam::895646477129:role/interop-be-pn-consumers-test-es1"
 
 configmap:
-  TENANTS_COLLECTION_NAME: "tenants"
-  ATTRIBUTES_COLLECTION_NAME: "attributes"
-  ESERVICES_COLLECTION_NAME: "eservices"
-  S3_BUCKET: "interop-public-catalog-dev-es1"
-  DTD_CATALOG_STORAGE_PATH: "catalog"
-  DTD_CATALOG_FILENAME: "catalog.json"
-  DTD_CATALOG_JSON_FILENAME: "catalog.json"
-  DTD_CATALOG_CSV_FILENAME: "catalog.csv"
-  DTD_TENANTS_CSV_FILENAME: "tenants.csv"
-  DTD_TENANTS_JSON_FILENAME: "tenants.json"
-  GITHUB_REPO: "interop-metrics-deploy-test"
-  GITHUB_REPO_OWNER: "pagopa"
+  SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
+  SMTP_PORT: "5025"
+  SMTP_SECURE: "true"
+  PN_ESERVICE_ID: "048da443-1ac7-425f-bb11-29e9a08935b3"
+  COMUNI_E_LORO_CONSORZI_E_ASSOCIAZIONI_ATTRIBUTE_ID: "cbddada9-ad22-42c9-bb1d-9a832e34179e"
+  REPORT_SENDER_MAIL: "noreply@reports.uat.interop.pagopa.it"
+  REPORT_SENDER_LABEL: "noreply-test"
 
 cronjob:
-  schedule: "0 */3 * * *"
+  schedule: "0 7 */2 * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
   automountServiceAccountToken: false
-  env:
-    ENVIRONMENT: "dev"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
@@ -50,6 +43,8 @@ cronjob:
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    MAIL_RECIPIENTS: "pn-consumers.MAIL_RECIPIENTS"
+    SMTP_USER: "smtp-reports.SMTP_USER"
+    SMTP_PASSWORD: "smtp-reports.SMTP_PASSWORD"
     READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
-    GITHUB_ACCESS_TOKEN: "metrics-reports.BOT_DTD_OPENDATA_GITHUB_ACCESS_TOKEN"
