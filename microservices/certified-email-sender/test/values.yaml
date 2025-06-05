@@ -10,7 +10,7 @@ serviceAccount:
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-certified-email-sender"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-certified-email-sender"
-  PEC_SMTP_ADDRESS: "smtp-mock.test.svc.cluster.local"
+  PEC_SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
   PEC_SMTP_PORT: "5025"
   PEC_SMTP_SECURE: "false"
   INTEROP_FE_BASE_URL: "selfcare.uat.interop.pagopa.it"
