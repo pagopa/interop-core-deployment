@@ -1,32 +1,58 @@
 images:
   microservices:
     agreement-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
     authorization-server-node:
-      tag: "2.4.0-RC4" 
+      tag: "2.4.0-RC5" 
     catalog-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
+    certified-email-sender:
+      tag: "2.4.0-RC5"
     client-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
+    delegation-items-archiver:
+      tag: "2.4.0-RC5"      
     delegation-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
+    eservice-descriptors-archiver:
+      tag: "2.4.0-RC5"
+    eservice-template-instances-updater:
+      tag: "2.4.0-RC5"
     eservice-template-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
     key-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
     m2m-gateway:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
+    notification-email-sender:
+      tag: "2.4.0-RC5"
     producer-key-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
     purpose-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
+    selfcare-client-users-updater:
+      tag: "2.4.0-RC5"
     tenant-readmodel-writer-sql:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
 
   jobs:
+    anac-certified-attributes-importer:
+      tag: "2.4.0-RC5"
+    datalake-data-export:
+      tag: "2.4.0-RC5"
+    dtd-catalog-exporter:
+      tag: "2.4.0-RC5"
+    ipa-certified-attributes-importer:
+      tag: "2.4.0-RC5"
+    ivass-certified-attributes-importer:
+      tag: "2.4.0-RC5"
+    pn-consumers:
+      tag: "2.4.0-RC5"
     readmodel-checker:
-      tag: "2.4.0-RC4"
+      tag: "2.4.0-RC5"
+    token-generation-readmodel-checker:
+      tag: "2.4.0-RC5"
