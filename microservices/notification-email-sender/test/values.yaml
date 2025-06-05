@@ -8,7 +8,7 @@ service:
   create: false
 
 configmap:
-  INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
+  INTEROP_FE_BASE_URL: "selfcare.uat.interop.pagopa.it"
   AWS_SES_ENDPOINT: "http://ses-mock.{{.Values.namespace}}.svc.cluster.local:8005"
   SENDER_MAIL: "noreply@notifiche.{{.Values.namespace}}.interop.pagopa.it"
   SENDER_LABEL: "noreply-{{.Values.namespace}}"
