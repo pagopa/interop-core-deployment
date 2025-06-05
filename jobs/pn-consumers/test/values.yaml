@@ -4,7 +4,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::895646477129:role/interop-be-pn-consumers-test-es1"
 
 configmap:
-  SMTP_ADDRESS: "smtp-mock.test.svc.cluster.local"
+  SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
   SMTP_PORT: "5025"
   SMTP_SECURE: "true"
   PN_ESERVICE_ID: "048da443-1ac7-425f-bb11-29e9a08935b3"
