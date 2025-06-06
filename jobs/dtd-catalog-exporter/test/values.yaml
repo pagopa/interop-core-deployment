@@ -1,0 +1,55 @@
+name: "interop-be-dtd-catalog-exporter"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::895646477129:role/interop-be-dtd-catalog-exporter-test-es1"
+
+configmap:
+  TENANTS_COLLECTION_NAME: "tenants"
+  ATTRIBUTES_COLLECTION_NAME: "attributes"
+  ESERVICES_COLLECTION_NAME: "eservices"
+  S3_BUCKET: "interop-public-catalog-test-es1"
+  DTD_CATALOG_STORAGE_PATH: "catalog"
+  DTD_CATALOG_FILENAME: "catalog.json"
+  DTD_CATALOG_JSON_FILENAME: "catalogo_eservice.json"
+  DTD_CATALOG_CSV_FILENAME: "catalogo_eservice.csv"
+  DTD_TENANTS_CSV_FILENAME: "aderenti.csv"
+  DTD_TENANTS_JSON_FILENAME: "aderenti.json"
+  GITHUB_REPO: "pdnd-opendata"
+  GITHUB_REPO_OWNER: "italia"
+
+cronjob:
+  schedule: "0 */3 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  env:
+    ENVIRONMENT: "test"
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
+    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
+    READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
+    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
+    GITHUB_ACCESS_TOKEN: "metrics-reports.BOT_DTD_OPENDATA_GITHUB_ACCESS_TOKEN"

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-kafka
+  namespace: att
+data:
+  AGREEMENT_OUTBOUND_TOPIC: "outbound.att_agreement.events"
+  AGREEMENT_TOPIC: "event-store.att_agreement.events"
+  APPLICATION_AUDIT_TOPIC: "att_application.audit"
+  ATTRIBUTE_TOPIC: "event-store.att_attribute_registry.events"
+  AUTHORIZATION_TOPIC: "event-store.att_authorization.events"
+  CATALOG_OUTBOUND_TOPIC: "outbound.att_catalog.events"
+  CATALOG_TOPIC: "event-store.att_catalog.events"
+  DELEGATION_TOPIC: "event-store.att_delegation.events"
+  ESERVICE_TEMPLATE_TOPIC: "event-store.att_eservice_template.events"
+  KAFKA_BROKERS: "b-1.interopplatformevents.1e4dzm.c3.kafka.eu-south-1.amazonaws.com:9098,b-2.interopplatformevents.1e4dzm.c3.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.1e4dzm.c3.kafka.eu-south-1.amazonaws.com:9098"
+  PURPOSE_OUTBOUND_TOPIC: "outbound.att_purpose.events"
+  PURPOSE_TOPIC: "event-store.att_purpose.events"
+  TENANT_OUTBOUND_TOPIC: "outbound.att_tenant.events"
+  TENANT_TOPIC: "event-store.att_tenant.events"
+  TOKEN_AUDITING_TOPIC: "att_authorization-server.generated-jwt"
