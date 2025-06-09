@@ -142,8 +142,6 @@ images:
       tag: "develop"
     one-trust-notices:
       tag: "develop"
-    padigitale-report-generator:
-      tag: "1.0.x-latest"
     pn-consumers:
       tag: "develop"
     readmodel-checker:
