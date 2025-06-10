@@ -22,10 +22,3 @@ cronjob:
     JWT_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/505630707203/generated-jwt"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
-  resources:
-    requests:
-      cpu: "1"
-      memory: "2Gi"
-    limits:
-      cpu: "1"
-      memory: "2Gi"
