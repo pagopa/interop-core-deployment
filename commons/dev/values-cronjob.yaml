@@ -9,9 +9,9 @@ cronjob:
   env:
     LOG_LEVEL: "info"
   resources:
-    limits:
-      cpu: "500m"
-      memory: "1Gi"
     requests:
-      cpu: "500m"
-      memory: "1Gi"
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
