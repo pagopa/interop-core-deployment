@@ -40,6 +40,8 @@ deployment:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
   envFromConfigmaps:
+    DPOP_CACHE_TABLE: "interop-dpop-cache-dev"
+    DPOP_HTU: "https://auth.dev.interop.pagopa.it/token.oauth2"
     FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
     FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS: "common-feature-flags.FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
