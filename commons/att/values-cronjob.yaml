@@ -10,11 +10,11 @@ cronjob:
     LOG_LEVEL: "info"
   resources:
     requests:
-      cpu: "500m"
-      memory: "1Gi"
+      cpu: "1000m"
+      memory: "2Gi"
     limits:
-      cpu: "500m"
-      memory: "1Gi"
+      cpu: "1000m"
+      memory: "2Gi"
 
 local:
   interop_be_commons:

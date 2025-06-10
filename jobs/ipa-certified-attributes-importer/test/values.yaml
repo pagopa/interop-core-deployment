@@ -55,10 +55,3 @@ cronjob:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
-  resources:
-    limits:
-      cpu: "1"
-      memory: "2Gi"
-    requests:
-      cpu: "1"
-      memory: "2Gi"
