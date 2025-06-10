@@ -7,16 +7,13 @@ on:
 permissions:
   id-token: write
   contents: read
-
 jobs:
-   validation:
-     name: "Validation – ${{ matrix.environment }}"
-     secrets: inherit
-     strategy:
-       matrix:
-         environment: [dev, qa, vapt]
-     # dovrà puntare alla github action che fa la validazione centralizzata sul repo interop-infra-commons
-     uses: pagopa/interop-infra-commons/.github/workflows/deployment-values-validation.yaml@main
-     with:
-       environment: ${{ matrix.environment }}
-
+  validation:
+    name: "Validation – ${{ matrix.environment }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [dev, qa, vapt]
+    uses: pagopa/interop-infra-commons/actions/deployment-values-validation.yaml@main
+    with:
+      environment: ${{ matrix.environment }}
