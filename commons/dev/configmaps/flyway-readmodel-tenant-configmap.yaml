@@ -166,6 +166,10 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_anac_certified_attributes_importer_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_anac_certified_attributes_importer_user";
 
-  V1.3.3__Grant_Access_JobDatalakeExport_Tenant.sql: |-
+  V1.3.3__Grant_Access_CertifiedEmailSender_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_certified_email_sender_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_certified_email_sender_user";
+
+  V1.3.4__Grant_Access_JobDatalakeExport_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_datalake_data_export_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_datalake_data_export_user";
