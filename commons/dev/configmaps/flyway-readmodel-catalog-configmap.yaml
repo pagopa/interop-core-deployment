@@ -183,3 +183,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_tenant_process_user";    
+
+  V1.3__Grant_Access_JobDatalakeExport_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_datalake_data_export_user";
