@@ -1,4 +1,4 @@
-namespace: "dev"
+namespace: "prod"
 
 cronjob:
   image:
