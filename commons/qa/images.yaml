@@ -7,7 +7,7 @@ images:
     agreement-readmodel-writer:
       tag: "develop"
     agreement-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
     api-gateway:
       tag: "develop"
     attribute-registry-process:
@@ -15,7 +15,7 @@ images:
     attribute-registry-readmodel-writer:
       tag: "develop"
     attribute-registry-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
@@ -37,15 +37,15 @@ images:
     catalog-readmodel-writer:
       tag: "develop"
     catalog-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
     certified-email-sender:
       tag: "develop"
     client-purpose-updater:
-      tag: "develop"      
+      tag: "develop"
     client-readmodel-writer:
       tag: "develop"
     client-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
     compute-agreements-consumer:
       tag: "develop"
     delegation-items-archiver:
@@ -55,7 +55,7 @@ images:
     delegation-readmodel-writer:
       tag: "develop"
     delegation-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
     eservice-descriptors-archiver:
       tag: "develop"
     eservice-template-instances-updater:
@@ -65,13 +65,15 @@ images:
     eservice-template-readmodel-writer:
       tag: "develop"
     eservice-template-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
     frontend:
       tag: "dev-latest"
     key-readmodel-writer:
       tag: "develop"
     key-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
+    m2m-gateway:
+      tag: "develop"
     notification-email-sender:
       tag: "develop"
     notifier:
@@ -81,7 +83,7 @@ images:
     producer-key-readmodel-writer:
       tag: "develop"
     producer-key-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
     producer-keychain-readmodel-writer:
       tag: "develop"
     producer-keychain-readmodel-writer-sql:
@@ -111,23 +113,21 @@ images:
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "1.0.43"
+      tag: "develop"
     datalake-data-export:
-      tag: "1.0.43"
+      tag: "develop"
     dtd-catalog-exporter:
-      tag: "1.0.43"
+      tag: "develop"
     ipa-certified-attributes-importer:
       tag: "develop"
     ivass-certified-attributes-importer:
-      tag: "1.0.43"
+      tag: "develop"
     one-trust-notices:
-      tag: "1.0.43"
-    padigitale-report-generator:
-      tag: "1.0.32"
+      tag: "develop"
     pn-consumers:
       tag: "develop"
     readmodel-checker:
-      tag: "develop"      
+      tag: "develop"
     token-generation-readmodel-checker:
       tag: "develop"
     token-details-persister:

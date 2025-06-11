@@ -16,17 +16,6 @@ on:
         required: true
         default: false
         type: boolean
-      helm_force_upgrade_microservices_csv:
-        description: 'Comma-separated microservices names to apply --force'
-        required: false
-        default: ''
-        type: string
-      helm_force_upgrade_cronjob_csv:
-        description: 'Comma-separated cronjob names to apply --force'
-        required: false
-        default: ''
-        type: string
-
   
 defaults:
   run:
@@ -118,7 +107,7 @@ jobs:
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --enable-templating-lookup --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
       - name: Diff
         id: diff
         env: 
@@ -131,7 +120,7 @@ jobs:
           set +e
           # TODO: temporary condition - will be removed
           if [[ ${{inputs.environment}} == "vapt" ]]; then
-            $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+            $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --enable-templating-lookup --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
           else
             $SCRIPTS_FOLDER/helmDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
           fi
@@ -152,9 +141,13 @@ jobs:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
           TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
           FORCE_ROLLOUT: ${{ inputs.force_restart }}
-          ENABLE_FORCE_UPGRADE: ${{ inputs.helm_force_upgrade_microservices_csv == '*' || contains(inputs.helm_force_upgrade_microservices_csv, matrix.microservice) }}
+          ENABLE_FORCE_UPGRADE: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV == '*' || contains(vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV, matrix.microservice) }}
         run: |
           set -euo pipefail
+          
+          echo "matrix.microservice: ${{ matrix.microservice }}"
+          echo "vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}"
+          echo "ENABLE_FORCE_UPGRADE: $ENABLE_FORCE_UPGRADE"
 
           TIMEOUT="${TIMEOUT_SECONDS}s"
 
@@ -171,6 +164,7 @@ jobs:
           else
             HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
             if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
+              echo "Force upgrade requested for $MICROSERVICE_FULLNAME"
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
@@ -267,7 +261,7 @@ jobs:
       - name: Deploy
         env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
-          ENABLE_FORCE_UPGRADE: ${{ inputs.helm_force_upgrade_cronjob_csv == '*' || contains(inputs.helm_force_upgrade_cronjob_csv, matrix.cronjob) }}
+          ENABLE_FORCE_UPGRADE: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV == '*' || contains(vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV, matrix.cronjob) }}
         run: |
           set -euo pipefail
 
@@ -285,8 +279,8 @@ jobs:
           else
             HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
             if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
+              echo "Force upgrade requested for $CRONJOB_FULLNAME"
               HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
             fi
             $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
-          fi
-          
+          fi 

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: common-db-migrations
-  namespace: dev
+  namespace: test
 data:
   V1__Init.sql: |-
     CREATE TABLE IF NOT EXISTS "${applicationSchema}".event_journal(

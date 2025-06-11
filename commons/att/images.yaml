@@ -1,0 +1,32 @@
+images:
+  microservices:
+    agreement-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    attribute-registry-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    authorization-server-node:
+      tag: "2.4.0-RC5" 
+    catalog-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    client-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    delegation-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    eservice-template-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    key-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    m2m-gateway:
+      tag: "2.4.0-RC6"
+    producer-key-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    producer-keychain-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    purpose-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+    tenant-readmodel-writer-sql:
+      tag: "2.4.0-RC6"
+
+  jobs:
+    readmodel-checker:
+      tag: "2.4.0-RC6"
