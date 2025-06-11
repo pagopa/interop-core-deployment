@@ -46,5 +46,5 @@ cronjob:
     MAIL_RECIPIENTS: "pn-consumers.MAIL_RECIPIENTS"
     SMTP_USER: "smtp-reports.SMTP_USER"
     SMTP_PASSWORD: "smtp-reports.SMTP_PASSWORD"
-    READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-pn-consumers-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-pn-consumers-user.password"

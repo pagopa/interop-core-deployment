@@ -169,3 +169,7 @@ data:
   V1.3.3__Grant_Access_CertifiedEmailSender_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_certified_email_sender_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_certified_email_sender_user";
+
+  V1.3.4__Grant_Access_PNConsumers_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_pn_consumers_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_pn_consumers_user";
