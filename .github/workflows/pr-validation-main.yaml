@@ -14,6 +14,6 @@ jobs:
       fail-fast: false
       matrix:
         environment: [dev, qa, vapt]
-    uses: pagopa/interop-infra-commons/actions/deployment-values-validation.yaml@main
+    uses: pagopa/interop-infra-commons/actions/common-pr-deployment-values-validation.yaml@main
     with:
       environment: ${{ matrix.environment }}
