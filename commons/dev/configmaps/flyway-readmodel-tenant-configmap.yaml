@@ -161,3 +161,11 @@ data:
   V1.3.1__Grant_Tenant_on_ClientUserUpdater.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_selfcare_client_users_updater_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant TO "${NAMESPACE}_selfcare_client_users_updater_user";
+
+  V1.3.2__Grant_Access_JobAnacUser_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_anac_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_anac_certified_attributes_importer_user";
+
+  V1.3.3__Grant_Access_CertifiedEmailSender_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_certified_email_sender_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_certified_email_sender_user";
