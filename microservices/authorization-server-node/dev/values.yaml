@@ -14,6 +14,8 @@ service:
 
 configmap:
   AUDIT_FALLBACK_S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
+  DPOP_CACHE_TABLE: "interop-dpop-cache-dev"
+  DPOP_HTU: "https://auth.dev.interop.pagopa.it/token.oauth2"
   S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   GENERATED_INTEROP_TOKEN_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   GENERATED_INTEROP_TOKEN_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
@@ -40,8 +42,7 @@ deployment:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
   envFromConfigmaps:
-    DPOP_CACHE_TABLE: "interop-dpop-cache-dev"
-    DPOP_HTU: "https://auth.dev.interop.pagopa.it/token.oauth2"
+
     FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
     FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS: "common-feature-flags.FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
