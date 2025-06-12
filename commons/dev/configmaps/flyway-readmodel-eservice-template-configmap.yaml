@@ -137,4 +137,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_catalog_process_user";
 
   V1.2__Grant_Usage_Schema_Template.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";        
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";
+
+  V1.3__Add_Column_TenantId_RiskAnalysis_Template.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_eservice_template".eservice_template_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR NOT NULL;
