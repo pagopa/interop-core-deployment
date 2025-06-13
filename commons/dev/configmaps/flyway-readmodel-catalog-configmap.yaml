@@ -199,3 +199,7 @@ data:
   V1.6__Grant_Access_EserviceDescriptorArchiver_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_descriptors_archiver_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_eservice_descriptors_archiver_user";
+
+  V1.7__Grant_Access_NotificationEmailSender_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_notification_email_sender_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_notification_email_sender_user";

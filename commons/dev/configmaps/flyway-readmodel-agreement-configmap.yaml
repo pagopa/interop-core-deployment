@@ -118,3 +118,7 @@ data:
   V1.5__Grant_Access_EserviceDescriptorArchiver_Agreement.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_eservice_descriptors_archiver_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_eservice_descriptors_archiver_user";
+
+  V1.6__Grant_Access_NotificationEmailSender_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_notification_email_sender_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_notification_email_sender_user";
