@@ -1,15 +1,15 @@
-name: "interop-be-client-readmodel-writer"
+name: "interop-be-producer-key-readmodel-writer"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::533267098416:role/interop-be-client-readmodel-writer-att-es1"
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-producer-key-readmodel-writer-att-es1"
 
 service:
   create: false
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-client"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-client-readmodel-writer"
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-producer-key"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-producer-key-readmodel-writer"
 
 deployment:
   env:

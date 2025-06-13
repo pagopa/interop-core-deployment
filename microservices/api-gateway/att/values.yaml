@@ -9,7 +9,7 @@ service:
     protocol: "HTTP"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-api-gateway-att-es1"
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-api-gateway-att-es1"
 
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"

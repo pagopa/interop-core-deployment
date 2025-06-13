@@ -2,7 +2,7 @@ name: "interop-be-authorization-updater"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-authorization-updater-att-es1"
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-authorization-updater-att-es1"
 
 service:
   create: false

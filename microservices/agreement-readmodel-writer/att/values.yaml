@@ -5,7 +5,7 @@ service:
   create: false
   
 serviceAccount:
-  roleArn: arn:aws:iam::505630707203:role/interop-be-agreement-readmodel-writer-att-es1
+  roleArn: arn:aws:iam::533267098416:role/interop-be-agreement-readmodel-writer-att-es1
             
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-agreement"

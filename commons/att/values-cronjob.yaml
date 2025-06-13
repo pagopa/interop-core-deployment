@@ -2,7 +2,7 @@ namespace: "att"
 
 cronjob:
   image:
-    repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
+    repositoryPrefix: "533267098416.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
     tag: $IMAGE_TAG_PLACEHOLDER
     digest: $IMAGE_DIGEST_PLACEHOLDER
