@@ -192,6 +192,6 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_datalake_data_export_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_datalake_data_export_user";
 
-  V1.4__Grant_Access_DtdCatalogExporter_Catalog.sql: |-
+  V1.5__Grant_Access_DtdCatalogExporter_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_dtd_catalog_exporter_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_dtd_catalog_exporter_user";
