@@ -53,8 +53,8 @@ deployment:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     SMTP_USERNAME: "smtp-notifications.SMTP_USER"
     SMTP_PASSWORD: "smtp-notifications.SMTP_PASSWORD"
-    READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-notification-email-sender-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-notification-email-sender-user.password"
   resources:
     limits:
       cpu: "500m"
