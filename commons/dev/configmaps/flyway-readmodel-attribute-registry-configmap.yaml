@@ -50,3 +50,7 @@ data:
   V1.5__Grant_Access_JobIPACertifiedAttributesImporter_Attribute.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_ipa_certified_attributes_importer_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_ipa_certified_attributes_importer_user";
+
+  V1.6__Grant_Access_JobIVASSCertifiedAttributesImporter_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_ivass_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_ivass_certified_attributes_importer_user";
