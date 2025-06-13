@@ -50,8 +50,8 @@ deployment:
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
     READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-delegation-items-archiver-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-items-archiver-user.password"
   resources:
     limits:
       cpu: "1"
