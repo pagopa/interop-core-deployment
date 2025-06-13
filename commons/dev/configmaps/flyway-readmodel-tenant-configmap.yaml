@@ -193,3 +193,7 @@ data:
   V1.3.9__Grant_Access_PNConsumers_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_pn_consumers_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_pn_consumers_user";
+
+  V1.3.10__Grant_Access_SelfcareClientUsersUpdater_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_selfcare_client_users_updater_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_selfcare_client_users_updater_user";

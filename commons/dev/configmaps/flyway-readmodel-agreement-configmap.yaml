@@ -122,3 +122,7 @@ data:
   V1.6__Grant_Access_NotificationEmailSender_Agreement.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_notification_email_sender_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_notification_email_sender_user";
+
+  V1.7__Grant_Access_TokenGenerationRMChecker_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_token_generation_readmodel_checker_user";

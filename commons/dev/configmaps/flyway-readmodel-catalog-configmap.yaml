@@ -203,3 +203,7 @@ data:
   V1.7__Grant_Access_NotificationEmailSender_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_notification_email_sender_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_notification_email_sender_user";
+
+  V1.8__Grant_Access_TokenGenerationRMChecker_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_token_generation_readmodel_checker_user";
