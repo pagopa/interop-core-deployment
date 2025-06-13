@@ -114,3 +114,7 @@ data:
   V1.4__Grant_Access_DelegationItemArchiver_Agreement.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_delegation_items_archiver_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_delegation_items_archiver_user";
+
+  V1.5__Grant_Access_EserviceDescriptorArchiver_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_eservice_descriptors_archiver_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_eservice_descriptors_archiver_user";
