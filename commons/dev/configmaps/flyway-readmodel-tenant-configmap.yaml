@@ -170,6 +170,18 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_certified_email_sender_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_certified_email_sender_user";
 
-  V1.3.4__Grant_Access_JobIVASSCertifiedAttributesImporter_Tenant.sql: |-
+  V1.3.4__Grant_Access_JobDatalakeExport_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_datalake_data_export_user";
+
+  V1.3.5__Grant_Access_DtdCatalogExporter_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_dtd_catalog_exporter_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_dtd_catalog_exporter_user";
+
+  V1.3.6__Grant_Access_JobIPACertifiedAttributesImporter_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_ipa_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_ipa_certified_attributes_importer_user";
+
+  V1.3.7__Grant_Access_JobIVASSCertifiedAttributesImporter_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_ivass_certified_attributes_importer_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_ivass_certified_attributes_importer_user";
