@@ -191,4 +191,3 @@ data:
   V1.4__Grant_Access_JobDatalakeExport_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_datalake_data_export_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_datalake_data_export_user";
- 
