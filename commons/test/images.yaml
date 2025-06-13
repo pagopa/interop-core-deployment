@@ -1,58 +1,58 @@
 images:
   microservices:
     agreement-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     authorization-server-node:
       tag: "2.4.0-RC5" 
     catalog-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     certified-email-sender:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     client-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     delegation-items-archiver:
-      tag: "2.4.0-RC6"      
+      tag: "2.4.0-RC7"      
     delegation-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     eservice-descriptors-archiver:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     eservice-template-instances-updater:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     eservice-template-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     key-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     m2m-gateway:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     notification-email-sender:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     producer-key-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     purpose-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     selfcare-client-users-updater:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     tenant-readmodel-writer-sql:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     datalake-data-export:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     dtd-catalog-exporter:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     ipa-certified-attributes-importer:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     ivass-certified-attributes-importer:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     pn-consumers:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     readmodel-checker:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
     token-generation-readmodel-checker:
-      tag: "2.4.0-RC6"
+      tag: "2.4.0-RC7"
