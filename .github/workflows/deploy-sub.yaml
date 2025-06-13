@@ -88,8 +88,22 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
-      - name: Checkout scripts repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+
+      - name: Check Kubectl Enabled
+        id: check-kubectl-enabled
+        run: |
+          use_kubectl_diff=false
+          use_kubectl_apply=false
+
+          if [[ "${{ inputs.environment }}" == "vapt" ]]; then
+            use_kubectl_diff=true
+            use_kubectl_apply=true
+          fi
+          echo "use_kubectl_diff=$use_kubectl_diff" >> $GITHUB_OUTPUT
+          echo "use_kubectl_apply=$use_kubectl_apply" >> $GITHUB_OUTPUT
+
+      - name: Deploy Microservice
+        uses: pagopa/interop-infra-commons/github/actions/deploy@${{ vars.INFRA_COMMONS_ACTIONS_DEPLOY_TAG }} # Aggiungere var?
         with:
           repository: pagopa/interop-infra-commons
           path: interop-infra-commons 
@@ -201,8 +215,22 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
-      - name: Checkout scripts repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+      
+      - name: Check Kubectl Enabled
+        id: check-kubectl-enabled
+        run: |
+          use_kubectl_diff=false
+          use_kubectl_apply=false
+
+          if [[ "${{ inputs.environment }}" == "vapt" ]]; then
+            use_kubectl_diff=true
+            use_kubectl_apply=true
+          fi
+          echo "use_kubectl_diff=$use_kubectl_diff" >> $GITHUB_OUTPUT
+          echo "use_kubectl_apply=$use_kubectl_apply" >> $GITHUB_OUTPUT
+      
+      - name: Deploy Cronjob
+        uses: pagopa/interop-infra-commons/github/actions/deploy@${{ vars.INFRA_COMMONS_ACTIONS_DEPLOY_TAG }} # Aggiungere var?
         with:
           repository: pagopa/interop-infra-commons
           path: interop-infra-commons 
