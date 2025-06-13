@@ -5,7 +5,7 @@ service:
   portName: http
 
 deployment:
-  replicas: 1
+  replicas: 0
   image:
     repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
