@@ -108,3 +108,7 @@ data:
   V1.4__Grant_Access_DelegationItemArchiver_Purpose.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_delegation_items_archiver_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_delegation_items_archiver_user";
+
+  V1.5__Grant_Access_PNConsumers_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_pn_consumers_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_pn_consumers_user";
