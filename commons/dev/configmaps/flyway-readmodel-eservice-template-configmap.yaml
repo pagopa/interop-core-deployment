@@ -139,6 +139,6 @@ data:
   V1.2__Grant_Usage_Schema_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";
 
-  V1.3__Grant_Access_EserviceTemplateInsstancesUpdater_Template.sql: |-
+  V1.3__Grant_Access_EserviceTemplateInstancesUpdater_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_eservice_template_instances_updater_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_eservice_template_instances_updater_user";
