@@ -26,3 +26,7 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client_jwk_key".client_jwk_key TO "${NAMESPACE}_key_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_client_jwk_key".client_jwk_key TO "${NAMESPACE}_api_gateway_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_client_jwk_key".client_jwk_key TO readonly_user;
+
+  V1.1__Grant_Access_ApiGWUser_ClientJWKKey.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_client_jwk_key" to "${NAMESPACE}_api_gateway_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_client_jwk_key" TO "${NAMESPACE}_api_gateway_user";
