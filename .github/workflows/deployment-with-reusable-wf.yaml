@@ -54,6 +54,8 @@ jobs:
   initChecks:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
+    outputs:
+      infra_commons_tag_computed: ${{ steps.extract-deploy-wf-tag.outputs.infra_commons_tag_computed }}
     steps:
       - name: Check user is a ${{ vars.ALLOWED_DEPLOY_GH_TEAMS }} team member
         id: checkUserPermissions
@@ -94,6 +96,31 @@ jobs:
           fi
 
           echo "$USER has the correct permissions to execute the workflow."
+
+      - name: Checkout repo @ current ref
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Extract deployment reusable workflow used tag
+        id: extract-deploy-wf-tag
+        run: |
+          fullref=$(yq e '.jobs."call-remote-inner-matrix".uses' .github/workflows/deployment-with-reusable-wf.yaml)
+
+          tag=${fullref#*@}
+
+          echo "fullref=$fullref"
+          echo "tag=$tag"
+
+          if [[ -n "${{ vars.INFRA_COMMONS_TAG }}" ]]; then
+            final_tag="${{ vars.INFRA_COMMONS_TAG }}"
+          else
+            final_tag="$tag"
+          fi
+          echo "infra_commons_tag_computed=$final_tag" >> $GITHUB_OUTPUT
+
+      - name: Show extracted tag
+        run: echo "infra_commons_tag_computed = ${{ steps.extract-deploy-wf-tag.outputs.infra_commons_tag_computed }}"
 
   create_runner:
     name: Create Self-Hosted Runner
@@ -146,14 +173,18 @@ jobs:
 # So, always() overrides this dependency, helping to execute the following job even when 'tf_apply_secrets' job is skipped.
  
   deploy:
-    needs: [ create_runner, tf_apply_secrets ]
+    needs: [ initChecks, create_runner, tf_apply_secrets ]
     secrets: inherit
     if: ${{ always() && (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success'))) }}
-    uses: ./.github/workflows/deploy-sub.yaml
+    uses: pagopa/interop-infra-commons/.github/workflows/common-k8s-deploy.yaml@feature/github-deploy-workflow
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 300
+      infra_commons_tag: ${{ needs.initChecks.outputs.infra_commons_tag_computed }}
       force_restart: ${{ inputs.force_restart }}
+      helm_upgrade_no_wait: ${{ vars.HELM_UPGRADE_NO_WAIT }}
+      use_kubectl_diff: ${{ vars.USE_KUBECTL_DIFF }}
+      use_kubectl_apply: ${{ vars.USE_KUBECTL_APPLY }}
 
   delete_runner:
     name: Delete Self-Hosted Runner
