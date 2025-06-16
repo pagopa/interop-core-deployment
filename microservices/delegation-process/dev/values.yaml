@@ -31,13 +31,6 @@ deployment:
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
-    resources:
-      limits:
-        cpu: "500m"
-        memory: "1Gi"
-      requests:
-        cpu: "10m"
-        memory: "64Mi"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -94,10 +87,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-  resources:
-    limits:
-      cpu: "1"
-      memory: "1Gi"
-    requests:
-      cpu: "1"
-      memory: "1Gi"
