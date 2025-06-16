@@ -132,13 +132,7 @@ jobs:
           export PROJECT_DIR=$(pwd)
 
           set +e
-          # TODO: temporary condition - will be removed
-          if [[ ${{inputs.environment}} == "vapt" ]]; then
-            $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --enable-templating-lookup --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
-          else
-            $SCRIPTS_FOLDER/helmDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
-          fi
-
+          $SCRIPTS_FOLDER/helmDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
           DIFF_EXIT_CODE=$?
           set -e
           
@@ -172,17 +166,14 @@ jobs:
           MICROSERVICE_FULLNAME=$(cat template.yaml | yq 'select(.kind == "Deployment") | .metadata.name')
           
           echo "INFO - Apply changes for $MICROSERVICE_FULLNAME."
-          # TODO: temporary condition - will be removed
-          if [[ ${{inputs.environment}} == "vapt" ]]; then
-            "$SCRIPTS_FOLDER/kubectlApply-svc-single-standalone.sh" --debug --skip-dep --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console
-          else
-            HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
-              echo "Force upgrade requested for $MICROSERVICE_FULLNAME"
-              HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
-            fi
-            "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
+
+          HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
+          if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
+            echo "Force upgrade requested for $MICROSERVICE_FULLNAME"
+            HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
           fi
+
+          "$SCRIPTS_FOLDER/helmUpgrade-svc-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -m "$MICROSERVICE_NAME" -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
 
           DESIRED_REPLICAS=$(kubectl get deployment "$MICROSERVICE_FULLNAME" -n "$K8S_NAMESPACE" -o jsonpath='{.spec.replicas}')
           echo "INFO - Desired replicas: $DESIRED_REPLICAS"
@@ -268,12 +259,7 @@ jobs:
           export PROJECT_DIR=$(pwd)
 
           set +e
-          # TODO: temporary condition - will be removed
-          if [[ ${{inputs.environment}} == "vapt" ]]; then
-            $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
-          else
-            $SCRIPTS_FOLDER/helmDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
-          fi
+          $SCRIPTS_FOLDER/helmDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
           
           DIFF_EXIT_CODE=$?
           set -e
@@ -293,6 +279,10 @@ jobs:
         run: |
           set -euo pipefail
 
+          echo "matrix.cronjob: ${{ matrix.cronjob }}"
+          echo "vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}"
+          echo "ENABLE_FORCE_UPGRADE: $ENABLE_FORCE_UPGRADE"
+
           export PROJECT_DIR=$(pwd)
 
           $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug -e ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console > template.yaml
@@ -301,14 +291,11 @@ jobs:
           CRONJOB_FULLNAME=$(cat template.yaml | yq 'select(.kind == "CronJob") | .metadata.name')
   
           echo "INFO - Apply changes for $CRONJOB_FULLNAME."
-          # TODO: temporary condition - will be removed
-          if [[ ${{inputs.environment}} == "vapt" ]]; then
-            $SCRIPTS_FOLDER/kubectlApply-cron-single-standalone.sh --debug --skip-dep --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml --output console 
-          else
-            HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-            if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
-              echo "Force upgrade requested for $CRONJOB_FULLNAME"
-              HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
-            fi
-            $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
-          fi 
+
+          HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
+          if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
+            echo "Force upgrade requested for $CRONJOB_FULLNAME"
+            HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
+          fi
+
+          $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
