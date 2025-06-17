@@ -105,7 +105,21 @@ jobs:
       - name: Extract deployment reusable workflow used tag
         id: extract-deploy-wf-tag
         run: |
-          fullref=$(yq e '.jobs."call-remote-inner-matrix".uses' .github/workflows/deployment-with-reusable-wf.yaml)
+          set -euo pipefail
+
+          WORKFLOW_FILE=".github/workflows/deployment-with-reusable-wf.yaml"
+          
+          if [[ ! -f "$WORKFLOW_FILE" ]]; then
+            echo "::error:: Workflow file '$WORKFLOW_FILE' not found."
+            exit 1
+          fi
+          job_content=$(yq e '.jobs.deploy // ""' .github/workflows/deployment-with-reusable-wf.yaml)
+          if [[ -z "$job_content" ]]; then
+            echo "::error:: 'deploy' job not found in the workflow file."
+            exit 1
+          fi
+
+          fullref=$(yq e '.jobs."deploy".uses' .github/workflows/deployment-with-reusable-wf.yaml)
 
           tag=${fullref#*@}
 
