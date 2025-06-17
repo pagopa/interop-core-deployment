@@ -140,3 +140,6 @@ data:
   V1.1__Grant_Access_Jobs_Consumers_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_eservice_template_instances_updater_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_eservice_template_instances_updater_user";
+
+  V1.2__Add_Column_TenantId_RiskAnalysis_Template.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_eservice_template".eservice_template_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR NOT NULL;
