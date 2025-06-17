@@ -1,101 +1,101 @@
 images:
   microservices:
     agreement-platformstate-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     agreement-process:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     agreement-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     agreement-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     api-gateway:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     attribute-registry-process:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     attribute-registry-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     attribute-registry-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     authorization-process:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     authorization-server:
       tag: "1.0.14"
     authorization-server-node:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     authorization-updater:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     backend-for-frontend:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     catalog-platformstate-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     catalog-process:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     catalog-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     catalog-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     certified-email-sender:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     client-purpose-updater:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     client-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     client-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     compute-agreements-consumer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     delegation-items-archiver:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     delegation-process:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     delegation-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     delegation-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     eservice-descriptors-archiver:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     eservice-template-instances-updater:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     eservice-template-process:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     eservice-template-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     eservice-template-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     frontend:
       tag: "dev-latest"
     key-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     key-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     m2m-gateway:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     notification-email-sender:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     producer-key-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     producer-key-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     producer-keychain-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     producer-keychain-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     purpose-platformstate-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     purpose-process:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     purpose-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     purpose-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     redis:
       tag: "7.0.4"
     ses-mock:
@@ -103,32 +103,32 @@ images:
     smtp-mock:
       tag: "1.10.4"
     tenant-process:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     tenant-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     tenant-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     token-details-persister-node:
-      tag: "develop"
+      tag: "2.4.0-RC9"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     datalake-data-export:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     dtd-catalog-exporter:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     ipa-certified-attributes-importer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     ivass-certified-attributes-importer:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     one-trust-notices:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     pn-consumers:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     readmodel-checker:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     token-generation-readmodel-checker:
-      tag: "develop"
+      tag: "2.4.0-RC9"
     token-details-persister:
       tag: "1.0.32"
