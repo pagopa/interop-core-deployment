@@ -5,7 +5,7 @@ images:
     attribute-registry-readmodel-writer-sql:
       tag: "2.4.0-RC8"
     authorization-server-node:
-      tag: "2.4.0-RC5" 
+      tag: "2.4.0-RC8"
     catalog-readmodel-writer-sql:
       tag: "2.4.0-RC8"
     certified-email-sender:
