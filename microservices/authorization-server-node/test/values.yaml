@@ -15,6 +15,8 @@ service:
 configmap:
   AUDIT_FALLBACK_S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   DPOP_CACHE_TABLE: "interop-dpop-cache-test"
+  DPOP_DURATION_SECONDS: "60"
+  DPOP_IAT_TOLERANCE_SECONDS: "10"
   DPOP_HTU: "https://auth.uat.interop.pagopa.it/token.oauth2"
   S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   GENERATED_INTEROP_TOKEN_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
