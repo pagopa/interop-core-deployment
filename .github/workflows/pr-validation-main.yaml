@@ -75,7 +75,7 @@ jobs:
       matrix:
         environment: [dev, qa, vapt]
     secrets: inherit
-    uses: pagopa/interop-infra-commons/actions/common-pr-deployment-values-validation.yaml@main
+    uses: pagopa/interop-infra-commons/.github/workflows/common-pr-deployment-values-validation.yaml@main
     with:
       infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
       environment: ${{ matrix.environment }}
