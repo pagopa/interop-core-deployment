@@ -28,6 +28,8 @@ configmap:
   RATE_LIMITER_TIMEOUT_MILLIS: "300"
   PRODUCER_KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-authorization-process"
   CLIENT_ASSERTION_AUDIENCE: "auth.uat.interop.pagopa.it/client-assertion"
+  DPOP_IAT_TOLERANCE_SECONDS: "10"
+  DPOP_DURATION_SECONDS: "60"
 
 deployment:
   image:
