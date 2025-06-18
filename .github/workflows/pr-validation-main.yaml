@@ -1,19 +1,81 @@
 name: PR Validation - Main Starter
+run-name: "${{ github.ref_name }} / PR Validation workflow - Main Starter"
 
 on:
   pull_request:
     types: [opened, edited, reopened, synchronize]
+  workflow_dispatch:  
+    inputs:
+      infra_commons_tag:
+        description: 'Tag of the infra-commons repository to use'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   id-token: write
   contents: read
+
+
 jobs:
+  print_inputs:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Print Inputs
+        id: print_inputs
+        run: |
+          echo "- ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- User provided infra_commons_tag: \`${{ inputs.infra_commons_tag }}\`" >> $GITHUB_STEP_SUMMARY
+
+  
+  extract-infra-commons-tag:
+    runs-on: ubuntu-22.04
+    outputs:
+      resolved_infra_commons_tag: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
+    steps: 
+      - name: Checkout caller repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Extract tag from reusable workflow
+        id: extract-infra-commons-tag
+        run: |
+          echo "Extracting tag from reusable workflow (wf version ${{github.ref}})"
+
+          if [ ! -f .github/workflows/pr-validation-main.yaml ]; then
+            echo "File not found"
+            exit 1
+          fi
+
+          fullref=$(yq e '.jobs.validation.uses' .github/workflows/pr-validation-main.yaml)
+
+          tag=${fullref#*@}
+
+          echo "fullref=$fullref"
+          echo "tag=$tag"
+
+          if [[ -n "${{ inputs.infra_commons_tag }}" ]]; then
+            # uses the tag provided by the user
+            final_tag="${{ inputs.infra_commons_tag }}"
+          else
+            # uses the tag from the reusable workflow
+            final_tag="$tag"
+          fi
+          echo "infra_commons_tag=$final_tag" >> $GITHUB_OUTPUT
+      
+      - name: Show extracted tag
+        run: echo "infra_commons_tag = ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}"
+
   validation:
     name: "Validation – ${{ matrix.environment }}"
+    needs: [print_inputs, extract-infra-commons-tag]
     strategy:
       fail-fast: false
       matrix:
         environment: [dev, qa, vapt]
+    secrets: inherit
     uses: pagopa/interop-infra-commons/actions/common-pr-deployment-values-validation.yaml@main
     with:
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
       environment: ${{ matrix.environment }}
