@@ -140,9 +140,13 @@ images:
       tag: "2.4.0-RC10"
     ivass-certified-attributes-importer:
       tag: "2.4.0-RC10"
+    one-trust-notices:
+      tag: "2.4.0-RC10"
     pn-consumers:
       tag: "2.4.0-RC10"
     readmodel-checker:
       tag: "2.4.0-RC10"
+    token-details-persister:
+      tag: "1.0.32"
     token-generation-readmodel-checker:
       tag: "2.4.0-RC10"
