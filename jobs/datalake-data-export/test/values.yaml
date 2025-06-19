@@ -41,3 +41,10 @@ cronjob:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-datalake-data-export-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-datalake-data-export-user.password"
+  resources:
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+    requests:
+      cpu: "2"
+      memory: "4Gi"

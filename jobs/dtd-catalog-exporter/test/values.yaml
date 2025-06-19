@@ -54,3 +54,10 @@ cronjob:
     READMODEL_SQL_DB_USERNAME: "platform-data-dtd-catalog-exporter-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-dtd-catalog-exporter-user.password"
     GITHUB_ACCESS_TOKEN: "metrics-reports.BOT_DTD_OPENDATA_GITHUB_ACCESS_TOKEN"
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
