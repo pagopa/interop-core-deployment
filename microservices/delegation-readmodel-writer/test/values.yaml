@@ -28,9 +28,9 @@ deployment:
     READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
     READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
   resources:
-    limits:
-      cpu: "1"
-      memory: "1Gi"
     requests:
-      cpu: "1"
+      cpu: "1000m"
+      memory: "1Gi"
+    limits:
+      cpu: "1000m"
       memory: "1Gi"

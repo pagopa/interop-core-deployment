@@ -52,3 +52,10 @@ deployment:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-certified-email-sender-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-certified-email-sender-user.password"
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "1Gi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"

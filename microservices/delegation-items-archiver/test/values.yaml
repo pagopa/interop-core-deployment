@@ -52,3 +52,10 @@ deployment:
     READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-delegation-items-archiver-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-items-archiver-user.password"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "1Gi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"

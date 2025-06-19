@@ -90,8 +90,8 @@ deployment:
     failureThreshold: 3
   resources:
     limits:
-      cpu: "500m"
-      memory: "2Gi"
+      cpu: "4"
+      memory: "8Gi"
     requests:
-      cpu: "500m"
-      memory: "2Gi"
+      cpu: "4"
+      memory: "8Gi"

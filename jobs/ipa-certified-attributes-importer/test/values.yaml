@@ -55,3 +55,10 @@ cronjob:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-ipa-certified-attributes-importer-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-ipa-certified-attributes-importer-user.password"
+  resources:
+    limits:
+      cpu: "1"
+      memory: "4Gi"
+    requests:
+      cpu: "1"
+      memory: "4Gi"
