@@ -1,0 +1,25 @@
+name: "interop-be-datalake-data-export"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-datalake-data-export-att-es1"
+
+configmap:
+  DATALAKE_STORAGE_BUCKET: "interop-data-lake-exports-{{.Values.namespace}}-es1"
+
+cronjob:
+  schedule: "45 6 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READ_MODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READ_MODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READ_MODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    MONGODB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
+    MONGODB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
+  envFromSecrets:
+    READ_MODEL_DB_USER: "documentdb.READONLY_USR"
+    READ_MODEL_DB_PASSWORD: "documentdb.READONLY_PSW"

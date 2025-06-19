@@ -1,0 +1,54 @@
+name: "interop-be-selfcare-onboarding-consumer"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-selfcare-onboarding-consumer-att-es1"
+
+service:
+  create: true
+  containerPort: 8088
+  additionalPorts:
+  - name: management
+    containerPort: 8558
+    protocol: TCP
+  - name: monitoring
+    containerPort: 9095
+    protocol: TCP
+    targetPort: monitoring
+  
+configmap:
+  KAFKA_BROKERS: "selc-p-eventhub-ns.servicebus.windows.net:9093"
+  KAFKA_CLIENT_ID: "interop-{{.Values.namespace}}"
+  KAFKA_GROUP_ID: "interop-onboarding-{{.Values.namespace}}"
+  SELFCARE_TOPIC: "sc-contracts"
+  RESET_CONSUMER_OFFSETS: "FALSE"
+  INTEROP_PRODUCT: "prod-interop-atst"
+  ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "3600"
+
+
+deployment:
+  securityContext:
+    runAsUser: 1001
+  env:
+    REQUIRED_CONTACT_POINT_NR: "1"
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
+    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+  envFromSecrets:
+    KAFKA_BROKER_CONNECTION_STRING: "selfcare-v2.SELFCARE_BROKER_CONNECTION_STRING"
+  resources:
+    limits:
+      cpu: "250m"
+      memory: "512Mi"
+    requests:
+      cpu: "250m"
+      memory: "512Mi"

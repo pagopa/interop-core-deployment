@@ -1,0 +1,38 @@
+name: "interop-be-anac-certified-attributes-importer"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-anac-certified-attributes-importer-att-es1"
+
+configmap:
+  SFTP_PORT: "22"
+  SFTP_PATH: "Esercizio"
+  SFTP_FILENAME_PREFIX: "esercizio"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "1800"
+  ANAC_TENANT_ID: "1c0cde2c-75a7-4cc9-b620-e371bdd0320a"
+  RECORDS_PROCESS_BATCH_SIZE: "100"
+
+cronjob:
+  schedule: "15 5,11,17,23 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READ_MODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READ_MODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READ_MODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    MONGODB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
+    MONGODB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+  envFromSecrets:
+    READ_MODEL_DB_USER: "documentdb.READONLY_USR"
+    READ_MODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
+    SFTP_HOST: "anac.SFTP_HOST"
+    SFTP_USERNAME: "anac.SFTP_USERNAME"
+    SFTP_PASSWORD: "anac.SFTP_PASSWORD"

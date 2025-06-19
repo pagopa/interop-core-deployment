@@ -16,16 +16,16 @@ configmap:
   AUDIT_FALLBACK_S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   GENERATED_INTEROP_TOKEN_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
-  GENERATED_INTEROP_TOKEN_ISSUER: "att.interop.pagopa.it"
-  GENERATED_INTEROP_TOKEN_M2M_AUDIENCE: "att.interop.pagopa.it/m2m"
+  GENERATED_INTEROP_TOKEN_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  GENERATED_INTEROP_TOKEN_M2M_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/m2m"
   GENERATED_INTEROP_TOKEN_M2M_DURATION_SECONDS: "600"
-  CLIENT_ASSERTION_JWT_AUDIENCE: "auth.att.interop.pagopa.it/client-assertion"
+  CLIENT_ASSERTION_JWT_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
   RATE_LIMITER_MAX_REQUESTS: "10"
   RATE_LIMITER_BURST_PERCENTAGE: "1.0"
   RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
-  RATE_LIMITER_TIMEOUT_MILLIS: "300"
+  RATE_LIMITER_TIMEOUT_MILLIS: "200"
   PRODUCER_KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-authorization-process"
-  CLIENT_ASSERTION_AUDIENCE: "auth.att.interop.pagopa.it/client-assertion"
+  CLIENT_ASSERTION_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
 
 deployment:
   image:
