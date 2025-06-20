@@ -8,7 +8,6 @@ configmap:
 
 cronjob:
   schedule: "0 3 * * *"
-  suspend: true
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
