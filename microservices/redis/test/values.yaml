@@ -16,11 +16,3 @@ deployment:
   args: ["--save", "''", "--appendonly", "no"]
   livenessProbe:
   readinessProbe:
-  resources:
-    requests:
-      cpu: "4"
-      memory: "8Gi"
-    limits:
-      cpu: "4"
-      memory: "8Gi"
-  

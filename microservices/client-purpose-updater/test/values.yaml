@@ -33,10 +33,3 @@ deployment:
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
     READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
-  resources:
-    requests:
-      cpu: "1000m"
-      memory: "2Gi"
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"

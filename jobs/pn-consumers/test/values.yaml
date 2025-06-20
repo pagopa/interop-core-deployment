@@ -48,10 +48,3 @@ cronjob:
     SMTP_PASSWORD: "smtp-reports.SMTP_PASSWORD"
     READMODEL_SQL_DB_USERNAME: "platform-data-pn-consumers-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-pn-consumers-user.password"
-  resources:
-    limits:
-      cpu: "500m"
-      memory: "1Gi"
-    requests:
-      cpu: "500m"
-      memory: "1Gi"

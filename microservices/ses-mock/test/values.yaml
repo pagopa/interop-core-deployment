@@ -13,10 +13,3 @@ deployment:
     repositoryName: "node"
   command: ["/bin/bash"]
   args: ["-c", "npm install -g aws-ses-v2-local; aws-ses-v2-local --port=8005 --host=0.0.0.0"]
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "512Mi"
-    limits:
-      cpu: "500m"
-      memory: "512Mi"

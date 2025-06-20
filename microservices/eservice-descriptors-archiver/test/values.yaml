@@ -50,10 +50,3 @@ deployment:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-eservice-descriptors-archiver-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-descriptors-archiver-user.password"
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
-    limits:
-      cpu: "500m"
-      memory: "1Gi"

@@ -19,10 +19,4 @@ deployment:
     fakesmtp.authentication.username: username
     fakesmtp.authentication.password: password
     SERVER_PORT: "8080"
-  resources:
-    requests:
-      cpu: "1"
-      memory: "512Mi"
-    limits:
-      cpu: "1"
-      memory: "512Mi"
+ 

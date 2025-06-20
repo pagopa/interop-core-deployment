@@ -55,10 +55,3 @@ deployment:
     SMTP_PASSWORD: "smtp-notifications.SMTP_PASSWORD"
     READMODEL_SQL_DB_USERNAME: "platform-data-notification-email-sender-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-notification-email-sender-user.password"
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
-    limits:
-      cpu: "500m"
-      memory: "1Gi"

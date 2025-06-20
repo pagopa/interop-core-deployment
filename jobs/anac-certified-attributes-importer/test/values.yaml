@@ -54,10 +54,3 @@ cronjob:
     SFTP_PASSWORD: "anac.SFTP_PASSWORD"
     READMODEL_SQL_DB_USERNAME: "platform-data-anac-certified-attributes-importer-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-anac-certified-attributes-importer-user.password"
-  resources:
-    limits:
-      cpu: "500m"
-      memory: "1Gi"
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
