@@ -9,7 +9,7 @@ images:
     agreement-readmodel-writer:
       tag: "2.4.0-RC10"
     agreement-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     api-gateway:
       tag: "2.4.0-RC10"
     attribute-registry-process:
@@ -17,7 +17,7 @@ images:
     attribute-registry-readmodel-writer:
       tag: "2.4.0-RC10"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
@@ -27,7 +27,7 @@ images:
     authorization-server:
       tag: "1.0.15"
     authorization-server-node:
-      tag: "2.4.0-RC5"
+      tag: "2.4.0-RC11"
     authorization-updater:
       tag: "2.4.0-RC10"
     backend-for-frontend:
@@ -41,21 +41,21 @@ images:
     catalog-readmodel-writer:
       tag: "2.4.0-RC10"
     catalog-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     certified-email-sender:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     client-purpose-updater:
       tag: "2.4.0-RC10"
     client-readmodel-writer:
       tag: "2.4.0-RC10"
     client-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     compute-agreements-consumer:
       tag: "2.4.0-RC10"
     datalake-interface-exporter:
       tag: "2.4.0-RC10"      
     delegation-items-archiver:
-      tag: "2.4.0-RC10"      
+      tag: "2.4.0-RC11"      
     delegation-outbound-writer:
       tag: "2.4.0-RC10"
     delegation-process:
@@ -63,27 +63,27 @@ images:
     delegation-readmodel-writer:
       tag: "2.4.0-RC10"
     delegation-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     eservice-descriptors-archiver:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     eservice-template-instances-updater:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     eservice-template-process:
       tag: "2.4.0-RC10"
     eservice-template-readmodel-writer:
       tag: "2.4.0-RC10"
     eservice-template-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     frontend:
       tag: "1.2.3"
     key-readmodel-writer:
       tag: "2.4.0-RC10"
     key-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     m2m-gateway:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     notification-email-sender:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
@@ -93,11 +93,11 @@ images:
     producer-key-readmodel-writer:
       tag: "2.4.0-RC10"
     producer-key-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     producer-keychain-readmodel-writer:
       tag: "2.4.0-RC10"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     purpose-platformstate-writer:
       tag: "2.4.0-RC10"
     purpose-process:
@@ -107,11 +107,11 @@ images:
     purpose-readmodel-writer:
       tag: "2.4.0-RC10"
     purpose-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     selfcare-onboarding-consumer:
       tag: "2.4.0-RC10"
     ses-mock:
@@ -125,28 +125,28 @@ images:
     tenant-readmodel-writer:
       tag: "2.4.0-RC10"
     tenant-readmodel-writer-sql:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     token-details-persister-node:
       tag: "2.4.0-RC10"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     datalake-data-export:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     dtd-catalog-exporter:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     ipa-certified-attributes-importer:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     ivass-certified-attributes-importer:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     one-trust-notices:
       tag: "2.4.0-RC10"
     pn-consumers:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     readmodel-checker:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "2.4.0-RC10"
+      tag: "2.4.0-RC11"
