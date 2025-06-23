@@ -17,6 +17,7 @@ configmap:
   INTERNAL_JWT_SUBJECT: "uat.interop-m2m"
 
 deployment:
+  replicas: 0
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:

@@ -42,6 +42,7 @@ configmap:
   ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
 
 deployment:
+  replicas: 0
   securityContext:
     runAsUser: 1001
   command: ["bin/interop-be-authorization-server"]
