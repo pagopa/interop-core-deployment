@@ -37,7 +37,7 @@ configmap:
   RATE_LIMITER_RATE_INTERVAL: "1.second"
   RATE_LIMITER_TIMEOUT: "300.milliseconds"
   JWT_FALLBACK_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
-  JWT_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/505630707203/generated-jwt"
+  JWT_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/895646477129/generated-jwt"
   DEV_ENDPOINTS_ENABLED: "{{.Values.local.interop_be_commons.DEV_ENDPOINTS_ENABLED}}"
   ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
 
