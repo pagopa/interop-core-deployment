@@ -97,13 +97,13 @@ deployment:
     SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
   livenessProbe:
     httpGet:
-      path: "/backend-for-frontend/0.0/status"
+      path: "/backend-for-frontend/1.0/status"
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
   readinessProbe:
     httpGet:
-      path: "/backend-for-frontend/0.0/status"
+      path: "/backend-for-frontend/1.0/status"
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
