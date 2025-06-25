@@ -115,9 +115,9 @@ images:
     selfcare-onboarding-consumer:
       tag: "2.4.0-RC11"
     ses-mock:
-      tag: "2.4.0-RC11"
-    smtp-mock:
       tag: "20"
+    smtp-mock:
+      tag: "1.10.4"
     tenant-outbound-writer:
       tag: "2.4.0-RC11"
     tenant-process:
