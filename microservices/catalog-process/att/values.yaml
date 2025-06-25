@@ -6,7 +6,7 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::533267098416:role/interop-be-catalog-process-dev-es1"
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-catalog-process-att-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_catalog"
