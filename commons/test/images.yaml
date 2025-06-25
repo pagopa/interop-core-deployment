@@ -1,58 +1,58 @@
 images:
   microservices:
     agreement-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     authorization-server-node:
-      tag: "2.4.0-RC5" 
+      tag: "2.4.0-RC11"
     catalog-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     certified-email-sender:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     client-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     delegation-items-archiver:
-      tag: "2.4.0-RC8"      
+      tag: "2.4.0-RC11"      
     delegation-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     eservice-descriptors-archiver:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     eservice-template-instances-updater:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     eservice-template-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     key-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     m2m-gateway:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     notification-email-sender:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     producer-key-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     purpose-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     selfcare-client-users-updater:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     tenant-readmodel-writer-sql:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     datalake-data-export:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     dtd-catalog-exporter:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     ipa-certified-attributes-importer:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     ivass-certified-attributes-importer:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     pn-consumers:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     readmodel-checker:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"
     token-generation-readmodel-checker:
-      tag: "2.4.0-RC8"
+      tag: "2.4.0-RC11"

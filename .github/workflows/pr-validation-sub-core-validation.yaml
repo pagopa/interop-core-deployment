@@ -104,7 +104,7 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --disable-templating-lookup --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
       
   template_cronjobs:
     name: ${{ matrix.cronjob }}

@@ -107,7 +107,7 @@ jobs:
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --enable-templating-lookup --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
       - name: Diff
         id: diff
         env: 
