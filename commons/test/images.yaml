@@ -117,7 +117,7 @@ images:
     ses-mock:
       tag: "2.4.0-RC11"
     smtp-mock:
-      tag: "2.4.0-RC11"
+      tag: "20"
     tenant-outbound-writer:
       tag: "2.4.0-RC11"
     tenant-process:
