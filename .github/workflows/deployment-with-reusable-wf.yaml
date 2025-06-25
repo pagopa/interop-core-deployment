@@ -190,12 +190,11 @@ jobs:
     needs: [ initChecks, create_runner, tf_apply_secrets ]
     secrets: inherit
     if: ${{ always() && (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success'))) }}
-    uses: pagopa/interop-infra-commons/.github/workflows/common-k8s-deploy.yaml@feature/github-deploy-workflow #TODO cambiare con il tag corretto
+    uses: pagopa/interop-infra-commons/.github/workflows/common-k8s-deploy.yaml@v1.20.1
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 300
       infra_commons_tag: ${{ needs.initChecks.outputs.infra_commons_tag_computed }}
-      force_restart: ${{ inputs.force_restart }}
       helm_upgrade_no_wait: ${{ vars.HELM_UPGRADE_NO_WAIT }}
       use_kubectl_diff: ${{ vars.USE_KUBECTL_DIFF }}
       use_kubectl_apply: ${{ vars.USE_KUBECTL_APPLY }}
