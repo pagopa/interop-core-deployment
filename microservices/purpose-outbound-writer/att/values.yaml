@@ -1,0 +1,25 @@
+name: "interop-be-purpose-outbound-writer"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-purpose-outbound-writer-att-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-purpose-outbound-writer"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-purpose-outbound-writer"
+
+deployment:
+  env:
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    PURPOSE_OUTBOUND_TOPIC: "common-kafka.PURPOSE_OUTBOUND_TOPIC"
+    PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+   

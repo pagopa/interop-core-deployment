@@ -1,0 +1,26 @@
+name: "interop-be-token-generation-readmodel-checker"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-token-generation-readmodel-checker-att-es1"
+
+configmap:
+  AGREEMENTS_TO_SKIP: ""
+
+cronjob:
+  schedule: "0 3 * * *"
+  suspend: true
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    TOKEN_GENERATION_READMODEL_TABLE_NAME_PLATFORM: "common-token-generation-read-model.TOKEN_READMODEL_PLATFORM_STATES_TABLE_NAME"
+    TOKEN_GENERATION_READMODEL_TABLE_NAME_TOKEN_GENERATION: "common-token-generation-read-model.TOKEN_READMODEL_TOKEN_STATES_TABLE_NAME"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "documentdb.READONLY_USR"
+    READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
