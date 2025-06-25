@@ -7,11 +7,16 @@ configmap:
   TENANTS_COLLECTION_NAME: "tenants"
   ATTRIBUTES_COLLECTION_NAME: "attributes"
   ESERVICES_COLLECTION_NAME: "eservices"
-  DTD_CATALOG_STORAGE_BUCKET: "interop-public-catalog-{{.Values.namespace}}-es1"
+  S3_BUCKET: "interop-public-catalog-{{.Values.namespace}}-es1"
   DTD_CATALOG_STORAGE_PATH: "catalog"
-  FILENAME: "catalog.json"
+  DTD_CATALOG_FILENAME: "catalog.json"
+  DTD_CATALOG_JSON_FILENAME: "catalog.json"
+  DTD_CATALOG_CSV_FILENAME: "catalog.csv"
+  DTD_TENANTS_CSV_FILENAME: "tenants.csv"
+  DTD_TENANTS_JSON_FILENAME: "tenants.json"
 
 cronjob:
+  suspend: true
   schedule: "0 */3 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
