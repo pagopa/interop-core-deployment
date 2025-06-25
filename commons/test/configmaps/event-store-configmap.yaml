@@ -4,6 +4,6 @@ metadata:
   name: common-event-store
   namespace: test
 data:
-  EVENTSTORE_DB_HOST: interop-platform-data-test.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com
+  EVENTSTORE_DB_HOST: interop-platform-data-test.cluster-ciwztfqful5r.eu-south-1.rds.amazonaws.com
   EVENTSTORE_DB_NAME: persistence_management
   EVENTSTORE_DB_PORT: '5432'
