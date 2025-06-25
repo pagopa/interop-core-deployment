@@ -1,0 +1,230 @@
+name: Interop Core Deployment V2
+run-name: "${{ github.ref_name }} / ${{ inputs.environment }} - Interop Core Deployment"
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        type: environment
+      force_restart:
+        description: 'Force Deployment Rollout Restart'
+        required: true
+        default: false
+        type: boolean
+      run_k8s_workflow:
+        description: 'Run K8s workflow'
+        required: true
+        default: true
+        type: boolean
+      run_tf_apply_monitoring_workflow:
+        description: 'Run tf_apply_monitoring workflow'
+        required: true
+        default: true
+        type: boolean
+      run_tf_apply_secrets_workflow:
+        description: 'Run tf_apply_secrets workflow'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  print_inputs:
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Print Inputs
+        id: print_inputs
+        run: |
+          echo "- environment: \`${{ inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- force_restart: \`${{ inputs.force_restart }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- run_k8s_workflow: \`${{ inputs.run_k8s_workflow }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- run_tf_apply_monitoring_workflow: \`${{ inputs.run_tf_apply_monitoring_workflow }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- run_tf_apply_secrets_workflow: \`${{ inputs.run_tf_apply_secrets_workflow }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- HELM_FORCE_UPGRADE_MICROSERVICES_CSV: \`${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- HELM_FORCE_UPGRADE_CRONJOBS_CSV: \`${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}\`" >> $GITHUB_STEP_SUMMARY
+
+  initChecks:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    outputs:
+      infra_commons_tag_computed: ${{ steps.extract-deploy-wf-tag.outputs.infra_commons_tag_computed }}
+    steps:
+      - name: Check user is a ${{ vars.ALLOWED_DEPLOY_GH_TEAMS }} team member
+        id: checkUserPermissions
+        if: ${{ inputs.environment != 'dev' && inputs.environment != 'qa' }}
+        env:
+            GITHUB_TOKEN: ${{ secrets.BOT_TEAMS_RO_PAT }}
+            ORG: ${{ github.repository_owner }}
+            TEAMS: ${{ vars.ALLOWED_DEPLOY_GH_TEAMS }}
+            USER: ${{ github.triggering_actor	}}
+        run: |
+          set -euo pipefail
+          TEAMS_LIST=$(echo $TEAMS | tr "," "\n")
+
+          CHECK_SUCCESS=0
+
+          for TEAM in $TEAMS_LIST; do
+            set +e
+            # Check current user membership with gh api 
+            echo "Check if user is member of $TEAM"           
+            GH_TEAM_MEMBERSHIP_RESPONSE=$(gh api -i --method GET -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" \/orgs/$ORG/teams/$TEAM/memberships/$USER)
+            set -e
+            
+            # Extract the HTTP status code
+            HTTP_CODE=$(echo $GH_TEAM_MEMBERSHIP_RESPONSE | head -n 1 | cut -d' ' -f 2)
+
+            if [[ $HTTP_CODE -eq 200 ]]; then
+              echo "User is member of $TEAM"
+              CHECK_SUCCESS=1
+              break
+            else
+              echo "User is NOT member of $TEAM"
+            fi
+          done
+            
+          if [[ $CHECK_SUCCESS -eq 0 ]]; then
+            echo "::error:: Resource not found. Please check the organization ($ORG), team ($TEAMS), and username ($USER). $USER is not memeber of specified teams."
+            exit 1
+          fi
+
+          echo "$USER has the correct permissions to execute the workflow."
+
+      - name: Checkout repo @ current ref
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Extract deployment reusable workflow used tag
+        id: extract-deploy-wf-tag
+        run: |
+          set -euo pipefail
+
+          WORKFLOW_FILE=".github/workflows/deployment-with-reusable-wf.yaml"
+          
+          if [[ ! -f "$WORKFLOW_FILE" ]]; then
+            echo "::error:: Workflow file '$WORKFLOW_FILE' not found."
+            exit 1
+          fi
+          job_content=$(yq e '.jobs.deploy // ""' .github/workflows/deployment-with-reusable-wf.yaml)
+          if [[ -z "$job_content" ]]; then
+            echo "::error:: 'deploy' job not found in the workflow file."
+            exit 1
+          fi
+
+          fullref=$(yq e '.jobs."deploy".uses' .github/workflows/deployment-with-reusable-wf.yaml)
+
+          tag=${fullref#*@}
+
+          echo "fullref=$fullref"
+          echo "tag=$tag"
+
+          if [[ -n "${{ vars.INFRA_COMMONS_TAG }}" ]]; then
+            final_tag="${{ vars.INFRA_COMMONS_TAG }}"
+          else
+            final_tag="$tag"
+          fi
+          echo "infra_commons_tag_computed=$final_tag" >> $GITHUB_OUTPUT
+
+      - name: Show extracted tag
+        run: echo "infra_commons_tag_computed = ${{ steps.extract-deploy-wf-tag.outputs.infra_commons_tag_computed }}"
+
+  create_runner:
+    name: Create Self-Hosted Runner
+    runs-on: ubuntu-22.04
+    if: ${{ inputs.run_k8s_workflow || inputs.run_tf_apply_secrets_workflow }}
+    environment: ${{ inputs.environment }}
+    needs: [ initChecks ]
+    outputs:
+      ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
+    strategy:
+      matrix:
+        index: [1,2,3,4,5,6,7,8,9,10]
+      fail-fast: false
+    steps:
+      - name: Start GitHub Runner
+        id: start_runner
+        uses: pagopa/interop-github-runner-aws-create-action@main
+        with:
+          aws_region: ${{ secrets.AWS_REGION }}
+          iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
+          ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
+          ecs_task_definition: ${{ secrets.ECS_TASK_DEFINITION }}
+          ecs_task_cpu: ${{ vars.ECS_TASK_CPU }}
+          ecs_task_memory: ${{ vars.ECS_TASK_MEMORY }}
+          ecs_container_name: ${{ vars.ECS_TASK_CONTAINER_NAME }}
+          ecs_task_subnet_id: ${{ secrets.SUBNET_ID }}
+          ecs_task_sec_group: ${{ secrets.SEC_GROUP_ID }}
+          ecs_task_max_duration_seconds: ${{ vars.ECS_TASK_MAX_DURATION_SECONDS }}
+          pat_token: ${{ secrets.BOT_TOKEN }}
+          environment: ${{ inputs.environment }}
+
+  tf_apply_secrets:
+    needs: [ create_runner]
+    secrets: inherit
+    if: ${{ inputs.run_tf_apply_secrets_workflow }}
+    uses: ./.github/workflows/tf-apply-secrets.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      timeout_seconds: 300
+
+# The following 'deploy' job must be executed when:
+# we want to deploy microservices and cronjobs to k8s (inputs.run_k8s_workflow is TRUE)
+# AND
+#   we don't want to apply secrets to k8s (!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped')		
+#   OR
+#   we want to apply secrets to k8s (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success')
+###
+# Note: always() is required because the following job has a dependency with 'tf_apply_secrets' job.
+# In case we don’t want to deploy secrets to k8s, the 'tf_apply_secrets' job would be skipped and the current job would be skipped as well.
+# So, always() overrides this dependency, helping to execute the following job even when 'tf_apply_secrets' job is skipped.
+ 
+  deploy:
+    needs: [ initChecks, create_runner, tf_apply_secrets ]
+    secrets: inherit
+    if: ${{ always() && (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success'))) }}
+    uses: pagopa/interop-infra-commons/.github/workflows/common-k8s-deploy.yaml@v1.20.1
+    with:
+      environment: ${{ inputs.environment }}
+      timeout_seconds: 300
+      infra_commons_tag: ${{ needs.initChecks.outputs.infra_commons_tag_computed }}
+      helm_upgrade_no_wait: ${{ vars.HELM_UPGRADE_NO_WAIT }}
+      use_kubectl_diff: ${{ vars.USE_KUBECTL_DIFF }}
+      use_kubectl_apply: ${{ vars.USE_KUBECTL_APPLY }}
+
+  delete_runner:
+    name: Delete Self-Hosted Runner
+    needs: [ create_runner, deploy, tf_apply_secrets ]
+    if: ${{ always() && ( (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || inputs.run_tf_apply_secrets_workflow)) || inputs.run_tf_apply_secrets_workflow ) }}
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        index: [1,2,3,4,5,6,7,8,9,10]
+      fail-fast: false
+    steps:
+      - name: Stop Github Runner
+        id: stop_runner
+        uses: pagopa/interop-github-runner-aws-cleanup-action@main
+        with:
+          aws_region: ${{ secrets.AWS_REGION }}
+          iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
+          ecs_cluster_name: ${{ secrets.ECS_CLUSTER_NAME }}
+          pat_token: ${{ secrets.BOT_TOKEN }}
+          environment: ${{ inputs.environment }}
+
+  tf_apply_monitoring:
+    needs: [ initChecks ]
+    secrets: inherit
+    if: ${{ inputs.run_tf_apply_monitoring_workflow }}
+    uses: ./.github/workflows/tf-apply-monitoring.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      timeout_seconds: 300
