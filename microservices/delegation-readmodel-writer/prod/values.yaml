@@ -1,0 +1,36 @@
+name: "interop-be-delegation-readmodel-writer"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-delegation-readmodel-writer-prod-es1"
+  
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-delegation"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-delegation-readmodel-writer"
+
+deployment:
+  env:
+    PORT: "8088"
+    HOST: "0.0.0.0"
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
+    READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "1"
+      memory: "1Gi"
