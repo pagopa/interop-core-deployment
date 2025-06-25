@@ -14,7 +14,7 @@ serviceAccount:
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
   BASE_URL: "api.{{.Values.namespace}}.interop.pagopa.it"
-  API_GATEWAY_INTERFACE_VERSION: "0.0"
+  API_GATEWAY_INTERFACE_VERSION: "1.0"
   RATE_LIMITER_MAX_REQUESTS: "10"
   RATE_LIMITER_BURST_PERCENTAGE: "1.0"
   RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
