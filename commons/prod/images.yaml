@@ -2,15 +2,23 @@ images:
   microservices:
     agreement-outbound-writer:
       tag: "2.0.28"
+    agreement-process:
+      tag: "2.0.28"
     agreement-readmodel-writer:
       tag: "2.0.28"
     agreement-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    attribute-registry-process:
+      tag: "2.0.28"
     attribute-registry-readmodel-writer:
       tag: "2.0.28"
     attribute-registry-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    authorization-process:
+      tag: "2.0.28"
     catalog-outbound-writer:
+      tag: "2.0.28"
+    catalog-process:
       tag: "2.0.28"
     catalog-readmodel-writer:
       tag: "2.0.28"
@@ -32,8 +40,6 @@ images:
       tag: "2.4.0-RC11"      
     delegation-outbound-writer:
       tag: "2.4.0-RC11"
-    delegation-items-archiver:
-      tag: "2.4.0-RC11"
     delegation-readmodel-writer:
       tag: "2.4.0-RC11"
     delegation-readmodel-writer-sql:
@@ -41,7 +47,7 @@ images:
     eservice-descriptors-archiver:
       tag: "2.0.28"
     eservice-template-instances-updater:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0-RC11"   
     eservice-template-readmodel-writer:
       tag: "2.4.0-RC11"
     eservice-template-readmodel-writer-sql:
@@ -64,6 +70,8 @@ images:
       tag: "2.0.28"
     producer-keychain-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    purpose-process:
+      tag: "2.0.28"
     purpose-outbound-writer:
       tag: "2.0.28"
     purpose-readmodel-writer:
@@ -73,6 +81,8 @@ images:
     selfcare-onboarding-consumer:
       tag: "2.0.28"
     tenant-outbound-writer:
+      tag: "2.0.28"
+    tenant-process:
       tag: "2.0.28"
     tenant-readmodel-writer:
       tag: "2.0.28"
