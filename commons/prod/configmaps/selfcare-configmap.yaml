@@ -4,9 +4,9 @@ metadata:
   name: common-selfcare
   namespace: prod
 data:
-  SELFCARE_BASE_URL : "https://selfcare.pagopa.it" # UNUSED
+  SELFCARE_BASE_URL : "https://selfcare.pagopa.it"
   SELFCARE_V2_URL: "https://api.selfcare.pagopa.it/external/v2"
-  SELFCARE_KAFKA_BROKERS: "selc-p-eventhub-ns.servicebus.windows.net:9093" # UNUSED
-  SELFCARE_LOGIN_URL: "https://selfcare.pagopa.it/auth/login" # UNUSED
-  SELFCARE_CONTRACTS_TOPIC: "sc-contracts" # UNUSED
-  SELFCARE_USERS_TOPIC: "sc-users" # UNUSED
+  SELFCARE_KAFKA_BROKERS: "selc-p-eventhub-ns.servicebus.windows.net:9093"
+  SELFCARE_LOGIN_URL: "https://selfcare.pagopa.it/auth/login"
+  SELFCARE_CONTRACTS_TOPIC: "sc-contracts"
+  SELFCARE_USERS_TOPIC: "sc-users"
