@@ -40,6 +40,8 @@ images:
       tag: "2.4.0-RC11"      
     delegation-outbound-writer:
       tag: "2.4.0-RC11"
+    delegation-process:
+      tag: "2.4.0-RC11"
     delegation-readmodel-writer:
       tag: "2.4.0-RC11"
     delegation-readmodel-writer-sql:
@@ -47,7 +49,9 @@ images:
     eservice-descriptors-archiver:
       tag: "2.0.28"
     eservice-template-instances-updater:
-      tag: "2.4.0-RC11"   
+      tag: "2.4.0-RC11"
+    eservice-template-process:
+      tag: "2.4.0-RC11"
     eservice-template-readmodel-writer:
       tag: "2.4.0-RC11"
     eservice-template-readmodel-writer-sql:
