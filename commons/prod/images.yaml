@@ -20,8 +20,6 @@ images:
       tag: "2.0.28"
     catalog-process:
       tag: "2.0.28"
-    catalog-outbound-writer:
-      tag: "2.0.28"
     catalog-readmodel-writer:
       tag: "2.0.28"
     catalog-readmodel-writer-sql:
