@@ -1,0 +1,27 @@
+name: "interop-be-compute-agreements-consumer"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-compute-agreements-consumer-prod-es1"
+
+service:
+  create: false
+  
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-compute-agreements-consumer"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-compute-agreements-consumer"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_ISSUER: "interop.pagopa.it"
+  INTERNAL_JWT_SUBJECT: "interop-m2m"
+  INTERNAL_JWT_AUDIENCE: "interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "3600"
+
+deployment:
+  env:
+    TOPIC_STARTING_OFFSET: "latest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
+    TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
