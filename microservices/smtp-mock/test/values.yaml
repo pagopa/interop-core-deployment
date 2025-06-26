@@ -1,0 +1,22 @@
+name: smtp-mock
+techStack: nodejs
+
+service:
+  create: true
+  portName: smtp-mock
+  containerPort: 5025
+  targetPort: 5025
+  additionalPorts:
+    - name: web-ui
+      containerPort: 8080
+      protocol: TCP
+
+deployment:
+  image:
+    repositoryPrefix: docker.io
+    repositoryName: "gessnerfl/fake-smtp-server"
+  env:
+    fakesmtp.authentication.username: username
+    fakesmtp.authentication.password: password
+    SERVER_PORT: "8080"
+ 

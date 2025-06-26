@@ -1,0 +1,33 @@
+name: "interop-be-pn-consumers"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-pn-consumers-att-es1"
+
+configmap:
+  SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
+  SMTP_PORT: "5025"
+  SMTP_SECURE: "true"
+  PN_ESERVICE_ID: "927c4432-46a6-408c-8bc5-f6930ef96b32"
+  COMUNI_E_LORO_CONSORZI_E_ASSOCIAZIONI_ATTRIBUTE_ID: "bc71ba3e-3607-46a3-96dc-af3ebb47ca64"
+  REPORT_SENDER_MAIL: "noreply@reports.{{.Values.namespace}}.interop.pagopa.it"
+  REPORT_SENDER_LABEL: "noreply-{{.Values.namespace}}"
+
+cronjob:
+  schedule: "0 7 */2 * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"    
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "documentdb.READONLY_USR"
+    READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
+    MAIL_RECIPIENTS: "pn-consumers.MAIL_RECIPIENTS"
+    SMTP_USER: "smtp-reports.SMTP_USER"
+    SMTP_PASSWORD: "smtp-reports.SMTP_PASSWORD"
+    
