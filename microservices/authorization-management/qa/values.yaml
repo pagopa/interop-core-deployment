@@ -28,6 +28,7 @@ configmap:
   ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
  
 deployment:
+  replicas: 0
   podTemplateMetadata:
     labels:
       actorSystemName: "{{.Values.name}}"
