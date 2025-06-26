@@ -16,6 +16,10 @@ images:
       tag: "2.0.28"
     catalog-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    certified-email-sender:
+      tag: "2.3.3"
+    client-purpose-updater:
+      tag: "2.0.28"
     client-readmodel-writer:
       tag: "2.0.28"
     client-readmodel-writer-sql:
@@ -24,6 +28,8 @@ images:
       tag: "2.0.28"      
     datalake-interface-exporter:
       tag: "2.4.0-RC11"
+    delegation-items-archiver:
+      tag: "2.4.0-RC11"      
     delegation-outbound-writer:
       tag: "2.4.0-RC11"
     delegation-items-archiver:
@@ -32,6 +38,8 @@ images:
       tag: "2.4.0-RC11"
     delegation-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    eservice-descriptors-archiver:
+      tag: "2.0.28"
     eservice-template-instances-updater:
       tag: "2.4.0-RC11"
     eservice-template-readmodel-writer:
@@ -44,6 +52,8 @@ images:
       tag: "2.4.0-RC11"
     notification-email-sender:
       tag: "2.3.3"
+    notifier:
+      tag: "1.0.19"
     notifier-seeder:
       tag: "2.0.28"
     producer-key-readmodel-writer:
