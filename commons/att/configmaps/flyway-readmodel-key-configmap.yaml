@@ -30,3 +30,7 @@ data:
   V1.1__Grant_Access_Jobs_Consumers_ClientJWKKey.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_client_jwk_key" to "${NAMESPACE}_api_gateway_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_client_jwk_key" TO "${NAMESPACE}_api_gateway_user";
+
+  V1.2__Grant_Access_AuthorizationProcessUser_ClientJWKKey.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_client_jwk_key" to "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_client_jwk_key" TO "${NAMESPACE}_authorization_process_user";
