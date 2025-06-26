@@ -5,5 +5,5 @@ metadata:
   namespace: prod
 data:
   WELL_KNOWN_URLS: "https://interop.pagopa.it/.well-known/jwks.json"
-  SELFCARE_WELL_KNOWN_URLS: "https://selfcare.pagopa.it/.well-known/jwks.json" # VERIFY
-  BFF_WELL_KNOWN_URLS: "https://interop.pagopa.it/.well-known/jwks.json,https://selfcare.pagopa.it/.well-known/jwks.json" # VERIFY
+  SELFCARE_WELL_KNOWN_URLS: "https://selfcare.pagopa.it/.well-known/jwks.json" # UNUSED
+  BFF_WELL_KNOWN_URLS: "https://interop.pagopa.it/.well-known/jwks.json,https://selfcare.pagopa.it/.well-known/jwks.json" # UNUSED
