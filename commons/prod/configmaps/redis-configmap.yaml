@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-redis
+  namespace: prod
+data:
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
