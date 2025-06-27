@@ -1,98 +1,98 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     agreement-process:
       tag: 2.4.0"
     agreement-readmodel-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     agreement-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     attribute-registry-process:
       tag: "2.4.0"
     attribute-registry-readmodel-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     authorization-process:
       tag: "2.4.0"
     catalog-outbound-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     catalog-process:
       tag: "2.4.0"
     catalog-readmodel-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     catalog-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     certified-email-sender:
-      tag: "2.3.3"
+      tag: "2.4.0"
     client-purpose-updater:
-      tag: "2.0.28"
+      tag: "2.4.0"
     client-readmodel-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     client-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     compute-agreements-consumer:
-      tag: "2.0.28"      
+      tag: "2.4.0"
     datalake-interface-exporter:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     delegation-items-archiver:
-      tag: "2.4.0-RC11"      
+      tag: "2.4.0"      
     delegation-outbound-writer:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     delegation-process:
       tag: "2.4.0"
     delegation-readmodel-writer:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     delegation-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     eservice-descriptors-archiver:
       tag: "2.0.28"
     eservice-template-instances-updater:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     eservice-template-process:
       tag: "2.4.0"
     eservice-template-readmodel-writer:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     eservice-template-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     key-readmodel-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     key-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     notification-email-sender:
-      tag: "2.3.3"
+      tag: "2.4.0"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "2.0.28"
+      tag: "2.4.0"
     producer-key-readmodel-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     producer-key-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     producer-keychain-readmodel-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     purpose-process:
       tag: "2.4.0"
     purpose-outbound-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     purpose-readmodel-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     purpose-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     selfcare-onboarding-consumer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     tenant-outbound-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     tenant-process:
       tag: "2.4.0"
     tenant-readmodel-writer:
-      tag: "2.0.28"
+      tag: "2.4.0"
     tenant-readmodel-writer-sql:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
 
   jobs:
     readmodel-checker:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
