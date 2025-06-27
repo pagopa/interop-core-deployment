@@ -2,6 +2,8 @@ images:
   microservices:
     agreement-outbound-writer:
       tag: "2.0.28"
+    agreement-platformstate-writer:
+      tag: "2.4.0"
     agreement-readmodel-writer:
       tag: "2.0.28"
     agreement-readmodel-writer-sql:
@@ -10,8 +12,14 @@ images:
       tag: "2.0.28"
     attribute-registry-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    authorization-platformstate-writer:
+      tag: "2.4.0"
+    authorization-server-node:
+      tag: "2.4.0"
     catalog-outbound-writer:
       tag: "2.0.28"
+    catalog-platformstate-writer:
+      tag: "2.4.0"
     catalog-readmodel-writer:
       tag: "2.0.28"
     catalog-readmodel-writer-sql:
@@ -66,6 +74,8 @@ images:
       tag: "2.4.0-RC11"
     purpose-outbound-writer:
       tag: "2.0.28"
+    purpose-platformstate-writer:
+      tag: "2.4.0"
     purpose-readmodel-writer:
       tag: "2.0.28"
     purpose-readmodel-writer-sql:
@@ -78,6 +88,8 @@ images:
       tag: "2.0.28"
     tenant-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    token-details-persister-node:
+      tag: "2.4.0"
 
   jobs:
     readmodel-checker:
