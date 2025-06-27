@@ -90,3 +90,10 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
+  resources:
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+    requests:
+      cpu: "2000m"
+      memory: "4Gi"
