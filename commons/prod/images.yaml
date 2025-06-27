@@ -14,8 +14,12 @@ images:
       tag: "2.0.28"
     attribute-registry-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    api-gateway:
+      tag: "2.4.0"      
     authorization-process:
       tag: "2.4.0"
+    backend-for-frontend:
+      tag: "2.4.0"      
     catalog-outbound-writer:
       tag: "2.0.28"
     catalog-process:
@@ -60,6 +64,8 @@ images:
       tag: "2.0.28"
     key-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    m2m-gateway:
+      tag: "2.4.0"
     notification-email-sender:
       tag: "2.3.3"
     notifier:
