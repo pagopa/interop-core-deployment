@@ -64,6 +64,7 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
 
 deployment:
+  replicas: 2
   env:
     HOST: "0.0.0.0"
     PORT: "8088"
