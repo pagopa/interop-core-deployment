@@ -21,6 +21,7 @@ configmap:
   RATE_LIMITER_TIMEOUT_MILLIS: "300"
 
 deployment:
+  replicas: 2
   env:
     HOST: "0.0.0.0"
     PORT: "8088"
