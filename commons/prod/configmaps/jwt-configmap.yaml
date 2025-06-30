@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-jwt
+  namespace: prod
+data:
+  WELL_KNOWN_URLS: "https://interop.pagopa.it/.well-known/jwks.json"
+  SELFCARE_WELL_KNOWN_URLS: "https://selfcare.pagopa.it/.well-known/jwks.json"
+  BFF_WELL_KNOWN_URLS: "https://interop.pagopa.it/.well-known/jwks.json,https://selfcare.pagopa.it/.well-known/jwks.json"
