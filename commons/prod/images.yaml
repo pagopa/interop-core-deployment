@@ -4,6 +4,8 @@ images:
       tag: "2.4.0"
     agreement-process:
       tag: "2.4.0"
+    agreement-platformstate-writer:
+      tag: "2.4.0"
     agreement-readmodel-writer:
       tag: "2.4.0"
     agreement-readmodel-writer-sql:
@@ -23,6 +25,12 @@ images:
     catalog-outbound-writer:
       tag: "2.4.0"
     catalog-process:
+      tag: "2.4.0"
+    authorization-platformstate-writer:
+      tag: "2.4.0"
+    authorization-server-node:
+      tag: "2.4.0"
+    catalog-platformstate-writer:
       tag: "2.4.0"
     catalog-readmodel-writer:
       tag: "2.4.0"
@@ -51,7 +59,7 @@ images:
     delegation-readmodel-writer-sql:
       tag: "2.4.0"
     eservice-descriptors-archiver:
-      tag: "2.0.28"
+      tag: "2.4.0"
     eservice-template-instances-updater:
       tag: "2.4.0"
     eservice-template-process:
@@ -86,12 +94,16 @@ images:
       tag: "2.4.0"
     purpose-outbound-writer:
       tag: "2.4.0"
+    purpose-platformstate-writer:
+      tag: "2.4.0"
     purpose-readmodel-writer:
       tag: "2.4.0"
     purpose-readmodel-writer-sql:
       tag: "2.4.0"
     selfcare-client-users-updater:
       tag: "2.4.0"
+    redis:
+      tag: "7.0.4"
     selfcare-onboarding-consumer:
       tag: "2.4.0"
     tenant-outbound-writer:
@@ -101,6 +113,8 @@ images:
     tenant-readmodel-writer:
       tag: "2.4.0"
     tenant-readmodel-writer-sql:
+      tag: "2.4.0"
+    token-details-persister-node:
       tag: "2.4.0"
 
   jobs:
