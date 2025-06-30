@@ -11,7 +11,6 @@ configmap:
   MAX_NUMBER_OF_MESSAGES_PER_FILE: "1000"
 
 cronjob:
-  suspend: true
   schedule: "0 */1 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
