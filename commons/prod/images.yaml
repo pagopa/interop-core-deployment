@@ -60,6 +60,8 @@ images:
       tag: "2.4.0-RC11"
     eservice-template-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    frontend:
+      tag: "1.2.4"
     key-readmodel-writer:
       tag: "2.0.28"
     key-readmodel-writer-sql:
