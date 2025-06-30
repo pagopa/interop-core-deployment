@@ -1,4 +1,4 @@
-name: "interop-be-delegation-process"
+name: "interop-be-purpose-process"
 techStack: "nodejs"
 
 service:
@@ -6,13 +6,13 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-delegation-process-prod-es1"
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-purpose-process-prod-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_delegation"
-  ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  DELEGATION_DOCUMENT_PATH: "delegation"
+  RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
+  ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
 
 deployment:
   flywayInitContainer:
@@ -76,8 +76,8 @@ deployment:
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-delegation-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

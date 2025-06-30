@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: common-sqs
-  namespace: prod
-data:
-  APPLICATION_AUDIT_FALLBACK_SQS_URL: "https://sqs.eu-south-1.amazonaws.com/697818730278/interop-analytics-application-audit-fallback-prod"

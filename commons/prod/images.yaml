@@ -3,23 +3,27 @@ images:
     agreement-outbound-writer:
       tag: "2.0.28"
     agreement-process:
-      tag: "2.0.28"
+      tag: 2.4.0"
     agreement-readmodel-writer:
       tag: "2.0.28"
     agreement-readmodel-writer-sql:
       tag: "2.4.0-RC11"
     attribute-registry-process:
-      tag: "2.0.28"
+      tag: "2.4.0"
     attribute-registry-readmodel-writer:
       tag: "2.0.28"
     attribute-registry-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    api-gateway:
+      tag: "2.4.0"      
     authorization-process:
-      tag: "2.0.28"
+      tag: "2.4.0"
+    backend-for-frontend:
+      tag: "2.4.0"      
     catalog-outbound-writer:
       tag: "2.0.28"
     catalog-process:
-      tag: "2.0.28"
+      tag: "2.4.0"
     catalog-readmodel-writer:
       tag: "2.0.28"
     catalog-readmodel-writer-sql:
@@ -41,7 +45,7 @@ images:
     delegation-outbound-writer:
       tag: "2.4.0-RC11"
     delegation-process:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     delegation-readmodel-writer:
       tag: "2.4.0-RC11"
     delegation-readmodel-writer-sql:
@@ -51,15 +55,19 @@ images:
     eservice-template-instances-updater:
       tag: "2.4.0-RC11"
     eservice-template-process:
-      tag: "2.4.0-RC11"
+      tag: "2.4.0"
     eservice-template-readmodel-writer:
       tag: "2.4.0-RC11"
     eservice-template-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    frontend:
+      tag: "1.2.4"
     key-readmodel-writer:
       tag: "2.0.28"
     key-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    m2m-gateway:
+      tag: "2.4.0"
     notification-email-sender:
       tag: "2.3.3"
     notifier:
@@ -75,7 +83,7 @@ images:
     producer-keychain-readmodel-writer-sql:
       tag: "2.4.0-RC11"
     purpose-process:
-      tag: "2.0.28"
+      tag: "2.4.0"
     purpose-outbound-writer:
       tag: "2.0.28"
     purpose-readmodel-writer:
@@ -87,7 +95,7 @@ images:
     tenant-outbound-writer:
       tag: "2.0.28"
     tenant-process:
-      tag: "2.0.28"
+      tag: "2.4.0"
     tenant-readmodel-writer:
       tag: "2.0.28"
     tenant-readmodel-writer-sql:

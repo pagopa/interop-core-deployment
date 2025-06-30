@@ -1,4 +1,4 @@
-name: "interop-be-delegation-process"
+name: "interop-be-catalog-process"
 techStack: "nodejs"
 
 service:
@@ -6,13 +6,16 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-delegation-process-prod-es1"
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-catalog-process-prod-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_delegation"
-  ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_catalog"
+  ESERVICE_DOCUMENTS_PATH: "eservices/docs"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  DELEGATION_DOCUMENT_PATH: "delegation"
+  PRODUCER_ALLOWED_ORIGINS: "IPA"
+  ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
+  ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
 
 deployment:
   flywayInitContainer:
@@ -71,13 +74,14 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
+    FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-delegation-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-catalog-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
@@ -90,10 +94,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-  resources:
-    limits:
-      cpu: "2000m"
-      memory: "4Gi"
-    requests:
-      cpu: "2000m"
-      memory: "4Gi"

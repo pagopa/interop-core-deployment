@@ -1,4 +1,4 @@
-name: "interop-be-delegation-process"
+name: "interop-be-authorization-process"
 techStack: "nodejs"
 
 service:
@@ -6,16 +6,16 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-delegation-process-prod-es1"
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-authorization-process-prod-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_delegation"
   ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  DELEGATION_DOCUMENT_PATH: "delegation"
+  MAX_KEYS_PER_CLIENT: "100"
+  MAX_KEYS_PER_PRODUCER_KEYCHAIN: "30"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_authorization"
 
 deployment:
-  flywayInitContainer:
+  flywayInitContainer: 
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
@@ -45,6 +45,7 @@ deployment:
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
     EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
@@ -72,12 +73,13 @@ deployment:
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
   envFromSecrets:
+    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-delegation-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-authorization-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-authorization-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
@@ -90,10 +92,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-  resources:
-    limits:
-      cpu: "2000m"
-      memory: "4Gi"
-    requests:
-      cpu: "2000m"
-      memory: "4Gi"
