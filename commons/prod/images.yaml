@@ -3,7 +3,7 @@ images:
     agreement-outbound-writer:
       tag: "2.4.0"
     agreement-process:
-      tag: 2.4.0"
+      tag: "2.4.0"
     agreement-readmodel-writer:
       tag: "2.4.0"
     agreement-readmodel-writer-sql:
@@ -104,5 +104,23 @@ images:
       tag: "2.4.0"
 
   jobs:
+    anac-certified-attributes-importer:
+      tag: "2.4.0"
+    datalake-data-export:
+      tag: "2.4.0"
+    dtd-catalog-exporter:
+      tag: "2.4.0"
+    ipa-certified-attributes-importer:
+      tag: "2.4.0"
+    ivass-certified-attributes-importer:
+      tag: "2.4.0"
+    one-trust-notices:
+      tag: "2.4.0"
+    pn-consumers:
+      tag: "2.4.0"
     readmodel-checker:
+      tag: "2.4.0"
+    token-details-persister:
+      tag: "1.0.32"
+    token-generation-readmodel-checker:
       tag: "2.4.0"
