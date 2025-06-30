@@ -12,6 +12,13 @@ cronjob:
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
   automountServiceAccountToken: false
+  resources:
+    requests:
+      cpu: 1
+      memory: 4Gi
+    limits:
+      cpu: 1
+      memory: 4Gi
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
