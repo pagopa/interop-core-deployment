@@ -40,8 +40,6 @@ images:
       tag: "2.4.0-RC11"      
     delegation-outbound-writer:
       tag: "2.4.0-RC11"
-    delegation-items-archiver:
-      tag: "2.4.0-RC11"
     delegation-readmodel-writer:
       tag: "2.4.0-RC11"
     delegation-readmodel-writer-sql:
@@ -80,6 +78,8 @@ images:
       tag: "2.0.28"
     purpose-readmodel-writer-sql:
       tag: "2.4.0-RC11"
+    redis:
+      tag: "7.0.4"
     selfcare-onboarding-consumer:
       tag: "2.0.28"
     tenant-outbound-writer:
