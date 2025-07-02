@@ -16,6 +16,8 @@ configmap:
   AUDIT_FALLBACK_S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   DPOP_CACHE_TABLE: "interop-dpop-cache-dev"
   DPOP_HTU: "https://auth.dev.interop.pagopa.it/token.oauth2"
+  DPOP_DURATION_SECONDS: "60"
+  DPOP_IAT_TOLERANCE_SECONDS: "10"
   S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   GENERATED_INTEROP_TOKEN_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   GENERATED_INTEROP_TOKEN_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
@@ -70,4 +72,3 @@ deployment:
     requests:
       cpu: "500m"
       memory: "2Gi"
-    
