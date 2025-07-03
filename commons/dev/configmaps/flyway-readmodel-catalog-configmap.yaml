@@ -168,6 +168,13 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO "${NAMESPACE}_catalog_process_user";    
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO readonly_user; 
 
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_agreement_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_authorization_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_delegation_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_tenant_process_user";
+         
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_agreement_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_authorization_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_delegation_process_user";
@@ -175,37 +182,24 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_tenant_process_user";
 
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_agreement_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_authorization_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_delegation_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_tenant_process_user";    
-
-  V1.3__Grant_Access_CertifiedEmailSender_Catalog.sql: |-
+  V1.1__Grant_Access_Jobs_Consumers_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_certified_email_sender_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_certified_email_sender_user";
 
-  V1.4__Grant_Access_JobDatalakeExport_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_datalake_data_export_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_datalake_data_export_user";
 
-  V1.5__Grant_Access_DtdCatalogExporter_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_dtd_catalog_exporter_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_dtd_catalog_exporter_user";
 
-  V1.6__Grant_Access_EserviceDescriptorArchiver_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_descriptors_archiver_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_eservice_descriptors_archiver_user";
 
-  V1.7__Grant_Access_NotificationEmailSender_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_notification_email_sender_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_notification_email_sender_user";
 
-  V1.8__Grant_Access_TokenGenerationRMChecker_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_token_generation_readmodel_checker_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_token_generation_readmodel_checker_user";
 
-  V1.9__Grant_Access_EserviceTemplateInstanceUpdater_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_instances_updater_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_eservice_template_instances_updater_user";
