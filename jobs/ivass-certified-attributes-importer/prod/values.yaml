@@ -1,0 +1,52 @@
+name: "interop-be-ivass-certified-attributes-importer"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-ivass-certified-attributes-importer-prod-es1"
+
+configmap:
+  SOURCE_URL: "https://infostat-ivass.bancaditalia.it/RIGAInquiry-public/getAreaDownloadExport.do?referenceDate=&product=VFLUSSO_IMPRESE&language=IT&exportType=CSV&username=OBLIXANONYMOUS&isCompressed=S"
+  HISTORY_BUCKET_NAME: "interop-ivass-prod-es1"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "interop-m2m"
+  INTERNAL_JWT_ISSUER: "interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "1800"
+  IVASS_TENANT_ID: "65609655-4ff4-4877-be88-00f98cdc9c10"
+  RECORDS_PROCESS_BATCH_SIZE: "100"
+
+cronjob:
+  schedule: "15 5,11,17,23 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    MONGODB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
+    MONGODB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
+    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
+    READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
+    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    READMODEL_SQL_DB_USERNAME: "platform-data-ivass-certified-attributes-importer-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-ivass-certified-attributes-importer-user.password"

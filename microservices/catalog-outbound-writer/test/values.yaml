@@ -1,0 +1,24 @@
+name: "interop-be-catalog-outbound-writer"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::895646477129:role/interop-be-catalog-outbound-writer-test-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-catalog-outbound-writer"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-catalog-outbound-writer"
+
+deployment:
+  env:
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    CATALOG_OUTBOUND_TOPIC: "common-kafka.CATALOG_OUTBOUND_TOPIC"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"

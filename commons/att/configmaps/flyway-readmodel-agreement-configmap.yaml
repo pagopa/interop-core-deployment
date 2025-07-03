@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-agreement
+  namespace: att
+data:
+  V1__Init_Agreement.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_agreement";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to
+      "${NAMESPACE}_agreement_rmw_user",
+      "${NAMESPACE}_agreement_process_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      eservice_id UUID NOT NULL,
+      descriptor_id UUID NOT NULL,
+      producer_id UUID NOT NULL,
+      consumer_id UUID NOT NULL,
+      state VARCHAR NOT NULL,
+      suspended_by_consumer BOOLEAN,
+      suspended_by_producer BOOLEAN,
+      suspended_by_platform BOOLEAN,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      updated_at TIMESTAMP WITH TIME ZONE,
+      consumer_notes VARCHAR,
+      rejection_reason VARCHAR,
+      suspended_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id),
+      CONSTRAINT agreement_id_metadata_version_unique UNIQUE (id, metadata_version)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement TO "${NAMESPACE}_agreement_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement TO readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_stamp (
+      agreement_id UUID NOT NULL REFERENCES "${NAMESPACE}_agreement".agreement (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      who UUID NOT NULL,
+      delegation_id UUID,
+      "when" TIMESTAMP WITH TIME ZONE NOT NULL,
+      kind VARCHAR NOT NULL,
+      PRIMARY KEY (agreement_id, kind),
+      FOREIGN KEY (agreement_id, metadata_version) REFERENCES "${NAMESPACE}_agreement".agreement (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_stamp TO "${NAMESPACE}_agreement_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_stamp TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_stamp TO readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_attribute (
+      agreement_id UUID NOT NULL REFERENCES "${NAMESPACE}_agreement".agreement (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      attribute_id UUID NOT NULL,
+      kind VARCHAR NOT NULL,
+      PRIMARY KEY (agreement_id, attribute_id),
+      FOREIGN KEY (agreement_id, metadata_version) REFERENCES "${NAMESPACE}_agreement".agreement (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_attribute TO "${NAMESPACE}_agreement_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_attribute TO "${NAMESPACE}_agreement_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_attribute TO readonly_user;    
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_consumer_document (
+      id UUID,
+      agreement_id UUID NOT NULL REFERENCES "${NAMESPACE}_agreement".agreement (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      name VARCHAR NOT NULL,
+      pretty_name VARCHAR NOT NULL,
+      content_type VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id),
+      FOREIGN KEY (agreement_id, metadata_version) REFERENCES "${NAMESPACE}_agreement".agreement (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_consumer_document TO "${NAMESPACE}_agreement_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_consumer_document TO "${NAMESPACE}_agreement_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_consumer_document TO readonly_user;    
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_contract (
+      id UUID,
+      agreement_id UUID UNIQUE NOT NULL REFERENCES "${NAMESPACE}_agreement".agreement (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      name VARCHAR NOT NULL,
+      pretty_name VARCHAR NOT NULL,
+      content_type VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (agreement_id, id),
+      FOREIGN KEY (agreement_id, metadata_version) REFERENCES "${NAMESPACE}_agreement".agreement (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_contract TO "${NAMESPACE}_agreement_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_contract TO "${NAMESPACE}_agreement_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_contract TO readonly_user;    
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_catalog_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_authorization_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_delegation_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_purpose_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_tenant_process_user";
+    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_delegation_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_tenant_process_user";
+
+  V1.1__Grant_Access_Jobs_Consumers_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_datalake_data_export_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_delegation_items_archiver_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_eservice_descriptors_archiver_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_eservice_descriptors_archiver_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_notification_email_sender_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_notification_email_sender_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_token_generation_readmodel_checker_user";

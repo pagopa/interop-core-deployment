@@ -1,0 +1,37 @@
+name: "interop-be-ivass-certified-attributes-importer"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::533267098416:role/interop-be-ivass-certified-attributes-importer-att-es1"
+
+configmap:
+  SOURCE_URL: "https://infostat-ivass.bancaditalia.it/RIGAInquiry-public/ng/#/area-download"
+  HISTORY_BUCKET_NAME: "interop-ivass-{{.Values.namespace}}-es1"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "1800"
+  IVASS_TENANT_ID: "9e2528e5-b9bd-4eee-8ea0-161040daff47"
+  RECORDS_PROCESS_BATCH_SIZE: "100"
+
+cronjob:
+  schedule: "15 5,11,17,23 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  suspend: true
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  env:
+    SOURCE_FILE_DOWNLOAD_DIR: "/tmp"
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    READ_MODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READ_MODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READ_MODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    MONGODB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
+    MONGODB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"    
+  envFromSecrets:
+    READ_MODEL_DB_USER: "documentdb.READONLY_USR"
+    READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"

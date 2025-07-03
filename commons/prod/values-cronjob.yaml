@@ -1,0 +1,21 @@
+namespace: "prod"
+
+cronjob:
+  image:
+    repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
+    imagePullPolicy: Always
+    tag: $IMAGE_TAG_PLACEHOLDER
+    digest: $IMAGE_DIGEST_PLACEHOLDER
+  env:
+    LOG_LEVEL: "info"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+
+local:
+  interop_be_commons:
+    RSA_KEYS_IDENTIFIERS: "9432c16b-7aae-49df-b9c4-ea61b556652b"

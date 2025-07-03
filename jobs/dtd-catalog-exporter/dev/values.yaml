@@ -10,6 +10,12 @@ configmap:
   S3_BUCKET: "interop-public-catalog-dev-es1"
   DTD_CATALOG_STORAGE_PATH: "catalog"
   DTD_CATALOG_FILENAME: "catalog.json"
+  DTD_CATALOG_JSON_FILENAME: "catalog.json"
+  DTD_CATALOG_CSV_FILENAME: "catalog.csv"
+  DTD_TENANTS_CSV_FILENAME: "tenants.csv"
+  DTD_TENANTS_JSON_FILENAME: "tenants.json"
+  GITHUB_REPO: "interop-metrics-deploy-test"
+  GITHUB_REPO_OWNER: "pagopa"
 
 cronjob:
   schedule: "0 */3 * * *"
@@ -40,9 +46,10 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"    
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:
-    READMODEL_DB_USERNAME: "documentdb.READONLY_USR"
-    READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"    
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    READMODEL_SQL_DB_USERNAME: "platform-data-dtd-catalog-exporter-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-dtd-catalog-exporter-user.password"
+    GITHUB_ACCESS_TOKEN: "metrics-reports.BOT_DTD_OPENDATA_GITHUB_ACCESS_TOKEN"

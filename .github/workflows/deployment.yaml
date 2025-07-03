@@ -1,4 +1,5 @@
 name: Interop Core Deployment
+run-name: "${{ github.ref_name }} / ${{ inputs.environment }} - Interop Core Deployment"
 
 on: 
   workflow_dispatch:
@@ -35,6 +36,7 @@ permissions:
 jobs:
   print_inputs:
     runs-on: ubuntu-24.04
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Print Inputs
@@ -47,7 +49,7 @@ jobs:
           echo "- run_tf_apply_monitoring_workflow: \`${{ inputs.run_tf_apply_monitoring_workflow }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- run_tf_apply_secrets_workflow: \`${{ inputs.run_tf_apply_secrets_workflow }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- HELM_FORCE_UPGRADE_MICROSERVICES_CSV: \`${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- HELM_FORCE_UPGRADE_CRONJOB_CSV: \`${{ vars.HELM_FORCE_UPGRADE_CRONJOB_CSV }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- HELM_FORCE_UPGRADE_CRONJOBS_CSV: \`${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}\`" >> $GITHUB_STEP_SUMMARY
 
   initChecks:
     runs-on: ubuntu-22.04
@@ -103,7 +105,7 @@ jobs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
     strategy:
       matrix:
-        index: [1,2,3,4,5,6,7,8,9,10]
+        index: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
       fail-fast: false
     steps:
       - name: Start GitHub Runner
@@ -150,10 +152,8 @@ jobs:
     uses: ./.github/workflows/deploy-sub.yaml
     with:
       environment: ${{ inputs.environment }}
-      timeout_seconds: 180
+      timeout_seconds: 300
       force_restart: ${{ inputs.force_restart }}
-      helm_force_upgrade_microservices_csv: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}
-      helm_force_upgrade_cronjob_csv: ${{ vars.HELM_FORCE_UPGRADE_CRONJOB_CSV }}
 
   delete_runner:
     name: Delete Self-Hosted Runner
@@ -163,7 +163,7 @@ jobs:
     environment: ${{ inputs.environment }}
     strategy:
       matrix:
-        index: [1,2,3,4,5,6,7,8,9,10]
+        index: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
       fail-fast: false
     steps:
       - name: Stop Github Runner

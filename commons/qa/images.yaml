@@ -1,130 +1,134 @@
 images:
   microservices:
     agreement-platformstate-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     agreement-process:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     agreement-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     agreement-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
     api-gateway:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     attribute-registry-process:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     attribute-registry-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     attribute-registry-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     authorization-process:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     authorization-server:
       tag: "1.0.14"
     authorization-server-node:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     authorization-updater:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     backend-for-frontend:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     catalog-platformstate-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     catalog-process:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     catalog-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     catalog-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
     certified-email-sender:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     client-purpose-updater:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
     client-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     client-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
     compute-agreements-consumer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     delegation-items-archiver:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     delegation-process:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     delegation-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     delegation-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
     eservice-descriptors-archiver:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     eservice-template-instances-updater:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     eservice-template-process:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     eservice-template-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     eservice-template-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
     frontend:
       tag: "dev-latest"
     key-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     key-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
+    m2m-gateway:
+      tag: "2.4.0-RC12"
     notification-email-sender:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     producer-key-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     producer-key-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
     producer-keychain-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     producer-keychain-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     purpose-platformstate-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     purpose-process:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     purpose-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     purpose-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     redis:
       tag: "7.0.4"
+    ses-mock:
+      tag: "20"
+    smtp-mock:
+      tag: "1.10.4"
     tenant-process:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     tenant-readmodel-writer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     tenant-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     token-details-persister-node:
-      tag: "develop"
+      tag: "2.4.0-RC12"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "1.0.43"
+      tag: "2.4.0-RC12"
     datalake-data-export:
-      tag: "1.0.43"
+      tag: "2.4.0-RC12"
     dtd-catalog-exporter:
-      tag: "1.0.43"
+      tag: "2.4.0-RC12"
     ipa-certified-attributes-importer:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     ivass-certified-attributes-importer:
-      tag: "1.0.43"
+      tag: "2.4.0-RC12"
     one-trust-notices:
-      tag: "1.0.43"
-    padigitale-report-generator:
-      tag: "1.0.32"
+      tag: "2.4.0-RC12"
     pn-consumers:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     readmodel-checker:
-      tag: "develop"      
+      tag: "2.4.0-RC12"
     token-generation-readmodel-checker:
-      tag: "develop"
+      tag: "2.4.0-RC12"
     token-details-persister:
       tag: "1.0.32"

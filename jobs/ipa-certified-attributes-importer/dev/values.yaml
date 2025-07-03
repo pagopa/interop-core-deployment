@@ -49,16 +49,9 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"    
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:
-    READMODEL_DB_USERNAME: "documentdb.READONLY_USR"
-    READMODEL_DB_PASSWORD: "documentdb.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"    
-  resources:
-    limits:
-      cpu: "1"
-      memory: "2Gi"
-    requests:
-      cpu: "1"
-      memory: "2Gi"
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    READMODEL_SQL_DB_USERNAME: "platform-data-ipa-certified-attributes-importer-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-ipa-certified-attributes-importer-user.password"

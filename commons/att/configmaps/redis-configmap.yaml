@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-redis
+  namespace: att
+data:
+  REDIS_HOST: "redis.att.svc.cluster.local"
+  REDIS_PORT: "6379"

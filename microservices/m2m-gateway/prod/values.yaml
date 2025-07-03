@@ -1,0 +1,64 @@
+name: "interop-be-m2m-gateway"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-m2m-gateway-prod-es1"
+
+service:
+  create: true
+  containerPort: 8088
+  albHealthCheck:
+    path: /m2m-gateway/v2/status
+    port: "8088"
+    protocol: HTTP
+
+configmap:
+  M2M_GATEWAY_INTERFACE_VERSION: v2
+  ACCEPTED_AUDIENCES: "interop.pagopa.it/m2m"
+  RATE_LIMITER_MAX_REQUESTS: "20"
+  RATE_LIMITER_BURST_PERCENTAGE: "1.2"
+  RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
+  RATE_LIMITER_TIMEOUT_MILLIS: "300"
+  DEFAULT_POLLING_INTERVAL_MS: "200"
+  DEFAULT_POLLING_MAX_ATTEMPTS: "20"
+  ESERVICE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  ESERVICE_DOCUMENTS_PATH: "eservices/docs"
+deployment:
+  env:
+    HOST: "0.0.0.0"
+    PORT: "8088"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+  envFromFieldRef:
+    POD_NAME: "metadata.name"
+    NODE_IP: "status.hostIP"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
+    ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
+    AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
+    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
+    DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
+    ESERVICE_TEMPLATE_PROCESS_URL: "common-services-urls.ESERVICE_TEMPLATE_PROCESS_URL"
+    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
+    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
+
+  livenessProbe:
+    httpGet:
+      path: "/m2m-gateway/v2/status"
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: "/m2m-gateway/v2/status"
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+

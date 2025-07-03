@@ -84,7 +84,7 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --disable-templating-lookup --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
 
       - name: Microservice Kube-Linter
         id: microservice_kube_lineter
@@ -95,7 +95,7 @@ jobs:
           
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console | kube-linter lint -
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --disable-templating-lookup --debug --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console | kube-linter lint -
 
       - name: Kubectl Diff
         id: kubectl_diff
