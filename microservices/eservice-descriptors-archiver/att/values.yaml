@@ -48,12 +48,5 @@ deployment:
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
-  resources:
-    limits:
-      cpu: "500m"
-      memory: "1Gi"
-    requests:
-      cpu: "500m"
-      memory: "1Gi"
+    READMODEL_SQL_DB_USERNAME: "platform-data-eservice-descriptors-archiver-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-descriptors-archiver-user.password"

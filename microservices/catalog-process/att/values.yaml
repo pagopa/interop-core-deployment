@@ -34,13 +34,6 @@ deployment:
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
-    resources:
-      limits:
-        cpu: "500m"
-        memory: "1Gi"
-      requests:
-        cpu: "10m"
-        memory: "64Mi"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -79,9 +72,8 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_SIGNALHUB_WHITELIST: "common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST"
-    FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
     FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
+    FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
@@ -101,10 +93,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-  resources:
-    limits:
-      cpu: "500m"
-      memory: "2Gi"
-    requests:
-      cpu: "500m"
-      memory: "2Gi"

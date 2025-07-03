@@ -27,6 +27,7 @@ deployment:
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
+    FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -70,8 +71,8 @@ deployment:
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-readonly-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-readonly-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-api-gateway-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-api-gateway-user.password"
   livenessProbe:
     httpGet:
       path: "/api-gateway/1.0/status"
@@ -84,10 +85,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-  resources:
-    limits:
-      cpu: "500m"
-      memory: "2Gi"
-    requests:
-      cpu: "500m"
-      memory: "2Gi"

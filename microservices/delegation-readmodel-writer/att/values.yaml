@@ -29,8 +29,8 @@ deployment:
     READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
   resources:
     limits:
-      cpu: "1000m"
+      cpu: "1"
       memory: "1Gi"
     requests:
-      cpu: "1000m"
+      cpu: "1"
       memory: "1Gi"

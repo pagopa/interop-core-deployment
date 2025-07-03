@@ -23,10 +23,3 @@ deployment:
   envFromConfigmaps:
     CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-  resources:
-    limits:
-      cpu: "500m"
-      memory: "2Gi"
-    requests:
-      cpu: "500m"
-      memory: "2Gi"

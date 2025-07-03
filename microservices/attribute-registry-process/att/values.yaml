@@ -30,13 +30,6 @@ deployment:
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
-    resources:
-      limits:
-        cpu: "500m"
-        memory: "1Gi"
-      requests:
-        cpu: "10m"
-        memory: "64Mi"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -49,9 +42,6 @@ deployment:
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
-    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
-    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
@@ -59,29 +49,33 @@ deployment:
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+    FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
+    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
-    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
-    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
     READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
     READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
-    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
     READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
+    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
     READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
     READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"    
   envFromSecrets:
+    READMODEL_SQL_DB_PASSWORD: "platform-data-attribute-registry-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-attribute-registry-process-user.username"
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-attribute-registry-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-attribute-registry-process-user.password"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"    
   livenessProbe:
     httpGet:
       path: /status
@@ -94,10 +88,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-  resources:
-    limits:
-      cpu: "500m"
-      memory: "2Gi"
-    requests:
-      cpu: "500m"
-      memory: "2Gi"
