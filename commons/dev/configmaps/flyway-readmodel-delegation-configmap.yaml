@@ -61,16 +61,14 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_contract_document TO "${NAMESPACE}_delegation_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_contract_document TO readonly_user;     
 
-  V1.1__Permission_Process_Delegation.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_agreement_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_catalog_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_authorization_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_purpose_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_tenant_process_user";
+
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_agreement_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_catalog_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_authorization_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_tenant_process_user";
-
-  V1.2__Grant_Usage_Schema_Delegation.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_agreement_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_catalog_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_authorization_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_purpose_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_tenant_process_user";    
