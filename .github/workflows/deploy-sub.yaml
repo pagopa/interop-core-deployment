@@ -9,7 +9,7 @@ on:
         type: string
       timeout_seconds:
         description: 'Kubectl apply wait timeout in seconds for Deployments'
-        required: true
+        required: false
         type: number
       force_restart:
         description: 'Force Deployment Rollout Restart'
@@ -142,6 +142,12 @@ jobs:
           echo "matrix.microservice: ${{ matrix.microservice }}"
           echo "vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}"
           echo "ENABLE_FORCE_UPGRADE: $ENABLE_FORCE_UPGRADE"
+
+          if [[ -z "${TIMEOUT_SECONDS:-}" ]]; then
+            echo "No timeout specified, using dynamic timeout."
+            TIMEOUT_SECONDS=$(./$SCRIPTS_FOLDER/get-rollout-dynamic-wait.sh --namespace ${{ inputs.environment }} --deployment $MICROSERVICE_NAME  --batch-wait 30)
+            echo "Dynamic timeout calculated: $TIMEOUT_SECONDS seconds."
+          fi
 
           TIMEOUT="${TIMEOUT_SECONDS}s"
 
