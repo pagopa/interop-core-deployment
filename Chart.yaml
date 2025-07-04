@@ -5,7 +5,7 @@ type: application
 version: 0.0.1
 dependencies:
   - name: interop-eks-microservice-chart
-    version: 1.27.5
+    version: 1.27.6
     repository: "https://pagopa.github.io/interop-eks-microservice-chart"
   - name: interop-eks-cronjob-chart
     version: 1.8.0
