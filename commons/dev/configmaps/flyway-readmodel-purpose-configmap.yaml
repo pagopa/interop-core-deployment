@@ -116,3 +116,13 @@ data:
   V1.6__Grant_Access_TokenGenerationRMChecker_Purpose.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_token_generation_readmodel_checker_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+
+  V1.7__Update_NotNull_Column_RiskAnalysisAnswer_Purpose.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_purpose".purpose_risk_analysis_answer ALTER COLUMN "value" SET NOT NULL;
+    /*
+    ALTER TABLE IF EXISTS "${NAMESPACE}_purpose".purpose_risk_analysis_answer ADD COLUMN IF NOT EXISTS "value" VARCHAR ARRAY;
+    UPDATE "${NAMESPACE}_purpose".purpose_risk_analysis_answer SET value = '{}' WHERE "value" IS NULL;
+    ALTER TABLE IF EXISTS "${NAMESPACE}_purpose".purpose_risk_analysis_answer ALTER COLUMN "value" SET DEFAULT '{}';
+    ALTER TABLE IF EXISTS "${NAMESPACE}_purpose".purpose_risk_analysis_answer ALTER COLUMN "value" SET NOT NULL;
+    */
+    
