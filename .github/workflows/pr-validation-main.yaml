@@ -11,6 +11,17 @@ on:
         required: false
         type: string
         default: ''
+      environment:
+        description: 'Environment to validate against'
+        required: false
+        type: choice
+        options:
+          - att
+          - dev
+          - prod
+          - qa
+          - test
+          - vapt
 
 permissions:
   id-token: write
@@ -25,6 +36,8 @@ jobs:
         run: |
           echo "- Github ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- User provided infra_commons_tag: \`${{ inputs.infra_commons_tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- User provided strict_kube_linter_checks: \`${{ inputs.strict_kube_linter_checks }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- User provided environment: \`${{ inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
 
   extract-infra-commons-tag:
     runs-on: ubuntu-22.04
@@ -66,6 +79,7 @@ jobs:
         run: echo "infra_commons_tag = ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}"
 
   validation:
+    if: github.event_name == 'pull_request'
     name: "Validation - ${{ matrix.environment }}"
     needs: [print_inputs, extract-infra-commons-tag]
     strategy:
@@ -77,4 +91,14 @@ jobs:
     with:
       infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
       environment: ${{ matrix.environment }}
+      strict_kube_linter_checks: false
+
+  validation_manual:
+    if: github.event_name == 'workflow_dispatch'
+    needs: [print_inputs, extract-infra-commons-tag]
+    secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-pr-deployment-values-validation.yaml@main
+    with:
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+      environment: ${{ inputs.environment }}
       strict_kube_linter_checks: false
