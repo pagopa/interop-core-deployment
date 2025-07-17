@@ -12,6 +12,7 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-eservice-template-readmodel-writer"
 
 deployment:
+  replicas: 0
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
