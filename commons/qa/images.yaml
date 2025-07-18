@@ -73,7 +73,7 @@ images:
     key-readmodel-writer-sql:
       tag: "2.4.0-RC12"
     m2m-gateway:
-      tag: "2.4.0-RC12"
+      tag: "2.5.0-RC1"
     notification-email-sender:
       tag: "2.4.0-RC12"
     notifier:
