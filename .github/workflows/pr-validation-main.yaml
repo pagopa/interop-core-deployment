@@ -4,24 +4,6 @@ run-name: "${{ github.ref_name }} / PR Validation workflow - Main Starter"
 on:
   pull_request:
     types: [opened, edited, reopened, synchronize]
-  workflow_dispatch:
-    inputs:
-      infra_commons_tag:
-        description: 'Tag of the infra-commons repository to use'
-        required: false
-        type: string
-        default: ''
-      environment:
-        description: 'Environment to validate against'
-        required: false
-        type: choice
-        options:
-          - att
-          - dev
-          - prod
-          - qa
-          - test
-          - vapt
 
 permissions:
   id-token: write
@@ -35,9 +17,7 @@ jobs:
         id: print_inputs
         run: |
           echo "- Github ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- User provided infra_commons_tag: \`${{ inputs.infra_commons_tag }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- User provided strict_kube_linter_checks: \`${{ inputs.strict_kube_linter_checks }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- User provided environment: \`${{ inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
+
 
   extract-infra-commons-tag:
     runs-on: ubuntu-22.04
@@ -52,7 +32,7 @@ jobs:
       - name: Extract tag from reusable workflow
         id: extract-infra-commons-tag
         run: |
-          echo "Extracting tag from reusable workflow (wf version ${{github.ref}})"
+          echo "Extracting tag from reusable workflow (wf version ${{ github.ref }})"
 
           if [ ! -f .github/workflows/pr-validation-main.yaml ]; then
             echo "File not found"
@@ -66,13 +46,8 @@ jobs:
           echo "fullref=$fullref"
           echo "tag=$tag"
 
-          if [[ -n "${{ inputs.infra_commons_tag }}" ]]; then
-            # uses the tag provided by the user
-            final_tag="${{ inputs.infra_commons_tag }}"
-          else
-            # uses the tag from the reusable workflow
-            final_tag="$tag"
-          fi
+          final_tag="$tag"
+
           echo "infra_commons_tag=$final_tag" >> $GITHUB_OUTPUT
 
       - name: Show extracted tag
@@ -91,14 +66,4 @@ jobs:
     with:
       infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
       environment: ${{ matrix.environment }}
-      strict_kube_linter_checks: false
-
-  validation_manual:
-    if: github.event_name == 'workflow_dispatch'
-    needs: [print_inputs, extract-infra-commons-tag]
-    secrets: inherit
-    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main
-    with:
-      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
-      environment: ${{ inputs.environment }}
       strict_kube_linter_checks: false
