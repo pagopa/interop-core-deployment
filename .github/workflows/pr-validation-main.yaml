@@ -1,4 +1,5 @@
 name: PR Validation - Main Starter
+run-name: "${{ github.ref_name }} / PR Validation workflow - Main Starter"
 
 on:
   pull_request:
@@ -8,15 +9,61 @@ permissions:
   id-token: write
   contents: read
 
-jobs:      
-  start_dev_workflow:
-    uses: ./.github/workflows/pr-validation-generic-env.yaml
+jobs:
+  print_inputs:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Print Inputs
+        id: print_inputs
+        run: |
+          echo "- Github ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
+
+
+  extract-infra-commons-tag:
+    runs-on: ubuntu-22.04
+    outputs:
+      resolved_infra_commons_tag: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Extract tag from reusable workflow
+        id: extract-infra-commons-tag
+        run: |
+          echo "Extracting tag from reusable workflow (wf version ${{ github.ref }})"
+
+          if [ ! -f .github/workflows/pr-validation-main.yaml ]; then
+            echo "File not found"
+            exit 1
+          fi
+
+          fullref=$(yq e '.jobs.validation.uses' .github/workflows/pr-validation-main.yaml)
+
+          tag=${fullref#*@}
+
+          echo "fullref=$fullref"
+          echo "tag=$tag"
+
+          final_tag="$tag"
+
+          echo "infra_commons_tag=$final_tag" >> $GITHUB_OUTPUT
+
+      - name: Show extracted tag
+        run: echo "infra_commons_tag = ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}"
+
+  validation:
+    if: github.event_name == 'pull_request'
+    name: "Validation - ${{ matrix.environment }}"
+    needs: [print_inputs, extract-infra-commons-tag]
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [att, dev, prod, qa, test, vapt]
     secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main
     with:
-      environment: dev
-  
-  diff_summary:
-    needs: [ start_dev_workflow ]
-    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
-    secrets: inherit
-    uses: ./.github/workflows/pr-validation-sub-print-summary.yaml
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+      environment: ${{ matrix.environment }}
+      strict_kube_linter_checks: false
