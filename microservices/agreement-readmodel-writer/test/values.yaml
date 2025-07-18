@@ -3,15 +3,16 @@ techStack: "nodejs"
 
 service:
   create: false
-  
+
 serviceAccount:
   roleArn: arn:aws:iam::895646477129:role/interop-be-agreement-readmodel-writer-test-es1
-            
+
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-agreement"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-agreement-readmodel-writer"
 
 deployment:
+  replicas: 0
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -20,7 +21,7 @@ deployment:
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"    
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
