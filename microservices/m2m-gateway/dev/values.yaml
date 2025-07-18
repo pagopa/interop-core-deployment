@@ -66,4 +66,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-
