@@ -53,9 +53,9 @@ images:
     compute-agreements-consumer:
       tag: "2.4.4-RC1"
     datalake-interface-exporter:
-      tag: "2.4.4-RC1"      
+      tag: "2.4.4-RC1"
     delegation-items-archiver:
-      tag: "2.4.4-RC1"      
+      tag: "2.4.4-RC1"
     delegation-outbound-writer:
       tag: "2.4.4-RC1"
     delegation-process:
@@ -143,8 +143,6 @@ images:
     one-trust-notices:
       tag: "2.4.4-RC1"
     pn-consumers:
-      tag: "2.4.4-RC1"
-    readmodel-checker:
       tag: "2.4.4-RC1"
     token-details-persister:
       tag: "1.0.32"
