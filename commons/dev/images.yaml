@@ -51,7 +51,7 @@ images:
     client-readmodel-writer-sql:
       tag: "develop"
     compute-agreements-consumer:
-      tag: "develop"      
+      tag: "develop"
     datalake-interface-exporter:
       tag: "develop"
     delegation-outbound-writer:
@@ -109,7 +109,7 @@ images:
     purpose-process:
       tag: "develop"
     redis:
-      tag: "7.0.4"      
+      tag: "7.0.4"
     selfcare-client-users-updater:
       tag: "develop"
     selfcare-onboarding-consumer:
@@ -133,7 +133,7 @@ images:
     anac-certified-attributes-importer:
       tag: "develop"
     datalake-data-export:
-      tag: "develop"  
+      tag: "develop"
     dtd-catalog-exporter:
       tag: "develop"
     ipa-certified-attributes-importer:
@@ -143,8 +143,6 @@ images:
     one-trust-notices:
       tag: "develop"
     pn-consumers:
-      tag: "develop"
-    readmodel-checker:
       tag: "develop"
     token-details-persister:
       tag: "1.0.x-latest"
