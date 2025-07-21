@@ -3,7 +3,7 @@ techStack: "nodejs"
 
 serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-delegation-readmodel-writer-dev-es1"
-  
+
 service:
   create: false
 
@@ -12,6 +12,7 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-delegation-readmodel-writer"
 
 deployment:
+  replicas: 0
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
