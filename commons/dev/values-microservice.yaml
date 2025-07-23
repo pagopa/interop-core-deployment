@@ -27,3 +27,16 @@ local:
     RSA_KEYS_IDENTIFIERS: "41e3a8e9-5982-4a6d-b531-850774bfd961"
     DEV_ENDPOINTS_ENABLED: "true"
     ENABLED_PROJECTIONS: "true"
+
+autoscaling:
+  keda:
+    create: true
+    minReplicaCount: 0 # this must be 0 when using 'cron' trigger for uptime cost optimization
+    maxReplicaCount: "{{.Values.deployment.replicas}}" # must be a string
+    triggers:
+    - type: cron
+      metadata:
+        timezone: Europe/Rome
+        start: 0 8 * * 1-5
+        end: 0 20 * * 1-5
+        desiredReplicas: "{{.Values.deployment.replicas}}" # must be a string
