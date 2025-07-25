@@ -1,9 +1,15 @@
 # .github/workflows/apigw-automation-main.yaml
 
+####
+# Analizzo le modifiche ai file images.yaml per determinare se ci sono cambiamenti nei tag dei microservizi esposti.
+# ambienti esposti: authorization-server-node, backend-for-frontend, api-gateway, m2m-gateway
+# Se ci sono cambiamenti, eseguo la pipeline sub per aprire le PR nei vari ambienti.
+#
+
 name: apigw-automation-main
 
 on:
-#   push: # da sostituire con pull_request per eseguire la pipeline durante le PR
+#   push: # TO MODIFIE WHEN PULL_REQUEST IS ENABLED
 #     branches:
 #       - main
 #       # - develop
@@ -12,7 +18,7 @@ on:
 #       #   - '*.*.*-RC*'
 #     paths:
 #       - 'commons/*/images.yaml'
-    workflow_dispatch: # per eseguire manualmente la pipeline
+    workflow_dispatch: # TO REMOVE WHEN PULL_REQUEST IS ENABLED
 
 jobs:
   detect-changes:
@@ -21,8 +27,8 @@ jobs:
       changed_envs: ${{ steps.check-changes.outputs.changed_envs }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout remote repository
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
         with:
           fetch-depth: 2
 
@@ -31,73 +37,46 @@ jobs:
         run: |
           echo "Checking tag updates for exposed microservices in images.yaml files"
 
-          # Elenco dei servizi da monitorare
           services_to_watch=("authorization-server-node" "backend-for-frontend" "api-gateway" "m2m-gateway")
           echo "Exposed services: ${services_to_watch[*]}"
           any_changed=false
           envs_changed=()
 
-          # Controllo se ci sono modifiche tra l'ultimo commit e il precedente
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
-
-            # Cerco tutti i file images.yaml in commons
             all_files=$(find commons -type f -path '*/images.yaml' | sort)
-
-            # Cerco i file modificati tra l'ultimo commit e il precedente
             changed_files=$(git diff --name-only HEAD~1 HEAD -- 'commons/*/images.yaml')
 
-            # Ciclo su tutti i file trovati (anche quelli non modificati)
             for file in $all_files; do
-
-              # Controllo se il file è presente nella lista dei file modificati
               if echo "$changed_files" | grep -qx "$file"; then
                 file_has_relevant_changes=false
 
-                # Controllo i tag dei servizi esposti
                 for svc in "${services_to_watch[@]}"; do
-
-                  # Estraggo il tag prima e dopo il commit, utilizzando yq per leggere il file YAML
-                  # Se il servizio non esiste nel file, yq restituirà "null"
                   tag_before=$(git show HEAD~1:$file | yq '.images.microservices["'"$svc"'"].tag' 2>/dev/null || echo "null")
-
-                  # Il tag dopo il commit è quello attuale nel file
                   tag_after=$(yq '.images.microservices["'"$svc"'"].tag' "$file" 2>/dev/null || echo "null")
-
-                  # Controllo se i tag sono diversi
                   if [ "$tag_before" != "$tag_after" ]; then
-
-                    # Controllo se il file ha cambiamenti rilevanti
                     if [ "$file_has_relevant_changes" = false ]; then
                       echo "$file changed:"
                       file_has_relevant_changes=true
                       env_name=$(echo "$file" | awk -F'/' '{print $2}')
-                      # Aggiungi solo se l'env è valorizzato e non vuoto
                       if [ -n "$env_name" ]; then
                         envs_changed+=("$env_name")
                       fi
                     fi
-
-                    # Stampo il servizio e i tag prima e dopo
-                    echo "❗ $svc: $tag_before → $tag_after"
+                    echo "$svc: $tag_before → $tag_after"
                     any_changed=true
                   fi
                 done
 
-                # Se il file ha cambiamenti ma nessun servizio monitorato è stato aggiornato
-                # stampo comunque che il file è cambiato
                 if [ "$file_has_relevant_changes" = false ]; then
                   echo "$file changed (no watched services updated)"
                 fi
               else
-                # Se il file non è cambiato, lo segnalo come non cambiato
                 echo "$file unchanged"
               fi
             done
 
-            # Rimuovo duplicati e ignoro eventuali stringhe vuote
             envs_changed_uniq=($(printf "%s\n" "${envs_changed[@]}" | sort -u | grep -v '^$'))
 
-            # Se nessun ambiente viene modificato, envs_json dovrà essere vuoto e nella forma -> []
             if [ "${#envs_changed_uniq[@]}" -eq 0 ]; then
               envs_json="[]"
             else
