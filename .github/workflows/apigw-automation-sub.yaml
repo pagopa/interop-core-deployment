@@ -1,0 +1,18 @@
+# .github/workflows/apigw-automation-sub.yaml
+
+name: apigw-automation-sub
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  deploy-env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print environment
+        run: |
+          echo "Triggered for environment: ${{ inputs.environment }}"
