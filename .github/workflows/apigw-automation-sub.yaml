@@ -8,6 +8,9 @@ on:
       environment:
         required: true
         type: string
+    secrets:
+      INTEROP_INFRA_REPO_TOKEN:
+        required: true
 
 jobs:
   deploy-env:
@@ -16,3 +19,78 @@ jobs:
       - name: Print environment
         run: |
           echo "Triggered for environment: ${{ inputs.environment }}"
+  
+      - name: Checkout current repository
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          fetch-depth: 0
+      - name: Checkout remote repository
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          repository: ${{ vars.INTEROP_INFRA_REPO }}
+          token: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          path: interop-infra
+          fetch-depth: 0
+      - name: Build bot credentials
+        id: bot_creds
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BOT_USER="github-actions[bot]"
+          BOT_ENC=$(printf '%s' "$BOT_USER" | jq -sRr @uri)
+          
+          BOT_ID=$(curl -s \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/users/$BOT_ENC \
+            | jq -r .id)
+          
+          BOT_EMAIL="${BOT_ID}+${BOT_USER}@users.noreply.github.com
+
+          echo "BOT_EMAIL=${BOT_EMAIL}" >> $GITHUB_OUTPUT
+          echo "BOT_USER=${BOT_USER}" >> $GITHUB_OUTPUT
+      - name: Commit changes to target repo
+        id: commit_changes
+        run: |
+          BOT_EMAIL=${{ steps.bot_creds.outputs.BOT_EMAIL }}
+          BOT_USER=${{ steps.bot_creds.outputs.BOT_USER }}
+
+          cd interop-infra
+
+          git checkout -b ${{ vars.INTEROP_INFRA_TARGET_BRANCH }}
+          git pull origin ${{ vars.INTEROP_INFRA_TARGET_BRANCH }} || true
+          
+          git config user.name "$BOT_USER"
+          git config user.email "$BOT_EMAIL"
+          
+          # TODO
+          #rm test-file.txt || true
+          #touch test-file.txt
+          #echo "This is a test file ${{ github.run_id }}" > test-file.txt
+          #git add test-file.txt
+          #git commit -m "chore: test file for PR opener"
+
+          git push --set-upstream origin ${{ vars.INTEROP_INFRA_TARGET_BRANCH }}
+      - name: Open PR for environment ${{ inputs.environment }}
+        id: open_pr
+        env: 
+          INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+        run: |
+            #TODO
+            PR_OPEN_RES=$(curl -sSL \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/Licas/pr-opener-target/pulls \
+            -d '{"title":"[${{inputs.environment }}] TBD Automated update from Repo PR Opener","head":"${{ vars.INTEROP_INFRA_TARGET_BRANCH }}","base":"main","body":"TODO This is an example"}')
+
+            CURL_STATUS=$(echo $PR_OPEN_RES | jq -r '.status')
+
+            if [[ "$CURL_STATUS" == "404" ]]; then
+                echo "Failed to create PR: $PR_OPEN_RES"
+                exit 1
+            else
+                echo "PR created successfully $PR_OPEN_RES"
+            fi
+
