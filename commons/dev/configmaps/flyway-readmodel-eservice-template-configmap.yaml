@@ -131,17 +131,15 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO "${NAMESPACE}_eservice_template_process_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO readonly_user;        
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO readonly_user;
 
-  V1.1__Permission_Process_Template.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";
+    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_catalog_process_user";
 
-  V1.2__Grant_Usage_Schema_Template.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";
-
-  V1.3__Grant_Access_EserviceTemplateInstancesUpdater_Template.sql: |-
+  V1.1__Grant_Access_Jobs_Consumers_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_eservice_template_instances_updater_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_eservice_template_instances_updater_user";
 
-  V1.4__Add_Column_TenantId_RiskAnalysis_Template.sql: |-
+  V1.2__Add_Column_TenantId_RiskAnalysis_Template.sql: |-
     ALTER TABLE IF EXISTS "${NAMESPACE}_eservice_template".eservice_template_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR NOT NULL;
