@@ -3,7 +3,7 @@ techStack: "nodejs"
 
 serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-backend-for-frontend-dev-es1"
-  
+
 service:
   create: true
   containerPort: 8088
@@ -14,7 +14,7 @@ service:
 
 configmap:
   BACKEND_FOR_FRONTEND_INTERFACE_VERSION: "0.0"
-  GENERATED_JWT_KID:  "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  GENERATED_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   GENERATED_JWT_SECONDS_DURATION: "86400"
   GENERATED_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   GENERATED_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/ui"
@@ -62,6 +62,7 @@ configmap:
   DELEGATION_CONTRACTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
+  BFF_SWAGGER_UI_ENABLED: "true"
 
 deployment:
   env:
@@ -74,7 +75,7 @@ deployment:
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
-  envFromConfigmaps:    
+  envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.BFF_WELL_KNOWN_URLS"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
