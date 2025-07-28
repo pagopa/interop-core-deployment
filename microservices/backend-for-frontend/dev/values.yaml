@@ -62,7 +62,7 @@ configmap:
   DELEGATION_CONTRACTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
-  BFF_SWAGGER_UI_ENABLED: "true"
+  BFF_SWAGGER_UI_ENABLED: true
 
 deployment:
   env:
