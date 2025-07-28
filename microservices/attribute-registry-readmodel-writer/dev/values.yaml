@@ -12,6 +12,7 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-attribute-registry-readmodel-writer"
 
 deployment:
+  replicas: 0
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -27,4 +28,3 @@ deployment:
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
     READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
-    
