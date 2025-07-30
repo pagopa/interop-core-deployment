@@ -74,3 +74,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_authorization_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_purpose_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_tenant_process_user";    
+
+  V1.3__Grant_Access_Job_Datalake-Export_Schema_Delegation.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_datalake_data_export_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_datalake_data_export_user";
