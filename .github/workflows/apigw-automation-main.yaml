@@ -1,15 +1,7 @@
-# .github/workflows/apigw-automation-main.yaml
-
-####
-# Analizzo le modifiche ai file images.yaml per determinare se ci sono cambiamenti nei tag dei microservizi esposti.
-# ambienti esposti: authorization-server-node, backend-for-frontend, api-gateway, m2m-gateway
-# Se ci sono cambiamenti, eseguo la pipeline sub per aprire le PR nei vari ambienti.
-#
-
 name: apigw-automation-main
 
 on:
-#   push: # TO MODIFIE WHEN PULL_REQUEST IS ENABLED
+#   push: # TO ENABLE WHEN READY
 #     branches:
 #       - main
 #       # - develop
@@ -24,81 +16,111 @@ jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      changed_envs: ${{ steps.check-changes.outputs.changed_envs }}
+      envs_changed: ${{ steps.check-changes.outputs.envs_changed }}
+      any_changed: ${{ steps.check-changes.outputs.any_changed }}
 
     steps:
       - name: Checkout remote repository
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: Check microservices tag changes
+      - name: Check microservices tag changes and write env YAMLs
         id: check-changes
         run: |
-          echo "Checking tag updates for exposed microservices in images.yaml files"
+          set -euo pipefail
 
+          # DEFINIZIONE DEI SERVIZI DI INTERESSE
           services_to_watch=("authorization-server-node" "backend-for-frontend" "api-gateway" "m2m-gateway")
           echo "Exposed services: ${services_to_watch[*]}"
-          any_changed=false
           envs_changed=()
+          path_changed_file="temp/apigw-automation-meta"
+          mkdir -p "$path_changed_file"
 
+          # CONTROLLO SE ESISTE UN COMMIT PRECEDENTE
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
+
+            # RECUPERO TUTTI I FILE IMAGES.YAML E QUELLI CAMBIATI
             all_files=$(find commons -type f -path '*/images.yaml' | sort)
             changed_files=$(git diff --name-only HEAD~1 HEAD -- 'commons/*/images.yaml')
 
+            # CICLO SU TUTTI I FILE INTERESSATI
             for file in $all_files; do
               if echo "$changed_files" | grep -qx "$file"; then
+                env_name=$(echo "$file" | awk -F'/' '{print $2}')
+                changes_file="$path_changed_file/changes-${env_name}.yaml"
+                > "$changes_file" # PULISCO/CREO IL FILE
                 file_has_relevant_changes=false
 
+                # CICLO SU TUTTI I SERVIZI ESPOSTI
                 for svc in "${services_to_watch[@]}"; do
+                  # RECUPERO I TAG PRIMA E DOPO
                   tag_before=$(git show HEAD~1:$file | yq '.images.microservices["'"$svc"'"].tag' 2>/dev/null || echo "null")
                   tag_after=$(yq '.images.microservices["'"$svc"'"].tag' "$file" 2>/dev/null || echo "null")
+
+                  # SE IL TAG È CAMBIATO, SCRIVO NEL FILE E AGGIUNGO L'AMBIENTE ALLA LISTA
                   if [ "$tag_before" != "$tag_after" ]; then
-                    if [ "$file_has_relevant_changes" = false ]; then
-                      echo "$file changed:"
-                      file_has_relevant_changes=true
-                      env_name=$(echo "$file" | awk -F'/' '{print $2}')
-                      if [ -n "$env_name" ]; then
-                        envs_changed+=("$env_name")
-                      fi
-                    fi
-                    echo "$svc: $tag_before → $tag_after"
-                    any_changed=true
+                    file_has_relevant_changes=true
+                    envs_changed+=("$env_name")
+                    {
+                      echo "${svc}:"
+                      echo "  before: $tag_before"
+                      echo "  after: $tag_after"
+                    } >> "$changes_file"
                   fi
                 done
 
+                # SE NESSUN CAMBIAMENTO, ELIMINO IL FILE CREATO VUOTO
                 if [ "$file_has_relevant_changes" = false ]; then
-                  echo "$file changed (no watched services updated)"
+                  rm -f "$changes_file"
                 fi
-              else
-                echo "$file unchanged"
               fi
             done
 
+            # RENDO UNICA E ORDINATA LA LISTA DEGLI AMBIENTI COINVOLTI
+            set +e
             envs_changed_uniq=($(printf "%s\n" "${envs_changed[@]}" | sort -u | grep -v '^$'))
+            set -e
 
-            if [ "${#envs_changed_uniq[@]}" -eq 0 ]; then
-              envs_json="[]"
+            # ESPORTO I RISULTATI COME OUTPUT DEL JOB, COME ARRAY JSON
+            if [ ${#envs_changed_uniq[@]} -gt 0 ]; then
+              # output JSON array, sempre valido anche per 1 solo env
+              json_envs=$(printf '%s\n' "${envs_changed_uniq[@]}" | jq -R . | jq -s .)
+              echo "envs_changed=$(echo "$json_envs" | jq -c .)" >> $GITHUB_OUTPUT
+              echo "any_changed=true" >> $GITHUB_OUTPUT
             else
-              envs_json=$(printf '%s\n' "${envs_changed_uniq[@]}" | jq -R . | jq -s -c .)
+              echo "envs_changed=[]" >> $GITHUB_OUTPUT
+              echo "any_changed=false" >> $GITHUB_OUTPUT
             fi
 
-            echo "Environments changed: $envs_json"
-            echo "changed_envs=$envs_json" >> $GITHUB_OUTPUT
-
-            if [ "$any_changed" = false ]; then
-              echo "No exposed services tag changes detected."
-            fi
           else
+            # SE NON ESISTE UN COMMIT PRECEDENTE, NESSUN CAMBIAMENTO
             echo "No previous commit to compare with."
+            echo "envs_changed=[]" >> $GITHUB_OUTPUT
+            echo "any_changed=false" >> $GITHUB_OUTPUT
           fi
 
-  call-reusable:
+      - name: Upload changes files as artifact
+        # SE CI SONO CAMBIAMENTI, CARICO TUTTI I FILE CHANGES-<ENV>.YAML
+        if: ${{ steps.check-changes.outputs.any_changed == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: changes-yamls
+          path: temp/apigw-automation-meta/changes-*.yaml
+
+      - name: List artifact dir
+        run: |-
+          ls -l temp/apigw-automation-meta/
+
+  call-sub-workflow:
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.changed_envs != '[]' && needs.detect-changes.outputs.changed_envs != '' }}
+    # ESEGUO SOLO SE ALMENO UN AMBIENTE È CAMBIATO
+    if: ${{ needs.detect-changes.outputs.any_changed == 'true' && needs.detect-changes.outputs.envs_changed != '[]' }}
     strategy:
+      # CREO LA MATRIX DINAMICA DA ARRAY JSON
       matrix:
-        env: ${{ fromJson(needs.detect-changes.outputs.changed_envs) }}
+        environment: ${{ fromJson(needs.detect-changes.outputs.envs_changed) }}
     uses: ./.github/workflows/apigw-automation-sub.yaml
     with:
-      environment: ${{ matrix.env }}
+      changes_file_path: .apigw-automation-meta/changes-${{ matrix.environment }}.yaml
+      env: ${{ matrix.environment }}
