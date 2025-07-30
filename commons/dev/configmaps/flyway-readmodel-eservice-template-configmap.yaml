@@ -145,3 +145,7 @@ data:
 
   V1.4__Add_Column_TenantId_RiskAnalysis_Template.sql: |-
     ALTER TABLE IF EXISTS "${NAMESPACE}_eservice_template".eservice_template_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR NOT NULL;
+  
+  V1.5_Grant_Access_Job_Datalake-Export_Schema_Template.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_datalake_data_export_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_datalake_data_export_user";
