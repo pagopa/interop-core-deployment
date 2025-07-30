@@ -123,4 +123,4 @@ jobs:
     uses: ./.github/workflows/apigw-automation-sub.yaml
     with:
       changes_file_path: .apigw-automation-meta/changes-${{ matrix.environment }}.yaml
-      env: ${{ matrix.environment }}
+      environment: ${{ matrix.environment }}

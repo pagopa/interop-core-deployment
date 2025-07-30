@@ -8,9 +8,16 @@ on:
       environment:
         required: true
         type: string
+      changes_file_path:
+        required: true
+        type: string
     secrets:
       INTEROP_INFRA_REPO_TOKEN:
         required: true
+
+env:
+  ENVIRONMENT: ${{ inputs.environment }}
+  PR_NUMBER: ${{ github.event.number }}
 
 jobs:
   deploy-env:
@@ -24,6 +31,7 @@ jobs:
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
         with:
           fetch-depth: 0
+
       - name: Checkout remote repository
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
         with:
@@ -31,6 +39,16 @@ jobs:
           token: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
           path: interop-infra
           fetch-depth: 0
+
+      - name: Download changes files artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: changes-yamls
+          path: .apigw-automation-meta
+
+      - name: List artifact dir
+        run: ls -l .apigw-automation-meta/
+
       - name: Build bot credentials
         id: bot_creds
         env:
@@ -49,6 +67,54 @@ jobs:
 
           echo "BOT_EMAIL=${BOT_EMAIL}" >> $GITHUB_OUTPUT
           echo "BOT_USER=${BOT_USER}" >> $GITHUB_OUTPUT
+
+      - name: Build PR Labels
+        id: build_labels
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+
+          label1="env=$ENVIRONMENT"
+          label2="ref_pr=$PR_NUMBER"
+
+          echo "env_label=${label1}" >> $GITHUB_OUTPUT
+          echo "prnum_label=${label2}" >> $GITHUB_OUTPUT
+      
+      - name: List open PRs
+        id: get_open_prs
+        env: 
+          INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # il query param "state=open" è superfluo, è il default
+          OPEN_PRS=$(curl -sSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/pulls?state=open)
+
+          
+          # find matching prs based on provided labels 
+          label1="${{ steps.build_labels.outputs.env_label }}"
+          label2="${{ steps.build_labels.outputs.prnum_label }}"
+
+          MATCHING_PRS=$(echo $OPEN_PRS | jq --arg label_env "${label1}" --arg label_pr "${label2}" \
+              '.[] | select(
+                (.labels   | any(.name == $label_env)) and 
+                (.labels   | any(.name == $label_pr))
+              )')
+          
+          if [[ -n "$MATCHING_PRS" ]]; then
+            echo "MATCHING PRs"
+            echo $MATCHING_PRS
+            echo "create_pr=false" >> $GITHUB_OUTPUT
+          else
+            echo "No matching PRs, will create a new one"
+            echo "create_pr=true" >> $GITHUB_OUTPUT
+          fi                  
+
       - name: Commit changes to target repo
         id: commit_changes
         run: |
@@ -57,22 +123,24 @@ jobs:
 
           cd interop-infra
 
-          git checkout -b ${{ vars.INTEROP_INFRA_TARGET_BRANCH }}
-          git pull origin ${{ vars.INTEROP_INFRA_TARGET_BRANCH }} || true
+          TARGET_BRANCH_FULL=${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT
+          git checkout -b $TARGET_BRANCH_FULL
+          git pull origin $TARGET_BRANCH_FULL || true
           
           git config user.name "$BOT_USER"
           git config user.email "$BOT_EMAIL"
           
           # TODO
-          #rm test-file.txt || true
-          #touch test-file.txt
-          #echo "This is a test file ${{ github.run_id }}" > test-file.txt
-          #git add test-file.txt
-          #git commit -m "chore: test file for PR opener"
+          touch test-file.txt
+          echo "This is a test file ${{ github.run_id }}" >> test-file.txt
+          git add test-file.txt
+          git commit -m "chore: test file for PR opener ${{ github.run_id }}"
 
-          git push --set-upstream origin ${{ vars.INTEROP_INFRA_TARGET_BRANCH }}
+          git push --set-upstream origin $TARGET_BRANCH_FULL
+
       - name: Open PR for environment ${{ inputs.environment }}
         id: open_pr
+        if: ${{ steps.get_open_prs.outputs.create_pr == true }}
         env: 
           INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
         run: |
@@ -82,15 +150,39 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/Licas/pr-opener-target/pulls \
-            -d '{"title":"[${{inputs.environment }}] TBD Automated update from Repo PR Opener","head":"${{ vars.INTEROP_INFRA_TARGET_BRANCH }}","base":"main","body":"TODO This is an example"}')
+            https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/pulls \
+            -d '{"title":"['"$ENVIRONMENT"'] TBD Automated update from Repo PR Opener","head":"'${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT'","base":"main","body":"TODO This is an example"}')
 
             CURL_STATUS=$(echo $PR_OPEN_RES | jq -r '.status')
+            CURL_ERRORS=$(echo $PR_OPEN_RES | jq -r '.errors//""')
 
-            if [[ "$CURL_STATUS" == "404" ]]; then
+            if [[ "$CURL_STATUS" == "404" ]] || [[ -n "$CURL_ERRORS" ]]; then
                 echo "Failed to create PR: $PR_OPEN_RES"
                 exit 1
             else
                 echo "PR created successfully $PR_OPEN_RES"
             fi
+
+            # Pull requests are a type of issue. Any actions that are available in both pull requests and issues, like managing assignees,
+            # labels, and milestones, are handled by the REST API to manage issues. 
+            # To perform these actions on pull requests, you must use the issues API endpoints (for example, /repos/{owner}/{repo}/issues/{issue_number}), 
+            # not the pull requests endpoints. For more information, see REST API endpoints for issues.
+
+            PR_NUMBER=$(echo $PR_OPEN_RES | jq -r '.number' )
+            echo "Target PR Number: $PR_NUMBER"
+            
+            label1="${{ steps.build_labels.outputs.env_label }}"
+            label2="${{ steps.build_labels.outputs.prnum_label }}"
+            
+            echo "Applying labels: $label1, $label2"
+            LABELING_RESULT=$(curl -sSL \
+              -X PUT \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/issues/$PR_NUMBER/labels \
+              -d "{\"labels\": [ \"$label1\", \"$label2\" ] }")
+
+            echo "Labels applied:"
+            echo "$LABELING_RESULT"
 
