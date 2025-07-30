@@ -1,6 +1,10 @@
 # .github/workflows/apigw-automation-sub.yaml
 
 name: apigw-automation-sub
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
 
 on:
   workflow_call:
