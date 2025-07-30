@@ -1,4 +1,7 @@
 name: apigw-automation-main
+permissions:
+  contents: read
+  actions: write
 
 on:
 #   push: # TO ENABLE WHEN READY
