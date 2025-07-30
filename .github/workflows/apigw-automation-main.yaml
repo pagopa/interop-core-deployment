@@ -123,6 +123,7 @@ jobs:
       # CREO LA MATRIX DINAMICA DA ARRAY JSON
       matrix:
         environment: ${{ fromJson(needs.detect-changes.outputs.envs_changed) }}
+    secrets: inherit
     uses: ./.github/workflows/apigw-automation-sub.yaml
     with:
       changes_file_path: .apigw-automation-meta/changes-${{ matrix.environment }}.yaml
