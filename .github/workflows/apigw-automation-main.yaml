@@ -15,6 +15,13 @@ on:
 #       - 'commons/*/images.yaml'
     workflow_dispatch: # TO REMOVE WHEN PULL_REQUEST IS ENABLED
 
+# DEFINISCO LA CONCURRENCY DEL WORKFLOW PER EVITARE ESECUZIONI SIMUTANEE
+# FUNZIONA SOLO CON PULL_REQUEST, IN QUANTO WORKFLOW_DISPATCH NON HA UN NUMERO DI PR
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
