@@ -9,7 +9,7 @@ images:
     agreement-readmodel-writer-sql:
       tag: "2.5.0-RC1"
     api-gateway:
-      tag: "2.5.1-RC1"
+      tag: "2.5.0-RC1"
     attribute-registry-process:
       tag: "2.5.0-RC1"
     attribute-registry-readmodel-writer:
