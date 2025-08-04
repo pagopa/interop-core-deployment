@@ -83,9 +83,9 @@ jobs:
               fi
             done
 
-            # RENDO UNICA E ORDINATA LA LISTA DEGLI AMBIENTI COINVOLTI
+            # RENDO UNICA E ORDINATA LA LISTA DEGLI AMBIENTI COINVOLTI ESCLUDENDO L'AMBIENTE "dev"
             set +e
-            envs_changed_uniq=($(printf "%s\n" "${envs_changed[@]}" | sort -u | grep -v '^$'))
+            envs_changed_uniq=($(printf "%s\n" "${envs_changed[@]}" | sort -u | grep -v '^$' | grep -v '^dev$'))
             set -e
 
             # ESPORTO I RISULTATI COME OUTPUT DEL JOB, COME ARRAY JSON
