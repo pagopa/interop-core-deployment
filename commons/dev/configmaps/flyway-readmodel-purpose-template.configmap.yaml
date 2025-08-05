@@ -30,7 +30,7 @@ data:
       UNIQUE (id, metadata_version)
     );
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose_template".purpose_template_eservice_descriptor_version (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose_template".purpose_template_eservice_descriptor (
       metadata_version INTEGER NOT NULL,
       purpose_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose_template".purpose_template (id) ON DELETE CASCADE,
       eservice_id UUID NOT NULL,
