@@ -23,6 +23,11 @@ configmap:
   DEFAULT_POLLING_MAX_ATTEMPTS: "20"
   ESERVICE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_DOCUMENTS_PATH: "eservices/docs"
+  RISK_ANALYSIS_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
+  AGREEMENT_CONSUMER_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  AGREEMENT_CONSUMER_DOCUMENTS_PATH: "{{.Values.namespace}}/agreement/consumer-docs"
+  AGREEMENT_CONSUMER_CONTRACTS_PATH: "{{.Values.namespace}}/agreement/contracts"
 deployment:
   env:
     HOST: "0.0.0.0"
