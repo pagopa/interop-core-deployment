@@ -33,8 +33,9 @@ data:
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose_template".purpose_template_eservice_descriptor_version (
       metadata_version INTEGER NOT NULL,
       purpose_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose_template".purpose_template (id) ON DELETE CASCADE,
-      eservice_id UUID,
-      descriptor_id UUID,
+      eservice_id UUID NOT NULL,
+      descriptor_id UUID NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
       PRIMARY KEY (purpose_template_id, eservice_id),
       FOREIGN KEY (purpose_template_id, metadata_version) REFERENCES "${NAMESPACE}_purpose_template".purpose_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
@@ -81,6 +82,7 @@ data:
       metadata_version INTEGER NOT NULL,
       annotation_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose_template".purpose_template_risk_analysis_answer_annotation (id) ON DELETE CASCADE,
       "name" VARCHAR NOT NULL,
+      pretty_name VARCHAR NOT NULL,
       content_type VARCHAR NOT NULL,
       "path" VARCHAR NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE NOT NULL,
