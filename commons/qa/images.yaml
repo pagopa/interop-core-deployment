@@ -67,7 +67,7 @@ images:
     eservice-template-readmodel-writer-sql:
       tag: "2.5.0-RC4"
     frontend:
-      tag: "develop"
+      tag: "dev-latest"
     key-readmodel-writer:
       tag: "2.5.0-RC4"
     key-readmodel-writer-sql:
