@@ -4,19 +4,15 @@ permissions:
   actions: write
 
 on:
-  # pull_request:
-  #   types: [opened, edited, reopened, synchronize]
-  #   paths:
-  #     - 'commons/*/images.yaml'
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    paths:
+      - 'commons/*/images.yaml'
 
-  workflow_dispatch: # TO REMOVE WHEN PULL_REQUEST IS ENABLED
 
-# DEFINISCO LA CONCURRENCY DEL WORKFLOW PER EVITARE ESECUZIONI SIMUTANEE
-# FUNZIONA SOLO CON PULL_REQUEST, IN QUANTO WORKFLOW_DISPATCH NON HA UN NUMERO DI PR
-
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }} # USO run_id PER workflow_dispatch da rimuovere in caso di pull_request
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }} # USO run_id PER workflow_dispatch da rimuovere in caso di pull_request
+  cancel-in-progress: true
 
 jobs:
   detect-changes:
