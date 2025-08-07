@@ -1,101 +1,101 @@
 images:
   microservices:
     agreement-platformstate-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     agreement-process:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     agreement-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     agreement-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     api-gateway:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     attribute-registry-process:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     attribute-registry-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     authorization-process:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     authorization-server:
       tag: "1.0.14"
     authorization-server-node:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     authorization-updater:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     backend-for-frontend:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     catalog-platformstate-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     catalog-process:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     catalog-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     catalog-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     certified-email-sender:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     client-purpose-updater:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     client-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     client-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     compute-agreements-consumer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     delegation-items-archiver:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     delegation-process:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     delegation-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     delegation-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     eservice-descriptors-archiver:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     eservice-template-instances-updater:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     eservice-template-process:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     eservice-template-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     eservice-template-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     frontend:
       tag: "dev-latest"
     key-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     key-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     m2m-gateway:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     notification-email-sender:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     producer-key-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     producer-key-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     producer-keychain-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     purpose-platformstate-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     purpose-process:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     purpose-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     purpose-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     redis:
       tag: "7.0.4"
     ses-mock:
@@ -103,32 +103,32 @@ images:
     smtp-mock:
       tag: "1.10.4"
     tenant-process:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     tenant-readmodel-writer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     tenant-readmodel-writer-sql:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     token-details-persister-node:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     datalake-data-export:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     dtd-catalog-exporter:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     ipa-certified-attributes-importer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     ivass-certified-attributes-importer:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     one-trust-notices:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     pn-consumers:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     readmodel-checker:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     token-generation-readmodel-checker:
-      tag: "2.5.0-RC4"
+      tag: "2.6.0-RC1"
     token-details-persister:
       tag: "1.0.32"
