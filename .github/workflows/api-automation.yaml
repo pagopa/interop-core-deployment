@@ -1,0 +1,381 @@
+####
+# Questo workflow automatizza l’aggiornamento e la propagazione dei cambiamenti nei tag
+# dei microservizi definiti nei file `images.yaml` nei vari ambienti,
+# creando pull request nel repository interop-infra.
+#
+# In particolare:
+# * viene attivato da:
+#   * una pull request che modifica almeno un file `commons/*/images.yaml`
+# * clona il repository corrente (interop-core-deployment)
+# * analizza le differenze tra il commit corrente e quello precedente sui file `images.yaml` per i microservizi di interesse
+#   * Servizi esposti: `authorization-server-node`, `backend-for-frontend`, `api-gateway`, `m2m-gateway`
+# * per ogni env che presenta modifiche rilevanti nei tag, salva i dettagli delle differenze in un file YAML dedicato
+# * per ciascun ambiente:
+#   * clona il repository corrente (monorepo)
+#   * clona il repository target remoto specificato (interop-infra)
+#   * crea le due label per la PR (env=<env> e ref_pr=<prnum>)
+#   * verifica se esiste già una PR aperta per lo stesso ambiente e PR
+#   * aggiorna il file `terraform.tfvars` dell’ambiente nel repository target (interop-infra), modificando o aggiungendo le variabili dei servizi aggiornati (`*_raw_url`)
+#   * committa e pusha le modifiche su un branch dedicato nel repository target remoto
+#   * apre una pull request verso il branch `main` del repository target (se non esiste già una PR con le stesse label)
+#   * applica le label `env=...` e `ref_pr=...` alla nuova PR appena aperta
+###
+
+name: apigw-automation-main
+
+on:
+#   push: # TO ENABLE WHEN READY
+#     branches:
+#       - main
+#       # - develop
+#       # tags:
+#       #   - '*.*.*'
+#       #   - '*.*.*-RC*'
+#     paths:
+#       - 'commons/*/images.yaml'
+  workflow_dispatch: # TO REMOVE WHEN PULL_REQUEST IS ENABLED
+
+    # concurrency:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+    paths:
+      - 'commons/*/images.yaml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }} # USO run_id PER workflow_dispatch da rimuovere in caso di pull_request
+  cancel-in-progress: true
+
+jobs:
+  deploy-envs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        #environment: [dev, test, qa, uat, prod, vapt]
+        environment: [qa]
+    env:
+      ENVIRONMENT: ${{ matrix.environment }}
+      #PR_NUMBER: ${{ github.event.number }}
+      PR_NUMBER: ${{ github.event.pull_request.number || github.run_id }}
+
+    steps:
+      - name: Print environment
+        run: |
+          echo "Triggered for environment: ${{ matrix.environment }}"
+
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check microservices tag changes and write env YAMLs
+        id: check-changes
+        run: |
+          set -euo pipefail
+
+          # DEFINIZIONE DEI SERVIZI DI INTERESSE
+          services_to_watch=("authorization-server-node" "backend-for-frontend" "api-gateway" "m2m-gateway")
+          echo "Exposed services: ${services_to_watch[*]}"
+
+          path_changed_file=".apigw-automation-meta"
+          mkdir -p "$path_changed_file"
+
+          # CONTROLLO SE ESISTE UN COMMIT PRECEDENTE
+          if ! git rev-parse HEAD~1 >/dev/null 2>&1; then
+            echo "No previous commit to compare with."
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # FILE DELL'ENV CORRENTE
+          file="commons/${ENVIRONMENT}/images.yaml"
+
+          # VERIFICO SE IL FILE ESISTE
+          if [ ! -f "$file" ]; then
+            echo "File $file not found for environment ${ENVIRONMENT}."
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "exist_file=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # VERIFICO SE L'IMAGES.YAML DELL'ENV È CAMBIATO
+          if git diff --quiet HEAD~1 HEAD -- "$file"; then
+            echo "No changes detected for $file"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          changes_file="$path_changed_file/changes-${ENVIRONMENT}.yaml"
+          file_has_relevant_changes=false
+
+          # CICLO SU TUTTI I SERVIZI ESPOSTI
+          for svc in "${services_to_watch[@]}"; do
+            # RECUPERO I TAG PRIMA E DOPO
+            tag_before=$(git show HEAD~1:$file | yq '.images.microservices["'"$svc"'"].tag' 2>/dev/null || echo "null")
+            tag_after=$(yq '.images.microservices["'"$svc"'"].tag' "$file" 2>/dev/null || echo "null")
+
+            # SE IL TAG È CAMBIATO, CREO IL FILE (se non esiste) E SCRIVO LA DIFF
+            if [ "$tag_before" != "$tag_after" ]; then
+              if [ "$file_has_relevant_changes" = false ]; then
+                > "$changes_file"   # creo il file solo al primo cambiamento
+                file_has_relevant_changes=true
+              fi
+              {
+                echo "${svc}:"
+                echo "  before: $tag_before"
+                echo "  after:  $tag_after"
+              } >> "$changes_file"
+            fi
+          done
+
+          # SE NESSUN CAMBIAMENTO RILEVANTE, NON PRODUCO FILE
+          if [ "$file_has_relevant_changes" = false ]; then
+            echo "No relevant microservice tag changes for ${ENVIRONMENT}"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "Changes file path: $changes_file"
+          echo "changes_file=$changes_file" >> $GITHUB_OUTPUT
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+
+      - name: Warn if no changes or file images.yaml not exists
+        if: ${{ steps.check-changes.outputs.has_changes != 'true' }}
+        run: |
+          if [ "${{ steps.check-changes.outputs.exist_file }}" = "false" ]; then
+            echo "No images.yaml file found for environment ${{ matrix.environment }}. Skipping."
+          else
+            echo "No changes for exposed microservices detected for environment ${{ matrix.environment }}. Skipping."
+          fi
+          exit 0
+
+      - name: Checkout remote repository
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.INTEROP_INFRA_REPO }}
+          token: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          path: interop-infra
+          fetch-depth: 0
+
+      - name: Build bot credentials
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
+        id: bot_creds
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BOT_USER="github-actions[bot]"
+          BOT_ENC=$(printf '%s' "$BOT_USER" | jq -sRr @uri)
+
+          BOT_ID=$(curl -s \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/users/$BOT_ENC \
+            | jq -r .id)
+
+          BOT_EMAIL="${BOT_ID}+${BOT_USER}@users.noreply.github.com"
+
+          echo "BOT_EMAIL=${BOT_EMAIL}" >> $GITHUB_OUTPUT
+          echo "BOT_USER=${BOT_USER}" >> $GITHUB_OUTPUT
+
+      - name: Build PR Labels
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
+        id: build_labels
+        env:
+          ENVIRONMENT: ${{ matrix.environment }}
+        run: |
+          set -euo pipefail
+
+          label1="env=$ENVIRONMENT"
+          label2="ref_pr=$PR_NUMBER"
+
+          echo "env_label=${label1}" >> $GITHUB_OUTPUT
+          echo "prnum_label=${label2}" >> $GITHUB_OUTPUT
+
+      - name: List open PRs
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
+        id: get_open_prs
+        env:
+          INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # il query param "state=open" è superfluo, è il default
+          OPEN_PRS=$(curl -sSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/pulls?state=open)
+
+          # find matching prs based on provided labels
+          label1="${{ steps.build_labels.outputs.env_label }}"
+          label2="${{ steps.build_labels.outputs.prnum_label }}"
+
+          MATCHING_PRS=$(echo $OPEN_PRS | jq --arg label_env "${label1}" --arg label_pr "${label2}" \
+              '.[] | select(
+                (.labels   | any(.name == $label_env)) and
+                (.labels   | any(.name == $label_pr))
+              )')
+
+          if [[ -n "$MATCHING_PRS" ]]; then
+            echo "MATCHING PRs"
+            echo $MATCHING_PRS
+            echo "create_pr=false" >> $GITHUB_OUTPUT
+          else
+            echo "No matching PRs, will create a new one"
+            echo "create_pr=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update tfvars
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
+        run: |
+          set -euo pipefail
+
+          CHANGES_FILE="${{ steps.check-changes.outputs.changes_file }}"
+          ENV="${{ matrix.environment }}"
+
+          # TODO: da modificare per adattarlo al repo corretto
+          # src/main/core-es1/env/${ENV}/terraform.tfvars
+          TFVARS_FILE="interop-infra/src/main/core-es1/env/${ENV}/terraform.tfvars"
+
+          # Se il file non esiste, esci senza errore
+          if [ ! -f "$TFVARS_FILE" ]; then
+            echo "File $TFVARS_FILE not found."
+            exit 0
+          fi
+
+          # associazione servizio -> variabile da aggiornare
+          declare -A service_to_var
+          service_to_var=(
+            ["api-gateway"]="api_gateway_raw_url"
+            ["authorization-server-node"]="authorization_server_node_raw_url"
+            ["backend-for-frontend"]="backend_for_frontend_raw_url"
+            ["m2m-gateway"]="m2m_gateway_raw_url"
+          )
+          # associazione servizio -> nome file openapi
+          declare -A service_to_file
+          service_to_file=(
+            ["api-gateway"]="apiGatewayApi.yml"
+            ["authorization-server-node"]="authorizationServerApi.yml"
+            ["backend-for-frontend"]="bffApi.yml"
+            ["m2m-gateway"]="m2mGatewayApi.yml"
+          )
+
+          # debug
+          echo "*** tfvars PRIMA ***"
+          cat "$TFVARS_FILE"
+          echo "********************"
+
+           # ciclo i servizi cambiati nel file
+          for svc in $(yq 'keys | .[]' "$CHANGES_FILE"); do
+
+            # popolo il nuovo tag per il servizio se non esiste vado avanti
+            new_tag=$(yq ".\"$svc\".after" "$CHANGES_FILE")
+            if [[ "$new_tag" == "null" ]]; then
+              continue
+            fi
+
+            # popolo la variabile corrispondente al servizio se non esiste vado avanti
+            var_name="${service_to_var[$svc]}"
+            if [ -z "$var_name" ]; then
+              continue
+            fi
+
+            # popolo il nome del file openapi
+            openapi_file="${service_to_file[$svc]}"
+            if [ -z "$openapi_file" ]; then
+              continue
+            fi
+
+              # modificare branch/tag in base alle casistiche; ragionare per tag
+            #
+            if [[ "$new_tag" == "develop" ]]; then
+              ref="refs/heads/develop"
+            else
+              ref="refs/tags/${new_tag}"
+            fi
+
+            #  passo new_tag al nuovo valore della url raw
+            url_raw="https://raw.githubusercontent.com/pagopa/interop-be-monorepo/$ref/packages/api-clients/open-api/$openapi_file"
+
+            #  se la variabile è già presente la aggiorno
+
+            if grep -q "^$var_name[[:space:]]*=" "$TFVARS_FILE"; then
+              sed -i -E "s|^$var_name[[:space:]]*=.*|$var_name = \"$url_raw\"|g" "$TFVARS_FILE"
+              echo "$var_name updated"
+            else
+              # aggiungo la variabile se non trovata; aggiungo alla fine
+              echo "" >> "$TFVARS_FILE"
+              echo "$var_name = \"$url_raw\"" >> "$TFVARS_FILE"
+              echo "$var_name added"
+            fi
+          done
+
+          # debug
+          echo "=== File tfvars DOPO ==="
+          cat "$TFVARS_FILE"
+
+      - name: Commit changes to target repo
+        id: commit_changes
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
+        run: |
+          BOT_EMAIL=${{ steps.bot_creds.outputs.BOT_EMAIL }}
+          BOT_USER=${{ steps.bot_creds.outputs.BOT_USER }}
+
+          cd interop-infra
+
+          TARGET_BRANCH_FULL=${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT
+          git checkout -b $TARGET_BRANCH_FULL
+          git pull origin $TARGET_BRANCH_FULL || true
+
+          git config user.name "$BOT_USER"
+          git config user.email "$BOT_EMAIL"
+
+          # forzo il remote a usare il PAT
+          git remote set-url origin "https://x-access-token:${{ secrets.INTEROP_INFRA_REPO_TOKEN }}@github.com/${{ vars.INTEROP_INFRA_REPO }}.git"
+
+          REL_TFVARS_FILE="src/main/core-es1/env/${ENVIRONMENT}/terraform.tfvars"
+
+          git add "$REL_TFVARS_FILE"
+          git commit -m "chore: Automated update from PR Opener ${{ github.run_id }}"
+          git push --set-upstream origin $TARGET_BRANCH_FULL
+
+      - name: Open PR for environment ${{ matrix.environment }}
+        id: open_pr
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' && steps.get_open_prs.outputs.create_pr == 'true' }}
+        env:
+          INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+        run: |
+          PR_OPEN_RES=$(curl -sSL \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/pulls \
+            -d '{"title":"['"$ENVIRONMENT"'] Automated update from Repo PR Opener","head":"'${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT'","base":"main","body":"This is an automated PR."}')
+
+          CURL_STATUS=$(echo $PR_OPEN_RES | jq -r '.status')
+          CURL_ERRORS=$(echo $PR_OPEN_RES | jq -r '.errors//""')
+
+          if [[ "$CURL_STATUS" == "404" ]] || [[ -n "$CURL_ERRORS" ]]; then
+              echo "Failed to create PR: $PR_OPEN_RES"
+              exit 1
+          else
+              echo "PR created successfully $PR_OPEN_RES"
+          fi
+
+          PR_NUMBER_CREATED=$(echo $PR_OPEN_RES | jq -r '.number' )
+          echo "Target PR Number: $PR_NUMBER_CREATED"
+
+          label1="${{ steps.build_labels.outputs.env_label }}"
+          label2="${{ steps.build_labels.outputs.prnum_label }}"
+
+          echo "Applying labels: $label1, $label2"
+          LABELING_RESULT=$(curl -sSL \
+            -X PUT \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
+            https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/issues/$PR_NUMBER_CREATED/labels \
+            -d "{\"labels\": [ \"$label1\", \"$label2\" ] }")
+
+          echo "Labels applied:"
+          echo "$LABELING_RESULT"
