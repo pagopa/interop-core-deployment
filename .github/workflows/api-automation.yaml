@@ -15,8 +15,9 @@
 #   * clona il repository target remoto specificato (interop-infra)
 #   * crea le due label per la PR (env=<env> e ref_pr=<prnum>)
 #   * verifica se esiste già una PR aperta per lo stesso ambiente e PR
+#   * verifica se esiste il branch sul repo target (se esiste lo allinea, altrimenti lo crea)
 #   * aggiorna il file `terraform.tfvars` dell’ambiente nel repository target (interop-infra), modificando o aggiungendo le variabili dei servizi aggiornati (`*_raw_url`)
-#   * committa e pusha le modifiche su un branch dedicato nel repository target remoto
+#   * committa e pusha le modifiche sul branch nel repository target remoto
 #   * apre una pull request verso il branch `main` del repository target (se non esiste già una PR con le stesse label)
 #   * applica le label `env=...` e `ref_pr=...` alla nuova PR appena aperta
 ###
@@ -24,25 +25,13 @@
 name: apigw-automation-main
 
 on:
-#   push: # TO ENABLE WHEN READY
-#     branches:
-#       - main
-#       # - develop
-#       # tags:
-#       #   - '*.*.*'
-#       #   - '*.*.*-RC*'
-#     paths:
-#       - 'commons/*/images.yaml'
-  workflow_dispatch: # TO REMOVE WHEN PULL_REQUEST IS ENABLED
-
-    # concurrency:
   pull_request:
     types: [opened, edited, reopened, synchronize]
     paths:
       - 'commons/*/images.yaml'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }} # USO run_id PER workflow_dispatch da rimuovere in caso di pull_request
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
@@ -50,12 +39,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        #environment: [dev, test, qa, uat, prod, vapt]
-        environment: [qa]
+        environment: [test, qa, uat, prod, vapt]
+
     env:
       ENVIRONMENT: ${{ matrix.environment }}
-      #PR_NUMBER: ${{ github.event.number }}
-      PR_NUMBER: ${{ github.event.pull_request.number || github.run_id }}
+      PR_NUMBER: ${{ github.event.number }}
 
     steps:
       - name: Print environment
@@ -225,6 +213,29 @@ jobs:
             echo "create_pr=true" >> $GITHUB_OUTPUT
           fi
 
+      - name: Check target branch in remote repository
+        if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
+        run: |
+          # branch target: se esiste lo allinea altrimenti lo crea da main aggiornato
+          set -euo pipefail
+          cd interop-infra
+
+          TARGET_BRANCH_FULL=${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT
+
+          git fetch origin --prune
+          # controllo se il branch su repo target esiste
+          if git ls-remote --exit-code --heads origin "$TARGET_BRANCH_FULL" >/dev/null; then
+            echo "Using existing remote branch $TARGET_BRANCH_FULL"
+            # se esiste allineo il branch locale a quello remoto
+            git checkout -B "$TARGET_BRANCH_FULL" "origin/$TARGET_BRANCH_FULL"
+          else
+            # se non esiste, allineo main ad origin/main, creo un nuovo branch e lo pusho
+            echo "Creating new branch from up-to-date main"
+            git checkout -B main origin/main
+            git checkout -b "$TARGET_BRANCH_FULL"
+            git push -u origin "$TARGET_BRANCH_FULL"
+          fi
+
       - name: Update tfvars
         if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
         run: |
@@ -233,8 +244,6 @@ jobs:
           CHANGES_FILE="${{ steps.check-changes.outputs.changes_file }}"
           ENV="${{ matrix.environment }}"
 
-          # TODO: da modificare per adattarlo al repo corretto
-          # src/main/core-es1/env/${ENV}/terraform.tfvars
           TFVARS_FILE="interop-infra/src/main/core-es1/env/${ENV}/terraform.tfvars"
 
           # Se il file non esiste, esci senza errore
@@ -299,6 +308,7 @@ jobs:
 
             #  se la variabile è già presente la aggiorno
 
+            # TODO rivedere formattazione/spazi - in questo modo considero anche spazi/tab tra nome variabile e uguale
             if grep -q "^$var_name[[:space:]]*=" "$TFVARS_FILE"; then
               sed -i -E "s|^$var_name[[:space:]]*=.*|$var_name = \"$url_raw\"|g" "$TFVARS_FILE"
               echo "$var_name updated"
@@ -318,14 +328,11 @@ jobs:
         id: commit_changes
         if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
         run: |
+          set -euo pipefail
           BOT_EMAIL=${{ steps.bot_creds.outputs.BOT_EMAIL }}
           BOT_USER=${{ steps.bot_creds.outputs.BOT_USER }}
 
           cd interop-infra
-
-          TARGET_BRANCH_FULL=${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT
-          git checkout -b $TARGET_BRANCH_FULL
-          git pull origin $TARGET_BRANCH_FULL || true
 
           git config user.name "$BOT_USER"
           git config user.email "$BOT_EMAIL"
@@ -336,8 +343,16 @@ jobs:
           REL_TFVARS_FILE="src/main/core-es1/env/${ENVIRONMENT}/terraform.tfvars"
 
           git add "$REL_TFVARS_FILE"
-          git commit -m "chore: Automated update from PR Opener ${{ github.run_id }}"
-          git push --set-upstream origin $TARGET_BRANCH_FULL
+
+          # committo solo se ci sono cambiamenti (evito errore nothing to commit)
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: chore: test file for PR opener ${{ github.run_id }}"
+          fi
+          # l'upstream l'ho settato nello step di prepare
+          git push
+
 
       - name: Open PR for environment ${{ matrix.environment }}
         id: open_pr
