@@ -20,6 +20,12 @@ deployment:
     limits:
       cpu: "1000m"
       memory: "2Gi"
+  enableRolloutAnnotations: true
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0%
+      maxSurge: 50%
 
 local:
   interop_be_commons:

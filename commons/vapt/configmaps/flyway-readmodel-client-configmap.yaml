@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-client
+  namespace: vapt
+data:
+  V1__Init_Client.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_client";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_client" to
+      "${NAMESPACE}_client_rmw_user",
+      "${NAMESPACE}_authorization_process_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client".client (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      consumer_id UUID NOT NULL,
+      name VARCHAR NOT NULL,
+      description VARCHAR,
+      kind VARCHAR NOT NULL,
+      admin_id UUID,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id),
+      CONSTRAINT client_id_metadata_version_unique UNIQUE (id, metadata_version)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client".client TO "${NAMESPACE}_client_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client TO "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client TO readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client".client_user (
+      metadata_version INTEGER NOT NULL,
+      client_id UUID NOT NULL REFERENCES "${NAMESPACE}_client".client (id) ON DELETE CASCADE,
+      user_id UUID NOT NULL,
+      PRIMARY KEY (client_id, user_id),
+      FOREIGN KEY (client_id, metadata_version) REFERENCES "${NAMESPACE}_client".client (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client".client_user TO "${NAMESPACE}_client_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client_user TO "${NAMESPACE}_authorization_process_user";   
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client_user TO readonly_user;    
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client".client_purpose (
+      metadata_version INTEGER NOT NULL,
+      client_id UUID NOT NULL REFERENCES "${NAMESPACE}_client".client (id) ON DELETE CASCADE,
+      purpose_id UUID NOT NULL,
+      PRIMARY KEY (client_id, purpose_id),
+      FOREIGN KEY (client_id, metadata_version) REFERENCES "${NAMESPACE}_client".client (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client".client_purpose TO "${NAMESPACE}_client_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client_purpose TO "${NAMESPACE}_authorization_process_user";      
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client_purpose TO readonly_user;      
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client".client_key (
+      metadata_version INTEGER NOT NULL,
+      client_id UUID NOT NULL REFERENCES "${NAMESPACE}_client".client (id) ON DELETE CASCADE,
+      user_id UUID,
+      kid VARCHAR NOT NULL,
+      name VARCHAR NOT NULL,
+      encoded_pem VARCHAR NOT NULL,
+      "algorithm" VARCHAR NOT NULL,
+      "use" VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (client_id, kid),
+      FOREIGN KEY (client_id, metadata_version) REFERENCES "${NAMESPACE}_client".client (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client".client_key TO "${NAMESPACE}_client_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client_key TO "${NAMESPACE}_authorization_process_user";      
+    GRANT SELECT ON TABLE "${NAMESPACE}_client".client_key TO readonly_user;      
+
+  V1.1__Grant_Access_Jobs_Consumers_Client.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_client" to "${NAMESPACE}_selfcare_client_users_updater_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_client" TO "${NAMESPACE}_selfcare_client_users_updater_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_client" to "${NAMESPACE}_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_client" TO "${NAMESPACE}_token_generation_readmodel_checker_user";

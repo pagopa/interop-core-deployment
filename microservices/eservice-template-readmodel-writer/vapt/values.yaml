@@ -1,4 +1,4 @@
-name: interop-be-eservice-template-readmodel-writer
+name: "interop-be-eservice-template-readmodel-writer"
 techStack: "nodejs"
 
 serviceAccount:
@@ -9,19 +9,23 @@ service:
 
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-eservice-template-readmodel-writer"
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-eservice-template"
 
 deployment:
   env:
-    TOPIC_STARTING_OFFSET: "earliest" 
+    PORT: "8088"
+    HOST: "0.0.0.0"
+    TOPIC_STARTING_OFFSET: "earliest"
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
+    READMODEL_DB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
     READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-    KAFKA_CLIENT_ID: "metadata.name"
