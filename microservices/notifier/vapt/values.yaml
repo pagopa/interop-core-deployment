@@ -70,7 +70,7 @@ deployment:
     runAsUser: 1001
   env:
     REQUIRED_CONTACT_POINT_NR: "1"
-    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/697818730278/persistence-events.fifo"
+    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/565393043798/persistence-events.fifo"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
