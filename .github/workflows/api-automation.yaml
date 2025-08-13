@@ -46,6 +46,7 @@ jobs:
       PR_NUMBER: ${{ github.event.number }}
 
     steps:
+      # RIMUOVERE ??
       - name: Print environment
         run: |
           echo "Triggered for environment: ${{ matrix.environment }}"
@@ -85,13 +86,24 @@ jobs:
             exit 0
           fi
 
-          # VERIFICO SE L'IMAGES.YAML DELL'ENV È CAMBIATO
-          if git diff --quiet HEAD~1 HEAD -- "$file"; then
+          # VERIFICA CAMBIAMENTI NEL FILE IMAGES.YAML ATTRAVERSO GIT DIFF
+          set +e
+          result_diff=$(git diff --quiet HEAD~1 HEAD -- $file)
+          diff_exit_code=$?
+
+          diff_name_only=$(git diff --name-only HEAD~1 HEAD)
+          echo "Diff result: $diff_name_only"
+
+          echo Diff result for $file: "$diff_exit_code"
+
+          if [ "$diff_exit_code" == '0' ]; then
             echo "No changes detected for $file"
             echo "has_changes=false" >> $GITHUB_OUTPUT
             exit 0
           fi
+          set -e
 
+          # VERIFICA CAMBIAMENTI NEI TAG DEI SERVIZI ESPOSI
           changes_file="$path_changed_file/changes-${ENVIRONMENT}.yaml"
           file_has_relevant_changes=false
 
@@ -101,7 +113,7 @@ jobs:
             tag_before=$(git show HEAD~1:$file | yq '.images.microservices["'"$svc"'"].tag' 2>/dev/null || echo "null")
             tag_after=$(yq '.images.microservices["'"$svc"'"].tag' "$file" 2>/dev/null || echo "null")
 
-            # SE IL TAG È CAMBIATO, CREO IL FILE (se non esiste) E SCRIVO LA DIFF
+            # SE IL TAG È CAMBIATO, CREO IL FILE (se non esiste) E SCRIVO LA DIFFERENZA TRA I DUE TAG
             if [ "$tag_before" != "$tag_after" ]; then
               if [ "$file_has_relevant_changes" = false ]; then
                 > "$changes_file"   # creo il file solo al primo cambiamento
@@ -213,7 +225,7 @@ jobs:
             echo "create_pr=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check target branch in remote repository
+      - name: Check target branch in interop-infra
         if: ${{ steps.check-changes.outputs.has_changes == 'true' }}
         run: |
           # branch target: se esiste lo allinea altrimenti lo crea da main aggiornato
@@ -223,13 +235,12 @@ jobs:
           TARGET_BRANCH_FULL=${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT
 
           git fetch origin --prune
-          # controllo se il branch su repo target esiste
+          # SE IL BRANCH ESISTE, LO ALLINEO, ALTRIMENTI LO CREO PARTENDO DA MAIN DEL REPO TARGET
           if git ls-remote --exit-code --heads origin "$TARGET_BRANCH_FULL" >/dev/null; then
             echo "Using existing remote branch $TARGET_BRANCH_FULL"
-            # se esiste allineo il branch locale a quello remoto
             git checkout -B "$TARGET_BRANCH_FULL" "origin/$TARGET_BRANCH_FULL"
+            git pull origin "$TARGET_BRANCH_FULL"
           else
-            # se non esiste, allineo main ad origin/main, creo un nuovo branch e lo pusho
             echo "Creating new branch from up-to-date main"
             git checkout -B main origin/main
             git checkout -b "$TARGET_BRANCH_FULL"
@@ -295,8 +306,7 @@ jobs:
               continue
             fi
 
-              # modificare branch/tag in base alle casistiche; ragionare per tag
-            #
+            # nel caso in cui il tag sia develop, uso il branch develop, altrimenti uso il tag sistemando opportunamente la ref
             if [[ "$new_tag" == "develop" ]]; then
               ref="refs/heads/develop"
             else
@@ -348,9 +358,10 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: chore: test file for PR opener ${{ github.run_id }}"
+            git commit -m "chore: Automated update from PR Opener ${{ github.run_id }}"
           fi
-          # l'upstream l'ho settato nello step di prepare
+
+            # eseguo il push al branch del repo target, l'upstream l'ho settato nello step di prepare
           git push
 
 
