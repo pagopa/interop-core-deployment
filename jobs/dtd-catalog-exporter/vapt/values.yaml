@@ -14,7 +14,7 @@ configmap:
   DTD_CATALOG_CSV_FILENAME: "eservice_a_catalogo.csv"
   DTD_TENANTS_CSV_FILENAME: "aderenti.csv"
   DTD_TENANTS_JSON_FILENAME: "aderenti.json"
-  GITHUB_REPO: "pdnd-opendata"
+  GITHUB_REPO: "interop-metrics-deploy-test"
   GITHUB_REPO_OWNER: "pagopa"
 
 cronjob:
