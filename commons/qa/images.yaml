@@ -2,30 +2,30 @@ images:
   microservices:
     agreement-outbound-writer:
       tag: "2.6.0-RC2"
-    agreement-readmodel-writer:
-      tag: "2.6.0-RC2"
     agreement-platformstate-writer:
       tag: "2.6.0-RC2"
     agreement-process:
+      tag: "2.6.0-RC2"
+    agreement-readmodel-writer:
       tag: "2.6.0-RC2"
     agreement-readmodel-writer-sql:
       tag: "2.6.0-RC2"
     api-gateway:
       tag: "2.6.0-RC2"
+    attribute-registry-process:
+      tag: "2.6.0-RC2"
     attribute-registry-readmodel-writer:
       tag: "2.6.0-RC2"
     attribute-registry-readmodel-writer-sql:
       tag: "2.6.0-RC2"
-    attribute-registry-process:
-      tag: "2.6.0-RC2"
     authorization-management:
       tag: "1.0.18"
-    authorization-process:
-      tag: "2.6.0-RC2"
     authorization-platformstate-writer:
       tag: "2.6.0-RC2"
+    authorization-process:
+      tag: "2.6.0-RC2"
     authorization-server:
-      tag: "1.0.14"
+      tag: "1.0.15"
     authorization-server-node:
       tag: "2.6.0-RC2"
     authorization-updater:
@@ -34,13 +34,13 @@ images:
       tag: "2.6.0-RC2"
     catalog-outbound-writer:
       tag: "2.6.0-RC2"
-    catalog-readmodel-writer:
-      tag: "2.6.0-RC2"
-    catalog-readmodel-writer-sql:
-      tag: "2.6.0-RC2"
     catalog-platformstate-writer:
       tag: "2.6.0-RC2"
     catalog-process:
+      tag: "2.6.0-RC2"
+    catalog-readmodel-writer:
+      tag: "2.6.0-RC2"
+    catalog-readmodel-writer-sql:
       tag: "2.6.0-RC2"
     certified-email-sender:
       tag: "2.6.0-RC2"
@@ -53,12 +53,12 @@ images:
     compute-agreements-consumer:
       tag: "2.6.0-RC2"
     datalake-interface-exporter:
-      tag: "2.6.0-RC2"
+      tag: "2.6.0-RC2"      
+    delegation-items-archiver:
+      tag: "2.6.0-RC2"      
     delegation-outbound-writer:
       tag: "2.6.0-RC2"
     delegation-process:
-      tag: "2.6.0-RC2"
-    delegation-items-archiver:
       tag: "2.6.0-RC2"
     delegation-readmodel-writer:
       tag: "2.6.0-RC2"
@@ -66,16 +66,16 @@ images:
       tag: "2.6.0-RC2"
     eservice-descriptors-archiver:
       tag: "2.6.0-RC2"
+    eservice-template-instances-updater:
+      tag: "2.6.0-RC2"
     eservice-template-process:
       tag: "2.6.0-RC2"
     eservice-template-readmodel-writer:
       tag: "2.6.0-RC2"
     eservice-template-readmodel-writer-sql:
       tag: "2.6.0-RC2"
-    eservice-template-instances-updater:
-      tag: "2.6.0-RC2"
     frontend:
-      tag: "dev-latest"
+      tag: "1.2.7"
     key-readmodel-writer:
       tag: "2.6.0-RC2"
     key-readmodel-writer-sql:
@@ -88,25 +88,25 @@ images:
       tag: "1.0.19"
     notifier-seeder:
       tag: "2.6.0-RC2"
-    producer-keychain-readmodel-writer:
-      tag: "2.6.0-RC2"
+    party-registry-proxy:
+      tag: "1.0.15"
     producer-key-readmodel-writer:
       tag: "2.6.0-RC2"
     producer-key-readmodel-writer-sql:
       tag: "2.6.0-RC2"
+    producer-keychain-readmodel-writer:
+      tag: "2.6.0-RC2"
     producer-keychain-readmodel-writer-sql:
       tag: "2.6.0-RC2"
-    party-registry-proxy:
-      tag: "1.0.15"
+    purpose-platformstate-writer:
+      tag: "2.6.0-RC2"
+    purpose-process:
+      tag: "2.6.0-RC2"
     purpose-outbound-writer:
       tag: "2.6.0-RC2"
     purpose-readmodel-writer:
       tag: "2.6.0-RC2"
     purpose-readmodel-writer-sql:
-      tag: "2.6.0-RC2"
-    purpose-platformstate-writer:
-      tag: "2.6.0-RC2"
-    purpose-process:
       tag: "2.6.0-RC2"
     redis:
       tag: "7.0.4"
@@ -118,13 +118,13 @@ images:
       tag: "20"
     smtp-mock:
       tag: "1.10.4"
+    tenant-outbound-writer:
+      tag: "2.6.0-RC2"
     tenant-process:
       tag: "2.6.0-RC2"
     tenant-readmodel-writer:
       tag: "2.6.0-RC2"
     tenant-readmodel-writer-sql:
-      tag: "2.6.0-RC2"
-    tenant-outbound-writer:
       tag: "2.6.0-RC2"
     token-details-persister-node:
       tag: "2.6.0-RC2"
