@@ -8,8 +8,6 @@ cronjob:
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
-  env:
-    AGREEMENTS_TO_SKIP: ""
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
@@ -39,3 +37,7 @@ cronjob:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-token-generation-readmodel-checker-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-token-generation-readmodel-checker-user.password"
+  automountServiceAccountToken: false
+
+configmap:
+  AGREEMENTS_TO_SKIP: ""
