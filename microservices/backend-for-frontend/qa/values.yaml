@@ -3,7 +3,7 @@ techStack: "nodejs"
 
 serviceAccount:
   roleArn: "arn:aws:iam::755649575658:role/interop-be-backend-for-frontend-qa-es1"
-  
+
 service:
   create: true
   containerPort: 8088
@@ -14,7 +14,7 @@ service:
 
 configmap:
   BACKEND_FOR_FRONTEND_INTERFACE_VERSION: "1.0"
-  GENERATED_JWT_KID:  "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  GENERATED_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   GENERATED_JWT_SECONDS_DURATION: "86400"
   GENERATED_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   GENERATED_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/ui"
@@ -61,18 +61,21 @@ configmap:
   DELEGATION_CONTRACTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
+  CLIENT_ASSERTION_JWT_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
+  BFF_SWAGGER_UI_ENABLED: true
 
 deployment:
   env:
     HOST: "0.0.0.0"
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
-  envFromConfigmaps:    
+  envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.BFF_WELL_KNOWN_URLS"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
@@ -86,7 +89,7 @@ deployment:
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"    
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
   envFromSecrets:
