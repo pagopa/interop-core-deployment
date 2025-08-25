@@ -38,6 +38,7 @@ deployment:
     HOST: "0.0.0.0"
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     POD_NAME: "metadata.name"
@@ -64,4 +65,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-    
