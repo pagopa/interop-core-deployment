@@ -86,7 +86,7 @@ jobs:
             exit 0
           fi
 
-          # VERIFICA CAMBIAMENTI NEL FILE IMAGES.YAML ATTRAVERSO GIT DIFF
+          # VERIFICA CAMBIAMENTI NEL FILE IMAGES.YAML ATTRAVERSO GIT DIFF (e recupero il codice del git diff)
           set +e
           result_diff=$(git diff --quiet HEAD~1 HEAD -- $file)
           diff_exit_code=$?
@@ -238,7 +238,8 @@ jobs:
           # SE IL BRANCH ESISTE, LO ALLINEO, ALTRIMENTI LO CREO PARTENDO DA MAIN DEL REPO TARGET
           if git ls-remote --exit-code --heads origin "$TARGET_BRANCH_FULL" >/dev/null; then
             echo "Using existing remote branch $TARGET_BRANCH_FULL"
-            git checkout -B "$TARGET_BRANCH_FULL" "origin/$TARGET_BRANCH_FULL"
+            #git checkout -B "$TARGET_BRANCH_FULL" "origin/$TARGET_BRANCH_FULL"
+            git checkout "$TARGET_BRANCH_FULL"
             git pull origin "$TARGET_BRANCH_FULL"
           else
             echo "Creating new branch from up-to-date main"
