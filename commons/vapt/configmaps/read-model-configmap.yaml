@@ -9,4 +9,3 @@ data:
   READMODEL_DB_PORT: "27017"
   READMODEL_REPLICA_SET: "rs0"
   READMODEL_READ_PREFERENCE: "secondaryPreferred"
-    

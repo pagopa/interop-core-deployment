@@ -5,7 +5,7 @@ service:
   portName: http
 
 deployment:
-  replicas: 0
+  replicas: 1
   image:
     repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
@@ -13,6 +13,7 @@ deployment:
     digest: $IMAGE_DIGEST_PLACEHOLDER
   env:
     LOG_LEVEL: "info"
+    NODE_ENV: "production"
   resources:
     requests:
       cpu: "1000m"
@@ -20,6 +21,12 @@ deployment:
     limits:
       cpu: "1000m"
       memory: "2Gi"
+  enableRolloutAnnotations: true
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0%
+      maxSurge: 50%
 
 local:
   interop_be_commons:

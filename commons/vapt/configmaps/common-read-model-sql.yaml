@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-read-model-sql
+  namespace: vapt
+data:
+  DB_HOST_RW: "interop-platform-data-vapt.cluster-c1simiia6fq8.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "interop-platform-data-vapt.cluster-ro-c1simiia6fq8.eu-south-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "read_model"
+  DB_USE_SSL: "true"
+  DB_SCHEMA_AGREEMENT: "vapt_agreement"
+  DB_SCHEMA_ATTRIBUTE: "vapt_attribute"
+  DB_SCHEMA_CATALOG: "vapt_catalog"
+  DB_SCHEMA_CLIENT_JWK_KEY: "vapt_client_jwk_key"
+  DB_SCHEMA_CLIENT: "vapt_client"
+  DB_SCHEMA_DELEGATION: "vapt_delegation"
+  DB_SCHEMA_ESERVICE_TEMPLATE: "vapt_eservice_template"
+  DB_SCHEMA_PRODUCER_JWK_KEY: "vapt_producer_jwk_key"
+  DB_SCHEMA_PRODUCER_KEYCHAIN: "vapt_producer_keychain"
+  DB_SCHEMA_PURPOSE: "vapt_purpose"
+  DB_SCHEMA_TENANT: "vapt_tenant"

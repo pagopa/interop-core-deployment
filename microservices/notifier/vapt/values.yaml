@@ -54,8 +54,13 @@ deployment:
     envFromSecrets:
       FLYWAY_USER: "postgres.POSTGRES_USR"
       FLYWAY_PASSWORD: "postgres.POSTGRES_PSW"
-
-
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+      requests:
+        cpu: "10m"
+        memory: "64Mi"
   podTemplateMetadata:
     labels:
       actorSystemName: "{{.Values.name}}"
