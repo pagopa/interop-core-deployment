@@ -75,7 +75,7 @@ images:
     eservice-template-readmodel-writer-sql:
       tag: "2.6.0-RC2"
     frontend:
-      tag: "1.2.8-RC1"
+      tag: "1.2.8-RC2"
     key-readmodel-writer:
       tag: "2.6.0-RC2"
     key-readmodel-writer-sql:
