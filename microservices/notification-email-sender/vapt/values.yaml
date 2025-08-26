@@ -9,13 +9,13 @@ serviceAccount:
 
 configmap:
   INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
-  AWS_SES_ENDPOINT: "https://email.eu-south-1.amazonaws.com"
-  SENDER_MAIL: "noreply@notifiche.vapt.interop.pagopa.it"
-  SENDER_LABEL: "PDND Interop noreply-{{.Values.namespace}}"
+  AWS_SES_ENDPOINT: "http://ses-mock.{{.Values.namespace}}.svc.cluster.local:8005"
+  SENDER_MAIL: "noreply@notifiche.{{.Values.namespace}}.interop.pagopa.it"
+  SENDER_LABEL: "noreply-{{.Values.namespace}}"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-email-sender"
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-notification-email-sender"
-  SMTP_ADDRESS: "DEPRECATED"
-  SMTP_PORT: "465"
+  SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
+  SMTP_PORT: "5025"
   SMTP_SECURE: "false"
 
 deployment:

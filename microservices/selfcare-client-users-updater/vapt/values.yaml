@@ -18,6 +18,7 @@ configmap:
   KAFKA_GROUP_ID: "interop-users-{{.Values.namespace}}"
 
 deployment:
+  replicas: 0
   env:
     TOPIC_STARTING_OFFSET: earliest
   envFromConfigmaps:
