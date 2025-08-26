@@ -17,3 +17,7 @@ cronjob:
   env:
     LOG_LEVEL: "info"
     NODE_ENV: "production"
+
+local:
+  interop_be_commons:
+    RSA_KEYS_IDENTIFIERS: "65ce3bd3-88ed-40c1-9787-0a55e7f35332"
