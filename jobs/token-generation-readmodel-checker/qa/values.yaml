@@ -3,13 +3,14 @@ name: "interop-be-token-generation-readmodel-checker"
 serviceAccount:
   roleArn: "arn:aws:iam::755649575658:role/interop-be-token-generation-readmodel-checker-qa-es1"
 
+configmap:
+  AGREEMENTS_TO_SKIP: ""
+
 cronjob:
   schedule: "0 3 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
-  env:
-    AGREEMENTS_TO_SKIP: ""
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
@@ -39,3 +40,4 @@ cronjob:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-token-generation-readmodel-checker-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-token-generation-readmodel-checker-user.password"
+  automountServiceAccountToken: false

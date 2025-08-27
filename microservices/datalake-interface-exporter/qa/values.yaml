@@ -1,0 +1,33 @@
+name: "interop-be-datalake-interface-exporter"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-datalake-interface-exporter-qa-es1"
+
+service:
+  create: false
+  
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-datalake-interface-exporter"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-datalake-interface-exporter"
+  ESERVICE_DOCUMENTS_S3_BUCKET: "interop-application-documents-qa-es1"
+  DATALAKE_INTERFACES_EXPORT_S3_BUCKET: "interop-datalake-interface-export-qa-es1"
+  DATALAKE_INTERFACES_EXPORT_PATH: "data/interoperabilita/eservices/openapi/{{.Values.namespace}}" # DO NOT CHANGE, must match DL bucket path
+  
+
+deployment:
+  replicas: 0
+  env:
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "2Gi"
+    requests:
+      cpu: "500m"
+      memory: "2Gi"

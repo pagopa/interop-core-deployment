@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-key
+  namespace: vapt
+data:
+  V1__Init_ClientJWKKey.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_client_jwk_key";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_client_jwk_key" to
+      "${NAMESPACE}_key_rmw_user",
+      "${NAMESPACE}_api_gateway_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_client_jwk_key".client_jwk_key (
+      client_id UUID NOT NULL,
+      metadata_version INTEGER NOT NULL,
+      alg VARCHAR NOT NULL,
+      e VARCHAR NOT NULL,
+      kid VARCHAR NOT NULL,
+      kty VARCHAR NOT NULL,
+      n VARCHAR NOT NULL,
+      use VARCHAR NOT NULL,
+      PRIMARY KEY (client_id, kid)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_client_jwk_key".client_jwk_key TO "${NAMESPACE}_key_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client_jwk_key".client_jwk_key TO "${NAMESPACE}_api_gateway_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_client_jwk_key".client_jwk_key TO readonly_user;
+
+  V1.1__Grant_Access_Jobs_Consumers_ClientJWKKey.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_client_jwk_key" to "${NAMESPACE}_api_gateway_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_client_jwk_key" TO "${NAMESPACE}_api_gateway_user";
+
+  V1.2__Grant_Access_AuthorizationProcessUser_ClientJWKKey.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_client_jwk_key" to "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_client_jwk_key" TO "${NAMESPACE}_authorization_process_user";
