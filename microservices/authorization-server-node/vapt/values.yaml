@@ -26,6 +26,10 @@ configmap:
   RATE_LIMITER_TIMEOUT_MILLIS: "300"
   PRODUCER_KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-authorization-process"
   CLIENT_ASSERTION_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
+  DPOP_CACHE_TABLE: "interop-dpop-cache-vapt"
+  DPOP_DURATION_SECONDS: "60"
+  DPOP_IAT_TOLERANCE_SECONDS: "10"
+  DPOP_HTU: "https://auth.vapt.interop.pagopa.it/token.oauth2"
 
 deployment:
   image:
@@ -34,11 +38,11 @@ deployment:
     HOST: "0.0.0.0"
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
-    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
     FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
     FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS: "common-feature-flags.FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS"
@@ -46,6 +50,7 @@ deployment:
     TOKEN_AUDITING_TOPIC: "common-kafka.TOKEN_AUDITING_TOPIC"
     TOKEN_GENERATION_READMODEL_TABLE_NAME_TOKEN_GENERATION: "common-token-generation-read-model.TOKEN_READMODEL_TOKEN_STATES_TABLE_NAME"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
   livenessProbe:
@@ -60,4 +65,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-    
