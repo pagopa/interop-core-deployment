@@ -26,7 +26,7 @@ configmap:
   CQRS_CLIENTS_PROJECTION_COLLECTION_NAME: "clients"
   DEV_ENDPOINTS_ENABLED: "{{.Values.local.interop_be_commons.DEV_ENDPOINTS_ENABLED}}"
   ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
- 
+
 deployment:
   replicas: 0
   podTemplateMetadata:
@@ -52,11 +52,11 @@ deployment:
       FLYWAY_PASSWORD: "postgres.POSTGRES_PSW"
   command: ["bin/interop-be-authorization-management"]
   args: ["-Dconfig.override_with_env_vars=true"]
-  envFromFieldRef: 
+  envFromFieldRef:
     NAMESPACE: "metadata.namespace"
-  env: 
+  env:
     REQUIRED_CONTACT_POINT_NR: 1
-    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/565393043798/persistence-events.fifo"
+    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/755649575658/persistence-events.fifo"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
