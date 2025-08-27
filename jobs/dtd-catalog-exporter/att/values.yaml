@@ -14,6 +14,8 @@ configmap:
   DTD_CATALOG_CSV_FILENAME: "catalog.csv"
   DTD_TENANTS_CSV_FILENAME: "tenants.csv"
   DTD_TENANTS_JSON_FILENAME: "tenants.json"
+  GITHUB_REPO: "interop-metrics-deploy-test"
+  GITHUB_REPO_OWNER: "pagopa"
 
 cronjob:
   suspend: true

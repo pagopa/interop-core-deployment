@@ -19,7 +19,7 @@ cronjob:
     ENVIRONMENT: "att"
     TERMS_OF_SERVICE_NOTICE_ID: ""
     PRIVACY_POLICY_NOTICE_ID: ""
-    PRIVACY_NOTICES_DYNAMO_TABLE_NAME: "interop-privacy-notices-dev"
+    PRIVACY_NOTICES_DYNAMO_TABLE_NAME: "interop-privacy-notices-{{.Values.namespace}}"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromSecrets:
