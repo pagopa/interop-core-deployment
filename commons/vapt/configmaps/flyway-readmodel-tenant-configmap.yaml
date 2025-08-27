@@ -1,0 +1,187 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-tenant
+  namespace: vapt
+data:
+  V1__Init_Tenant.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_tenant";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to
+      "${NAMESPACE}_tenant_rmw_user",
+      "${NAMESPACE}_tenant_process_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      kind VARCHAR,
+      selfcare_id VARCHAR,
+      external_id_origin VARCHAR NOT NULL,
+      external_id_value VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      updated_at TIMESTAMP WITH TIME ZONE,
+      name VARCHAR NOT NULL,
+      onboarded_at TIMESTAMP WITH TIME ZONE,
+      sub_unit_type VARCHAR,
+      PRIMARY KEY (id),
+      CONSTRAINT tenant_id_metadata_version_unique UNIQUE (id, metadata_version)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant TO readonly_user;    
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant_mail (
+      id VARCHAR,
+      tenant_id UUID NOT NULL REFERENCES "${NAMESPACE}_tenant".tenant (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      kind VARCHAR NOT NULL,
+      address VARCHAR NOT NULL,
+      description VARCHAR NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id, tenant_id, created_at),
+      FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_mail TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_mail TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_mail TO readonly_user;   
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant_certified_attribute (
+      attribute_id UUID NOT NULL,
+      tenant_id UUID NOT NULL REFERENCES "${NAMESPACE}_tenant".tenant (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      assignment_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+      revocation_timestamp TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (attribute_id, tenant_id),
+      FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_certified_attribute TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_attribute TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_attribute TO readonly_user;      
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant_declared_attribute (
+      attribute_id UUID,
+      tenant_id UUID NOT NULL REFERENCES "${NAMESPACE}_tenant".tenant (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      assignment_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+      revocation_timestamp TIMESTAMP WITH TIME ZONE,
+      delegation_id UUID,
+      PRIMARY KEY (attribute_id, tenant_id),
+      FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_declared_attribute TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_declared_attribute TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_declared_attribute TO readonly_user;      
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant_verified_attribute (
+      attribute_id UUID,
+      tenant_id UUID NOT NULL REFERENCES "${NAMESPACE}_tenant".tenant (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      assignment_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (attribute_id, tenant_id),
+      FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_verified_attribute TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_verified_attribute TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_verified_attribute TO readonly_user;      
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant_verified_attribute_verifier (
+      tenant_id UUID NOT NULL REFERENCES "${NAMESPACE}_tenant".tenant (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      tenant_verifier_id UUID NOT NULL,
+      tenant_verified_attribute_id UUID NOT NULL,
+      verification_date TIMESTAMP WITH TIME ZONE NOT NULL,
+      expiration_date TIMESTAMP WITH TIME ZONE,
+      extension_date TIMESTAMP WITH TIME ZONE,
+      delegation_id UUID,
+      FOREIGN KEY (tenant_id, tenant_verified_attribute_id) REFERENCES "${NAMESPACE}_tenant".tenant_verified_attribute (tenant_id, attribute_id),
+      FOREIGN KEY (tenant_verifier_id) REFERENCES "${NAMESPACE}_tenant".tenant (id) DEFERRABLE INITIALLY DEFERRED,
+      FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_verified_attribute_verifier TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_verified_attribute_verifier TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_verified_attribute_verifier TO readonly_user;      
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant_verified_attribute_revoker (
+      tenant_id UUID NOT NULL REFERENCES "${NAMESPACE}_tenant".tenant (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      tenant_revoker_id UUID NOT NULL,
+      tenant_verified_attribute_id UUID NOT NULL,
+      verification_date TIMESTAMP WITH TIME ZONE NOT NULL,
+      expiration_date TIMESTAMP WITH TIME ZONE,
+      extension_date TIMESTAMP WITH TIME ZONE,
+      revocation_date TIMESTAMP WITH TIME ZONE NOT NULL,
+      delegation_id UUID,
+      FOREIGN KEY (tenant_id, tenant_verified_attribute_id) REFERENCES "${NAMESPACE}_tenant".tenant_verified_attribute (tenant_id, attribute_id),
+      FOREIGN KEY (tenant_revoker_id) REFERENCES "${NAMESPACE}_tenant".tenant (id) DEFERRABLE INITIALLY DEFERRED,
+      FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_verified_attribute_revoker TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_verified_attribute_revoker TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_verified_attribute_revoker TO readonly_user;  
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant_feature (
+      tenant_id UUID NOT NULL REFERENCES "${NAMESPACE}_tenant".tenant (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      kind VARCHAR NOT NULL,
+      certifier_id VARCHAR,
+      availability_timestamp TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (tenant_id, kind),
+      FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_feature TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_feature TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_feature TO readonly_user;   
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_agreement_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_catalog_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_attribute_registry_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_delegation_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_eservice_template_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_purpose_process_user";        
+
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_attribute_registry_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_delegation_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_purpose_process_user";
+
+    CREATE INDEX idx_tenant_mail_tenant_id ON "${NAMESPACE}_tenant".tenant_mail (tenant_id);
+    CREATE INDEX idx_tenant_feature_tenant_id ON "${NAMESPACE}_tenant".tenant_feature (tenant_id);
+    CREATE INDEX idx_tenant_certified_attribute_tenant_id ON "${NAMESPACE}_tenant".tenant_certified_attribute (tenant_id);
+    CREATE INDEX idx_tenant_declared_attribute_tenant_id ON "${NAMESPACE}_tenant".tenant_declared_attribute (tenant_id);
+    CREATE INDEX idx_tenant_verified_attribute_tenant_id ON "${NAMESPACE}_tenant".tenant_verified_attribute (tenant_id);
+    CREATE INDEX idx_verifier_attr_id ON "${NAMESPACE}_tenant".tenant_verified_attribute_verifier (tenant_verified_attribute_id);
+    CREATE INDEX idx_revoker_attr_id ON "${NAMESPACE}_tenant".tenant_verified_attribute_revoker (tenant_verified_attribute_id);
+  
+  V1.1__Grant_Access_Jobs_Consumers_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_selfcare_client_users_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant TO "${NAMESPACE}_selfcare_client_users_updater_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_anac_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_anac_certified_attributes_importer_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_certified_email_sender_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_certified_email_sender_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_datalake_data_export_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_dtd_catalog_exporter_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_dtd_catalog_exporter_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_ipa_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_ipa_certified_attributes_importer_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_ivass_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_ivass_certified_attributes_importer_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_notification_email_sender_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_notification_email_sender_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_pn_consumers_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_pn_consumers_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_selfcare_client_users_updater_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_selfcare_client_users_updater_user";

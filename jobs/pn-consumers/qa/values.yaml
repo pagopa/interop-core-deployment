@@ -48,3 +48,4 @@ cronjob:
     SMTP_PASSWORD: "smtp-reports.SMTP_PASSWORD"
     READMODEL_SQL_DB_USERNAME: "platform-data-pn-consumers-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-pn-consumers-user.password"
+  automountServiceAccountToken: false

@@ -1,0 +1,25 @@
+name: "interop-be-delegation-outbound-writer"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-delegation-outbound-writer-qa-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-delegation-outbound-writer"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-delegation-outbound-writer"
+
+deployment:
+  replicas: 0
+  env:
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
+    DELEGATION_OUTBOUND_TOPIC: "common-kafka.DELEGATION_OUTBOUND_TOPIC"
+    PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
