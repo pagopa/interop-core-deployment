@@ -21,3 +21,5 @@ data:
   TENANT_OUTBOUND_TOPIC: "outbound.dev_tenant.events"
   TENANT_TOPIC: "event-store.dev_tenant.events"
   TOKEN_AUDITING_TOPIC: "dev_authorization-server.generated-jwt"
+  PURPOSE_TEMPLATE_TOPIC: event-store.dev_purpose_template.events"
+  
