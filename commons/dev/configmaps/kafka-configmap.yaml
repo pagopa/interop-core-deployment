@@ -18,8 +18,7 @@ data:
   KAFKA_BROKERS: "b-1.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,b-2.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098"
   PURPOSE_OUTBOUND_TOPIC: "outbound.dev_purpose.events"
   PURPOSE_TOPIC: "event-store.dev_purpose.events"
+  PURPOSE_TEMPLATE_TOPIC: event-store.dev_purpose_template.events"
   TENANT_OUTBOUND_TOPIC: "outbound.dev_tenant.events"
   TENANT_TOPIC: "event-store.dev_tenant.events"
   TOKEN_AUDITING_TOPIC: "dev_authorization-server.generated-jwt"
-  PURPOSE_TEMPLATE_TOPIC: event-store.dev_purpose_template.events"
-  
