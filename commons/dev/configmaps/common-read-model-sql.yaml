@@ -19,4 +19,5 @@ data:
   DB_SCHEMA_PRODUCER_JWK_KEY: "dev_producer_jwk_key"
   DB_SCHEMA_PRODUCER_KEYCHAIN: "dev_producer_keychain"
   DB_SCHEMA_PURPOSE: "dev_purpose"
+  DB_SCHEMA_PURPOSE_TEMPLATE: "dev_purpose_template"
   DB_SCHEMA_TENANT: "dev_tenant"
