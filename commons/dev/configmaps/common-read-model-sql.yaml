@@ -16,6 +16,7 @@ data:
   DB_SCHEMA_CLIENT: "dev_client"
   DB_SCHEMA_DELEGATION: "dev_delegation"
   DB_SCHEMA_ESERVICE_TEMPLATE: "dev_eservice_template"
+  DB_SCHEMA_NOTIFICATION_CONFIG: "dev_notification_config"
   DB_SCHEMA_PRODUCER_JWK_KEY: "dev_producer_jwk_key"
   DB_SCHEMA_PRODUCER_KEYCHAIN: "dev_producer_keychain"
   DB_SCHEMA_PURPOSE: "dev_purpose"
