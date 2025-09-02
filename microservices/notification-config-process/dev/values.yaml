@@ -37,7 +37,7 @@ deployment:
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
-      AWS_ROLE_SESSION_NAME: "metadata.name"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"

@@ -64,7 +64,7 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".user_enabled_email_notification TO "${NAMESPACE}_notification_config_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".user_enabled_email_notification readonly_user;
 
-  # TODO add permissions for who else needs to read: in-app-dispatcher, email-dispatcher
+  # TODO add permissions for who else needs to read: in-app-notification-dispatcher, email-notification-dispatcher
   # V1.1__Permission_Process_NotificationConfig.sql: |-
   #   GRANT USAGE ON SCHEMA "${NAMESPACE}_notification_config" to "${NAMESPACE}_???_user";
   #   GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_???_user";
