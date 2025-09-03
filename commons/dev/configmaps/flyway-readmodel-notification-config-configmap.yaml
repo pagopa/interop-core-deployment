@@ -55,8 +55,3 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_notification_config_rmw_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_notification_config_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "readonly_user";
-
-  # TODO add permissions for who else needs to read: in-app-notification-dispatcher, email-notification-dispatcher
-  # V1.1__Permission_Process_NotificationConfig.sql: |-
-  #   GRANT USAGE ON SCHEMA "${NAMESPACE}_notification_config" to "${NAMESPACE}_???_user";
-  #   GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_???_user";
