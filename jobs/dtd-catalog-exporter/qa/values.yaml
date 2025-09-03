@@ -4,9 +4,6 @@ serviceAccount:
   roleArn: "arn:aws:iam::755649575658:role/interop-be-dtd-catalog-exporter-qa-es1"
 
 configmap:
-  TENANTS_COLLECTION_NAME: "tenants"
-  ATTRIBUTES_COLLECTION_NAME: "attributes"
-  ESERVICES_COLLECTION_NAME: "eservices"
   S3_BUCKET: "interop-public-catalog-qa-es1"
   DTD_CATALOG_STORAGE_PATH: "catalog"
   DTD_CATALOG_FILENAME: "catalog.json"
