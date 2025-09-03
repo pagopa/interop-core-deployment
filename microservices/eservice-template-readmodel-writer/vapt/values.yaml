@@ -12,6 +12,7 @@ configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-eservice-template"
 
 deployment:
+  replicas: 0
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
