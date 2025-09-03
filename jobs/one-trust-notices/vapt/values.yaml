@@ -19,8 +19,6 @@ cronjob:
     TERMS_OF_SERVICE_NOTICE_ID: ""
     PRIVACY_POLICY_NOTICE_ID: ""
     PRIVACY_NOTICES_DYNAMO_TABLE_NAME: "interop-privacy-notices-{{.Values.namespace}}"
-  envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
   envFromSecrets:
     ONETRUST_CLIENT_ID: "onetrust.ONETRUST_CLIENT_ID"
     ONETRUST_CLIENT_SECRET: "onetrust.ONETRUST_CLIENT_SECRET"

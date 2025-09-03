@@ -21,7 +21,6 @@ deployment:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-    NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"

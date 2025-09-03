@@ -22,8 +22,6 @@ configmap:
   INTERNAL_JWT_SECONDS_DURATION: "3600"
 
 deployment:
-  envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
   envFromSecrets:

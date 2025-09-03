@@ -18,8 +18,6 @@ cronjob:
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
-  envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
