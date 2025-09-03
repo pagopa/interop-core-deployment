@@ -1,4 +1,4 @@
-name: interop-be-eservice-template-readmodel-writer-sql
+name: interop-be-notification-config-readmodel-writer-sql
 techStack: nodejs
 
 serviceAccount:
