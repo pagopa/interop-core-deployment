@@ -23,9 +23,6 @@ data:
       CONSTRAINT tenant_notification_config_id_metadata_version_unique UNIQUE (id, metadata_version),
       CONSTRAINT tenant_notification_config_tenant_id_unique UNIQUE (tenant_id)
     );
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_notification_config".tenant_notification_config TO "${NAMESPACE}_notification_config_rmw_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".tenant_notification_config TO "${NAMESPACE}_notification_config_process_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".tenant_notification_config TO readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_notification_config".user_notification_config (
       id UUID,
@@ -38,9 +35,6 @@ data:
       CONSTRAINT user_notification_config_id_metadata_version_unique UNIQUE (id, metadata_version),
       CONSTRAINT user_notification_config_user_id_tenant_id_unique UNIQUE (user_id, tenant_id)
     );
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_notification_config".user_notification_config TO "${NAMESPACE}_notification_config_rmw_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".user_notification_config TO "${NAMESPACE}_notification_config_process_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".user_notification_config TO readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_notification_config".user_enabled_in_app_notification (
       user_notification_config_id UUID NOT NULL REFERENCES "${NAMESPACE}_notification_config".user_notification_config (id) ON DELETE CASCADE,
@@ -49,9 +43,6 @@ data:
       PRIMARY KEY (user_notification_config_id, notification_type),
       FOREIGN KEY (user_notification_config_id, metadata_version) REFERENCES "${NAMESPACE}_notification_config".user_notification_config (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_notification_config".user_enabled_in_app_notification TO "${NAMESPACE}_notification_config_rmw_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".user_enabled_in_app_notification TO "${NAMESPACE}_notification_config_process_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".user_enabled_in_app_notification TO readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_notification_config".user_enabled_email_notification (
       user_notification_config_id UUID NOT NULL REFERENCES "${NAMESPACE}_notification_config".user_notification_config (id) ON DELETE CASCADE,
@@ -60,9 +51,10 @@ data:
       PRIMARY KEY (user_notification_config_id, notification_type),
       FOREIGN KEY (user_notification_config_id, metadata_version) REFERENCES "${NAMESPACE}_notification_config".user_notification_config (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_notification_config".user_enabled_email_notification TO "${NAMESPACE}_notification_config_rmw_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".user_enabled_email_notification TO "${NAMESPACE}_notification_config_process_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_notification_config".user_enabled_email_notification readonly_user;
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_notification_config_rmw_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_notification_config_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "readonly_user";
 
   # TODO add permissions for who else needs to read: in-app-notification-dispatcher, email-notification-dispatcher
   # V1.1__Permission_Process_NotificationConfig.sql: |-
