@@ -23,8 +23,6 @@ cronjob:
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
-  env:
-    ENVIRONMENT: "qa"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:

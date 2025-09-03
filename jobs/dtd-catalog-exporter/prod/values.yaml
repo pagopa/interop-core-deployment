@@ -30,8 +30,6 @@ cronjob:
     limits:
       cpu: 1
       memory: 4Gi
-  env:
-    ENVIRONMENT: "prod"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:

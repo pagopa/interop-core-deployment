@@ -22,8 +22,6 @@ cronjob:
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
   automountServiceAccountToken: false
-  env:
-    ENVIRONMENT: "vapt"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:

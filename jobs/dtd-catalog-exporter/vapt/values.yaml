@@ -31,8 +31,6 @@ cronjob:
     limits:
       cpu: 1
       memory: 4Gi
-  env:
-    ENVIRONMENT: "vapt"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:

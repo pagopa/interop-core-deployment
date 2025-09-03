@@ -16,7 +16,6 @@ cronjob:
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
   env:
-    ENVIRONMENT: "qa"
     TERMS_OF_SERVICE_NOTICE_ID: ""
     PRIVACY_POLICY_NOTICE_ID: ""
     PRIVACY_NOTICES_DYNAMO_TABLE_NAME: "interop-privacy-notices-qa"
