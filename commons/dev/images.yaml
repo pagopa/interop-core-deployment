@@ -82,6 +82,10 @@ images:
       tag: "develop"
     m2m-gateway:
       tag: "develop"
+    notification-config-process:
+      tag: "develop"
+    notification-config-readmodel-writer-sql:
+      tag: "develop"
     notification-email-sender:
       tag: "develop"
     notifier:
