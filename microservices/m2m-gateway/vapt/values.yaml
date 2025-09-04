@@ -14,7 +14,7 @@ service:
 
 configmap:
   M2M_GATEWAY_INTERFACE_VERSION: v2
-  ACCEPTED_AUDIENCES: "interop.vapt.pagopa.it/m2m"
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
   RATE_LIMITER_MAX_REQUESTS: "20"
   RATE_LIMITER_BURST_PERCENTAGE: "1.2"
   RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
