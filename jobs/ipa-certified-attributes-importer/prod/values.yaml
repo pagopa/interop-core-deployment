@@ -14,7 +14,7 @@ configmap:
   UO_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/b0aa1f6c-f135-4c8a-b416-396fed4e1a5d?format=json"
   INSTITUTIONS_CATEGORIES_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/84ebb2e7-0e61-427b-a1dd-ab8bb2a84f07?format=json"
   ATTRIBUTE_CREATION_WAIT_TIME: "5000"
-  ECONOMIC_ACCOUNT_COMPANIES_ALLOWLIST: "soris"
+  ECONOMIC_ACCOUNT_COMPANIES_ALLOWLIST: "soris,trs_,C58G5FHA"
 
 cronjob:
   schedule: "30 7 * * *"

@@ -1,21 +1,16 @@
-name: "interop-be-catalog-process"
+name: "interop-be-notification-config-process"
 techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-notification-config-process-dev-es1"
 
 service:
   create: true
   containerPort: 8088
 
-serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-catalog-process-dev-es1"
-
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_catalog"
-  ESERVICE_DOCUMENTS_PATH: "eservices/docs"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PRODUCER_ALLOWED_ORIGINS: "IPA"
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
-  ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_notification_config"
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/internal"
 
 deployment:
   flywayInitContainer:
@@ -28,9 +23,9 @@ deployment:
     envFromConfigmaps:
       FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
+      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
@@ -49,9 +44,6 @@ deployment:
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
     EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
@@ -72,16 +64,12 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_SIGNALHUB_WHITELIST: "common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST"
-    FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
+    FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-catalog-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-notification-config-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-notification-config-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
