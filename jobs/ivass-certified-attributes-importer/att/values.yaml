@@ -21,8 +21,6 @@ cronjob:
   suspend: true
   restartPolicy: OnFailure
   automountServiceAccountToken: false
-  envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"

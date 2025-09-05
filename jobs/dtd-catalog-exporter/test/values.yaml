@@ -4,9 +4,6 @@ serviceAccount:
   roleArn: "arn:aws:iam::895646477129:role/interop-be-dtd-catalog-exporter-test-es1"
 
 configmap:
-  TENANTS_COLLECTION_NAME: "tenants"
-  ATTRIBUTES_COLLECTION_NAME: "attributes"
-  ESERVICES_COLLECTION_NAME: "eservices"
   S3_BUCKET: "interop-public-catalog-test-es1"
   DTD_CATALOG_STORAGE_PATH: "catalog"
   DTD_CATALOG_FILENAME: "catalog.json"
@@ -24,10 +21,6 @@ cronjob:
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
   automountServiceAccountToken: false
-  env:
-    ENVIRONMENT: "test"
-  envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
