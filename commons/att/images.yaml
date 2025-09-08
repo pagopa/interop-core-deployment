@@ -75,7 +75,7 @@ images:
     eservice-template-readmodel-writer-sql:
       tag: "2.5.2"
     frontend:
-      tag: "1.2.7"
+      tag: "1.2.10"
     key-readmodel-writer:
       tag: "2.5.2"
     key-readmodel-writer-sql:
