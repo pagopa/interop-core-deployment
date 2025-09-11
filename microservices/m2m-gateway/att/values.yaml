@@ -28,11 +28,13 @@ configmap:
   AGREEMENT_CONSUMER_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   AGREEMENT_CONSUMER_DOCUMENTS_PATH: "{{.Values.namespace}}/agreement/consumer-docs"
   AGREEMENT_CONSUMER_CONTRACTS_PATH: "{{.Values.namespace}}/agreement/contracts"
+
 deployment:
   env:
     HOST: "0.0.0.0"
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
