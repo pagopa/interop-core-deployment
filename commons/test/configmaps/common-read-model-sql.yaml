@@ -16,6 +16,7 @@ data:
   DB_SCHEMA_CLIENT: "test_client"
   DB_SCHEMA_DELEGATION: "test_delegation"
   DB_SCHEMA_ESERVICE_TEMPLATE: "test_eservice_template"
+  DB_SCHEMA_NOTIFICATION_CONFIG: "test_notification_config"
   DB_SCHEMA_PRODUCER_JWK_KEY: "test_producer_jwk_key"
   DB_SCHEMA_PRODUCER_KEYCHAIN: "test_producer_keychain"
   DB_SCHEMA_PURPOSE: "test_purpose"
