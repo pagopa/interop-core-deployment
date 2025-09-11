@@ -15,8 +15,6 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   PRODUCER_ALLOWED_ORIGINS: "IPA"
   ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/ui,uat.interop.pagopa.it/m2m,uat.interop.pagopa.it/internal"
-  FEATURE_FLAG_SIGNALHUB_WHITELIST: "false"
-  SIGNALHUB_WHITELIST_PRODUCER: ""
 
 deployment:
   flywayInitContainer:
