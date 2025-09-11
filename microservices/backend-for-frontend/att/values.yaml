@@ -3,7 +3,7 @@ techStack: "nodejs"
 
 serviceAccount:
   roleArn: "arn:aws:iam::533267098416:role/interop-be-backend-for-frontend-att-es1"
-  
+
 service:
   create: true
   containerPort: 8088
@@ -75,7 +75,7 @@ deployment:
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
-  envFromConfigmaps:    
+  envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.BFF_WELL_KNOWN_URLS"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
