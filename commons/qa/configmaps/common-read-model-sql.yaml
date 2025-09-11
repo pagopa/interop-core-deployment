@@ -16,6 +16,7 @@ data:
   DB_SCHEMA_CLIENT: "qa_client"
   DB_SCHEMA_DELEGATION: "qa_delegation"
   DB_SCHEMA_ESERVICE_TEMPLATE: "qa_eservice_template"
+  DB_SCHEMA_NOTIFICATION_CONFIG: "qa_notification_config"
   DB_SCHEMA_PRODUCER_JWK_KEY: "qa_producer_jwk_key"
   DB_SCHEMA_PRODUCER_KEYCHAIN: "qa_producer_keychain"
   DB_SCHEMA_PURPOSE: "qa_purpose"
