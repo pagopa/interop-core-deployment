@@ -4,9 +4,6 @@ serviceAccount:
   roleArn: "arn:aws:iam::565393043798:role/interop-be-dtd-catalog-exporter-vapt-es1"
 
 configmap:
-  TENANTS_COLLECTION_NAME: "tenants"
-  ATTRIBUTES_COLLECTION_NAME: "attributes"
-  ESERVICES_COLLECTION_NAME: "eservices"
   S3_BUCKET: "interop-public-catalog-{{.Values.namespace}}-es1"
   DTD_CATALOG_STORAGE_PATH: "catalog"
   DTD_CATALOG_FILENAME: "catalog.json"
@@ -31,10 +28,6 @@ cronjob:
     limits:
       cpu: 1
       memory: 4Gi
-  env:
-    ENVIRONMENT: "vapt"
-  envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"

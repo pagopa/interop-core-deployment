@@ -20,7 +20,6 @@ deployment:
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
     CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
