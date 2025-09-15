@@ -26,6 +26,7 @@ deployment:
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
+    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
