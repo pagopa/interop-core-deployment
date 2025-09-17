@@ -22,7 +22,7 @@
 #
 # 3. REMOTE PR MANAGEMENT:
 #    - Creation: new PR if it doesn't exist, with labels ref_pr={PR_NUMBER} + env={ENVIRONMENT}
-#    - Update: force push on existing branch if PR already present
+#    - Update: push on existing branch if PR already present (conflicts resolved at merge time)
 #    - PR description: includes modified services, author and workflow info
 #
 # 4. CLEANUP (merged PRs on interop-core-deployment):
@@ -84,18 +84,18 @@ jobs:
           set -euo pipefail
           git fetch origin main
 
-          echo "Checking for changes in commons/*/images.yaml ..."
+          echo "Checking for changes in commons/${ENVIRONMENT}/images.yaml ..."
 
-          # Detects if the last commit modified the images.yaml files
+          # Detects if the last commit modified the images.yaml file for current environment
           LAST_COMMIT_CHANGES=false
 
-          # Check if the last commit affected the images.yaml files
-          if git diff --name-only HEAD~1 HEAD | grep -E "^commons/.*/images\.yaml$"; then
+          # Check if the last commit affected the specific environment images.yaml file
+          if git diff --name-only HEAD~1 HEAD | grep -E "^commons/${ENVIRONMENT}/images\.yaml$"; then
             LAST_COMMIT_CHANGES=true
-            echo "Last commit modified images.yaml files - proceeding with workflow"
+            echo "Last commit modified commons/${ENVIRONMENT}/images.yaml - proceeding with workflow"
             echo "has_relevant_changes=true" >> $GITHUB_OUTPUT
           else
-            echo "Last commit did not modify images.yaml files - stopping workflow"
+            echo "Last commit did not modify commons/${ENVIRONMENT}/images.yaml - stopping workflow"
             echo "has_relevant_changes=false" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -212,7 +212,7 @@ jobs:
           set -euo pipefail
 
           label1="env=$ENVIRONMENT"
-          label2="ref_pr=$PR_NUMBER"
+          label2="core_deployment_pr=$PR_NUMBER"
 
           echo "env_label=${label1}" >> $GITHUB_OUTPUT
           echo "prnum_label=${label2}" >> $GITHUB_OUTPUT
@@ -261,6 +261,12 @@ jobs:
           TARGET_BRANCH_FULL=${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT
 
           git fetch origin --prune
+
+          # Ensure we always start from the latest main branch
+          echo "Updating local main to latest version"
+          git checkout main
+          git pull origin main
+
           # IF THE BRANCH EXISTS, ALIGN IT, OTHERWISE CREATE IT STARTING FROM MAIN OF TARGET REPO
           if git ls-remote --exit-code --heads origin "$TARGET_BRANCH_FULL" >/dev/null; then
             echo "Using existing remote branch $TARGET_BRANCH_FULL"
@@ -397,7 +403,7 @@ jobs:
           # Commit and push changes
           REL_TFVARS_FILE="src/main/core-es1/env/${ENVIRONMENT}/terraform.tfvars"
           git add "$REL_TFVARS_FILE"
-          git commit -m "Automated update from PR ${{ github.event.number }} (run ${{ github.run_id }})"
+          git commit -m "Automated update from interop-core-deployment PR ${{ github.event.number }} (run ${{ github.run_id }})"
           git push
 
       - name: Check changes in remote repository
@@ -504,6 +510,7 @@ jobs:
         if: steps.determine_action.outputs.should_create_pr == 'true' && steps.get_open_prs.outputs.create_pr == 'true'
         env:
           INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
         run: |
           set -euo pipefail
 
@@ -523,62 +530,50 @@ jobs:
           echo "  Workflow run ID: ${{ github.run_id }}"
 
           # Build PR body
-          PR_BODY="This PR was automatically created by apigw-automation workflow.\\n\\n"
-          PR_BODY+="**Source Repository:** \`interop-core-deployment\`\\n"
-          PR_BODY+="**Source PR:** #$PR_NUMBER - $PR_TITLE\\n"
-          PR_BODY+="**Environment:** \`$ENVIRONMENT\`\\n"
-          PR_BODY+="**Author:** $AUTHOR\\n"
-          PR_BODY+="**Monitored Services:**\\n"
-          PR_BODY+="\`$monitored_services\`\\n\\n"
-          PR_BODY+="## Automation Info\\n\\n"
-          PR_BODY+="- **Workflow:** \`apigw-automation\`\\n"
-          PR_BODY+="- **Run ID:** ${{ github.run_id }}\\n"
+          PR_BODY="This PR was automatically created by apigw-automation workflow."$'\n\n'
+          PR_BODY+="**Source Repository:** \`interop-core-deployment\`"$'\n'
+          PR_BODY+="**Source PR:** #$PR_NUMBER - $PR_TITLE"$'\n'
+          PR_BODY+="**Environment:** \`$ENVIRONMENT\`"$'\n'
+          PR_BODY+="**Author:** $AUTHOR"$'\n'
+          PR_BODY+="**Monitored Services:**"$'\n'
+          PR_BODY+="\`$monitored_services\`"$'\n\n'
+          PR_BODY+="## Automation Info"$'\n\n'
+          PR_BODY+="- **Workflow:** \`apigw-automation\`"$'\n'
+          PR_BODY+="- **Run ID:** ${{ github.run_id }}"$'\n'
 
-          # JSON escape for curl
-          PR_BODY_ESCAPED=$(echo "$PR_BODY" | sed 's/"/\\"/g')
+          # Create PR with gh cli
+          PR_URL=$(gh pr create \
+            --repo "${{ vars.INTEROP_INFRA_REPO }}" \
+            --title "[$ENVIRONMENT] APIGW update from interop-core-deployment PR#$PR_NUMBER" \
+            --head "${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT" \
+            --base main \
+            --body "$PR_BODY")
 
-          PR_OPEN_RES=$(curl -sSL \
-            -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/pulls \
-            -d "{\"title\":\"[$ENVIRONMENT] Automated update from PR #$PR_NUMBER\",\"head\":\"${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT\",\"base\":\"main\",\"body\":\"$PR_BODY_ESCAPED\"}")
-
-          CURL_STATUS=$(echo $PR_OPEN_RES | jq -r '.status')
-          CURL_ERRORS=$(echo $PR_OPEN_RES | jq -r '.errors//""')
-
-          # TODO: could add a check to intercept other cases besides 404
-          # It is possible to check the PR number in the response without checking error codes
-          # So, if the PR number is present in the response, we can assume it was created successfully
-          # otherwise I can assume that there was an error during PR creation
-
-          # TODO: check if it is possible to use gh cli for PR creation instead of curl
-
-          if [[ "$CURL_STATUS" == "404" ]] || [[ -n "$CURL_ERRORS" ]]; then
-              echo "Failed to create PR: $PR_OPEN_RES"
-              exit 1
-          else
-              echo "PR created successfully $PR_OPEN_RES"
+          if [[ -z "$PR_URL" ]]; then
+            echo "Failed to create PR"
+            exit 1
           fi
 
-          PR_NUMBER_CREATED=$(echo $PR_OPEN_RES | jq -r '.number' )
-          echo "Target PR Number: $PR_NUMBER_CREATED"
+          # Extract PR number from URL (e.g., https://github.com/owner/repo/pull/123 -> 123)
+          PR_NUMBER_CREATED=$(echo "$PR_URL" | sed 's/.*\/pull\///')
+
+          echo "PR created successfully: #$PR_NUMBER_CREATED (URL: $PR_URL)"
 
           label1="${{ steps.build_labels.outputs.env_label }}"
           label2="${{ steps.build_labels.outputs.prnum_label }}"
 
-          echo "Applying labels: $label1, $label2"
-          LABELING_RESULT=$(curl -sSL \
-            -X PUT \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
-            https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/issues/$PR_NUMBER_CREATED/labels \
-            -d "{\"labels\": [ \"$label1\", \"$label2\" ] }")
+          echo "Applying labels: $label1, $label2, automated"
 
-          echo "Labels applied:"
-          echo "$LABELING_RESULT"
+          # Create labels if they don't exist, then apply them
+          gh label create "$label1" --repo "${{ vars.INTEROP_INFRA_REPO }}" --color "0969da" --force || true
+          gh label create "$label2" --repo "${{ vars.INTEROP_INFRA_REPO }}" --color "6f42c1" --force || true
+          gh label create "automated" --repo "${{ vars.INTEROP_INFRA_REPO }}" --color "ced4da" --force || true
 
+          gh pr edit "$PR_NUMBER_CREATED" \
+            --repo "${{ vars.INTEROP_INFRA_REPO }}" \
+            --add-label "$label1" \
+            --add-label "$label2" \
+            --add-label "automated"
   # ===========================================
   # JOB 2: CLEANUP PR/BRANCHES ON INTEROP-INFRA
   # ===========================================
@@ -610,41 +605,31 @@ jobs:
         # if there are no diffs on tfvars, I can proceed with deletion of remote PR and branch
         env:
           INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
           MERGED_PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
 
-          echo "=== Looking for remote PR: ref_pr=$MERGED_PR_NUMBER + env=$ENVIRONMENT ==="
+          echo "=== Looking for remote PR: core_deployment_pr=$MERGED_PR_NUMBER + env=$ENVIRONMENT ==="
 
-          # Search for specific PR using ref_pr and env labels
-          OPEN_PRS=$(curl -sSL \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/pulls?state=open&per_page=100")
+          # List open PRs with gh
+          MATCHING_PR=$(gh pr list \
+            --repo "${{ vars.INTEROP_INFRA_REPO }}" \
+            --state open \
+            --json number,title,labels,headRefName,url \
+            --jq ".[] | select(
+              (.labels[].name == \"core_deployment_pr=$MERGED_PR_NUMBER\") and
+              (.labels[].name == \"env=$ENVIRONMENT\")
+            ) | \"\(.number)|\(.headRefName)|\(.title)|\(.url)\"")
 
-          # Search PR (apply same logic as List PRs step)
-          TARGET_PR_LABEL="ref_pr=$MERGED_PR_NUMBER"
-          TARGET_ENV_LABEL="env=$ENVIRONMENT"
-
-          PR_INFO=$(echo "$OPEN_PRS" | jq -r --arg target_pr_label "$TARGET_PR_LABEL" --arg target_env_label "$TARGET_ENV_LABEL" '
-            .[] |
-            select(
-              (.labels | any(.name == $target_pr_label)) and
-              (.labels | any(.name == $target_env_label))
-            ) |
-            "\(.number)|\(.head.ref)|\(.title)|\(.html_url)"
-          ')
-
-          # check, if I haven't found the PR, exit
-          if [[ -z "$PR_INFO" ]]; then
+          if [[ -z "$MATCHING_PR" ]]; then
             echo "No remote PR found for $ENVIRONMENT environment"
             echo "This is normal if no remote PR was created for this environment"
             exit 0
           fi
 
           # Extract PR info
-          IFS='|' read -r pr_number branch_name title url <<< "$PR_INFO"
+          IFS='|' read -r pr_number branch_name title url <<< "$MATCHING_PR"
 
           echo "Found remote PR for $ENVIRONMENT:"
           echo "  - PR #$pr_number: $title"
@@ -659,10 +644,8 @@ jobs:
             exit 0
           fi
 
-          # Fetch main
+          # Fetch main and branch
           git fetch origin main
-
-          # fetch branch and verify existence, if doesn't exist skip
           git fetch origin "$branch_name:$branch_name" 2>/dev/null || {
             echo "WARNING: Could not fetch branch $branch_name, skipping"
             exit 0
@@ -678,7 +661,6 @@ jobs:
 
           echo "Checking differences for $tfvars_file..."
 
-          # Compare file on branch with the one on main
           if ! git diff --quiet "origin/main:$tfvars_file" "$branch_name:$tfvars_file" 2>/dev/null; then
             echo "Found differences in $tfvars_file - keeping PR open"
             echo "=== Differences ==="
@@ -689,30 +671,9 @@ jobs:
           # CLEANUP PHASE
           echo "No differences found - proceeding with cleanup"
 
-          # Close the PR
-          echo "Closing PR #$pr_number..."
-          close_result=$(curl -sSL \
-            -X PATCH \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/pulls/$pr_number" \
-            -d '{"state":"closed"}')
-
-          close_status=$(echo "$close_result" | jq -r '.state // "error"')
-          if [[ "$close_status" == "closed" ]]; then
-            echo "Successfully closed PR #$pr_number"
-
-            # Delete remote branch
-            echo "Deleting branch $branch_name..."
-            if git push origin --delete "$branch_name" 2>/dev/null; then
-              echo "Successfully deleted branch $branch_name"
-            else
-              echo "WARNING: Failed to delete branch $branch_name"
-            fi
-          else
-            echo "ERROR: Failed to close PR #$pr_number: $close_result"
-            exit 1
-          fi
+          echo "Closing PR #$pr_number and deleting branch..."
+          gh pr close "$pr_number" \
+            --repo "${{ vars.INTEROP_INFRA_REPO }}" \
+            --delete-branch
 
           echo "Cleanup completed for $ENVIRONMENT environment"
