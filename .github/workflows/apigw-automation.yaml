@@ -69,7 +69,7 @@ jobs:
 
     steps:
       - name: Checkout local repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 2
