@@ -21,12 +21,12 @@
 #    - Difference check: verifies if there are changes vs main of interop-infra
 #
 # 3. REMOTE PR MANAGEMENT:
-#    - Creation: new PR if it doesn't exist, with labels ref_pr={PR_NUMBER} + env={ENVIRONMENT}
+#    - Creation: new PR if it doesn't exist, with labels deployment_pr={PR_NUMBER} + env={ENVIRONMENT}
 #    - Update: push on existing branch if PR already present (conflicts resolved at merge time)
-#    - PR description: includes modified services, author and workflow info
+#    - PR description: includes info about source PR, author, environment, monitored services
 #
 # 4. CLEANUP (merged PRs on interop-core-deployment):
-#    - Remote PR search: finds PR with labels ref_pr={PR_NUMBER} + env={ENVIRONMENT}
+#    - Remote PR search: finds PR with labels deployment_pr={PR_NUMBER} + env={ENVIRONMENT}
 #    - Status check: verifies if there are still differences in remote branch vs main
 #    - Closes PR and deletes branch only if there are no more differences
 #
@@ -37,7 +37,7 @@
 # * The workflow is always triggered for any pull request
 # * Triggers: opened, edited, reopened, synchronize, closed
 # * The check on `commons/*/images.yaml` files determines whether to proceed or stop
-# * If there are no relevant changes, the workflow exits early
+# * If there are no relevant changes, the workflow exits
 ###
 
 name: apigw-automation
@@ -71,8 +71,6 @@ jobs:
       - name: Checkout local repository
         uses: actions/checkout@v4
         with:
-          # Example: PR Branch: develop → 1.1.0 → develop (git diff HEAD~1 sees the revert)
-          #          Merge commit: in case of revert doesn't see differences
           ref: ${{ github.head_ref }}
           fetch-depth: 2
 
