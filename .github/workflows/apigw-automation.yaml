@@ -50,6 +50,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
+# The permissions block should specify
+# the least privileges required for the workflow's successful operation.
+
+permissions:
+  contents: read # needed to checkout code
+  pull-requests: write # needed to create/update PRs on interop-infra
+  issues: write # needed to add comments/label on PRs
+
 jobs:
   # ========================================
   # JOB 1: CHANGE PROPAGATION
@@ -62,6 +70,9 @@ jobs:
       matrix:
         #environment: [dev, test, qa, uat, prod, vapt]
         environment: [dev, qa]
+    # Mitigate potential unsafe checkout of untrusted pull request on privileged workflow.
+    permissions:
+      contents: read
 
     env:
       ENVIRONMENT: ${{ matrix.environment }}
@@ -509,6 +520,7 @@ jobs:
         env:
           INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
           GH_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          PR_TITLE_SAFE: ${{ github.event.pull_request.title }}
         run: |
           set -euo pipefail
 
@@ -517,7 +529,7 @@ jobs:
 
           # Information about commit and PR
           AUTHOR=$(git log -1 --pretty=format:"%an")
-          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_TITLE="$PR_TITLE_SAFE"
 
           echo "Info collected:"
           echo "  Source PR: #$PR_NUMBER"
