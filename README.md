@@ -1,10 +1,10 @@
 # interop-core-deployment
 
 ## APIGW - Automated opening PR on interop-infra
-In case of a pull request modifies a **microservice version (tag)** in
+In case of a pull request modifies a microservice version in
 `commons/<environment>/images.yaml` for one of the exposed services
 (`api-gateway`, `authorization-server-node`, `backend-for-frontend`, `m2m-gateway`),
-the **apigw-automation** workflow detects the updated values and opens/updates a **dedicated PR**
+the apigw-automation workflow detects the updated values and opens/updates a dedicated PR
 (one per affected environment) on [`interop-infra`](https://github.com/pagopa/interop-infra),
 updating the `terraform.tfvars` file with the new OpenAPI raw URLs.
 
