@@ -2,7 +2,7 @@
 
 ## APIGW - Automated opening PR on interop-infra
 In case of a pull request modifies a microservice version in
-`commons/<environment>/images.yaml` for one of the exposed services
+`commons/<environment>/images.yaml` for one or more the exposed services
 (`api-gateway`, `authorization-server-node`, `backend-for-frontend`, `m2m-gateway`),
 the apigw-automation workflow detects the updated values and opens/updates a dedicated PR
 (one per affected environment) on [`interop-infra`](https://github.com/pagopa/interop-infra),
