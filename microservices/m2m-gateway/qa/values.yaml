@@ -23,6 +23,8 @@ configmap:
   DEFAULT_POLLING_MAX_RETRIES: "20"
   ESERVICE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_DOCUMENTS_PATH: "eservices/docs"
+  ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   RISK_ANALYSIS_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
   AGREEMENT_CONSUMER_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
