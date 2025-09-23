@@ -50,14 +50,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-# The permissions block should specify
-# the least privileges required for the workflow's successful operation.
-
-permissions:
-  contents: read # needed to checkout code
-  pull-requests: write # needed to create/update PRs on interop-infra
-  issues: write # needed to add comments/label on PRs
-
 jobs:
   # ========================================
   # JOB 1: CHANGE PROPAGATION
@@ -70,7 +62,6 @@ jobs:
       matrix:
         #environment: [dev, test, qa, uat, prod, vapt]
         environment: [dev, qa]
-    # Mitigate potential unsafe checkout of untrusted pull request on privileged workflow.
     permissions:
       contents: read
 
@@ -86,8 +77,6 @@ jobs:
           fetch-depth: 2
 
       - name: Detect relevant changes (diff + reverts)
-        # The workflow is triggered even in the presence of any modification to the repo,
-        # I need a check to verify if there are modifications to the images.yaml files
         id: detect-changes
         run: |
           set -euo pipefail
@@ -518,7 +507,7 @@ jobs:
         # Open a PR on interop-infra if: there are no open PRs and I'm not in revert or edge cases
         if: steps.determine_action.outputs.should_create_pr == 'true' && steps.get_open_prs.outputs.create_pr == 'true'
         env:
-          INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          #INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
           GH_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
           PR_TITLE_SAFE: ${{ github.event.pull_request.title }}
         run: |
@@ -614,7 +603,7 @@ jobs:
         # if there are diffs on tfvars, do nothing, show them and terminate workflow
         # if there are no diffs on tfvars, I can proceed with deletion of remote PR and branch
         env:
-          INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          #INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
           GH_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
           MERGED_PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
