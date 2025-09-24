@@ -18,7 +18,7 @@ configmap:
   GITHUB_REPO_OWNER: "italia"
 
 cronjob:
-  schedule: "0 */3 * * *"
+  schedule: "0 4 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
