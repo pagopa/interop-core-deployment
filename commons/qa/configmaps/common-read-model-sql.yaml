@@ -20,4 +20,5 @@ data:
   DB_SCHEMA_PRODUCER_JWK_KEY: "qa_producer_jwk_key"
   DB_SCHEMA_PRODUCER_KEYCHAIN: "qa_producer_keychain"
   DB_SCHEMA_PURPOSE: "qa_purpose"
+  DB_SCHEMA_PURPOSE_TEMPLATE: "qa_purpose_template"
   DB_SCHEMA_TENANT: "qa_tenant"
