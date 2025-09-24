@@ -75,7 +75,7 @@ images:
     eservice-template-readmodel-writer-sql:
       tag: "2.7.0-RC1"
     frontend:
-      tag: "1.2.8-RC3"
+      tag: "dev-latest"
     key-readmodel-writer:
       tag: "2.7.0-RC1"
     key-readmodel-writer-sql:
