@@ -5,7 +5,7 @@ service:
   create: true
   containerPort: 8088
 
-serviceAccount: 
+serviceAccount:
   roleArn: "arn:aws:iam::755649575658:role/interop-be-attribute-registry-process-qa-es1"
 
 configmap:
@@ -67,6 +67,7 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:
