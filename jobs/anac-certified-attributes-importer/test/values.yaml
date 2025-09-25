@@ -16,13 +16,12 @@ configmap:
   RECORDS_PROCESS_BATCH_SIZE: "100"
 
 cronjob:
+  suspend: true
   schedule: "15 5,11,17,23 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
   automountServiceAccountToken: false
-  envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
