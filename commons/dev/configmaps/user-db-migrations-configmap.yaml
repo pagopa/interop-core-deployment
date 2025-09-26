@@ -9,7 +9,9 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_user" to
       "${NAMESPACE}_notification_user_lifecycle_consumer_user",
-      readonly_user;
+      readonly_user,
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_user".user (
       user_id UUID PRIMARY KEY NOT NULL,
