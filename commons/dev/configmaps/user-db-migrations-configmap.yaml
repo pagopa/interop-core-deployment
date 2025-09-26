@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-db-migrations
+  namespace: dev
+data:
+  V1__Init.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_user";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_user" to
+      "${NAMESPACE}_notification_user_lifecycle_consumer_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_user".user (
+      user_id UUID PRIMARY KEY NOT NULL,
+      tenant_id UUID NOT NULL,
+      institution_id UUID NOT NULL,
+      name VARCHAR NOT NULL,
+      family_name VARCHAR NOT NULL,
+      email VARCHAR NOT NULL,
+      product_role VARCHAR NOT NULL -- TODO: actually array?
+    );
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_user" TO "${NAMESPACE}_notification_user_lifecycle_consumer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_user" TO
+      "readonly_user",
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
