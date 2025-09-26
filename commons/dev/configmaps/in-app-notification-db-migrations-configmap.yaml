@@ -27,3 +27,7 @@ data:
 
     GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_manager_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "readonly_user";
+
+  V1.1__Grant_InAppNotificationDispatcherUser.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_notification" to "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_dispatcher_user";
