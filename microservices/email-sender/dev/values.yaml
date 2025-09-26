@@ -1,0 +1,26 @@
+name: interop-be-email-sender
+techStack: nodejs
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-email-sender-dev-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-email-sender"
+  TOPIC_STARTING_OFFSET: "earliest"
+  AWS_SES_ENDPOINT: "http://ses-mock.{{.Values.namespace}}.svc.cluster.local:8005"
+  SENDER_MAIL: "noreply@notifiche.{{.Values.namespace}}.interop.pagopa.it"
+  SENDER_LABEL: "noreply-{{.Values.namespace}}"
+  RETRY_DELAY_IN_MILLIS: "1000"
+  SUCCESS_DELAY_IN_MILLIS: "100"
+
+deployment:
+  envFromConfigmaps:
+    EMAIL_SENDER_TOPIC: "common-kafka.EMAIL_SENDER_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+  envFromSecrets:
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"
