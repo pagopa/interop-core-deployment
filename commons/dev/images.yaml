@@ -76,6 +76,8 @@ images:
       tag: "develop"
     frontend:
       tag: "dev-latest"
+    in-app-notification-manager:
+      tag: "develop"
     key-readmodel-writer:
       tag: "develop"
     key-readmodel-writer-sql:

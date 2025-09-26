@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: in-app-notification-db-migrations
+  namespace: dev
+data:
+  V1__Init.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_notification";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_notification" to
+      "${NAMESPACE}_in_app_notification_manager_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_notification".notification (
+      id UUID,
+      user_id UUID NOT NULL,
+      tenant_id UUID NOT NULL,
+      body VARCHAR NOT NULL,
+      notification_type VARCHAR NOT NULL,
+      entity_id UUID NOT NULL,
+      read_at TIMESTAMP WITH TIME ZONE,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_notification_user_id_tenant_id ON "${NAMESPACE}_notification".notification (user_id, tenant_id);
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_manager_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "readonly_user";

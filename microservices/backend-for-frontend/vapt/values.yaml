@@ -62,6 +62,7 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-vapt-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   CLIENT_ASSERTION_JWT_AUDIENCE: "auth.vapt.interop.pagopa.it/client-assertion"
+  FRONTEND_BASE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/ui/it"
 
 deployment:
   env:
@@ -86,6 +87,7 @@ deployment:
     ESERVICE_TEMPLATE_PROCESS_URL: "common-services-urls.ESERVICE_TEMPLATE_PROCESS_URL"
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     NOTIFICATION_CONFIG_PROCESS_URL: "common-services-urls.NOTIFICATION_CONFIG_PROCESS_URL"
+    IN_APP_NOTIFICATION_MANAGER_URL: "common-services-urls.IN_APP_NOTIFICATION_MANAGER_URL"
     SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
