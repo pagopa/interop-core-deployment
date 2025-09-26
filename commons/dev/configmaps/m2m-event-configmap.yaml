@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: common-m2m-event
-  namespace: dev
-data:
-  M2M_EVENT_DB_HOST: interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com
-  M2M_EVENT_DB_NAME: m2m_event
-  M2M_EVENT_DB_PORT: '5432'

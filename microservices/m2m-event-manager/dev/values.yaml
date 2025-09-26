@@ -22,9 +22,9 @@ deployment:
     envFromConfigmaps:
       FLYWAY_SCHEMAS: "{{.Values.name}}.M2M_EVENT_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.M2M_EVENT_SCHEMA"
-      M2M_EVENT_DB_NAME: "common-m2m-event.M2M_EVENT_DB_NAME"
-      M2M_EVENT_DB_HOST: "common-m2m-event.M2M_EVENT_DB_HOST"
-      M2M_EVENT_DB_PORT: "common-m2m-event.M2M_EVENT_DB_PORT"
+      POSTGRES_DB: "common-m2m-events-db.DB_NAME"
+      POSTGRES_HOST: "common-m2m-events-db.DB_HOST"
+      POSTGRES_PORT: "common-m2m-events-db.DB_PORT"
     envFromSecrets:
       FLYWAY_USER: "platform-data-flyway-user.username"
       FLYWAY_PASSWORD: "platform-data-flyway-user.password"
@@ -44,8 +44,8 @@ deployment:
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
   envFromSecrets:
-    M2M_EVENT_DB_USERNAME: "TODO.username"
-    M2M_EVENT_DB_PASSWORD: "TODO.password"
+    M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-manager-user.username"
+    M2M_EVENT_DB_PASSWORD: "platform-data-m2m-event-manager-user.password"
   livenessProbe:
     httpGet:
       path: /status

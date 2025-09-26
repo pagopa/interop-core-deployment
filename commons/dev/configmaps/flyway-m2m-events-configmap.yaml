@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: m2m-event-migrations
+  name: flyway-m2m-events
   namespace: dev
 data:
   V1__Init.sql: |-
