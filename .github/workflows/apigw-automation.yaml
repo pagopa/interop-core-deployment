@@ -1,0 +1,678 @@
+####
+# This workflow automates the update and propagation of changes in the tags
+# of microservices defined in the `images.yaml` files across various environments,
+# creating pull requests in the interop-infra repository and managing automatic cleanup.
+#
+# WORKFLOW STRUCTURE:
+# - JOB 1 (propagate): Handles creation/update of PRs on interop-infra
+# - JOB 2 (cleanup): Handles closure/cleanup of PRs on interop-infra
+#
+# FLOW:
+#
+# 1. CHANGE DETECTION (open/updated PRs):
+#    - Checkout of PR branch to correctly detect reverts
+#    - Detect: detects both bumps and reverts
+#    - Tag extraction: reads current tags of exposed microservices from images.yaml
+#
+# 2. PROPAGATION TO INTEROP-INFRA:
+#    - Checkout of interop-infra repo on main branch
+#    - Update of terraform.tfvars with new tags for specific environment
+#    - Creation of dedicated branch: apigw-automation-pr-{PR_NUMBER}-{ENVIRONMENT}
+#    - Difference check: verifies if there are changes vs main of interop-infra
+#
+# 3. REMOTE PR MANAGEMENT:
+#    - Creation: new PR if it doesn't exist, with labels deployment_pr={PR_NUMBER} + env={ENVIRONMENT}
+#    - Update: push on existing branch if PR already present (conflicts resolved at merge time)
+#    - PR description: includes info about source PR, author, environment, monitored services
+#
+# 4. CLEANUP (merged PRs on interop-core-deployment):
+#    - Remote PR search: finds PR with labels deployment_pr={PR_NUMBER} + env={ENVIRONMENT}
+#    - Status check: verifies if there are still differences in remote branch vs main
+#    - Closes PR and deletes branch only if there are no more differences
+#
+# MONITORED SERVICES:
+# * api-gateway, authorization-server-node, backend-for-frontend, m2m-gateway
+#
+# ACTIVATION:
+# * The workflow is always triggered for any pull request
+# * Triggers: opened, edited, reopened, synchronize, closed
+# * The check on `commons/*/images.yaml` files determines whether to proceed or stop
+# * If there are no relevant changes, the workflow exits
+###
+
+name: apigw-automation
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize, closed]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # ========================================
+  # JOB 1: CHANGE PROPAGATION
+  # ========================================
+  propagate:
+    runs-on: ubuntu-latest
+    if: github.event.action != 'closed'
+    strategy:
+      fail-fast: false
+      matrix:
+        #environment: [dev, test, qa, uat, prod, vapt]
+        environment: [dev, qa]
+    permissions:
+      contents: read
+
+    env:
+      ENVIRONMENT: ${{ matrix.environment }}
+      PR_NUMBER: ${{ github.event.number }}
+
+    steps:
+      - name: Checkout local repository
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 2
+
+      - name: Detect relevant changes (diff + reverts)
+        id: detect-changes
+        run: |
+          set -euo pipefail
+          git fetch origin main
+
+          echo "Checking for changes in commons/${ENVIRONMENT}/images.yaml ..."
+
+          # Detects if the last commit modified the images.yaml file for current environment
+          LAST_COMMIT_CHANGES=false
+
+          # Check if the last commit affected the specific environment images.yaml file
+          if git diff --name-only HEAD~1 HEAD | grep -E "^commons/${ENVIRONMENT}/images\.yaml$"; then
+            LAST_COMMIT_CHANGES=true
+            echo "Last commit modified commons/${ENVIRONMENT}/images.yaml - proceeding with workflow"
+            echo "has_relevant_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "Last commit did not modify commons/${ENVIRONMENT}/images.yaml - stopping workflow"
+            echo "has_relevant_changes=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+      - name: Extract microservice tags
+        if: steps.detect-changes.outputs.has_relevant_changes == 'true'
+        id: extract-tags
+        run: |
+          set -euo pipefail
+
+          # DEFINITION OF EXPOSED SERVICES
+          services_to_watch=("authorization-server-node" "backend-for-frontend" "api-gateway" "m2m-gateway")
+          echo "Exposed services: ${services_to_watch[*]}"
+
+          path_metadata=".apigw-automation-meta"
+          mkdir -p "$path_metadata"
+
+          # CURRENT ENV FILE
+          file="commons/${ENVIRONMENT}/images.yaml"
+
+          # CHECK IF FILE EXISTS
+          if [ ! -f "$file" ]; then
+            echo "ERROR: File $file not found for environment ${ENVIRONMENT}."
+            exit 1
+          fi
+
+          # define the current tags file
+          tags_file="$path_metadata/tags-${ENVIRONMENT}.yaml"
+          # define the has_services_to_process variable to keep track of exposed services
+          has_services_to_process=false
+
+          echo "=== Extracting microservice tags for ${ENVIRONMENT} ==="
+
+          # LOOP THROUGH ALL EXPOSED SERVICES TO EXTRACT CURRENT TAGS
+          for svc in "${services_to_watch[@]}"; do
+            # GET CURRENT TAG
+            tag_current=$(yq '.images.microservices["'"$svc"'"].tag' "$file" 2>/dev/null || echo "null")
+
+            # CHECK THAT THE SERVICE EXISTS
+            if [ "$tag_current" == "null" ]; then
+              echo "WARNING: Service $svc not found in $file - skipping service"
+              continue
+            fi
+
+            # CHECK THAT THE TAG IS NOT EMPTY
+            if [ -z "$tag_current" ]; then
+              echo "ERROR: Service $svc has empty tag in $file"
+              exit 1
+            fi
+
+            # CREATE FILE WITH CURRENT TAGS
+            # on first run create the file and set has_services_to_process to true
+            if [ "$has_services_to_process" = false ]; then
+              > "$tags_file"
+              has_services_to_process=true
+            fi
+            # add current service tags to file
+            {
+              echo "${svc}:"
+              echo "  tag: $tag_current"
+            } >> "$tags_file"
+
+            # Log current tag for debug
+            echo "Service: $svc, Current tag: $tag_current"
+          done
+
+          # IF AT THE END OF THE FOR LOOP I HAVEN'T FOUND VALID SERVICES (I ONLY FOUND NON-EXPOSED SERVICES), STOP THE WORKFLOW
+          if [ "$has_services_to_process" = false ]; then
+            echo "No valid microservices found for ${ENVIRONMENT} - stopping workflow"
+            echo "has_valid_services=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "Tags extracted for ${ENVIRONMENT}. Tags file: $tags_file"
+          echo "tags_file=$tags_file" >> $GITHUB_OUTPUT
+          echo "has_valid_services=true" >> $GITHUB_OUTPUT
+          echo "monitored_services=$(IFS=', '; echo "${services_to_watch[*]}")" >> $GITHUB_OUTPUT
+
+      - name: Checkout remote repository
+        if: steps.detect-changes.outputs.has_relevant_changes == 'true' && steps.extract-tags.outputs.has_valid_services == 'true'
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          repository: ${{ vars.INTEROP_INFRA_REPO }}
+          token: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          path: interop-infra
+          fetch-depth: 0
+
+      - name: Build bot credentials
+        if: steps.extract-tags.outputs.has_valid_services == 'true'
+        id: bot_creds
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BOT_USER="github-actions[bot]"
+          BOT_ENC=$(printf '%s' "$BOT_USER" | jq -sRr @uri)
+
+          BOT_ID=$(curl -s \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/users/$BOT_ENC \
+            | jq -r .id)
+
+          BOT_EMAIL="${BOT_ID}+${BOT_USER}@users.noreply.github.com"
+
+          echo "BOT_EMAIL=${BOT_EMAIL}" >> $GITHUB_OUTPUT
+          echo "BOT_USER=${BOT_USER}" >> $GITHUB_OUTPUT
+
+      - name: Build PR Labels
+        if: steps.detect-changes.outputs.has_relevant_changes == 'true' && steps.extract-tags.outputs.has_valid_services == 'true'
+        id: build_labels
+        env:
+          ENVIRONMENT: ${{ matrix.environment }}
+        run: |
+          set -euo pipefail
+
+          label1="env=$ENVIRONMENT"
+          label2="core_deployment_pr=$PR_NUMBER"
+
+          echo "env_label=${label1}" >> $GITHUB_OUTPUT
+          echo "prnum_label=${label2}" >> $GITHUB_OUTPUT
+
+      - name: List open PRs
+        if: steps.detect-changes.outputs.has_relevant_changes == 'true' && steps.extract-tags.outputs.has_valid_services == 'true'
+        id: get_open_prs
+        env:
+          INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "Finding existing PR with label env=${{ matrix.environment }} and ref_pr=${{ github.event.number }}"
+
+          OPEN_PRS=$(curl -sSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $INTEROP_INFRA_REPO_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ vars.INTEROP_INFRA_REPO }}/pulls?state=open)
+
+          # find matching prs based on provided labels
+          label1="${{ steps.build_labels.outputs.env_label }}"
+          label2="${{ steps.build_labels.outputs.prnum_label }}"
+
+          # Extract only essential information from matching PRs, including URL
+          MATCHING_PR=$(echo $OPEN_PRS | jq -r --arg label_env "${label1}" --arg label_pr "${label2}" \
+              '.[] | select(
+                (.labels | any(.name == $label_env)) and
+                (.labels | any(.name == $label_pr))
+              ) | "\(.number): \(.title) | URL: \(.html_url)"')
+
+          if [[ -n "$MATCHING_PR" ]]; then
+            echo "Existing PR found: $MATCHING_PR"
+            echo "create_pr=false" >> $GITHUB_OUTPUT
+          else
+            echo "No existing PR found. A new one will be created"
+            echo "create_pr=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepare target branch in interop-infra
+        if: steps.detect-changes.outputs.has_relevant_changes == 'true' && steps.extract-tags.outputs.has_valid_services == 'true'
+        run: |
+          set -euo pipefail
+          cd interop-infra
+
+          TARGET_BRANCH_FULL=${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT
+
+          git fetch origin --prune
+
+          # Ensure we always start from the latest main branch
+          echo "Updating local main to latest version"
+          git checkout main
+          git pull origin main
+
+          # IF THE BRANCH EXISTS, ALIGN IT, OTHERWISE CREATE IT STARTING FROM MAIN OF TARGET REPO
+          if git ls-remote --exit-code --heads origin "$TARGET_BRANCH_FULL" >/dev/null; then
+            echo "Using existing remote branch $TARGET_BRANCH_FULL"
+            git checkout "$TARGET_BRANCH_FULL"
+            git pull origin "$TARGET_BRANCH_FULL"
+          else
+            echo "Creating new branch from up-to-date main"
+            git checkout -b "$TARGET_BRANCH_FULL"
+            git push -u origin "$TARGET_BRANCH_FULL"
+          fi
+
+      - name: Update tfvars
+        id: update_tfvars
+        if: steps.detect-changes.outputs.has_relevant_changes == 'true' && steps.extract-tags.outputs.has_valid_services == 'true'
+        run: |
+          set -euo pipefail
+
+          TAGS_FILE="${{ steps.extract-tags.outputs.tags_file }}"
+          ENV="${{ matrix.environment }}"
+
+          TFVARS_FILE="interop-infra/src/main/core-es1/env/${ENV}/terraform.tfvars"
+
+          # If the file doesn't exist, fail with error
+          if [ ! -f "$TFVARS_FILE" ]; then
+            echo "Error: File $TFVARS_FILE not found in interop-infra repository."
+            exit 1
+          fi
+
+          # service -> variable to update mapping
+          declare -A service_to_var
+          service_to_var=(
+            ["api-gateway"]="api_gateway_raw_url"
+            ["authorization-server-node"]="authorization_server_node_raw_url"
+            ["backend-for-frontend"]="backend_for_frontend_raw_url"
+            ["m2m-gateway"]="m2m_gateway_raw_url"
+          )
+          # service -> openapi file name mapping
+          declare -A service_to_file
+          service_to_file=(
+            ["api-gateway"]="apiGatewayApi.yml"
+            ["authorization-server-node"]="authorizationServerApi.yml"
+            ["backend-for-frontend"]="bffApi.yml"
+            ["m2m-gateway"]="m2mGatewayApi.yml"
+          )
+
+          echo "=== Updating terraform.tfvars for environment ${ENV} ==="
+
+          # define variable that tracks if there have been actual changes
+          has_actual_changes=false
+
+          # loop through services in file
+          for svc in $(yq 'keys | .[]' "$TAGS_FILE"); do
+
+            # populate current tag for service
+            current_tag=$(yq ".\"$svc\".tag" "$TAGS_FILE")
+            if [[ "$current_tag" == "null" ]]; then
+              continue
+            fi
+
+            # populate variable corresponding to service, if empty go ahead
+            var_name="${service_to_var[$svc]}"
+            if [ -z "$var_name" ]; then
+              continue
+            fi
+
+            # populate openapi file name, if empty go ahead
+            openapi_file="${service_to_file[$svc]}"
+            if [ -z "$openapi_file" ]; then
+              continue
+            fi
+
+            # if tag is develop, use develop branch, otherwise use tag properly setting the ref
+            if [[ "$current_tag" == "develop" ]]; then
+              ref="refs/heads/develop"
+            else
+              ref="refs/tags/${current_tag}"
+            fi
+
+            # build new raw URL
+            url_raw="https://raw.githubusercontent.com/pagopa/interop-be-monorepo/$ref/packages/api-clients/open-api/$openapi_file"
+
+            # check if variable is already present and if so update it
+            if grep -q "[[:space:]]*$var_name[[:space:]]*=" "$TFVARS_FILE"; then
+              # show previous value for debug
+              old_value=$(grep "[[:space:]]*$var_name[[:space:]]*=" "$TFVARS_FILE" | sed -E 's/.*=[[:space:]]*(.*)/\1/' | tr -d '"')
+
+              echo "Processing $var_name:"
+              echo "  OLD: $old_value"
+              echo "  NEW: $url_raw"
+
+              # check if values differ before making substitution
+              if [[ "$old_value" != "$url_raw" ]]; then
+                echo "Values differ, updating..."
+                # replace only value after = symbol keeping everything else
+                sed -i -E "s|(.*$var_name[[:space:]]*=)[[:space:]]*.*|\1 \"$url_raw\"|g" "$TFVARS_FILE"
+                has_actual_changes=true
+              else
+                echo "Values are identical, skipping update"
+              fi
+            else
+              # if variable is not present in tfvars file, return error
+              echo "Error: Variable $var_name not found in $TFVARS_FILE"
+              exit 1
+            fi
+          done
+
+          echo "=== Terraform.tfvars processing completed ==="
+
+          if [[ "$has_actual_changes" == "true" ]]; then
+            echo "Found actual changes to apply"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "No actual changes needed - all values are already up-to-date"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit changes to target repo
+        id: commit_changes
+        if: steps.detect-changes.outputs.has_relevant_changes == 'true' && steps.extract-tags.outputs.has_valid_services == 'true' && steps.update_tfvars.outputs.has_changes == 'true'
+        run: |
+          set -euo pipefail
+          BOT_EMAIL=${{ steps.bot_creds.outputs.BOT_EMAIL }}
+          BOT_USER=${{ steps.bot_creds.outputs.BOT_USER }}
+
+          cd interop-infra
+
+          # Configure git with bot credentials
+          git config user.name "$BOT_USER"
+          git config user.email "$BOT_EMAIL"
+
+          # Configure remote to use PAT
+          git remote set-url origin "https://x-access-token:${{ secrets.INTEROP_INFRA_REPO_TOKEN }}@github.com/${{ vars.INTEROP_INFRA_REPO }}.git"
+
+          # Commit and push changes
+          REL_TFVARS_FILE="src/main/core-es1/env/${ENVIRONMENT}/terraform.tfvars"
+          git add "$REL_TFVARS_FILE"
+          git commit -m "Automated update from interop-core-deployment PR ${{ github.event.number }} (run ${{ github.run_id }})"
+          git push
+
+      - name: Check changes in remote repository
+        id: check_remote_changes
+        if: steps.detect-changes.outputs.has_relevant_changes == 'true' && steps.extract-tags.outputs.has_valid_services == 'true'
+        run: |
+          set -euo pipefail
+
+          cd interop-infra
+
+          echo "=== Checking differences between current branch and main on interop-infra ==="
+
+          # Update origin/main of interop-infra
+          git fetch origin main
+
+          ENV="${{ matrix.environment }}"
+          TFVARS_FILE="src/main/core-es1/env/${ENV}/terraform.tfvars"
+
+          # Verify that terraform.tfvars file exists on main branch of interop-infra
+          if ! git show origin/main:$TFVARS_FILE >/dev/null 2>&1; then
+            echo "ERROR: File $TFVARS_FILE not found on main branch of interop-infra"
+            exit 1
+          fi
+
+          # Compare current terraform.tfvars file with the one on main
+          set +e
+          git diff --quiet origin/main -- $TFVARS_FILE
+          diff_exit_code=$?
+          set -e
+
+          # Define current branch name for messages
+          CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+          # CHECK IF THERE ARE DIFFS
+          if [ "$diff_exit_code" -eq 0 ]; then
+            # NO DIFFS - REVERT
+            echo "No differences found between current branch ($CURRENT_BRANCH) and main on interop-infra repository"
+            echo "has_remote_changes=false" >> $GITHUB_OUTPUT
+            echo "is_revert=true" >> $GITHUB_OUTPUT
+
+            # Show contents for debug
+            echo "=== Content on main branch ==="
+            git show origin/main:$TFVARS_FILE | grep -E "(api_gateway_raw_url|authorization_server_node_raw_url|backend_for_frontend_raw_url|m2m_gateway_raw_url)"
+            echo "=== Content on current branch ==="
+            grep -E "(api_gateway_raw_url|authorization_server_node_raw_url|backend_for_frontend_raw_url|m2m_gateway_raw_url)" $TFVARS_FILE
+          else
+            # THERE ARE DIFFERENCES
+            echo "Differences found between current branch ($CURRENT_BRANCH) and main on interop-infra repository"
+            echo "has_remote_changes=true" >> $GITHUB_OUTPUT
+            echo "is_revert=false" >> $GITHUB_OUTPUT
+
+            # Show differences for debug
+            echo "=== DIFFS ==="
+            git diff origin/main -- $TFVARS_FILE || true
+          fi
+
+      - name: Determine workflow action
+        # Determine whether to proceed with PR creation on interop-infra
+        # Case 1: Updates to propagate (bump + partial reverts) -> try to create/update PR
+        # Case 2: Complete revert -> no PR
+        # Case 3: Edge cases
+        id: determine_action
+        if: steps.detect-changes.outputs.has_relevant_changes == 'true' && steps.extract-tags.outputs.has_valid_services == 'true'
+        run: |
+          set -euo pipefail
+
+          # - HAS_CHANGES: if terraform.tfvars file on interop-infra has been modified
+          HAS_CHANGES="${{ steps.update_tfvars.outputs.has_changes }}"
+
+          # - IS_REVERT: if tags on interop-core-deployment have returned identical to main of interop-infra
+          IS_REVERT="${{ steps.check_remote_changes.outputs.is_revert || 'false' }}"
+
+          # - HAS_REMOTE_CHANGES: if differences exist between current branch and main on interop-infra
+          HAS_REMOTE_CHANGES="${{ steps.check_remote_changes.outputs.has_remote_changes || 'false' }}"
+
+          echo "=== Workflow action ==="
+          echo "Variables in tfvars file on interop-infra have changes: $HAS_CHANGES"
+          echo "Revert scenario: $IS_REVERT"
+          echo "Has changes (current branch vs main): $HAS_REMOTE_CHANGES"
+
+          # Case 1: Updates to propagate (bump + partial reverts)
+          # tags on interop-core-deployment have changed and produce differences on interop-infra
+          # micro bumps, partial reverts (some services reverted, others not)
+          if [[ "$HAS_CHANGES" == "true" && "$HAS_REMOTE_CHANGES" == "true" ]]; then
+            echo "Action: Proceed with PR creation/update (has changes + has remote diffs)"
+            echo "should_create_pr=true" >> $GITHUB_OUTPUT
+
+          # Case 2: Complete revert (no PR)
+          # All tags on interop-core-deployment have returned identical to main of interop-infra
+          # No PR needed because everything is already aligned between the two repositories
+          elif [[ "$IS_REVERT" == "true" ]]; then
+            echo "Action: Revert scenario detected, skip PR creation"
+            echo "should_create_pr=false" >> $GITHUB_OUTPUT
+
+          # Case 3: Edge cases
+          else
+            echo "WARNING: Possible edge case"
+            echo "should_create_pr=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Open PR for environment ${{ matrix.environment }}
+        id: open_pr
+        # Open a PR on interop-infra if: there are no open PRs and I'm not in revert or edge cases
+        if: steps.determine_action.outputs.should_create_pr == 'true' && steps.get_open_prs.outputs.create_pr == 'true'
+        env:
+          #INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          PR_TITLE_SAFE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+
+          # Retrieve list of monitored services
+          monitored_services="${{ steps.extract-tags.outputs.monitored_services }}"
+
+          # Information about commit and PR
+          AUTHOR=$(git log -1 --pretty=format:"%an")
+          PR_TITLE="$PR_TITLE_SAFE"
+
+          echo "Info collected:"
+          echo "  Source PR: #$PR_NUMBER"
+          echo "  Source PR title: $PR_TITLE"
+          echo "  Environment: $ENVIRONMENT"
+          echo "  Monitored services: $monitored_services"
+          echo "  Author: $AUTHOR"
+          echo "  Workflow run ID: ${{ github.run_id }}"
+
+          # Build PR body
+          PR_BODY="This PR was automatically created by apigw-automation workflow."$'\n\n'
+          PR_BODY+="**Source Repository:** \`interop-core-deployment\`"$'\n'
+          PR_BODY+="**Source PR:** #$PR_NUMBER - $PR_TITLE"$'\n'
+          PR_BODY+="**Environment:** \`$ENVIRONMENT\`"$'\n'
+          PR_BODY+="**Author:** $AUTHOR"$'\n'
+          PR_BODY+="**Monitored Services:**"$'\n'
+          PR_BODY+="\`$monitored_services\`"$'\n\n'
+          PR_BODY+="## Automation Info"$'\n\n'
+          PR_BODY+="- **Workflow:** \`apigw-automation\`"$'\n'
+          PR_BODY+="- **Run ID:** ${{ github.run_id }}"$'\n'
+
+          # Create PR with gh cli
+          PR_URL=$(gh pr create \
+            --repo "${{ vars.INTEROP_INFRA_REPO }}" \
+            --title "[$ENVIRONMENT] APIGW update from interop-core-deployment PR#$PR_NUMBER" \
+            --head "${{ vars.INTEROP_INFRA_TARGET_BRANCH }}-$PR_NUMBER-$ENVIRONMENT" \
+            --base main \
+            --body "$PR_BODY")
+
+          if [[ -z "$PR_URL" ]]; then
+            echo "Failed to create PR"
+            exit 1
+          fi
+
+          # Extract PR number from URL (e.g., https://github.com/owner/repo/pull/123 -> 123)
+          PR_NUMBER_CREATED=$(echo "$PR_URL" | sed 's/.*\/pull\///')
+
+          echo "PR created successfully: #$PR_NUMBER_CREATED (URL: $PR_URL)"
+
+          label1="${{ steps.build_labels.outputs.env_label }}"
+          label2="${{ steps.build_labels.outputs.prnum_label }}"
+
+          echo "Applying labels: $label1, $label2, automated"
+
+          # Create labels if they don't exist, then apply them
+          gh label create "$label1" --repo "${{ vars.INTEROP_INFRA_REPO }}" --color "0969da" --force || true
+          gh label create "$label2" --repo "${{ vars.INTEROP_INFRA_REPO }}" --color "6f42c1" --force || true
+          gh label create "automated" --repo "${{ vars.INTEROP_INFRA_REPO }}" --color "ced4da" --force || true
+
+          gh pr edit "$PR_NUMBER_CREATED" \
+            --repo "${{ vars.INTEROP_INFRA_REPO }}" \
+            --add-label "$label1" \
+            --add-label "$label2" \
+            --add-label "automated"
+  # ===========================================
+  # JOB 2: CLEANUP PR/BRANCHES ON INTEROP-INFRA
+  # ===========================================
+  cleanup:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    strategy:
+      fail-fast: false
+      matrix:
+        #environment: [dev, test, qa, uat, prod, vapt]
+        environment: [dev, qa]
+
+    env:
+      ENVIRONMENT: ${{ matrix.environment }}
+      PR_NUMBER: ${{ github.event.number }}
+
+    steps:
+      - name: Checkout remote repository
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+        with:
+          repository: ${{ vars.INTEROP_INFRA_REPO }}
+          token: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          path: interop-infra
+          fetch-depth: 0
+
+      - name: Find and cleanup remote PR for ${{ matrix.environment }}
+        # search for open PRs on interop-infra
+        # if there are diffs on tfvars, do nothing, show them and terminate workflow
+        # if there are no diffs on tfvars, I can proceed with deletion of remote PR and branch
+        env:
+          #INTEROP_INFRA_REPO_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.INTEROP_INFRA_REPO_TOKEN }}
+          MERGED_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          echo "=== Looking for remote PR: core_deployment_pr=$MERGED_PR_NUMBER + env=$ENVIRONMENT ==="
+
+          # List open PRs with gh
+          MATCHING_PR=$(gh pr list \
+            --repo "${{ vars.INTEROP_INFRA_REPO }}" \
+            --state open \
+            --json number,title,labels,headRefName,url \
+            --jq ".[] | select(
+              (.labels[].name == \"core_deployment_pr=$MERGED_PR_NUMBER\") and
+              (.labels[].name == \"env=$ENVIRONMENT\")
+            ) | \"\(.number)|\(.headRefName)|\(.title)|\(.url)\"")
+
+          if [[ -z "$MATCHING_PR" ]]; then
+            echo "No remote PR found for $ENVIRONMENT environment"
+            echo "This is normal if no remote PR was created for this environment"
+            exit 0
+          fi
+
+          # Extract PR info
+          IFS='|' read -r pr_number branch_name title url <<< "$MATCHING_PR"
+
+          echo "Found remote PR for $ENVIRONMENT:"
+          echo "  - PR #$pr_number: $title"
+          echo "  - Branch: $branch_name"
+          echo "  - URL: $url"
+
+          cd interop-infra
+
+          # Verify if branch exists
+          if ! git ls-remote --exit-code --heads origin "$branch_name" >/dev/null 2>&1; then
+            echo "WARNING: Branch $branch_name no longer exists, skipping"
+            exit 0
+          fi
+
+          # Fetch main and branch
+          git fetch origin main
+          git fetch origin "$branch_name:$branch_name" 2>/dev/null || {
+            echo "WARNING: Could not fetch branch $branch_name, skipping"
+            exit 0
+          }
+
+          # Check differences for specific environment
+          tfvars_file="src/main/core-es1/env/${ENVIRONMENT}/terraform.tfvars"
+
+          if [[ ! -f "$tfvars_file" ]]; then
+            echo "WARNING: File $tfvars_file not found, skipping"
+            exit 0
+          fi
+
+          echo "Checking differences for $tfvars_file..."
+
+          if ! git diff --quiet "origin/main:$tfvars_file" "$branch_name:$tfvars_file" 2>/dev/null; then
+            echo "Found differences in $tfvars_file - keeping PR open"
+            echo "=== Differences ==="
+            git diff "origin/main:$tfvars_file" "$branch_name:$tfvars_file"
+            exit 0
+          fi
+
+          # CLEANUP PHASE
+          echo "No differences found - proceeding with cleanup"
+
+          echo "Closing PR #$pr_number and deleting branch..."
+          gh pr close "$pr_number" \
+            --repo "${{ vars.INTEROP_INFRA_REPO }}" \
+            --delete-branch
+
+          echo "Cleanup completed for $ENVIRONMENT environment"
