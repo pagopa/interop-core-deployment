@@ -20,7 +20,7 @@ data:
       name VARCHAR NOT NULL,
       family_name VARCHAR NOT NULL,
       email VARCHAR NOT NULL,
-      product_role VARCHAR NOT NULL -- TODO: actually array?
+      product_roles VARCHAR[] NOT NULL
     );
 
     GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_user" TO "${NAMESPACE}_notification_user_lifecycle_consumer_user";
