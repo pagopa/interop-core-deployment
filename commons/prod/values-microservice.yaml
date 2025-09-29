@@ -31,4 +31,4 @@ local:
   interop_be_commons:
     RSA_KEYS_IDENTIFIERS: "9432c16b-7aae-49df-b9c4-ea61b556652b"
     DEV_ENDPOINTS_ENABLED: "false"
-    ENABLED_PROJECTIONS: "true"
+    ENABLED_PROJECTIONS: "false"
