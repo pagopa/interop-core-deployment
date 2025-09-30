@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: in-app-notification-db-migrations
+  name: flyway-in-app-notification
   namespace: dev
 data:
   V1__Init.sql: |-
