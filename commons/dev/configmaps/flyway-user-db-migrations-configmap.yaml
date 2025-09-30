@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: user-db-migrations
+  name: flyway-user
   namespace: dev
 data:
   V1__Init.sql: |-

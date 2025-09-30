@@ -20,7 +20,7 @@ configmap:
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "user-db-migrations"
+    migrationsConfigmap: "flyway-user"
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
