@@ -9,6 +9,7 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_notification" to
       "${NAMESPACE}_in_app_notification_manager_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user",
       readonly_user;
 
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_notification".notification (
@@ -25,5 +26,6 @@ data:
 
     CREATE INDEX IF NOT EXISTS idx_notification_user_id_tenant_id ON "${NAMESPACE}_notification".notification (user_id, tenant_id);
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_manager_user";
+    GRANT SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_manager_user";
+    GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "readonly_user";
