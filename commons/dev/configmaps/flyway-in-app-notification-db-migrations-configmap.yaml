@@ -30,4 +30,4 @@ data:
 
   V1.1__Grant_InAppNotificationDispatcherUser.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_notification" to "${NAMESPACE}_in_app_notification_dispatcher_user";
-    GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_dispatcher_user";
