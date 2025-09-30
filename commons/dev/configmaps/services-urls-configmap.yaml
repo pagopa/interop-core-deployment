@@ -16,4 +16,5 @@ data:
   NOTIFIER_URL: "http://interop-be-notifier.dev.svc.cluster.local:8088/notifier/0.0"
   PARTY_REGISTRY_PROXY_URL: "http://interop-be-party-registry-proxy.dev.svc.cluster.local:8088/party-registry-proxy/0.0"
   PURPOSE_PROCESS_URL: http://interop-be-purpose-process.dev.svc.cluster.local:8088
+  PURPOSE_TEMPLATE_PROCESS_URL: "http://interop-be-purpose-template-process.dev.svc.cluster.local:8088"
   TENANT_PROCESS_URL: "http://interop-be-tenant-process.dev.svc.cluster.local:8088"

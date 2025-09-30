@@ -5,16 +5,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::697818730278:role/interop-be-selfcare-onboarding-consumer-prod-es1"
 
 service:
-  create: true
-  containerPort: 8088
-  additionalPorts:
-  - name: management
-    containerPort: 8558
-    protocol: TCP
-  - name: monitoring
-    containerPort: 9095
-    protocol: TCP
-    targetPort: monitoring
+  create: false
   
 configmap:
   KAFKA_BROKERS: "selc-p-eventhub-ns.servicebus.windows.net:9093"
@@ -31,16 +22,7 @@ configmap:
   INTERNAL_JWT_SECONDS_DURATION: "3600"
 
 deployment:
-  securityContext:
-    runAsUser: 1001
-  env:
-    REQUIRED_CONTACT_POINT_NR: "1"
-  envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
-    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
-    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
-    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
   envFromSecrets:
     KAFKA_BROKER_CONNECTION_STRING: "selfcare-v2.SELFCARE_BROKER_CONNECTION_STRING"
