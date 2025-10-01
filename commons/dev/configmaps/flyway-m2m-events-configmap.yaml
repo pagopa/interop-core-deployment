@@ -19,7 +19,7 @@ data:
       eservice_id UUID NOT NULL,
       descriptor_id UUID,
       visibility VARCHAR NOT NULL,
-      producer_id UUID,
+      producer_id UUID NOT NULL,
       producer_delegate_id UUID,
       producer_delegation_id UUID,
       PRIMARY KEY (id)
@@ -36,7 +36,7 @@ data:
       eservice_template_id UUID NOT NULL,
       eservice_template_version_id UUID,
       visibility VARCHAR NOT NULL,
-      creator_id UUID,
+      creator_id UUID NOT NULL,
       PRIMARY KEY (id)
     );
 
@@ -50,8 +50,8 @@ data:
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
       agreement_id UUID NOT NULL,
       visibility VARCHAR NOT NULL,
-      consumer_id UUID,
-      producer_id UUID,
+      consumer_id UUID NOT NULL,
+      producer_id UUID NOT NULL,
       consumer_delegate_id UUID,
       consumer_delegation_id UUID,
       producer_delegate_id UUID,
@@ -70,8 +70,8 @@ data:
       purpose_id UUID NOT NULL,
       purpose_version_id UUID,
       visibility VARCHAR NOT NULL,
-      consumer_id UUID,
-      producer_id UUID,
+      consumer_id UUID NOT NULL,
+      producer_id UUID NOT NULL,
       consumer_delegate_id UUID,
       consumer_delegation_id UUID,
       producer_delegate_id UUID,
@@ -137,7 +137,7 @@ data:
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
       client_id UUID NOT NULL,
       visibility VARCHAR NOT NULL,
-      consumer_id UUID,
+      consumer_id UUID NOT NULL,
       PRIMARY KEY (id)
     );
 
@@ -151,7 +151,7 @@ data:
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
       producer_keychain_id UUID NOT NULL,
       visibility VARCHAR NOT NULL,
-      producer_id UUID,
+      producer_id UUID NOT NULL,
       PRIMARY KEY (id)
     );
 
@@ -163,7 +163,7 @@ data:
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
-      kid UUID NOT NULL,
+      kid VARCHAR NOT NULL,
       PRIMARY KEY (id)
     );
 
@@ -175,7 +175,7 @@ data:
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
-      kid UUID NOT NULL,
+      kid VARCHAR NOT NULL,
       PRIMARY KEY (id)
     );
 
