@@ -15,3 +15,7 @@ cronjob:
     limits:
       cpu: "1000m"
       memory: "2Gi"
+
+local:
+  interop_be_commons:
+    RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"

@@ -6,7 +6,7 @@ serviceAccount:
 configmap:
   SOURCE_URL: "https://infostat-ivass.bancaditalia.it/RIGAInquiry-public/getAreaDownloadExport.do?referenceDate=&product=VFLUSSO_IMPRESE&language=IT&exportType=CSV&username=OBLIXANONYMOUS&isCompressed=S"
   HISTORY_BUCKET_NAME: "interop-ivass-dev-es1"
-  INTERNAL_JWT_KID: "41e3a8e9-5982-4a6d-b531-850774bfd961"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_SUBJECT: "dev.interop-m2m"
   INTERNAL_JWT_ISSUER: "dev.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "dev.interop.pagopa.it/internal"
