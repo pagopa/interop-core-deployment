@@ -24,7 +24,7 @@ deployment:
 
 local:
   interop_be_commons:
-    RSA_KEYS_IDENTIFIERS: "41e3a8e9-5982-4a6d-b531-850774bfd961"
+    RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"
     DEV_ENDPOINTS_ENABLED: "true"
     ENABLED_PROJECTIONS: "false"
 
