@@ -10,11 +10,11 @@ service:
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-m2m-event-dispatcher"
   TOPIC_STARTING_OFFSET: "earliest"
-
+  M2M_EVENT_SCHEMA: "m2m_event" 
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "m2m-event-migrations"
+    migrationsConfigmap: "flyway-m2m-events"
     env:
       FLYWAY_CREATE_SCHEMAS: "true"
       FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
@@ -56,10 +56,10 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    M2M_EVENT_DB_NAME: "common-m2m-event.M2M_EVENT_DB_NAME"
-    M2M_EVENT_DB_HOST: "common-m2m-event.M2M_EVENT_DB_HOST"
-    M2M_EVENT_DB_PORT: "common-m2m-event.M2M_EVENT_DB_PORT"
-  envFromSecrets:   
+    M2M_EVENT_DB_NAME: "common-m2m-events-db.DB_NAME"
+    M2M_EVENT_DB_HOST: "common-m2m-events-db.DB_HOST"
+    M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
+  envFromSecrets:
     READMODEL_SQL_DB_USERNAME: "platform-data-m2m-event-dispatcher-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-m2m-event-dispatcher-user.password"
     M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-dispatcher-user.username"

@@ -10,11 +10,11 @@ service:
 
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/internal"
-
+  M2M_EVENT_SCHEMA: "m2m_event"
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "m2m-event-migrations"
+    migrationsConfigmap: "flyway-m2m-events"
     env:
       FLYWAY_CREATE_SCHEMAS: "true"
       FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
@@ -43,6 +43,9 @@ deployment:
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    M2M_EVENT_DB_NAME: "common-m2m-events-db.DB_NAME"
+    M2M_EVENT_DB_HOST: "common-m2m-events-db.DB_HOST"
+    M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
   envFromSecrets:
     M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-manager-user.username"
     M2M_EVENT_DB_PASSWORD: "platform-data-m2m-event-manager-user.password"
