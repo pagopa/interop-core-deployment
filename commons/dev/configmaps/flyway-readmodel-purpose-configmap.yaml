@@ -124,3 +124,11 @@ data:
     
   V1.8__Add_Column_PurposeTemplateId_Purpose.sql: |-
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS purpose_template_id UUID;
+
+  V1.9__Grant_Access_NotificationDispatchers_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
