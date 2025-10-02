@@ -12,7 +12,7 @@ data:
       "${NAMESPACE}_m2m_event_manager_user",
       readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".eservice_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".eservice (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -25,11 +25,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".eservice_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".eservice_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";    
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".eservice_m2m_event TO readonly_user;     
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".eservice TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".eservice TO "${NAMESPACE}_m2m_event_manager_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".eservice TO readonly_user;     
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".eservice_template_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".eservice_template (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -40,11 +40,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".eservice_template_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".eservice_template_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".eservice_template_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".eservice_template TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".eservice_template TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".eservice_template TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".agreement_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".agreement (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -59,11 +59,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".agreement_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".agreement_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".agreement_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".agreement TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".agreement TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".agreement TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".purpose_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".purpose (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -79,11 +79,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".purpose_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".purpose_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".purpose_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".purpose TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".purpose TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".purpose TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".tenant_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".tenant (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -91,11 +91,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".tenant_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".tenant_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".tenant_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".tenant TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".tenant TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".tenant TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".attribute_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".attribute (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -103,11 +103,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".attribute_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".attribute_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".attribute_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".attribute TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".attribute TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".attribute TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".consumer_delegation_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".consumer_delegation (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -115,11 +115,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".consumer_delegation_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".consumer_delegation_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".consumer_delegation_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".consumer_delegation TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".consumer_delegation TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".consumer_delegation TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".producer_delegation_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".producer_delegation (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -127,11 +127,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".producer_delegation_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_delegation_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_delegation_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".producer_delegation TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_delegation TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_delegation TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".client_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".client (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -141,11 +141,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".client_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".client_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".client_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".client TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".client TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".client TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".producer_keychain_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".producer_keychain (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -155,11 +155,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".producer_keychain_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_keychain_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_keychain_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".producer_keychain TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_keychain TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_keychain TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".key_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".key (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -167,11 +167,11 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".key_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".key_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".key_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".key TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".key TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".key TO readonly_user;
 
-    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".producer_key_m2m_event (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".producer_key (
       id UUID NOT NULL,
       event_type VARCHAR NOT NULL,
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -179,6 +179,6 @@ data:
       PRIMARY KEY (id)
     );
 
-    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".producer_key_m2m_event TO "${NAMESPACE}_m2m_event_dispatcher_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_key_m2m_event TO "${NAMESPACE}_m2m_event_manager_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_key_m2m_event TO readonly_user;
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".producer_key TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_key TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_key TO readonly_user;
