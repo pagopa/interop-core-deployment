@@ -7,7 +7,7 @@ configmap:
   SFTP_PORT: "22"
   SFTP_PATH: "dev"
   SFTP_FILENAME_PREFIX: "dev"
-  INTERNAL_JWT_KID: "41e3a8e9-5982-4a6d-b531-850774bfd961"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_SUBJECT: "dev.interop-m2m"
   INTERNAL_JWT_ISSUER: "dev.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "dev.interop.pagopa.it/internal"
