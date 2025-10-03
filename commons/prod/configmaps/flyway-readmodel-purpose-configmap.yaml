@@ -116,3 +116,19 @@ data:
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ADD COLUMN IF NOT EXISTS "value" VARCHAR[];
     UPDATE "${NAMESPACE}_purpose".purpose_risk_analysis_answer SET value = '{}' WHERE "value" IS NULL;
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ALTER COLUMN "value" SET NOT NULL;
+
+  V1.3__Create_Table_PurposeVersionStamp.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_version_stamp (
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      purpose_version_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose_version (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      who UUID NOT NULL,
+      "when" TIMESTAMP WITH TIME ZONE NOT NULL,
+      kind VARCHAR NOT NULL,
+      PRIMARY KEY (purpose_version_id, kind),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO readonly_user;
