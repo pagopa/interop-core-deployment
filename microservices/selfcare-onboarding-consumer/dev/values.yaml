@@ -6,7 +6,7 @@ serviceAccount:
 
 service:
   create: false
-  
+
 configmap:
   KAFKA_BROKERS: "selc-u-eventhub-ns.servicebus.windows.net:9093"
   KAFKA_CLIENT_ID: "interop-dev"
@@ -15,7 +15,7 @@ configmap:
   RESET_CONSUMER_OFFSETS: "FALSE"
   INTEROP_PRODUCT: "prod-interop"
   ALLOWED_ORIGINS: "IPA,ANAC,IVASS,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV"
-  INTERNAL_JWT_KID: "41e3a8e9-5982-4a6d-b531-850774bfd961"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_SUBJECT: "dev.interop-m2m"
   INTERNAL_JWT_ISSUER: "dev.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "dev.interop.pagopa.it/internal"
