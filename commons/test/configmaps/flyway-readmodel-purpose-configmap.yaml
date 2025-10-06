@@ -116,3 +116,6 @@ data:
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ADD COLUMN IF NOT EXISTS "value" VARCHAR[];
     UPDATE "${NAMESPACE}_purpose".purpose_risk_analysis_answer SET value = '{}' WHERE "value" IS NULL;
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ALTER COLUMN "value" SET NOT NULL;
+
+  V1.3__Add_Column_PurposeTemplateId_Purpose.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS purpose_template_id UUID;
