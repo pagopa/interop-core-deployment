@@ -29,6 +29,8 @@ data:
       metadata_version INTEGER NOT NULL,
       user_id UUID NOT NULL,
       tenant_id UUID NOT NULL,
+      in_app_notification_preference BOOLEAN NOT NULL,
+      email_notification_preference VARCHAR NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE NOT NULL,
       updated_at TIMESTAMP WITH TIME ZONE,
       PRIMARY KEY (id),
@@ -55,15 +57,3 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_notification_config_rmw_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_notification_config_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "readonly_user";
-
-  V1.2__AddPreferences_NotificationConfig.sql: |-
-    ALTER TABLE "${NAMESPACE}_notification_config".tenant_notification_config
-      ADD COLUMN IF NOT EXISTS in_app_notification_preference BOOLEAN,
-      ADD COLUMN IF NOT EXISTS email_notification_preference VARCHAR;
-    UPDATE "${NAMESPACE}_notification_config".tenant_notification_config
-      SET in_app_notification_preference = FALSE WHERE in_app_notification_preference IS NULL;
-    UPDATE "${NAMESPACE}_notification_config".tenant_notification_config
-      SET email_notification_preference = 'Disabled' WHERE email_notification_preference IS NULL;
-    ALTER TABLE "${NAMESPACE}_notification_config".tenant_notification_config
-      ALTER COLUMN in_app_notification_preference SET NOT NULL,
-      ALTER COLUMN email_notification_preference SET NOT NULL;
