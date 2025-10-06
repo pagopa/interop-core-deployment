@@ -92,3 +92,6 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_purpose_template_rmw_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose_template" TO "readonly_user";
+
+  V1.1__Add_Checksum_Column_To_RiskAnalysis_Template_Answer_Annotation_Document.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_purpose_template".purpose_template_risk_analysis_answer_annotation_document ADD COLUMN IF NOT EXISTS checksum VARCHAR NOT NULL;
