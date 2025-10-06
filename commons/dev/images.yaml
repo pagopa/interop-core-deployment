@@ -96,8 +96,6 @@ images:
       tag: "develop"
     notification-email-sender:
       tag: "develop"
-    notification-user-lifecycle-consumer:
-      tag: "develop"
     notification-tenant-lifecycle-consumer:
       tag: "develop"
     notifier:
