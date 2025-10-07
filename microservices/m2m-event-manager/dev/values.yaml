@@ -44,7 +44,7 @@ deployment:
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     M2M_EVENT_DB_NAME: "common-m2m-events-db.DB_NAME"
-    M2M_EVENT_DB_HOST: "common-m2m-events-db.DB_HOST"
+    M2M_EVENT_DB_HOST: "common-m2m-events-db.DB_HOST_RO"
     M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
   envFromSecrets:
     M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-manager-user.username"
