@@ -8,6 +8,7 @@ cronjob:
     digest: $IMAGE_DIGEST_PLACEHOLDER
   env:
     LOG_LEVEL: "info"
+    NODE_ENV: "production"
   resources:
     requests:
       cpu: "1000m"
