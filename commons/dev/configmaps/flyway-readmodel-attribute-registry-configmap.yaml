@@ -54,7 +54,3 @@ data:
   V1.6__Grant_Access_JobIVASSCertifiedAttributesImporter_Attribute.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_ivass_certified_attributes_importer_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_ivass_certified_attributes_importer_user";
-
-  V1.7__Grant_Access_PurposeTemplateProcess_Attribute.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_purpose_template_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_purpose_template_process_user";
