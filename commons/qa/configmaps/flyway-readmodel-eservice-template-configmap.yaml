@@ -134,7 +134,7 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO readonly_user;
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";
-
+    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_catalog_process_user";
 
   V1.1__Grant_Access_Jobs_Consumers_Template.sql: |-
@@ -147,6 +147,3 @@ data:
   V1.3__Grant_Access_Job_Datalake-Export_Schema_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_datalake_data_export_user";    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_datalake_data_export_user";
-
-  V1.4__Add_Column_PersonalData_EServiceTemplate.sql: |-
-    ALTER TABLE IF EXISTS "${NAMESPACE}_eservice_template".eservice_template ADD COLUMN IF NOT EXISTS personal_data BOOLEAN;

@@ -134,7 +134,7 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO readonly_user;
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";
-
+    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_catalog_process_user";
 
   V1.1__Grant_Access_Jobs_Consumers_Template.sql: |-
