@@ -32,6 +32,8 @@ configmap:
   ESERVICE_DOCUMENTS_PATH: "eservices/docs"
   RISK_ANALYSIS_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
+  PURPOSE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
   ALLOW_LIST_CONTAINER: "interop-allow-list-{{.Values.namespace}}-es1"
   ALLOW_LIST_PATH: "allowlist"
   ALLOW_LIST_FILE_NAME: "allowlist.txt"
