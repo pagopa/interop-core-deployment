@@ -34,7 +34,6 @@ frontend:
         SELFCARE_BASE_URL: "common-selfcare.SELFCARE_BASE_URL"
         SELFCARE_LOGIN_URL: "common-selfcare.SELFCARE_LOGIN_URL"
         WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
-        FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
 
   nginx:
     default.conf: |-
