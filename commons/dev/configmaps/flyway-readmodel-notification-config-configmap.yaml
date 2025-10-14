@@ -29,6 +29,8 @@ data:
       metadata_version INTEGER NOT NULL,
       user_id UUID NOT NULL,
       tenant_id UUID NOT NULL,
+      in_app_notification_preference BOOLEAN NOT NULL,
+      email_notification_preference VARCHAR NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE NOT NULL,
       updated_at TIMESTAMP WITH TIME ZONE,
       PRIMARY KEY (id),
