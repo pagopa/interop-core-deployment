@@ -1,152 +1,152 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     agreement-platformstate-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     agreement-process:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     agreement-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     agreement-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     api-gateway:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     attribute-registry-process:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     attribute-registry-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     authorization-process:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     authorization-server:
       tag: "1.0.15"
     authorization-server-node:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     authorization-updater:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     backend-for-frontend:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     catalog-outbound-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     catalog-platformstate-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     catalog-process:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     catalog-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     catalog-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     certified-email-sender:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     client-purpose-updater:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     client-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     client-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     compute-agreements-consumer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     datalake-interface-exporter:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     delegation-items-archiver:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     delegation-outbound-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     delegation-process:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     delegation-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     delegation-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     eservice-descriptors-archiver:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     eservice-template-instances-updater:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     eservice-template-process:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     eservice-template-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     eservice-template-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     frontend:
       tag: "1.3.0"
     key-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     key-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     m2m-gateway:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     notification-email-sender:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     party-registry-proxy:
       tag: "1.0.15"
     producer-key-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     producer-key-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     producer-keychain-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     purpose-platformstate-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     purpose-process:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     purpose-outbound-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     purpose-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     purpose-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     selfcare-onboarding-consumer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     ses-mock:
       tag: "20"
     smtp-mock:
       tag: "1.10.4"
     tenant-outbound-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     tenant-process:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     tenant-readmodel-writer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     tenant-readmodel-writer-sql:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     token-details-persister-node:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     datalake-data-export:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     dtd-catalog-exporter:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     ipa-certified-attributes-importer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     ivass-certified-attributes-importer:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     one-trust-notices:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     pn-consumers:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     readmodel-checker:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "2.7.0-RC3"
+      tag: "2.7.1-NRT"
