@@ -34,7 +34,7 @@ frontend:
         SELFCARE_BASE_URL: "common-selfcare.SELFCARE_BASE_URL"
         SELFCARE_LOGIN_URL: "common-selfcare.SELFCARE_LOGIN_URL"
         WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
- 
+
   nginx:
     default.conf: |-
       server {
