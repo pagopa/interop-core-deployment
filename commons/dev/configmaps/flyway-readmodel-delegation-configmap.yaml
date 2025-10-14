@@ -86,3 +86,11 @@ data:
   V1.5__Grant_Access_DocumentsGenerator_Delegation.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_documents_generator_user";    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_documents_generator_user";
+
+  V1.6__Grant_Access_NotificationDispatchers_Delegation.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
