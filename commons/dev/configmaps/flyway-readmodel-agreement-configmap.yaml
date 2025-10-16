@@ -130,3 +130,7 @@ data:
   V1.8__Grant_Access_PurposeTemplateProcess_Agreement.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.9__Grant_Access_DocumentsGenerator_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_documents_generator_user";
