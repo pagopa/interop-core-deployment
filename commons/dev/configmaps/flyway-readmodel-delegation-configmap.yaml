@@ -82,3 +82,7 @@ data:
   V1.4__Grant_Access_PurposeTemplateProcess_Delegation.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_purpose_template_process_user";    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.5__Grant_Access_DocumentsGenerator_Delegation.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_documents_generator_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_documents_generator_user";
