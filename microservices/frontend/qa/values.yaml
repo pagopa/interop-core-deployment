@@ -44,6 +44,7 @@ frontend:
           listen  [::]:80;
           server_name  localhost;
           absolute_redirect off;
+          server_tokens off;
 
           location /ui {
               root   /usr/share/nginx/html;
