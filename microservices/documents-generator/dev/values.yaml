@@ -19,7 +19,7 @@ configmap:
   DELEGATION_DOCUMENT_PATH: "{{.Values.local.env}}/documents-generator-v1/delegation"
   AGREEMENT_DOCUMENT_PATH: "{{.Values.local.env}}/documents-generator-v1/agreement"
   RISK_ANALYSIS_DOCUMENT_PATH: "{{.Values.local.env}}/documents-generator-v1/risk-analysis"
-  FEATURE_FLAG_SQL: true
+  FEATURE_FLAG_SQL: "true"
 
 deployment:
   envFromConfigmaps:
