@@ -28,6 +28,8 @@ local:
     RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"
     DEV_ENDPOINTS_ENABLED: "true"
     ENABLED_PROJECTIONS: "false"
+  awsAccountId: "505630707203"
+  env: "dev"
 
 autoscaling:
   keda:
