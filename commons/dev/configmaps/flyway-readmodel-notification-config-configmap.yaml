@@ -16,6 +16,7 @@ data:
       id UUID,
       metadata_version INTEGER NOT NULL,
       tenant_id UUID NOT NULL,
+      user_roles VARCHAR[] NOT NULL,
       enabled BOOLEAN NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE NOT NULL,
       updated_at TIMESTAMP WITH TIME ZONE,
