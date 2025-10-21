@@ -9,7 +9,7 @@ service:
 
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-email-sender"
-  TOPIC_STARTING_OFFSET: "earliest"
+  TOPIC_STARTING_OFFSET: "latest"
   AWS_SES_ENDPOINT: "http://ses-mock.{{.Values.namespace}}.svc.cluster.local:8005"
   SENDER_MAIL: "noreply@notifiche.{{.Values.namespace}}.interop.pagopa.it"
   SENDER_LABEL: "noreply-{{.Values.namespace}}"
