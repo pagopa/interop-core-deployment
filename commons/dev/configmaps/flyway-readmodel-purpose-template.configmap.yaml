@@ -95,3 +95,8 @@ data:
 
   V1.1__Add_Checksum_Column_To_RiskAnalysis_Template_Answer_Annotation_Document.sql: |-
     ALTER TABLE IF EXISTS "${NAMESPACE}_purpose_template".purpose_template_risk_analysis_answer_annotation_document ADD COLUMN IF NOT EXISTS checksum VARCHAR NOT NULL;
+
+  V1.2__Add_Handles_Personal_Data_Column_To_Purpose_Template.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_purpose_template".purpose_template ADD COLUMN IF NOT EXISTS handles_personal_data BOOLEAN;
+    UPDATE "${NAMESPACE}_purpose_template".purpose_template SET handles_personal_data = FALSE WHERE handles_personal_data IS NULL;
+    ALTER TABLE "${NAMESPACE}_purpose_template".purpose_template ALTER COLUMN handles_personal_data SET NOT NULL;
