@@ -100,3 +100,7 @@ data:
     ALTER TABLE IF EXISTS "${NAMESPACE}_purpose_template".purpose_template ADD COLUMN IF NOT EXISTS handles_personal_data BOOLEAN;
     UPDATE "${NAMESPACE}_purpose_template".purpose_template SET handles_personal_data = FALSE WHERE handles_personal_data IS NULL;
     ALTER TABLE "${NAMESPACE}_purpose_template".purpose_template ALTER COLUMN handles_personal_data SET NOT NULL;
+
+  V1.3__Grant_Access_PurposeProcess_Purpose_Template.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose_template" to "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_purpose_process_user";
