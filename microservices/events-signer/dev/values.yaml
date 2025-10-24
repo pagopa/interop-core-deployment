@@ -30,7 +30,7 @@ deployment:
     SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"
     SIGNATURE_REFERENCES_TABLE_NAME: "common-safe-storage.LIVE_REQUESTS_DYNAMO_TABLE_NAME"
 
-  envFromSecrets:   
+  envFromSecrets:
     SAFE_STORAGE_API_KEY: "safe-storage-signing-credentials.password"
     
   envFromFieldRef:
