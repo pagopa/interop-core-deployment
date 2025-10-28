@@ -203,3 +203,10 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_instances_updater_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_eservice_template_instances_updater_user";
+
+  V1.2__Grant_Select_to_PublicCatalogUpdater.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice TO "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor TO "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_template_version_ref TO "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute TO "public_catalog_updater_user";
