@@ -68,6 +68,8 @@ images:
       tag: "develop"
     documents-generator:
       tag: "develop"
+    documents-signer:
+      tag: "develop"
     eservice-descriptors-archiver:
       tag: "develop"
     eservice-template-process:
