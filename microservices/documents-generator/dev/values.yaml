@@ -18,6 +18,11 @@ configmap:
   DELEGATION_DOCUMENT_PATH: "{{.Values.namespace}}/documents-generator-v1/delegation"
   AGREEMENT_DOCUMENT_PATH: "{{.Values.namespace}}/documents-generator-v1/agreement"
   RISK_ANALYSIS_DOCUMENT_PATH: "{{.Values.namespace}}/documents-generator-v1/risk-analysis"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-documents-generator"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "3600"
 
 deployment:
   envFromConfigmaps:
@@ -43,6 +48,9 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
+    DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
+    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
   envFromSecrets:   
     READMODEL_SQL_DB_USERNAME: "platform-data-documents-generator-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-documents-generator-user.password"

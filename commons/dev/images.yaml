@@ -18,6 +18,8 @@ images:
       tag: "develop"
     attribute-registry-process:
       tag: "develop"
+    audit-signer:
+      tag: "develop"
     authorization-management:
       tag: "1.0.x-latest"
     authorization-process:
@@ -66,6 +68,8 @@ images:
       tag: "develop"
     documents-generator:
       tag: "develop"
+    documents-signer:
+      tag: "develop"
     eservice-descriptors-archiver:
       tag: "develop"
     eservice-template-process:
@@ -75,6 +79,8 @@ images:
     eservice-template-readmodel-writer-sql:
       tag: "develop"
     eservice-template-instances-updater:
+      tag: "develop"
+    events-signer:
       tag: "develop"
     frontend:
       tag: "1.3.2-RC3"
@@ -128,6 +134,8 @@ images:
       tag: "develop"
     ses-mock:
       tag: "20"
+    signed-objects-persister:
+      tag: "develop"
     smtp-mock:
       tag: "1.10.4"
     tenant-process:
