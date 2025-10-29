@@ -4,6 +4,11 @@ metadata:
   name: common-jwt
   namespace: dev
 data:
+  INTERNAL_JWT_KID: "aca0625c-e107-42ae-944a-158422af5d92"
+  INTERNAL_JWT_SUBJECT: dev.interop-m2m
+  INTERNAL_JWT_ISSUER: dev.interop.pagopa.it
+  INTERNAL_JWT_AUDIENCE: dev.interop.pagopa.it/internal
+  INTERNAL_JWT_SECONDS_DURATION: 3600
   WELL_KNOWN_URLS: https://dev.interop.pagopa.it/.well-known/jwks.json
   SELFCARE_WELL_KNOWN_URLS: "https://uat.selfcare.pagopa.it/.well-known/jwks.json"
   BFF_WELL_KNOWN_URLS: "https://dev.interop.pagopa.it/.well-known/jwks.json,https://uat.selfcare.pagopa.it/.well-known/jwks.json"
