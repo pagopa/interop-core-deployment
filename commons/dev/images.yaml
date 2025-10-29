@@ -83,7 +83,7 @@ images:
     events-signer:
       tag: "develop"
     frontend:
-      tag: "dev-latest"
+      tag: "1.3.2-RC4"
     in-app-notification-manager:
       tag: "develop"
     key-readmodel-writer:
