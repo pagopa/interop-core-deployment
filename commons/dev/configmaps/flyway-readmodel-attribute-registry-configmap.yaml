@@ -63,7 +63,11 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_documents_generator_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_documents_generator_user";
 
-  V1.9__Grant_Access_NotificationDispatchers_Attribute.sql: |-
+  V1.9__Grant_Select_to_PublicCatalogUpdater.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO "public_catalog_updater_user";
+
+  V1.10__Grant_Access_NotificationDispatchers_Attribute.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" TO
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user";

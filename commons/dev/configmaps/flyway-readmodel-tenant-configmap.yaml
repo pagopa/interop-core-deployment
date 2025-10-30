@@ -210,7 +210,11 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_documents_generator_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_documents_generator_user";
 
-  V1.4.2__Grant_Access_NotificationDispatchers_Tenant.sql: |-
+  V1.5__Grant_Select_to_PublicCatalogUpdater.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant TO "public_catalog_updater_user";
+
+  V1.5.1__Grant_Access_NotificationDispatchers_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" TO
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user";
