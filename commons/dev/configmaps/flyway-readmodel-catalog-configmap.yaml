@@ -166,7 +166,7 @@ data:
     );   
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO "${NAMESPACE}_catalog_process_user";    
-    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO readonly_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO readonly_user; 
 
   V1.1__Permission_Process_Catalog.sql: |-
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_agreement_process_user";
@@ -182,7 +182,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_delegation_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_tenant_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_tenant_process_user";    
 
   V1.3__Grant_Access_CertifiedEmailSender_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_certified_email_sender_user";
