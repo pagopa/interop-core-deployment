@@ -138,3 +138,10 @@ data:
 
   V1.5__Allow_AuthorizationProcess_To_Read_PurposeVersionStamp: |-
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_authorization_process_user";
+
+  V1.6__Allow_Jobs_To_Read_PurposeVersionStamp: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_datalake_data_export_user";
+
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_pn_consumers_user";
+
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_token_generation_readmodel_checker_user";
