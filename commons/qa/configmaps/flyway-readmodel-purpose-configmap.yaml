@@ -135,3 +135,6 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_purpose_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO readonly_user;
+
+  V1.5__Allow_AuthorizationProcess_To_Read_To_PurposeVersionStamp: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_authorization_process_user";
