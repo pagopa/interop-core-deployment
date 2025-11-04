@@ -1,38 +1,33 @@
-name: interop-be-purpose-readmodel-writer-sql
+name: interop-be-documents-generator
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-purpose-readmodel-writer-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-documents-generator-{{.Values.local.env}}-es1"
 
 service:
   create: false
 
 configmap:
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-purpose-readmodel-writer-sql"
+  SERVICE_NAME: "documents-generator"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-documents-generator"
   TOPIC_STARTING_OFFSET: "earliest"
+  AVERAGE_KAFKA_MESSAGE_SIZE_IN_BYTES: "5000"
+  MESSAGES_TO_READ_PER_BATCH: "500"
+  MAX_WAIT_KAFKA_BATCH_MILLIS: "5000"
+  S3_BUCKET: "interop-application-documents-{{.Values.local.env}}-es1"
+  DELEGATION_DOCUMENT_PATH: "{{.Values.namespace}}/documents-generator-v1/delegation"
+  AGREEMENT_DOCUMENT_PATH: "{{.Values.namespace}}/documents-generator-v1/agreement"
+  RISK_ANALYSIS_DOCUMENT_PATH: "{{.Values.namespace}}/documents-generator-v1/risk-analysis"
 
 deployment:
-  flywayInitContainer:
-    create: true
-    migrationsConfigmap: "flyway-read-model-purpose"
-    env:
-      FLYWAY_CREATE_SCHEMAS: true
-      FLYWAY_PLACEHOLDER_REPLACEMENT: true
-      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
-      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
-      FLYWAY_SCHEMAS: "{{.Values.namespace}}_purpose"
-    envFromConfigmaps:
-      POSTGRES_HOST: "common-read-model-sql.DB_HOST_RW"
-      POSTGRES_PORT: "common-read-model-sql.DB_PORT"
-      POSTGRES_DB: "common-read-model-sql.DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
-
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
     PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
-    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RW"
+    AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
@@ -43,15 +38,14 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
     READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
     READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
-    READMODEL_SQL_DB_SCHEMA_NOTIFICATION_CONFIG: "common-read-model-sql.DB_SCHEMA_NOTIFICATION_CONFIG"
     READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-rmw-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-rmw-user.password"
+  envFromSecrets:   
+    READMODEL_SQL_DB_USERNAME: "platform-data-documents-generator-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-documents-generator-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"

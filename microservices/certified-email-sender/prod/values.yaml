@@ -16,6 +16,7 @@ configmap:
   INTEROP_FE_BASE_URL: "selfcare.interop.pagopa.it"
 
 deployment:
+  replicas: 0
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:
