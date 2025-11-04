@@ -137,6 +137,6 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO readonly_user;
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_authorization_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_delegation_items_archiver_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_pn_consumers_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_token_generation_readmodel_checker_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_delegation_items_archiver_user";
