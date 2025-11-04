@@ -81,7 +81,7 @@ images:
     eservice-template-instances-updater:
       tag: "develop"
     frontend:
-      tag: "1.3.2-RC5"
+      tag: "1.3.2-RC7"
     in-app-notification-manager:
       tag: "develop"
     in-app-notification-dispatcher:
