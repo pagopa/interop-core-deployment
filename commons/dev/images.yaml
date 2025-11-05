@@ -51,7 +51,7 @@ images:
     client-readmodel-writer-sql:
       tag: "develop"
     compute-agreements-consumer:
-      tag: "develop"      
+      tag: "develop"
     datalake-interface-exporter:
       tag: "develop"
     delegation-outbound-writer:
@@ -77,7 +77,7 @@ images:
     eservice-template-instances-updater:
       tag: "develop"
     frontend:
-      tag: "1.3.2-RC4"
+      tag: "1.3.2-RC7"
     in-app-notification-manager:
       tag: "develop"
     key-readmodel-writer:
@@ -113,15 +113,15 @@ images:
     purpose-readmodel-writer-sql:
       tag: "develop"
     purpose-template-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
     purpose-platformstate-writer:
       tag: "develop"
     purpose-process:
       tag: "develop"
     purpose-template-process:
-      tag: "develop"      
+      tag: "develop"
     redis:
-      tag: "7.0.4"      
+      tag: "7.0.4"
     selfcare-client-users-updater:
       tag: "develop"
     selfcare-onboarding-consumer:
@@ -145,7 +145,7 @@ images:
     anac-certified-attributes-importer:
       tag: "develop"
     datalake-data-export:
-      tag: "develop"  
+      tag: "develop"
     dtd-catalog-exporter:
       tag: "develop"
     ipa-certified-attributes-importer:
