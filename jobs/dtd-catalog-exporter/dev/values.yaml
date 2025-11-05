@@ -4,8 +4,6 @@ serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-dtd-catalog-exporter-dev-es1"
 
 configmap:
-  S3_BUCKET: "interop-public-catalog-dev-es1"
-  DTD_CATALOG_STORAGE_PATH: "catalog"
   DTD_CATALOG_FILENAME: "catalog.json"
   DTD_CATALOG_JSON_FILENAME: "catalog.json"
   DTD_CATALOG_CSV_FILENAME: "catalog.csv"
@@ -42,6 +40,8 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+    S3_BUCKET: "common-s3.PUBLIC_CATALOG_BUCKET"
+    DTD_CATALOG_STORAGE_PATH: "common-s3.DTD_CATALOG_STORAGE_PATH"
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"

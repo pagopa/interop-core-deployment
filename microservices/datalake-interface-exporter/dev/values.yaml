@@ -6,14 +6,10 @@ serviceAccount:
 
 service:
   create: false
-  
+
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-datalake-interface-exporter"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-datalake-interface-exporter"
-  ESERVICE_DOCUMENTS_S3_BUCKET: "interop-application-documents-dev-es1"
-  DATALAKE_INTERFACES_EXPORT_S3_BUCKET: "interop-datalake-interface-export-dev-es1"
-  DATALAKE_INTERFACES_EXPORT_PATH: "data/interoperabilita/eservices/openapi/{{.Values.namespace}}" # DO NOT CHANGE, must match DL bucket path
-  
 
 deployment:
   env:
@@ -23,6 +19,9 @@ deployment:
   envFromConfigmaps:
     CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    ESERVICE_DOCUMENTS_S3_BUCKET: "common-s3.APPLICATION_DOCUMENTS_BUCKET"
+    DATALAKE_INTERFACES_EXPORT_S3_BUCKET: "common-s3.APPLICATION_DATA_IMPORT_EXPORT_BUCKET"
+    DATALAKE_INTERFACES_EXPORT_PATH: "common-s3.DATALAKE_INTERFACES_EXPORT_PATH"
   resources:
     limits:
       cpu: "500m"

@@ -10,8 +10,6 @@ serviceAccount:
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   MAX_ESERVICES_PER_LINK_REQUEST: "25"
 
@@ -72,6 +70,8 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
+    S3_BUCKET: "common-s3.APPLICATION_DOCUMENTS_BUCKET"
+    PURPOSE_TEMPLATE_DOCUMENTS_PATH: "common-s3.PURPOSE_TEMPLATE_DOCUMENTS_PATH"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"

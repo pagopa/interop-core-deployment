@@ -16,4 +16,3 @@ deployment:
   args: ["--save", "''", "--appendonly", "no"]
   livenessProbe:
   readinessProbe:
-  

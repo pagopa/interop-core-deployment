@@ -14,10 +14,6 @@ configmap:
   AVERAGE_KAFKA_MESSAGE_SIZE_IN_BYTES: "5000"
   MESSAGES_TO_READ_PER_BATCH: "500"
   MAX_WAIT_KAFKA_BATCH_MILLIS: "5000"
-  S3_BUCKET: "interop-application-documents-{{.Values.local.env}}-es1"
-  DELEGATION_DOCUMENT_PATH: "{{.Values.namespace}}/documents-generator-v1/delegation"
-  AGREEMENT_DOCUMENT_PATH: "{{.Values.namespace}}/documents-generator-v1/agreement"
-  RISK_ANALYSIS_DOCUMENT_PATH: "{{.Values.namespace}}/documents-generator-v1/risk-analysis"
 
 deployment:
   envFromConfigmaps:
@@ -43,6 +39,10 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    S3_BUCKET: "common-s3.APPLICATION_DOCUMENTS_BUCKET"
+    AGREEMENT_DOCUMENT_PATH: "common-s3.AGREEMENT_CONSUMER_DOCUMENTS_PATH"
+    DELEGATION_DOCUMENT_PATH: "common-s3.DELEGATION_DOCUMENTS_PATH"
+    RISK_ANALYSIS_DOCUMENT_PATH: "common-s3.RISK_ANALYSIS_DOCUMENTS_PATH"
   envFromSecrets:   
     READMODEL_SQL_DB_USERNAME: "platform-data-documents-generator-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-documents-generator-user.password"

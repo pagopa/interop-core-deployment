@@ -4,11 +4,6 @@ serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-ipa-certified-attributes-importer-dev-es1"
 
 configmap:
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
-  INTERNAL_JWT_SUBJECT: "dev.interop-m2m"
-  INTERNAL_JWT_ISSUER: "dev.interop.pagopa.it"
-  INTERNAL_JWT_AUDIENCE: "dev.interop.pagopa.it/internal"
-  INTERNAL_JWT_SECONDS_DURATION: "1800"
   INSTITUTIONS_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/d09adf99-dc10-4349-8c53-27b1e5aa97b6?format=json"
   AOO_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/cdaded04-f84e-4193-a720-47d6d5f422aa?format=json"
   UO_URL: "https://indicepa.gov.it/ipa-dati/datastore/dump/b0aa1f6c-f135-4c8a-b416-396fed4e1a5d?format=json"
@@ -48,6 +43,11 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+    INTERNAL_JWT_KID: "common-jwt.INTERNAL_JWT_KID"
+    INTERNAL_JWT_AUDIENCE: "common-jwt.INTERNAL_JWT_AUDIENCE"
+    INTERNAL_JWT_SUBJECT: "common-jwt.INTERNAL_JWT_SUBJECT"
+    INTERNAL_JWT_ISSUER: "common-jwt.INTERNAL_JWT_ISSUER"
+    INTERNAL_JWT_SECONDS_DURATION: "common-jwt.INTERNAL_JWT_SECONDS_DURATION"
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"

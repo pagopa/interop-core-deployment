@@ -8,11 +8,6 @@ service:
   create: false
 
 configmap:
-  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
-  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
-  INTERNAL_JWT_SECONDS_DURATION: "3600"
-  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
   INTEROP_PRODUCT: "prod-interop"
   KAFKA_CLIENT_ID: "interop-{{.Values.namespace}}"
   KAFKA_GROUP_ID: "interop-users-{{.Values.namespace}}"
@@ -45,6 +40,11 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
     SELFCARE_TOPIC: "common-selfcare.SELFCARE_USERS_TOPIC"
+    INTERNAL_JWT_KID: "common-jwt.INTERNAL_JWT_KID"
+    INTERNAL_JWT_AUDIENCE: "common-jwt.INTERNAL_JWT_AUDIENCE"
+    INTERNAL_JWT_SUBJECT: "common-jwt.INTERNAL_JWT_SUBJECT"
+    INTERNAL_JWT_ISSUER: "common-jwt.INTERNAL_JWT_ISSUER"
+    INTERNAL_JWT_SECONDS_DURATION: "common-jwt.INTERNAL_JWT_SECONDS_DURATION"
   envFromSecrets:
     KAFKA_BROKER_CONNECTION_STRING: "selfcare-v2.SELFCARE_USERS_BROKER_CONNECTION_STRING"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"

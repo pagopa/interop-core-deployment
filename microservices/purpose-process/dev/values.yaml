@@ -10,8 +10,6 @@ serviceAccount:
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
 
 deployment:
@@ -71,6 +69,8 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
+    S3_BUCKET: "common-s3.APPLICATION_DOCUMENTS_BUCKET"
+    RISK_ANALYSIS_DOCUMENTS_PATH: "common-s3.RISK_ANALYSIS_DOCUMENTS_PATH"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"

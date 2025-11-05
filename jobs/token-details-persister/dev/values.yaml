@@ -5,8 +5,6 @@ serviceAccount:
 
 configmap:
   JWT_QUEUE_NAME: "generated-jwt"
-  TOKENS_JOB_BUCKET: "interop-generated-jwt-details-dev-es1"
-  TOKENS_JOB_BASE_DOCS_PATH: "token-details"
   QUEUE_VISIBILITY_TIMEOUT_IN_SECONDS: "60"
   MAX_NUMBER_OF_MESSAGES_PER_FILE: "1000"
 
@@ -23,3 +21,6 @@ cronjob:
     JWT_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/505630707203/generated-jwt"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    TOKENS_JOB_BUCKET: "common-s3.GENERATED_JWT_DETAILS_BUCKET"
+    TOKENS_JOB_BASE_DOCS_PATH: "common-s3.TOKENS_JOB_BASE_DOCS_PATH"

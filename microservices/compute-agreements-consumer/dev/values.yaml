@@ -6,15 +6,10 @@ serviceAccount:
 
 service:
   create: false
-  
+
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-compute-agreements-consumer"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-compute-agreements-consumer"
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
-  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
-  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
-  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
-  INTERNAL_JWT_SECONDS_DURATION: "3600"
 
 deployment:
   env:
@@ -25,3 +20,8 @@ deployment:
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    INTERNAL_JWT_KID: "common-jwt.INTERNAL_JWT_KID"
+    INTERNAL_JWT_AUDIENCE: "common-jwt.INTERNAL_JWT_AUDIENCE"
+    INTERNAL_JWT_SUBJECT: "common-jwt.INTERNAL_JWT_SUBJECT"
+    INTERNAL_JWT_ISSUER: "common-jwt.INTERNAL_JWT_ISSUER"
+    INTERNAL_JWT_SECONDS_DURATION: "common-jwt.INTERNAL_JWT_SECONDS_DURATION"

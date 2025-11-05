@@ -10,11 +10,6 @@ service:
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-delegation-items-archiver"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-delegation-items-archiver"
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
-  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
-  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
-  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
-  INTERNAL_JWT_SECONDS_DURATION: "60"
 
 deployment:
   env:
@@ -49,6 +44,11 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+    INTERNAL_JWT_KID: "common-jwt.INTERNAL_JWT_KID"
+    INTERNAL_JWT_AUDIENCE: "common-jwt.INTERNAL_JWT_AUDIENCE"
+    INTERNAL_JWT_SUBJECT: "common-jwt.INTERNAL_JWT_SUBJECT"
+    INTERNAL_JWT_ISSUER: "common-jwt.INTERNAL_JWT_ISSUER"
+    INTERNAL_JWT_SECONDS_DURATION: "common-jwt.INTERNAL_JWT_SECONDS_DURATION"
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
     READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
