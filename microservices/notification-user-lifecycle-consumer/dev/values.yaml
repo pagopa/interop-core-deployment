@@ -42,6 +42,7 @@ deployment:
   envFromSecrets:
     READMODEL_SQL_DB_USERNAME: "platform-data-notification-user-lifecycle-consumer-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-notification-user-lifecycle-consumer-user.password"
+    KAFKA_BROKER_CONNECTION_STRING: "selfcare-v2.SELFCARE_USERS_BROKER_CONNECTION_STRING"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
