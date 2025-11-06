@@ -41,8 +41,8 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
   envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-notification-user-lifecycle-consumer-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-notification-user-lifecycle-consumer-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-email-sender-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-email-sender-user.password"
     SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
