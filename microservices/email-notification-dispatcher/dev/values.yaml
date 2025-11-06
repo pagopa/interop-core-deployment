@@ -10,6 +10,7 @@ service:
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-email-notification-dispatcher"
   TOPIC_STARTING_OFFSET: "latest"
+  PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-notification-dispatcher-transactional-id"
 
 deployment:
   envFromConfigmaps:
@@ -23,7 +24,6 @@ deployment:
     EMAIL_SENDER_TOPIC: "common-kafka.EMAIL_SENDER_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
-    PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-notification-dispatcher-transactional-id"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RW"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
