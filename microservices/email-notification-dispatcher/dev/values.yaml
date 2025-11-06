@@ -43,8 +43,8 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
   envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-in-app-notification-dispatcher-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-in-app-notification-dispatcher-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-email-notification-dispatcher-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-email-notification-dispatcher-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
