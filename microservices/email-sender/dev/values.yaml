@@ -22,7 +22,7 @@ deployment:
   envFromConfigmaps:
     EMAIL_SENDER_TOPIC: "common-kafka.EMAIL_SENDER_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RW"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
