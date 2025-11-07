@@ -86,3 +86,23 @@ data:
   V1.5__Grant_Access_DocumentsGenerator_Delegation.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_documents_generator_user";    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_documents_generator_user";
+
+  V1.6__Add_Archiviazione_Documentale_signed_contract_table.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_delegation".delegation_signed_contract_document (
+      id UUID,
+      delegation_id UUID NOT NULL REFERENCES readmodel_delegation.delegation (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      name VARCHAR NOT NULL,
+      content_type VARCHAR NOT NULL,
+      pretty_name VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      kind VARCHAR NOT NULL,
+      signed_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id),
+      FOREIGN KEY (delegation_id, metadata_version) REFERENCES readmodel_delegation.delegation (id, metadata_version) DEFERRABLE INITIALLY DEFERRED,
+      CONSTRAINT delegation_signed_contract_document_delegation_id_kind_unique UNIQUE (delegation_id, kind)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_delegation_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_delegation_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO readonly_user;
