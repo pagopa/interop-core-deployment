@@ -21,7 +21,7 @@ deployment:
     DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
     PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
     TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
-    EMAIL_SENDER_TOPIC: "common-kafka.EMAIL_SENDER_TOPIC"
+    EMAIL_DISPATCH_TOPIC: "common-kafka.EMAIL_DISPATCH_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"

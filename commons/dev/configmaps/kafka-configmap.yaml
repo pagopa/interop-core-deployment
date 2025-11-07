@@ -13,7 +13,7 @@ data:
   CATALOG_TOPIC: "event-store.dev_catalog.events"
   DELEGATION_OUTBOUND_TOPIC: "outbound.dev_delegation.events"
   DELEGATION_TOPIC: "event-store.dev_delegation.events"
-  EMAIL_SENDER_TOPIC: "dev_email-sender.emails"
+  EMAIL_DISPATCH_TOPIC: "dev_email-dispatch.emails"
   ESERVICE_TEMPLATE_OUTBOUND_TOPIC: "outbound.dev_eservice_template.events"
   ESERVICE_TEMPLATE_TOPIC: "event-store.dev_eservice_template.events"
   KAFKA_BROKERS: "b-1.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,b-2.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098"
