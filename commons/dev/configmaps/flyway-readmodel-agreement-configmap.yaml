@@ -160,15 +160,9 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_tenant_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_datalake_data_export_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_delegation_items_archiver_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_delegation_items_archiver_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_eservice_descriptors_archiver_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_eservice_descriptors_archiver_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_notification_email_sender_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_notification_email_sender_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_token_generation_readmodel_checker_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_token_generation_readmodel_checker_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_purpose_template_process_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_documents_generator_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_documents_generator_user";
