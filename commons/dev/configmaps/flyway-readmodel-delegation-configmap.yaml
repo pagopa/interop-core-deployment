@@ -88,7 +88,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_documents_generator_user";
 
   V1.6__Add_Archiviazione_Documentale_signed_contract_table.sql: |-
-    CREATE TABLE IF NOT EXISTS readmodel_delegation.delegation_signed_contract_document (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_delegation".delegation_signed_contract_document (
       id UUID,
       delegation_id UUID NOT NULL REFERENCES readmodel_delegation.delegation (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
