@@ -91,7 +91,7 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_contract TO "${NAMESPACE}_agreement_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_contract TO "${NAMESPACE}_agreement_process_user";    
-    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_contract TO readonly_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_contract TO readonly_user;    
 
   V1.1__Permission_Process_Agreement.sql: |-
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_catalog_process_user";
@@ -153,8 +153,7 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_agreement_process_user";    
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO readonly_user;
 
-  V1.11__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql:
-    |-
+  V1.11__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql: |-
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_catalog_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_authorization_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_delegation_process_user";
