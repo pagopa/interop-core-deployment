@@ -99,7 +99,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_authorization_process_user";
 
   V1.2__Grant_Usage_Schema_Purpose.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_authorization_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_authorization_process_user";    
 
   V1.3__Grant_Access_JobDatalakeExport_Purpose.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_datalake_data_export_user";
@@ -169,8 +169,7 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO readonly_user;
 
-  V1.14__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql:
-    |-
+  V1.14__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql: |-
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_authorization_process_user";
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose".purpose_version_signed_document to "${NAMESPACE}_authorization_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose".purpose_version_signed_document to "${NAMESPACE}_datalake_data_export_user";
