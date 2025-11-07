@@ -136,7 +136,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_documents_generator_user";
 
   V1.10__Add_Archiviazione_Documentale_signed_contract_table.sql: |-
-    CREATE TABLE IF NOT EXISTS readmodel_agreement.agreement_signed_contract (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_signed_contract (
       id UUID,
       agreement_id UUID UNIQUE NOT NULL REFERENCES readmodel_agreement.agreement (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
