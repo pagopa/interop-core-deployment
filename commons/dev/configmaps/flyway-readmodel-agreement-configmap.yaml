@@ -147,7 +147,7 @@ data:
       created_at TIMESTAMP WITH TIME ZONE NOT NULL,
       signed_at TIMESTAMP WITH TIME ZONE,
       PRIMARY KEY (agreement_id, id), 
-      FOREIGN KEY (agreement_id, metadata_version) REFERENCES readmodel_agreement.agreement (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+      FOREIGN KEY (agreement_id, metadata_version) REFERENCES "${NAMESPACE}_agreement".agreement (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_agreement_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_agreement_process_user";    
