@@ -99,7 +99,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_authorization_process_user";
 
   V1.2__Grant_Usage_Schema_Purpose.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_authorization_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_authorization_process_user";
 
   V1.3__Grant_Access_JobDatalakeExport_Purpose.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_datalake_data_export_user";
@@ -151,3 +151,20 @@ data:
 
   V1.12__Allow_DelegationItemsArchiver_To_Read_PurposeVersionStamp.sql: |-
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_delegation_items_archiver_user";
+
+  V1.13__Add_Archiviazione_Documentale_signed_document_table.sql: |-
+    CREATE TABLE IF NOT EXISTS readmodel_purpose.purpose_version_signed_document (
+      purpose_id UUID NOT NULL REFERENCES readmodel_purpose.purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      purpose_version_id UUID UNIQUE NOT NULL REFERENCES readmodel_purpose.purpose_version (id) ON DELETE CASCADE,
+      id UUID NOT NULL,
+      content_type VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      signed_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id, purpose_version_id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES readmodel_purpose.purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO readonly_user;
