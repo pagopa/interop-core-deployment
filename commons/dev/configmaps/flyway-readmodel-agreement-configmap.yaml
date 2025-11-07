@@ -138,7 +138,7 @@ data:
   V1.10__Add_Archiviazione_Documentale_signed_contract_table.sql: |-
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_signed_contract (
       id UUID,
-      agreement_id UUID UNIQUE NOT NULL REFERENCES readmodel_agreement.agreement (id) ON DELETE CASCADE,
+      agreement_id UUID UNIQUE NOT NULL REFERENCES "${NAMESPACE}_agreement".agreement (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
       name VARCHAR NOT NULL,
       pretty_name VARCHAR NOT NULL,
