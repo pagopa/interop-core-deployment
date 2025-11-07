@@ -152,3 +152,29 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_agreement_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_agreement_process_user";    
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO readonly_user;
+
+  V1.11__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_delegation_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_tenant_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_catalog_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_authorization_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_delegation_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_purpose_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_tenant_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_datalake_data_export_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_eservice_descriptors_archiver_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_eservice_descriptors_archiver_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_notification_email_sender_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_notification_email_sender_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_purpose_template_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_documents_generator_user";
