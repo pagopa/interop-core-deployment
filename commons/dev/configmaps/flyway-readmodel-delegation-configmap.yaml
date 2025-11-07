@@ -59,7 +59,7 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_delegation".delegation_contract_document TO "${NAMESPACE}_delegation_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_contract_document TO "${NAMESPACE}_delegation_process_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_contract_document TO readonly_user;     
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_contract_document TO readonly_user;
 
   V1.1__Permission_Process_Delegation.sql: |-
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_agreement_process_user";
@@ -73,7 +73,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_catalog_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_authorization_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_purpose_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_tenant_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" to "${NAMESPACE}_tenant_process_user";
 
   V1.3__Grant_Access_Job_Datalake-Export_Schema_Delegation.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_datalake_data_export_user";    
@@ -107,20 +107,21 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_delegation_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO readonly_user;
 
-  V1.7__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql: |-
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_agreement_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_catalog_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_authorization_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_purpose_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_tenant_process_user";
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_agreement_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_catalog_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_authorization_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_purpose_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_tenant_process_user";
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_datalake_data_export_user";    
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_datalake_data_export_user";
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_purpose_template_process_user";    
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_purpose_template_process_user";
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_documents_generator_user";    
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_documents_generator_user";
+  V1.7__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql:
+    |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_tenant_process_user";
+    GRANT USAGE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_agreement_process_user";    
+    GRANT USAGE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_catalog_process_user";    
+    GRANT USAGE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_authorization_process_user";    
+    GRANT USAGE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_purpose_process_user";    
+    GRANT USAGE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document to "${NAMESPACE}_tenant_process_user";
+    GRANT USAGE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_datalake_data_export_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_datalake_data_export_user";
+    GRANT USAGE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_purpose_template_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_purpose_template_process_user";
+    GRANT USAGE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_documents_generator_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_documents_generator_user";
