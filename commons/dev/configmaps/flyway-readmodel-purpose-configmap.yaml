@@ -153,7 +153,7 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_delegation_items_archiver_user";
 
   V1.13__Add_Archiviazione_Documentale_signed_document_table.sql: |-
-    CREATE TABLE IF NOT EXISTS readmodel_purpose.purpose_version_signed_document (
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_version_signed_document (
       purpose_id UUID NOT NULL REFERENCES readmodel_purpose.purpose (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
       purpose_version_id UUID UNIQUE NOT NULL REFERENCES readmodel_purpose.purpose_version (id) ON DELETE CASCADE,
