@@ -23,7 +23,6 @@ deployment:
     TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
     EMAIL_SENDER_TOPIC: "common-kafka.EMAIL_SENDER_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
@@ -48,3 +47,4 @@ deployment:
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
