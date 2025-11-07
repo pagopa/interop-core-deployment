@@ -159,12 +159,6 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_delegation_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_tenant_process_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_catalog_process_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_authorization_process_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_delegation_process_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_purpose_process_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_tenant_process_user";
-    GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_datalake_data_export_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_datalake_data_export_user";
     GRANT USAGE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract to "${NAMESPACE}_delegation_items_archiver_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_delegation_items_archiver_user";
