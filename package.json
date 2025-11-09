@@ -1,0 +1,19 @@
+{
+  "name": "yaml-lint",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "YAML linting for the project",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:microservices": "eslint microservices/",
+    "lint:jobs": "eslint jobs/",
+    "lint:commons": "eslint commons/"
+  },
+  "dependencies": {
+    "eslint": "^9.39.1",
+    "eslint-plugin-yml": "^1.14.0",
+    "yaml-eslint-parser": "^1.2.3"
+  },
+  "packageManager": "pnpm@8.12.1+sha1.aa961ffce9b6eaa56307d9b5ff7e984f25b7eb58"
+}
