@@ -5,10 +5,7 @@
   "description": "YAML linting for the project",
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "lint:microservices": "eslint microservices/",
-    "lint:jobs": "eslint jobs/",
-    "lint:commons": "eslint commons/"
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "eslint": "^9.39.1",
