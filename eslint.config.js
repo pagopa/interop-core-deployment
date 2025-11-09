@@ -31,7 +31,7 @@ export default [
 
             // Stile
             'yml/quotes': ['error', {
-                prefer: 'single',
+                prefer: 'double',
                 avoidEscape: false
             }],
             'yml/block-mapping': 'error',
@@ -54,7 +54,8 @@ export default [
             '**/dist/**',
             '**/.helm/**',
             '**/charts/**/*.tgz',
-            '**/.git/**'
+            '**/.git/**',
+            'pnpm-lock.yaml',
         ]
     }
 ];
