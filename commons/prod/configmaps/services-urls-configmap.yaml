@@ -11,6 +11,7 @@ data:
   CATALOG_PROCESS_URL: "http://interop-be-catalog-process.prod.svc.cluster.local:8088"
   DELEGATION_PROCESS_URL: "http://interop-be-delegation-process.prod.svc.cluster.local:8088"
   ESERVICE_TEMPLATE_PROCESS_URL: "http://interop-be-eservice-template-process.prod.svc.cluster.local:8088"
+  IN_APP_NOTIFICATION_MANAGER_URL: "http://interop-be-in-app-notification-manager.prod.svc.cluster.local:8088"
   NOTIFICATION_CONFIG_PROCESS_URL: "http://interop-be-notification-config-process.prod.svc.cluster.local:8088"
   NOTIFIER_URL: "http://interop-be-notifier.prod.svc.cluster.local:8088/notifier/1.0"
   PARTY_REGISTRY_PROXY_URL: "http://interop-be-party-registry-proxy.prod.svc.cluster.local:8088/party-registry-proxy/1.0"

@@ -211,3 +211,21 @@ data:
   V1.9__Grant_Access_EserviceTemplateInstanceUpdater_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_instances_updater_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_eservice_template_instances_updater_user";
+
+  V1.10__Add_Column_PersonalData_EService.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS personal_data BOOLEAN;
+
+  V1.11__Grant_Access_PurposeTemplateProcess_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.12__Grant_Access_DocumentsGenerator_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_documents_generator_user";
+
+  V1.13__Grant_Select_to_PublicCatalogUpdater.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice TO "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor TO "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_template_version_ref TO "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute TO "public_catalog_updater_user";

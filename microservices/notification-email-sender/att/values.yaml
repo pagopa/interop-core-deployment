@@ -14,6 +14,7 @@ configmap:
   SENDER_LABEL: "noreply-{{.Values.namespace}}"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-email-sender"
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-notification-email-sender"
+  REDIS_NOTIFICATION_EMAIL_SENDER_TTL_SECONDS: "2592000"
   SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
   SMTP_PORT: "5025"
   SMTP_SECURE: "false"
@@ -22,7 +23,6 @@ deployment:
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:
-    NAMESPACE: "metadata.namespace"
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
@@ -51,6 +51,8 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+    REDIS_NOTIFICATION_EMAIL_SENDER_HOST: "common-redis.REDIS_HOST"
+    REDIS_NOTIFICATION_EMAIL_SENDER_PORT: "common-redis.REDIS_PORT"
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"

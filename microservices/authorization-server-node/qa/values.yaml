@@ -22,7 +22,7 @@ configmap:
   GENERATED_INTEROP_TOKEN_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   GENERATED_INTEROP_TOKEN_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   GENERATED_INTEROP_TOKEN_M2M_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/m2m"
-  GENERATED_INTEROP_TOKEN_M2M_DURATION_SECONDS: "99999999"
+  GENERATED_INTEROP_TOKEN_M2M_DURATION_SECONDS: "28800"
   CLIENT_ASSERTION_JWT_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
   RATE_LIMITER_MAX_REQUESTS: "10"
   RATE_LIMITER_BURST_PERCENTAGE: "1.0"
