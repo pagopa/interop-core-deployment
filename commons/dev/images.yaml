@@ -51,7 +51,7 @@ images:
     client-readmodel-writer-sql:
       tag: "develop"
     compute-agreements-consumer:
-      tag: "develop"      
+      tag: "develop"
     datalake-interface-exporter:
       tag: "develop"
     delegation-outbound-writer:
