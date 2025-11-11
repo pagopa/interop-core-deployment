@@ -8,7 +8,6 @@ service:
   create: false
 
 configmap:
-  SERVICE_NAME: "documents-generator"
   KAFKA_GROUP_ID: "{{.Values.local.env}}-documents-generator"
   TOPIC_STARTING_OFFSET: "earliest"
   AVERAGE_KAFKA_MESSAGE_SIZE_IN_BYTES: "5000"
