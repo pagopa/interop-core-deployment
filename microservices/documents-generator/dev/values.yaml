@@ -50,7 +50,7 @@ deployment:
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
-  envFromSecrets:   
+  envFromSecrets:
     READMODEL_SQL_DB_USERNAME: "platform-data-documents-generator-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-documents-generator-user.password"
   envFromFieldRef:
