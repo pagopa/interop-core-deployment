@@ -134,3 +134,35 @@ data:
   V1.9__Grant_Access_DocumentsGenerator_Agreement.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_documents_generator_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_documents_generator_user";
+
+  V1.10__Add_Archiviazione_Documentale_signed_contract_table.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_signed_contract (
+      id UUID,
+      agreement_id UUID UNIQUE NOT NULL REFERENCES "${NAMESPACE}_agreement".agreement (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      name VARCHAR NOT NULL,
+      pretty_name VARCHAR NOT NULL,
+      content_type VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      signed_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (agreement_id, id), 
+      FOREIGN KEY (agreement_id, metadata_version) REFERENCES "${NAMESPACE}_agreement".agreement (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_agreement_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_agreement_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO readonly_user;
+
+  V1.11__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_delegation_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_eservice_descriptors_archiver_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_notification_email_sender_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_documents_generator_user";

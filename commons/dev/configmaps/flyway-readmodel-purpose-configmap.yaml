@@ -151,3 +151,27 @@ data:
 
   V1.12__Allow_DelegationItemsArchiver_To_Read_PurposeVersionStamp.sql: |-
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_delegation_items_archiver_user";
+
+  V1.13__Add_Archiviazione_Documentale_signed_document_table.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_version_signed_document (
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      purpose_version_id UUID UNIQUE NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose_version (id) ON DELETE CASCADE,
+      id UUID NOT NULL,
+      content_type VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      signed_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id, purpose_version_id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO readonly_user;
+
+  V1.14__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_authorization_process_user"; 
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_pn_consumers_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_token_generation_readmodel_checker_user";
