@@ -75,7 +75,7 @@ images:
     eservice-template-readmodel-writer-sql:
       tag: "2.9.0-RC1"
     frontend:
-      tag: "*** UPDATE THIS VALUE ***"
+      tag: "1.4.0-RC1"
     key-readmodel-writer:
       tag: "2.9.0-RC1"
     key-readmodel-writer-sql:
