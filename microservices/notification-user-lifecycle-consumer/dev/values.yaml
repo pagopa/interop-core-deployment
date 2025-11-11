@@ -19,7 +19,7 @@ configmap:
 
 deployment:
   envFromConfigmaps:
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    KAFKA_BROKERS: "common-selfcare.SELFCARE_KAFKA_BROKERS"
     NOTIFICATION_CONFIG_PROCESS_URL: "common-services-urls.NOTIFICATION_CONFIG_PROCESS_URL"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
