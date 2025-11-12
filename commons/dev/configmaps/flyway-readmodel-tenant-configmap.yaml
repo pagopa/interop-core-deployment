@@ -225,3 +225,7 @@ data:
   V1.5.2__Grant_Access_EmailSender_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_email_sender_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_email_sender_user";
+
+  V1.5.3__Grant_Access_NotificationUserLifecycleConsumer_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_notification_user_lifecycle_consumer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_notification_user_lifecycle_consumer_user";
