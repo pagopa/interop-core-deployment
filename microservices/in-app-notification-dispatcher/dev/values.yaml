@@ -14,7 +14,7 @@ configmap:
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "in-app-notification-db-migrations"
+    migrationsConfigmap: "flyway-in-app-notification"
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
