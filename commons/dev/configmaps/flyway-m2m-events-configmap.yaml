@@ -175,6 +175,7 @@ data:
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
       resource_version INT NOT NULL,
       kid VARCHAR NOT NULL,
+      client_id UUID NOT NULL,
       PRIMARY KEY (id)
     );
 
@@ -188,6 +189,7 @@ data:
       event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
       resource_version INT NOT NULL,
       kid VARCHAR NOT NULL,
+      producer_keychain_id UUID NOT NULL,
       PRIMARY KEY (id)
     );
 
