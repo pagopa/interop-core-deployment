@@ -15,7 +15,6 @@ configmap:
   AVERAGE_KAFKA_MESSAGE_SIZE_IN_BYTES: "5000"
   MESSAGES_TO_READ_PER_BATCH: "500"
   MAX_WAIT_KAFKA_BATCH_MILLIS: "5000"
-  S3_BUCKET: "interop-application-documents-{{.Values.local.env}}-es1"
 
 deployment:
   envFromConfigmaps:
@@ -25,6 +24,7 @@ deployment:
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
     PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
     AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
+    S3_BUCKET: "common-s3.APPLICATION_DOCUMENTS_BUCKET"
     SAFE_STORAGE_BASE_URL: "common-safe-storage.BASE_URL"
     SAFE_STORAGE_DOC_TYPE: "common-safe-storage.DOC_TYPE"
     SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"
