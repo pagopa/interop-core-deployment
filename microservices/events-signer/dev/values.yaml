@@ -15,7 +15,6 @@ configmap:
   MAX_WAIT_KAFKA_BATCH_MILLIS: "5000"
   TOPIC_STARTING_OFFSET: "earliest"
   SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-events-signer"
-  S3_BUCKET: "interop-domain-events-{{.Values.local.env}}-es1"
 
 deployment:
   envFromConfigmaps:
@@ -25,6 +24,7 @@ deployment:
     DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
     PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    S3_BUCKET: "common-s3.DOMAINS_EVENTS_BUCKET"
     SAFE_STORAGE_BASE_URL: "common-safe-storage.BASE_URL"
     SAFE_STORAGE_DOC_TYPE: "common-safe-storage.DOC_TYPE"
     SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"

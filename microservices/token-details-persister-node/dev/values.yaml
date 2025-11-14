@@ -13,7 +13,6 @@ configmap:
   AVERAGE_KAFKA_MESSAGE_SIZE_IN_BYTES: "1110"
   MESSAGES_TO_READ_PER_BATCH: "1000"
   MAX_WAIT_KAFKA_BATCH_MILLIS: "25000"
-  S3_BUCKET: "interop-generated-jwt-details-{{.Values.namespace}}-es1"
 
 deployment:
   image:
@@ -25,3 +24,4 @@ deployment:
   envFromConfigmaps:
     TOKEN_AUDITING_TOPIC: "common-kafka.TOKEN_AUDITING_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    S3_BUCKET: "common-s3.GENERATED_JWT_DETAILS_BUCKET"
