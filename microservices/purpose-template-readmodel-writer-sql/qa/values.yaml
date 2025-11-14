@@ -1,33 +1,38 @@
-name: "interop-be-certified-email-sender"
-techStack: "nodejs"
+name: interop-be-purpose-template-readmodel-writer-sql
+techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-certified-email-sender-qa-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-purpose-template-readmodel-writer-qa-es1"
 
 service:
   create: false
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-certified-email-sender"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-certified-email-sender"
-  PEC_SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
-  PEC_SMTP_PORT: "5025"
-  PEC_SMTP_SECURE: "false"
-  INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-purpose-template-readmodel-writer-sql"
+  TOPIC_STARTING_OFFSET: "earliest"
 
 deployment:
-  replicas: 0
-  env:
-    TOPIC_STARTING_OFFSET: "latest"
-  envFromFieldRef:
-    AWS_ROLE_SESSION_NAME: "metadata.name"
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "flyway-read-model-purpose-template"
+    env:
+      FLYWAY_CREATE_SCHEMAS: true
+      FLYWAY_PLACEHOLDER_REPLACEMENT: true
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_SCHEMAS: "{{.Values.namespace}}_purpose_template"
+    envFromConfigmaps:
+      POSTGRES_HOST: "common-read-model-sql.DB_HOST_RW"
+      POSTGRES_PORT: "common-read-model-sql.DB_PORT"
+      POSTGRES_DB: "common-read-model-sql.DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "platform-data-flyway-user.username"
+      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
+
   envFromConfigmaps:
-    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    PURPOSE_TEMPLATE_TOPIC: "common-kafka.PURPOSE_TEMPLATE_TOPIC"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RW"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
@@ -44,13 +49,9 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:
-    PEC_SENDER_MAIL: "smtp-certified.PEC_SMTP_SENDER"
-    PEC_SENDER_LABEL: "smtp-certified.PEC_SMTP_SENDER"
-    PEC_SMTP_USERNAME: "smtp-certified.PEC_SMTP_USER"
-    PEC_SMTP_PASSWORD: "smtp-certified.PEC_SMTP_PASSWORD"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-certified-email-sender-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-certified-email-sender-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-template-rmw-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-template-rmw-user.password"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"
