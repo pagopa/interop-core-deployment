@@ -19,6 +19,7 @@ configmap:
   GENERATED_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   GENERATED_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/ui"
   CLIENT_ASSERTION_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
+  CLIENT_ASSERTION_JWT_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,selfcare.{{.Values.namespace}}.interop.pagopa.it"
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
@@ -63,7 +64,6 @@ configmap:
   DELEGATION_CONTRACTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
-  CLIENT_ASSERTION_JWT_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
   BFF_SWAGGER_UI_ENABLED: true
   FRONTEND_BASE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/ui/it"
 
