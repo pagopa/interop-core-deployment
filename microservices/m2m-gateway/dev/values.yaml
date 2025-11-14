@@ -30,6 +30,8 @@ configmap:
   AGREEMENT_CONSUMER_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   AGREEMENT_CONSUMER_DOCUMENTS_PATH: "{{.Values.namespace}}/agreement/consumer-docs"
   AGREEMENT_CONSUMER_CONTRACTS_PATH: "{{.Values.namespace}}/agreement/contracts"
+  PURPOSE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
 
 deployment:
   env:
@@ -51,6 +53,7 @@ deployment:
     DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
     ESERVICE_TEMPLATE_PROCESS_URL: "common-services-urls.ESERVICE_TEMPLATE_PROCESS_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    PURPOSE_TEMPLATE_PROCESS_URL: "common-services-urls.PURPOSE_TEMPLATE_PROCESS_URL"
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
