@@ -123,7 +123,7 @@ data:
 
   V1.2__Grant_Access_PurposeTemplateProcess_Agreement.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_purpose_template_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_purpose_template_process_user";    
 
   V1.3__Add_Archiviazione_Documentale_signed_contract_table.sql: |-
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_signed_contract (
