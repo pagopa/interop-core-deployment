@@ -120,3 +120,7 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_token_generation_readmodel_checker_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+
+  V1.2__Grant_Access_DocumentsGenerator_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_documents_generator_user";
