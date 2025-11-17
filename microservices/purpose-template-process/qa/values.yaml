@@ -1,4 +1,4 @@
-name: "interop-be-purpose-process"
+name: "interop-be-purpose-template-process"
 techStack: "nodejs"
 
 service:
@@ -6,13 +6,14 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-purpose-process-qa-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-purpose-template-process-qa-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
+  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
+  MAX_ESERVICES_PER_LINK_REQUEST: "25"
 
 deployment:
   flywayInitContainer:
@@ -77,8 +78,8 @@ deployment:
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-template-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-template-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
