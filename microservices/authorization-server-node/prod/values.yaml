@@ -32,7 +32,7 @@ configmap:
   CLIENT_ASSERTION_AUDIENCE: "auth.interop.pagopa.it/client-assertion"
 
 deployment:
-  replicas: 20
+  replicas: 50
   image:
     repositoryName: "interop-be-authorization-server"
   env:
@@ -68,8 +68,8 @@ deployment:
     periodSeconds: 5
   resources:
     limits:
-      cpu: "1"
+      cpu: "2"
       memory: "4Gi"
     requests:
-      cpu: "1"
+      cpu: "2"
       memory: "4Gi"
