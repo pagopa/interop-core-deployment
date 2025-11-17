@@ -18,6 +18,8 @@ images:
       tag: "develop"
     attribute-registry-process:
       tag: "develop"
+    audit-signer:
+      tag: "develop"
     authorization-management:
       tag: "1.0.x-latest"
     authorization-process:
@@ -66,6 +68,8 @@ images:
       tag: "develop"
     documents-generator:
       tag: "develop"
+    documents-signer:
+      tag: "develop"
     email-notification-dispatcher:
       tag: "develop"
     email-sender:
@@ -80,8 +84,10 @@ images:
       tag: "develop"
     eservice-template-instances-updater:
       tag: "develop"
+    events-signer:
+      tag: "develop"
     frontend:
-      tag: "dev-latest"
+      tag: "1.4.0-RC2"
     in-app-notification-manager:
       tag: "develop"
     in-app-notification-dispatcher:
@@ -138,6 +144,8 @@ images:
       tag: "develop"
     ses-mock:
       tag: "20"
+    signed-objects-persister:
+      tag: "develop"
     smtp-mock:
       tag: "1.10.4"
     tenant-process:

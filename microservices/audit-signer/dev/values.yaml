@@ -1,0 +1,30 @@
+name: interop-be-audit-signer
+techStack: nodejs
+
+serviceAccount:
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-audit-signer-{{.Values.local.env}}-es1"
+
+service:
+  create: false
+
+configmap:
+  SERVICE_NAME: "audit-signer"
+  SQS_MAX_NUMBER_OF_MSGS: "5"
+  SQS_LONG_POLL_WAIT_TIME_SECONDS: "20"
+  SQS_VISIBILITY_TIMEOUT_SECONDS: "20"
+  S3_BUCKET: "interop-generated-jwt-details-{{.Values.local.env}}-es1"
+  SQS_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/interop-jwt-details-new-s3-object-{{.Values.namespace}}"
+  SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-audit-signer"
+
+deployment:
+  envFromConfigmaps:
+    SAFE_STORAGE_BASE_URL: "common-safe-storage.BASE_URL"
+    SAFE_STORAGE_DOC_TYPE: "common-safe-storage.DOC_TYPE"
+    SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"
+    SIGNATURE_REFERENCES_TABLE_NAME: "common-safe-storage.LIVE_REQUESTS_DYNAMO_TABLE_NAME"
+
+  envFromSecrets:
+    SAFE_STORAGE_API_KEY: "safe-storage-signing-credentials.password"
+    
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
