@@ -37,6 +37,7 @@ deployment:
     DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
     PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
     TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
+    ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     IN_APP_NOTIFICATION_DB_HOST: "common-in-app-notification-db.DB_HOST"
     IN_APP_NOTIFICATION_DB_PORT: "common-in-app-notification-db.DB_PORT"
