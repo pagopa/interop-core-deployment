@@ -4,7 +4,7 @@ metadata:
   name: common-m2m-events-db
   namespace: dev
 data:
-  DB_HOST: interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com
+  DB_HOST_RW: interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com
   DB_HOST_RO: "interop-platform-data-dev.cluster-ro-cevisn7oellx.eu-south-1.rds.amazonaws.com"
   DB_NAME: m2m_events
   DB_PORT: '5432'

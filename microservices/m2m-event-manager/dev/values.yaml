@@ -23,7 +23,7 @@ deployment:
       FLYWAY_SCHEMAS: "{{.Values.name}}.M2M_EVENT_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.M2M_EVENT_SCHEMA"
       POSTGRES_DB: "common-m2m-events-db.DB_NAME"
-      POSTGRES_HOST: "common-m2m-events-db.DB_HOST"
+      POSTGRES_HOST: "common-m2m-events-db.DB_HOST_RW"
       POSTGRES_PORT: "common-m2m-events-db.DB_PORT"
     envFromSecrets:
       FLYWAY_USER: "platform-data-flyway-user.username"
