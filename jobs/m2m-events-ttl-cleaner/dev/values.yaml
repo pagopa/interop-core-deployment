@@ -1,0 +1,83 @@
+name: "interop-be-m2m-events-ttl-cleaner"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-m2m-events-ttl-cleaner-dev-es1"
+
+configmap:
+  RETENTION_DAYS: "30"
+
+cronjob:
+  schedule: "0 3 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+
+  image:
+    repository: "postgres"
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
+
+  command: ["/bin/sh", "-c"]
+  args:
+    - |
+      set -euo pipefail
+
+      export PGPASSWORD="${M2M_EVENT_DB_PASSWORD}"
+      conn="sslmode=require host=${M2M_EVENT_DB_HOST} port=${M2M_EVENT_DB_PORT} dbname=${M2M_EVENT_DB_NAME} user=${M2M_EVENT_DB_USERNAME}"
+
+      schema="${NAMESPACE}_m2m_event"
+
+      echo "Running TTL cleaner on schema=${schema}, retention_days=${RETENTION_DAYS}"
+
+      psql "${conn}" -v ON_ERROR_STOP=1 <<SQL
+      SET ttl.schema = '${schema}';
+      SET ttl.retention_days = '${RETENTION_DAYS}';
+
+      DO \$\$
+      DECLARE
+        sch text := current_setting('ttl.schema');
+        retention int := current_setting('ttl.retention_days')::int;
+        t record;
+        deleted bigint;
+        has_col boolean;
+      BEGIN
+        FOR t IN
+          SELECT tablename
+          FROM pg_catalog.pg_tables
+          WHERE schemaname = sch
+        LOOP
+          SELECT EXISTS (
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_schema = sch
+              AND table_name = t.tablename
+              AND column_name = 'event_timestamp'
+          ) INTO has_col;
+
+          IF NOT has_col THEN
+            RAISE NOTICE 'Skipping %.% (no event_timestamp column)', sch, t.tablename;
+            CONTINUE;
+          END IF;
+
+          EXECUTE format(
+            'DELETE FROM %I.%I WHERE event_timestamp < now() - interval %L',
+            sch, t.tablename, retention::text || ' days'
+          );
+
+          GET DIAGNOSTICS deleted = ROW_COUNT;
+          RAISE NOTICE 'Deleted % rows from %.%', deleted, sch, t.tablename;
+        END LOOP;
+      END
+      \$\$;
+      SQL
+
+  envFromConfigmaps:
+    M2M_EVENT_DB_HOST: "common-m2m-events-db.DB_HOST_RW"
+    M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
+    M2M_EVENT_DB_NAME: "common-m2m-events-db.DB_NAME"
+  envFromSecrets:
+    M2M_EVENT_DB_USERNAME: "m2m_event_ttl_cleaner_user.username"
+    M2M_EVENT_DB_PASSWORD: "m2m_event_ttl_cleaner_user.password"
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
