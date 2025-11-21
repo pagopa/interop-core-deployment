@@ -24,7 +24,6 @@ deployment:
       FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
     envFromConfigmaps:
-      FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER"
       FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
@@ -45,6 +44,7 @@ deployment:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
+    FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER"  
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
