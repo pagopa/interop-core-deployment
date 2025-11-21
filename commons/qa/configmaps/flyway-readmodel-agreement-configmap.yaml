@@ -121,15 +121,11 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_token_generation_readmodel_checker_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_token_generation_readmodel_checker_user";
 
-  V1.2__Grant_Access_DocumentsGenerator_Agreement.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_documents_generator_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_documents_generator_user";
-
-  V1.3__Grant_Access_PurposeTemplateProcess_Agreement.sql: |-
+  V1.2__Grant_Access_PurposeTemplateProcess_Agreement.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_purpose_template_process_user";    
 
-  V1.4__Add_Archiviazione_Documentale_signed_contract_table.sql: |-
+  V1.3__Add_Archiviazione_Documentale_signed_contract_table.sql: |-
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_agreement".agreement_signed_contract (
       id UUID,
       agreement_id UUID UNIQUE NOT NULL REFERENCES "${NAMESPACE}_agreement".agreement (id) ON DELETE CASCADE,
@@ -157,3 +153,8 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_notification_email_sender_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_token_generation_readmodel_checker_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_agreement".agreement_signed_contract TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.4__Grant_Access_DocumentsGenerator_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_documents_generator_user";
+  
