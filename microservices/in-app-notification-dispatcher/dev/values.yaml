@@ -14,7 +14,7 @@ configmap:
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "in-app-notification-db-migrations"
+    migrationsConfigmap: "flyway-in-app-notification"
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
@@ -35,6 +35,7 @@ deployment:
     AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
     CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
     DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
+    ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"
     PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
     TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"

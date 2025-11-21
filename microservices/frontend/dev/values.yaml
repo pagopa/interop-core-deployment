@@ -14,7 +14,7 @@ frontend:
     window.pagopa_env:
       STAGE: "DEV"
       AUTHORIZATION_SERVER_TOKEN_CREATION_URL: "https://auth.dev.interop.pagopa.it/token.oauth2"
-      INTEROP_RESOURCES_BASE_URL: "https://interop-dev-public-es1.s3.eu-south-1.amazonaws.com"
+      INTEROP_RESOURCES_BASE_URL: "https://interop-public-assets-dev.s3.eu-south-1.amazonaws.com"
       BACKEND_FOR_FRONTEND_URL: "https://selfcare.dev.interop.pagopa.it/0.0/backend-for-frontend"
       API_GATEWAY_V1_INTERFACE_URL: "https://selfcare.dev.interop.pagopa.it/m2m/v1-interface-specification.yaml"
       API_GATEWAY_V2_INTERFACE_URL: "https://selfcare.dev.interop.pagopa.it/m2m/v2-interface-specification.yaml"
