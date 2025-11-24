@@ -11,12 +11,11 @@ cronjob:
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: OnFailure
-  automountServiceAccountToken: false
 
   image:
-    repository: "postgres"
+    repositoryPrefix: "docker.io"
+    repositoryName: "postgres"
     tag: "15-alpine"
-    pullPolicy: IfNotPresent
 
   command: ["/bin/sh", "-c"]
   args:
