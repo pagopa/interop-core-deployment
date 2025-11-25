@@ -9,7 +9,7 @@ service:
   protocol: TCP
 
 deployment:
-  replicas: 5
+  replicas: 3
   resources:
     requests:
       cpu: "2000m"
