@@ -10,7 +10,7 @@ service:
 
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/internal"
-  M2M_EVENT_SCHEMA: "m2m_event"
+  M2M_EVENT_SCHEMA: "common-m2m-events-db.DB_SCHEMA"
 deployment:
   flywayInitContainer:
     create: true

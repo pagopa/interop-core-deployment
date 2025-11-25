@@ -10,7 +10,7 @@ service:
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-m2m-event-dispatcher"
   TOPIC_STARTING_OFFSET: "earliest"
-  M2M_EVENT_SCHEMA: "m2m_event" 
+  M2M_EVENT_SCHEMA: "common-m2m-events-db.DB_SCHEMA"
 
 deployment:
   flywayInitContainer:
