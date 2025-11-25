@@ -18,10 +18,10 @@ deployment:
     env:
       FLYWAY_CREATE_SCHEMAS: "true"
       FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
     envFromConfigmaps:
       FLYWAY_SCHEMAS: "common-m2m-events-db.DB_SCHEMA"
-      FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.M2M_EVENT_SCHEMA"
       POSTGRES_DB: "common-m2m-events-db.DB_NAME"
       POSTGRES_HOST: "common-m2m-events-db.DB_HOST_RW"
       POSTGRES_PORT: "common-m2m-events-db.DB_PORT"
