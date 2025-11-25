@@ -46,6 +46,7 @@ deployment:
     M2M_EVENT_DB_NAME: "common-m2m-events-db.DB_NAME"
     M2M_EVENT_DB_HOST: "common-m2m-events-db.DB_HOST_RO"
     M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
+    M2M_EVENT_DB_USE_SSL: "common-m2m-events-db.DB_USE_SSL"
   envFromSecrets:
     M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-manager-user.username"
     M2M_EVENT_DB_PASSWORD: "platform-data-m2m-event-manager-user.password"

@@ -8,4 +8,5 @@ data:
   DB_HOST_RO: "interop-platform-data-dev.cluster-ro-cevisn7oellx.eu-south-1.rds.amazonaws.com"
   DB_NAME: m2m_events
   DB_PORT: '5432'
+  DB_USE_SSL: "true"
   DB_SCHEMA: 'm2m_event'
