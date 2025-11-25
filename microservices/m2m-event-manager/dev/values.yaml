@@ -10,7 +10,7 @@ service:
 
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/internal"
-  M2M_EVENT_SCHEMA: "common-m2m-events-db.DB_SCHEMA"
+
 deployment:
   flywayInitContainer:
     create: true
@@ -20,7 +20,7 @@ deployment:
       FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
     envFromConfigmaps:
-      FLYWAY_SCHEMAS: "{{.Values.name}}.M2M_EVENT_SCHEMA"
+      FLYWAY_SCHEMAS: "common-m2m-events-db.DB_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.M2M_EVENT_SCHEMA"
       POSTGRES_DB: "common-m2m-events-db.DB_NAME"
       POSTGRES_HOST: "common-m2m-events-db.DB_HOST_RW"
