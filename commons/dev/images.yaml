@@ -98,6 +98,10 @@ images:
       tag: "develop"
     m2m-gateway:
       tag: "develop"
+    m2m-event-dispatcher:
+      tag: "2.10.0-RC1"
+    m2m-event-manager:
+      tag: "2.10.0-RC1"
     notification-config-process:
       tag: "develop"
     notification-config-readmodel-writer-sql:
@@ -158,10 +162,6 @@ images:
       tag: "develop"
     token-details-persister-node:
       tag: "develop"
-    m2m-event-dispatcher:
-      tag: "2.10.0-RC1"
-    m2m-event-manager:
-      tag: "2.10.0-RC1"
 
   jobs:
     anac-certified-attributes-importer:
