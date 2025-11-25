@@ -87,7 +87,7 @@ images:
     events-signer:
       tag: "develop"
     frontend:
-      tag: "1.4.0-RC2"
+      tag: "dev-latest"
     in-app-notification-manager:
       tag: "develop"
     in-app-notification-dispatcher:
@@ -96,6 +96,10 @@ images:
       tag: "develop"
     key-readmodel-writer-sql:
       tag: "develop"
+    m2m-event-dispatcher:
+      tag: "2.10.0-RC1"
+    m2m-event-manager:
+      tag: "2.10.0-RC1"
     m2m-gateway:
       tag: "develop"
     notification-config-process:
