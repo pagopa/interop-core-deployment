@@ -62,6 +62,8 @@ images:
       tag: "2.8.1"
     eservice-template-instances-updater:
       tag: "2.8.1"
+    eservice-template-outbound-writer:
+      tag: "2.8.1"
     eservice-template-process:
       tag: "2.8.1"
     eservice-template-readmodel-writer:
