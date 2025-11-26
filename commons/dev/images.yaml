@@ -101,7 +101,7 @@ images:
     m2m-event-manager:
       tag: "2.10.0-RC2"
     m2m-gateway:
-      tag: "develop"
+      tag: "2.10.0-RC2"
     notification-config-process:
       tag: "develop"
     notification-config-readmodel-writer-sql:
