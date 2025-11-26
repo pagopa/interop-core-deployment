@@ -97,9 +97,9 @@ images:
     key-readmodel-writer-sql:
       tag: "develop"
     m2m-event-dispatcher:
-      tag: "2.10.0-RC1"
+      tag: "2.10.0-RC2"
     m2m-event-manager:
-      tag: "2.10.0-RC1"
+      tag: "2.10.0-RC2"
     m2m-gateway:
       tag: "develop"
     notification-config-process:
