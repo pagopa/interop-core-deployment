@@ -80,6 +80,10 @@ images:
       tag: "2.10.0-RC3"
     key-readmodel-writer-sql:
       tag: "2.10.0-RC3"
+    m2m-event-dispatcher:
+      tag: "2.10.0-RC3"
+    m2m-event-manager:
+      tag: "2.10.0-RC3"
     m2m-gateway:
       tag: "2.10.0-RC3"
     notification-email-sender:
