@@ -1,0 +1,24 @@
+name: "interop-be-eservice-template-outbound-writer"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-eservice-template-outbound-writer-dev-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-eservice-template-outbound-writer"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-agreement-outbound-writer"
+
+deployment:
+  env:
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
+    ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"
+    ESERVICE_TEMPLATE_OUTBOUND_TOPIC: "common-kafka.ESERVICE_TEMPLATE_OUTBOUND_TOPIC"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
