@@ -9,4 +9,4 @@ data:
   DB_NAME: m2m_events
   DB_PORT: '5432'
   DB_USE_SSL: "true"
-  DB_SCHEMA: 'm2m_event'
+  DB_SCHEMA: 'dev_m2m_event'
