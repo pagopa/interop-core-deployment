@@ -1,37 +1,44 @@
-name: interop-be-tenant-readmodel-writer-sql
+name: interop-be-m2m-event-dispatcher
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-tenant-readmodel-writer-test-es1"
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-m2m-event-dispatcher-dev-es1"
 
 service:
   create: false
 
 configmap:
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-tenant-readmodel-writer-sql"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-m2m-event-dispatcher"
   TOPIC_STARTING_OFFSET: "earliest"
 
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "flyway-read-model-tenant"
+    migrationsConfigmap: "flyway-m2m-events"
     env:
-      FLYWAY_CREATE_SCHEMAS: true
-      FLYWAY_PLACEHOLDER_REPLACEMENT: true
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
       FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
-      FLYWAY_SCHEMAS: "{{.Values.namespace}}_tenant"
     envFromConfigmaps:
-      POSTGRES_HOST: "common-read-model-sql.DB_HOST_RW"
-      POSTGRES_PORT: "common-read-model-sql.DB_PORT"
-      POSTGRES_DB: "common-read-model-sql.DB_NAME"
+      FLYWAY_SCHEMAS: "common-m2m-events-db.DB_SCHEMA"
+      POSTGRES_DB: "common-m2m-events-db.DB_NAME"
+      POSTGRES_HOST: "common-m2m-events-db.DB_HOST_RW"
+      POSTGRES_PORT: "common-m2m-events-db.DB_PORT"
     envFromSecrets:
       FLYWAY_USER: "platform-data-flyway-user.username"
       FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
+    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
+    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    ATTRIBUTE_TOPIC: "common-kafka.ATTRIBUTE_TOPIC"
+    DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
     TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
+    ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RW"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
@@ -49,9 +56,16 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    M2M_EVENT_DB_NAME: "common-m2m-events-db.DB_NAME"
+    M2M_EVENT_DB_HOST: "common-m2m-events-db.DB_HOST_RW"
+    M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
+    M2M_EVENT_DB_USE_SSL: "common-m2m-events-db.DB_USE_SSL"
+    M2M_EVENT_DB_SCHEMA: "common-m2m-events-db.DB_SCHEMA"
   envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-tenant-rmw-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-tenant-rmw-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-m2m-event-dispatcher-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-m2m-event-dispatcher-user.password"
+    M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-dispatcher-user.username"
+    M2M_EVENT_DB_PASSWORD: "platform-data-m2m-event-dispatcher-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"

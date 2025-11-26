@@ -1,4 +1,4 @@
-name: "interop-be-authorization-process"
+name: "interop-be-purpose-template-process"
 techStack: "nodejs"
 
 service:
@@ -6,16 +6,17 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-authorization-process-test-es1"
+  roleArn: "arn:aws:iam::895646477129:role/interop-be-purpose-template-process-test-es1"
 
 configmap:
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
+  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
+  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
   ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/ui,uat.interop.pagopa.it/m2m,uat.interop.pagopa.it/internal"
-  MAX_KEYS_PER_CLIENT: "100"
-  MAX_KEYS_PER_PRODUCER_KEYCHAIN: "30"
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_authorization"
+  MAX_ESERVICES_PER_LINK_REQUEST: "25"
 
 deployment:
-  flywayInitContainer: 
+  flywayInitContainer:
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
@@ -36,7 +37,6 @@ deployment:
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
-    FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -44,15 +44,12 @@ deployment:
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
-    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
     EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    READMODEL_DB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
-    READMODEL_DB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
@@ -74,15 +71,14 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
+    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
   envFromSecrets:
-    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-authorization-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-authorization-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-template-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-template-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
