@@ -141,18 +141,7 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_pn_consumers_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_token_generation_readmodel_checker_user";
 
-  V1.5__Allow_AuthorizationProcess_To_Read_PurposeVersionStamp.sql: |-
-    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_authorization_process_user";
-
-  V1.6__Allow_Jobs_To_Read_PurposeVersionStamp.sql: |-
-    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_datalake_data_export_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_pn_consumers_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_token_generation_readmodel_checker_user";
-
-  V1.7__Allow_DelegationItemsArchiver_To_Read_PurposeVersionStamp.sql: |-
-    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_delegation_items_archiver_user";
-
-  V1.8__Add_Archiviazione_Documentale_signed_document_table.sql: |-
+  V1.5__Add_Archiviazione_Documentale_signed_document_table.sql: |-
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_version_signed_document (
       purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
