@@ -20,4 +20,5 @@ data:
   DB_SCHEMA_PRODUCER_JWK_KEY: "vapt_producer_jwk_key"
   DB_SCHEMA_PRODUCER_KEYCHAIN: "vapt_producer_keychain"
   DB_SCHEMA_PURPOSE: "vapt_purpose"
+  DB_SCHEMA_PURPOSE_TEMPLATE: "vapt_purpose_template"
   DB_SCHEMA_TENANT: "vapt_tenant"
