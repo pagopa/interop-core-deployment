@@ -12,7 +12,7 @@ deployment:
   image:
     repositoryPrefix: docker.io
     repositoryName: "redis"
-  command: ["redis-server"]
-  args: ["--save", "''", "--appendonly", "no"]
+  command: [ "redis-server" ]
+  args: [ "--save", "''", "--appendonly", "no" ]
   livenessProbe:
   readinessProbe:

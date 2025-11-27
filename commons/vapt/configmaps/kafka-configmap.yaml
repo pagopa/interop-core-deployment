@@ -4,16 +4,20 @@ metadata:
   name: common-kafka
   namespace: vapt
 data:
-  KAFKA_BROKERS: "b-2.interopplatformevents.mlfzz3.c3.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.mlfzz3.c3.kafka.eu-south-1.amazonaws.com:9098,b-1.interopplatformevents.mlfzz3.c3.kafka.eu-south-1.amazonaws.com:9098"
-
+  AGREEMENT_OUTBOUND_TOPIC: "outbound.vapt_agreement.events"
   AGREEMENT_TOPIC: "event-store.vapt_agreement.events"
+  APPLICATION_AUDIT_TOPIC: "vapt_application.audit"
   ATTRIBUTE_TOPIC: "event-store.vapt_attribute_registry.events"
   AUTHORIZATION_TOPIC: "event-store.vapt_authorization.events"
+  CATALOG_OUTBOUND_TOPIC: "outbound.vapt_catalog.events"
   CATALOG_TOPIC: "event-store.vapt_catalog.events"
+  DELEGATION_OUTBOUND_TOPIC: "outbound.vapt_delegation.events"
   DELEGATION_TOPIC: "event-store.vapt_delegation.events"
+  ESERVICE_TEMPLATE_OUTBOUND_TOPIC: "outbound.vapt_eservice_template.events"
   ESERVICE_TEMPLATE_TOPIC: "event-store.vapt_eservice_template.events"
+  KAFKA_BROKERS: "b-2.interopplatformevents.mlfzz3.c3.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.mlfzz3.c3.kafka.eu-south-1.amazonaws.com:9098,b-1.interopplatformevents.mlfzz3.c3.kafka.eu-south-1.amazonaws.com:9098"
+  PURPOSE_OUTBOUND_TOPIC: "outbound.vapt_purpose.events"
   PURPOSE_TOPIC: "event-store.vapt_purpose.events"
+  TENANT_OUTBOUND_TOPIC: "outbound.vapt_tenant.events"
   TENANT_TOPIC: "event-store.vapt_tenant.events"
-
-  APPLICATION_AUDIT_TOPIC: "vapt_application.audit"
   TOKEN_AUDITING_TOPIC: "vapt_authorization-server.generated-jwt"

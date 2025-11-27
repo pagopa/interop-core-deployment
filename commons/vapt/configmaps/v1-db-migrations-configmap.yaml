@@ -73,4 +73,3 @@ data:
       last_updated BIGINT NOT NULL,
       PRIMARY KEY(projection_name, projection_key)
     );
-
