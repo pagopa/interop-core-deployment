@@ -211,7 +211,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_purpose_template_process_user";
  
-  V1.3__Grant_Select_to_PublicCatalogUpdater.sql: |-
+  V1.4__Grant_Select_to_PublicCatalogUpdater.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "public_catalog_updater_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice TO "public_catalog_updater_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor TO "public_catalog_updater_user";
