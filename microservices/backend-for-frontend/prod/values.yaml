@@ -67,7 +67,6 @@ configmap:
   FRONTEND_BASE_URL: "https://selfcare.interop.pagopa.it/ui/it"
 
 deployment:
-  replicas: 2
   env:
     HOST: "0.0.0.0"
     PORT: "8088"
