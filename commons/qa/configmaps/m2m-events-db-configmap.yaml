@@ -6,7 +6,7 @@ metadata:
 data:
   DB_HOST_RW: "interop-platform-data-qa.cluster-cwgb5whmdqov.eu-south-1.rds.amazonaws.com"
   DB_HOST_RO: "interop-platform-data-qa.cluster-ro-cwgb5whmdqov.eu-south-1.rds.amazonaws.com"
-  DB_NAME: m2m_events
-  DB_PORT: '5432'
+  DB_NAME: "m2m_events"
+  DB_PORT: "5432"
   DB_USE_SSL: "true"
-  DB_SCHEMA: 'qa_m2m_event'
+  DB_SCHEMA: "qa_m2m_event"
