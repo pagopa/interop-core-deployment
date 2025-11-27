@@ -189,3 +189,7 @@ data:
   V1.2__Grant_Access_PurposeTemplateProcess_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.3__Grant_Select_to_PublicCatalogUpdater.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant TO "public_catalog_updater_user";
