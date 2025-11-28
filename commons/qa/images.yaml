@@ -18,6 +18,8 @@ images:
       tag: "2.10.0-RC3"
     attribute-registry-readmodel-writer-sql:
       tag: "2.10.0-RC3"
+    audit-signer:
+      tag: "TBD"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
@@ -64,6 +66,10 @@ images:
       tag: "2.10.0-RC3"
     delegation-readmodel-writer-sql:
       tag: "2.10.0-RC3"
+    documents-generator:
+      tag: "TBD"
+    documents-signer:
+      tag: "TBD"
     eservice-descriptors-archiver:
       tag: "2.10.0-RC3"
     eservice-template-instances-updater:
@@ -74,6 +80,8 @@ images:
       tag: "2.10.0-RC3"
     eservice-template-readmodel-writer-sql:
       tag: "2.10.0-RC3"
+    events-signer:
+      tag: "TBD"
     frontend:
       tag: "1.4.0-RC5"
     key-readmodel-writer:
@@ -124,6 +132,8 @@ images:
       tag: "2.10.0-RC3"
     ses-mock:
       tag: "20"
+    signed-objects-persister:
+      tag: "TBD"
     smtp-mock:
       tag: "1.10.4"
     tenant-outbound-writer:
