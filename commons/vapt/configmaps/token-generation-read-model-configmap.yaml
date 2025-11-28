@@ -4,5 +4,5 @@ metadata:
   name: common-token-generation-read-model
   namespace: vapt
 data:
-  TOKEN_READMODEL_PLATFORM_STATES_TABLE_NAME: "interop-platform-states-vapt"
-  TOKEN_READMODEL_TOKEN_STATES_TABLE_NAME: "interop-token-generation-states-vapt"
+  TOKEN_READMODEL_PLATFORM_STATES_TABLE_NAME: interop-platform-states-vapt
+  TOKEN_READMODEL_TOKEN_STATES_TABLE_NAME: interop-token-generation-states-vapt

@@ -8,8 +8,8 @@ service:
   create: false
 
 configmap:
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-eservice-template-readmodel-writer"
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-eservice-template"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-eservice-template-readmodel-writer"
 
 deployment:
   replicas: 0
@@ -17,6 +17,8 @@ deployment:
     PORT: "8088"
     HOST: "0.0.0.0"
     TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"
@@ -28,5 +30,3 @@ deployment:
   envFromSecrets:
     READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
     READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
-  envFromFieldRef:
-    AWS_ROLE_SESSION_NAME: "metadata.name"

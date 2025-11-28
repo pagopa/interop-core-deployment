@@ -6,7 +6,7 @@ serviceAccount:
 
 service:
   create: false
-  
+
 configmap:
   KAFKA_BROKERS: "selc-u-eventhub-ns.servicebus.windows.net:9093"
   KAFKA_CLIENT_ID: "interop-{{.Values.namespace}}"

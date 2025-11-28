@@ -1,146 +1,140 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     agreement-process:
-      tag: "2.5.3"
+      tag: "2.8.1"
     agreement-platformstate-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     agreement-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     agreement-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     attribute-registry-process:
-      tag: "2.5.3"
+      tag: "2.8.1"
     attribute-registry-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     api-gateway:
-      tag: "2.5.3"
+      tag: "2.8.1"
     authorization-process:
-      tag: "2.5.3"
+      tag: "2.8.1"
     backend-for-frontend:
-      tag: "2.5.3"
+      tag: "2.8.1"
     catalog-outbound-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     catalog-process:
-      tag: "2.5.3"
-    authorization-management:
-      tag: "1.0.18"
+      tag: "2.8.1"
     authorization-platformstate-writer:
-      tag: "2.5.3"
-    authorization-server:
-      tag: "1.0.15"
+      tag: "2.8.1"
     authorization-server-node:
-      tag: "2.5.3"
-    authorization-updater:
-      tag: "2.5.3"
+      tag: "2.8.1"
     catalog-platformstate-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     catalog-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     catalog-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     certified-email-sender:
-      tag: "2.5.3"
+      tag: "2.8.1"
     client-purpose-updater:
-      tag: "2.5.3"
+      tag: "2.8.1"
     client-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     client-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     compute-agreements-consumer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     datalake-interface-exporter:
-      tag: "2.5.3"
+      tag: "2.8.1"
     delegation-items-archiver:
-      tag: "2.5.3"
+      tag: "2.8.1"
     delegation-outbound-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     delegation-process:
-      tag: "2.5.3"
+      tag: "2.8.1"
     delegation-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     delegation-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     eservice-descriptors-archiver:
-      tag: "2.5.3"
+      tag: "2.8.1"
     eservice-template-instances-updater:
-      tag: "2.5.3"
+      tag: "2.8.1"
     eservice-template-process:
-      tag: "2.5.3"
+      tag: "2.8.1"
     eservice-template-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     eservice-template-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     frontend:
-      tag: "1.2.9"
+      tag: "1.3.3"
     key-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     key-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     m2m-gateway:
-      tag: "2.5.3"
+      tag: "2.8.1"
     notification-email-sender:
-      tag: "2.5.3"
+      tag: "2.8.1"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "2.5.3"
+      tag: "2.8.1"
     producer-key-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     producer-key-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     producer-keychain-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     purpose-process:
-      tag: "2.5.3"
+      tag: "2.8.1"
     purpose-outbound-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     purpose-platformstate-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     purpose-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     purpose-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     selfcare-client-users-updater:
-      tag: "2.5.3"
+      tag: "2.8.1"
     redis:
       tag: "7.0.4"
     selfcare-onboarding-consumer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     tenant-outbound-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     tenant-process:
-      tag: "2.5.3"
+      tag: "2.8.1"
     tenant-readmodel-writer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     tenant-readmodel-writer-sql:
-      tag: "2.5.3"
+      tag: "2.8.1"
     token-details-persister-node:
-      tag: "2.5.3"
+      tag: "2.8.1"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     datalake-data-export:
-      tag: "2.5.3"
+      tag: "2.8.1"
     dtd-catalog-exporter:
-      tag: "2.5.3"
+      tag: "2.8.1"
     ipa-certified-attributes-importer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     ivass-certified-attributes-importer:
-      tag: "2.5.3"
+      tag: "2.8.1"
     one-trust-notices:
-      tag: "2.5.3"
+      tag: "2.8.1"
     pn-consumers:
-      tag: "2.5.3"
+      tag: "2.8.1"
     readmodel-checker:
-      tag: "2.5.3"
+      tag: "2.8.1"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "2.5.3"
+      tag: "2.8.1"
