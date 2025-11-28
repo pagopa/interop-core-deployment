@@ -64,8 +64,8 @@ deployment:
   podTemplateMetadata:
     labels:
       actorSystemName: "{{.Values.name}}"
-  command: ["bin/interop-be-notifier"]
-  args: ["-Dconfig.override_with_env_vars=true"]
+  command: [ "bin/interop-be-notifier" ]
+  args: [ "-Dconfig.override_with_env_vars=true" ]
   securityContext:
     runAsUser: 1001
   env:

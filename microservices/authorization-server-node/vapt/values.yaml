@@ -14,6 +14,10 @@ service:
 
 configmap:
   AUDIT_FALLBACK_S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
+  DPOP_CACHE_TABLE: "interop-dpop-cache-vapt"
+  DPOP_DURATION_SECONDS: "60"
+  DPOP_IAT_TOLERANCE_SECONDS: "10"
+  DPOP_HTU: "https://auth.vapt.interop.pagopa.it/token.oauth2"
   S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   GENERATED_INTEROP_TOKEN_KID: "65ce3bd3-88ed-40c1-9787-0a55e7f35332"
   GENERATED_INTEROP_TOKEN_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
@@ -26,10 +30,6 @@ configmap:
   RATE_LIMITER_TIMEOUT_MILLIS: "300"
   PRODUCER_KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-authorization-process"
   CLIENT_ASSERTION_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
-  DPOP_CACHE_TABLE: "interop-dpop-cache-vapt"
-  DPOP_DURATION_SECONDS: "60"
-  DPOP_IAT_TOLERANCE_SECONDS: "10"
-  DPOP_HTU: "https://auth.vapt.interop.pagopa.it/token.oauth2"
 
 deployment:
   image:
