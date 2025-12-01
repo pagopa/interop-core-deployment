@@ -199,4 +199,4 @@ data:
 
   V1.1__Grant_Delete_Access_M2M_Event_Cleaner.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_m2m_event" to "${NAMESPACE}_m2m_event_cleaner_user";
-    GRANT SELECT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_m2m_event" TO "${NAMESPACE}_m2m_event_cleaner_user"
+    GRANT SELECT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_m2m_event" TO "${NAMESPACE}_m2m_event_cleaner_user";
