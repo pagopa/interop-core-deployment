@@ -82,3 +82,49 @@ data:
   V1.4__Grant_Access_PurposeTemplateProcess_Delegation.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_purpose_template_process_user";    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.5__Grant_Access_DocumentsGenerator_Delegation.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_documents_generator_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_documents_generator_user";
+
+  V1.6__Add_Archiviazione_Documentale_signed_contract_table.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_delegation".delegation_signed_contract_document (
+      id UUID,
+      delegation_id UUID NOT NULL REFERENCES "${NAMESPACE}_delegation".delegation (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      name VARCHAR NOT NULL,
+      content_type VARCHAR NOT NULL,
+      pretty_name VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      kind VARCHAR NOT NULL,
+      signed_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id),
+      FOREIGN KEY (delegation_id, metadata_version) REFERENCES "${NAMESPACE}_delegation".delegation (id, metadata_version) DEFERRABLE INITIALLY DEFERRED,
+      CONSTRAINT delegation_signed_contract_document_delegation_id_kind_unique UNIQUE (delegation_id, kind)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_delegation_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_delegation_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO readonly_user;
+
+  V1.7__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_purpose_template_process_user";  
+    GRANT SELECT ON TABLE "${NAMESPACE}_delegation".delegation_signed_contract_document TO "${NAMESPACE}_documents_generator_user";
+
+  V1.8__Grant_Access_NotificationDispatchers_Delegation.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+
+  V1.9__Grant_Access_M2M_Event_Dispatcher_Delegation.sql: |- 
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_m2m_event_dispatcher_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_delegation" TO "${NAMESPACE}_m2m_event_dispatcher_user";

@@ -4,7 +4,7 @@ metadata:
   name: common-selfcare
   namespace: vapt
 data:
-  SELFCARE_BASE_URL : "https://uat.selfcare.pagopa.it"
+  SELFCARE_BASE_URL: "https://uat.selfcare.pagopa.it"
   SELFCARE_V2_URL: "https://api.uat.selfcare.pagopa.it/external/v2"
   SELFCARE_KAFKA_BROKERS: "selc-u-eventhub-ns.servicebus.windows.net:9093"
   SELFCARE_LOGIN_URL: "https://uat.selfcare.pagopa.it/auth/login"

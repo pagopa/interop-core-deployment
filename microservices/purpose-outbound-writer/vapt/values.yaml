@@ -23,4 +23,3 @@ deployment:
     PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-   
