@@ -18,6 +18,8 @@ images:
       tag: "develop"
     attribute-registry-process:
       tag: "develop"
+    audit-signer:
+      tag: "develop"
     authorization-management:
       tag: "1.0.x-latest"
     authorization-process:
@@ -51,7 +53,7 @@ images:
     client-readmodel-writer-sql:
       tag: "develop"
     compute-agreements-consumer:
-      tag: "develop"      
+      tag: "develop"
     datalake-interface-exporter:
       tag: "develop"
     delegation-outbound-writer:
@@ -64,6 +66,14 @@ images:
       tag: "develop"
     delegation-readmodel-writer-sql:
       tag: "develop"
+    documents-generator:
+      tag: "develop"
+    documents-signer:
+      tag: "develop"
+    email-notification-dispatcher:
+      tag: "develop"
+    email-sender:
+      tag: "develop"
     eservice-descriptors-archiver:
       tag: "develop"
     eservice-template-process:
@@ -74,21 +84,33 @@ images:
       tag: "develop"
     eservice-template-instances-updater:
       tag: "develop"
+    events-signer:
+      tag: "develop"
     frontend:
       tag: "dev-latest"
     in-app-notification-manager:
+      tag: "develop"
+    in-app-notification-dispatcher:
       tag: "develop"
     key-readmodel-writer:
       tag: "develop"
     key-readmodel-writer-sql:
       tag: "develop"
+    m2m-event-dispatcher:
+      tag: "2.10.0-RC3"
+    m2m-event-manager:
+      tag: "2.10.0-RC3"
     m2m-gateway:
-      tag: "develop"
+      tag: "2.10.0-RC3"
     notification-config-process:
       tag: "develop"
     notification-config-readmodel-writer-sql:
       tag: "develop"
     notification-email-sender:
+      tag: "develop"
+    notification-user-lifecycle-consumer:
+      tag: "develop"
+    notification-tenant-lifecycle-consumer:
       tag: "develop"
     notifier:
       tag: "1.0.x-latest"
@@ -111,21 +133,23 @@ images:
     purpose-readmodel-writer-sql:
       tag: "develop"
     purpose-template-readmodel-writer-sql:
-      tag: "develop"      
+      tag: "develop"
     purpose-platformstate-writer:
       tag: "develop"
     purpose-process:
       tag: "develop"
     purpose-template-process:
-      tag: "develop"      
+      tag: "develop"
     redis:
-      tag: "7.0.4"      
+      tag: "7.0.4"
     selfcare-client-users-updater:
       tag: "develop"
     selfcare-onboarding-consumer:
       tag: "develop"
     ses-mock:
       tag: "20"
+    signed-objects-persister:
+      tag: "develop"
     smtp-mock:
       tag: "1.10.4"
     tenant-process:
@@ -143,7 +167,7 @@ images:
     anac-certified-attributes-importer:
       tag: "develop"
     datalake-data-export:
-      tag: "develop"  
+      tag: "develop"
     dtd-catalog-exporter:
       tag: "develop"
     ipa-certified-attributes-importer:

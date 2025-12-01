@@ -203,3 +203,10 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_instances_updater_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_eservice_template_instances_updater_user";
+
+  V1.2__Add_Column_PersonalData_EService.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS personal_data BOOLEAN;
+
+  V1.3__Grant_Access_PurposeTemplateProcess_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_purpose_template_process_user";

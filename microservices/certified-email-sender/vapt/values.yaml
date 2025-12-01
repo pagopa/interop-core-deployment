@@ -2,7 +2,7 @@ name: "interop-be-certified-email-sender"
 techStack: "nodejs"
 
 service:
-  create:  false
+  create: false
 
 serviceAccount:
   roleArn: "arn:aws:iam::565393043798:role/interop-be-certified-email-sender-vapt-es1"

@@ -4,6 +4,6 @@ metadata:
   name: common-event-store
   namespace: vapt
 data:
-  EVENTSTORE_DB_HOST: "interop-platform-data-vapt.cluster-c1simiia6fq8.eu-south-1.rds.amazonaws.com"
-  EVENTSTORE_DB_PORT: "5432"
-  EVENTSTORE_DB_NAME: "persistence_management"
+  EVENTSTORE_DB_HOST: interop-platform-data-vapt.cluster-c1simiia6fq8.eu-south-1.rds.amazonaws.com
+  EVENTSTORE_DB_NAME: persistence_management
+  EVENTSTORE_DB_PORT: '5432'

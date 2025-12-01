@@ -30,10 +30,10 @@ frontend:
       fromConfigmaps:
         FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
         FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
-        FEATURE_FLAG_SIGNALHUB_WHITELIST: "common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST"
         SELFCARE_BASE_URL: "common-selfcare.SELFCARE_BASE_URL"
         SELFCARE_LOGIN_URL: "common-selfcare.SELFCARE_LOGIN_URL"
         WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+        FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
 
   nginx:
     default.conf: |-
@@ -42,6 +42,7 @@ frontend:
         listen  [::]:80;
         server_name  localhost;
         absolute_redirect off;
+        server_tokens off;
 
         location /ui {
           root   /usr/share/nginx/html;
