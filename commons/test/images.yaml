@@ -1,156 +1,162 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     agreement-platformstate-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     agreement-process:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     agreement-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     agreement-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     api-gateway:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     attribute-registry-process:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     attribute-registry-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     authorization-process:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     authorization-server:
       tag: "1.0.15"
     authorization-server-node:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     authorization-updater:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     backend-for-frontend:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     catalog-outbound-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     catalog-platformstate-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     catalog-process:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     catalog-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     catalog-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     certified-email-sender:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     client-purpose-updater:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     client-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     client-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     compute-agreements-consumer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     datalake-interface-exporter:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     delegation-items-archiver:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     delegation-outbound-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     delegation-process:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     delegation-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     delegation-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     eservice-descriptors-archiver:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     eservice-template-instances-updater:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     eservice-template-process:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     eservice-template-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     eservice-template-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     frontend:
       tag: "1.4.0-RC5"
     key-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     key-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
+    m2m-event-dispatcher:
+      tag: "2.10.0-RC5"
+    m2m-event-manager:
+      tag: "2.10.0-RC5"
     m2m-gateway:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     notification-email-sender:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     party-registry-proxy:
       tag: "1.0.15"
     producer-key-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     producer-key-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     producer-keychain-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     purpose-platformstate-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     purpose-process:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     purpose-outbound-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     purpose-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     purpose-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     purpose-template-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     purpose-template-process:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     selfcare-onboarding-consumer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     ses-mock:
       tag: "20"
     smtp-mock:
       tag: "1.10.4"
     tenant-outbound-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     tenant-process:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     tenant-readmodel-writer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     tenant-readmodel-writer-sql:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     token-details-persister-node:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     datalake-data-export:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     dtd-catalog-exporter:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     ipa-certified-attributes-importer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     ivass-certified-attributes-importer:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     one-trust-notices:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
+    m2m-event-cleaner:
+      tag: "2.10.0-RC5"
     pn-consumers:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     readmodel-checker:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "2.9.0-RC4"
+      tag: "2.10.0-RC5"
