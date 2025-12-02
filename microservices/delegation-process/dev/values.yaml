@@ -12,7 +12,7 @@ configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_delegation"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  DELEGATION_DOCUMENT_PATH: "delegation"
+  DELEGATION_DOCUMENTS_PATH: "delegation"
 
 deployment:
   flywayInitContainer:
