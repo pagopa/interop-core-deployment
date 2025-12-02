@@ -148,6 +148,8 @@ images:
       tag: "2.10.0-RC5"
     ivass-certified-attributes-importer:
       tag: "2.10.0-RC5"
+    m2m-event-cleaner:
+      tag: "2.10.0-RC5"
     one-trust-notices:
       tag: "2.10.0-RC5"
     pn-consumers:
