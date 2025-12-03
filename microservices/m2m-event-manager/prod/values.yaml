@@ -1,0 +1,65 @@
+name: "interop-be-m2m-event-manager"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-m2m-event-manager-prod-es1"
+
+service:
+  create: true
+  containerPort: 8088
+
+configmap:
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
+
+deployment:
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "flyway-m2m-events"
+    env:
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+    envFromConfigmaps:
+      FLYWAY_SCHEMAS: "common-m2m-events-db.DB_SCHEMA"
+      POSTGRES_DB: "common-m2m-events-db.DB_NAME"
+      POSTGRES_HOST: "common-m2m-events-db.DB_HOST_RW"
+      POSTGRES_PORT: "common-m2m-events-db.DB_PORT"
+    envFromSecrets:
+      FLYWAY_USER: "platform-data-flyway-user.username"
+      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
+  env:
+    PORT: "8088"
+    HOST: "0.0.0.0"
+    EVENTSTORE_DB_USE_SSL: "true"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+  envFromFieldRef:
+    POD_NAME: "metadata.name"
+    NODE_IP: "status.hostIP"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    M2M_EVENT_DB_NAME: "common-m2m-events-db.DB_NAME"
+    M2M_EVENT_DB_HOST: "common-m2m-events-db.DB_HOST_RO"
+    M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
+    M2M_EVENT_DB_USE_SSL: "common-m2m-events-db.DB_USE_SSL"
+    M2M_EVENT_DB_SCHEMA: "common-m2m-events-db.DB_SCHEMA"
+  envFromSecrets:
+    M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-manager-user.username"
+    M2M_EVENT_DB_PASSWORD: "platform-data-m2m-event-manager-user.password"
+  livenessProbe:
+    httpGet:
+      path: /status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
