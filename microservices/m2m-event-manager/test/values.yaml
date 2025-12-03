@@ -10,7 +10,7 @@ service:
 
 configmap:
   ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/m2m"
-  
+
 deployment:
   flywayInitContainer:
     create: true
