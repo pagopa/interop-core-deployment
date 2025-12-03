@@ -9,8 +9,8 @@ service:
   containerPort: 8088
 
 configmap:
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
-
+  ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/m2m"
+  
 deployment:
   flywayInitContainer:
     create: true
