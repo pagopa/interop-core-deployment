@@ -97,11 +97,11 @@ images:
     key-readmodel-writer-sql:
       tag: "develop"
     m2m-event-dispatcher:
-      tag: "2.10.0-RC5"
+      tag: "2.10.0-RC7"
     m2m-event-manager:
-      tag: "2.10.0-RC5"
+      tag: "2.10.0-RC7"
     m2m-gateway:
-      tag: "2.10.0-RC5"
+      tag: "2.10.0-RC7"
     notification-config-process:
       tag: "develop"
     notification-config-readmodel-writer-sql:
@@ -175,7 +175,7 @@ images:
     ivass-certified-attributes-importer:
       tag: "develop"
     m2m-event-cleaner:
-      tag: "2.10.0-RC5"
+      tag: "2.10.0-RC7"
     one-trust-notices:
       tag: "develop"
     pn-consumers:

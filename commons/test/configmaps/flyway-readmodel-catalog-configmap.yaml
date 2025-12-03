@@ -210,3 +210,7 @@ data:
   V1.3__Grant_Access_PurposeTemplateProcess_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_purpose_template_process_user";
+  
+  V1.4__Grant_Access_M2M_Event_Dispatcher_Catalog.sql: |- 
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";

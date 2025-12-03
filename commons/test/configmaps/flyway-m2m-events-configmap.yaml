@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-m2m-events
-  namespace: dev
+  namespace: test
 data:
   V1__Init.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_m2m_event";
@@ -196,7 +196,6 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".producer_key TO "${NAMESPACE}_m2m_event_dispatcher_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_key TO "${NAMESPACE}_m2m_event_manager_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_key TO readonly_user;
-
-  V1.1__Grant_Delete_Access_M2M_Event_Cleaner.sql: |-
+  
     GRANT USAGE ON SCHEMA "${NAMESPACE}_m2m_event" to "${NAMESPACE}_m2m_event_cleaner_user";
     GRANT SELECT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_m2m_event" TO "${NAMESPACE}_m2m_event_cleaner_user";
