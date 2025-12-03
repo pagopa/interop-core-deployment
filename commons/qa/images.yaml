@@ -1,162 +1,162 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     agreement-platformstate-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     agreement-process:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     agreement-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     agreement-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     api-gateway:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     attribute-registry-process:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     attribute-registry-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     authorization-process:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     authorization-server:
       tag: "1.0.15"
     authorization-server-node:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     authorization-updater:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     backend-for-frontend:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     catalog-outbound-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     catalog-platformstate-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     catalog-process:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     catalog-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     catalog-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     certified-email-sender:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     client-purpose-updater:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     client-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     client-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     compute-agreements-consumer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     datalake-interface-exporter:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     delegation-items-archiver:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     delegation-outbound-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     delegation-process:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     delegation-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     delegation-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     eservice-descriptors-archiver:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     eservice-template-instances-updater:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     eservice-template-process:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     eservice-template-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     eservice-template-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     frontend:
       tag: "1.4.0-RC5"
     key-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     key-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     m2m-event-dispatcher:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     m2m-event-manager:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     m2m-gateway:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     notification-email-sender:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     party-registry-proxy:
       tag: "1.0.15"
     producer-key-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     producer-key-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     producer-keychain-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     purpose-platformstate-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     purpose-process:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     purpose-outbound-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     purpose-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     purpose-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     purpose-template-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     purpose-template-process:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     selfcare-onboarding-consumer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     ses-mock:
       tag: "20"
     smtp-mock:
       tag: "1.10.4"
     tenant-outbound-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     tenant-process:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     tenant-readmodel-writer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     tenant-readmodel-writer-sql:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     token-details-persister-node:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     datalake-data-export:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     dtd-catalog-exporter:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     ipa-certified-attributes-importer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     ivass-certified-attributes-importer:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     m2m-event-cleaner:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     one-trust-notices:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     pn-consumers:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     readmodel-checker:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "2.10.0-RC6"
+      tag: "2.10.0-RC7"
