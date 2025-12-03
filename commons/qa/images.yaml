@@ -158,6 +158,8 @@ images:
       tag: "2.11.0-RC1"
     ivass-certified-attributes-importer:
       tag: "2.11.0-RC1"
+    m2m-event-cleaner:
+      tag: "2.11.0-RC1"
     one-trust-notices:
       tag: "2.11.0-RC1"
     pn-consumers:
