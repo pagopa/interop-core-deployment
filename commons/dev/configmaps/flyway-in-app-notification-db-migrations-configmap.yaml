@@ -34,9 +34,8 @@ data:
     ALTER TABLE "${NAMESPACE}_notification".notification
       ALTER COLUMN entity_id TYPE VARCHAR USING entity_id::TEXT;
 
-  V1.2__EntityId_Varchar.sql: |-
+  V1.2__Add_Grant_Cleaner_User.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_notification" to
-      "${NAMESPACE}_in-app-notification-cleaner-user",
-      readonly_user;
+      "${NAMESPACE}_in_app_notification_cleaner_user";
 
-    GRANT DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in-app-notification-cleaner-user";
+    GRANT DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_cleaner_user";
