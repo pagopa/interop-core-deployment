@@ -29,7 +29,10 @@ data:
     GRANT SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_manager_user";
     GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "readonly_user";
- 
+
   V1.1__EntityId_Varchar.sql: |-
     ALTER TABLE "${NAMESPACE}_notification".notification
       ALTER COLUMN entity_id TYPE VARCHAR USING entity_id::TEXT;
+
+  V1.2__EntityId_Varchar.sql: |-
+    GRANT DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in-app-notification-cleaner-user";

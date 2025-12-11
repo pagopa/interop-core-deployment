@@ -1,8 +1,5 @@
 name: "interop-be-in-app-notification-cleaner"
 
-serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-in-app-notification-cleaner-dev-es1" # TODO check role
-
 cronjob:
   schedule: "0 3 * * *"
   failedJobsHistoryLimit: 1
@@ -18,7 +15,7 @@ cronjob:
     IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"
     IN_APP_NOTIFICATION_DB_USE_SSL: "common-in-app-notification-db.DB_USE_SSL"
   envFromSecrets:
-    IN_APP_NOTIFICATION_DB_USERNAME: "in_app_notification_cleaner_user.username" # TODO check user
-    IN_APP_NOTIFICATION_DB_PASSWORD: "in_app_notification_cleaner_user.password" # TODO check user
+    IN_APP_NOTIFICATION_DB_USERNAME: "platform-data-in-app-notification-cleaner-user.username"
+    IN_APP_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-notification-cleaner-user.password"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
