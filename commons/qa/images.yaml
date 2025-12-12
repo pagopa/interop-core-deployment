@@ -1,172 +1,190 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "2.11.0-RC3"
-    agreement-platformstate-writer:
-      tag: "2.11.0-RC3"
-    agreement-process:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     agreement-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    agreement-platformstate-writer:
+      tag: "develop" #TODO
+    agreement-process:
+      tag: "develop" #TODO
     agreement-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     api-gateway:
-      tag: "2.11.0-RC3"
-    attribute-registry-process:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     attribute-registry-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     attribute-registry-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    attribute-registry-process:
+      tag: "develop" #TODO
     audit-signer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     authorization-management:
-      tag: "1.0.18"
-    authorization-platformstate-writer:
-      tag: "2.11.0-RC3"
+      tag: "1.0.x-latest"
     authorization-process:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    authorization-platformstate-writer:
+      tag: "develop" #TODO
     authorization-server:
-      tag: "1.0.15"
+      tag: "1.0.x-latest"
     authorization-server-node:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     authorization-updater:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     backend-for-frontend:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     catalog-outbound-writer:
-      tag: "2.11.0-RC3"
-    catalog-platformstate-writer:
-      tag: "2.11.0-RC3"
-    catalog-process:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     catalog-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     catalog-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    catalog-platformstate-writer:
+      tag: "develop" #TODO
+    catalog-process:
+      tag: "develop" #TODO
     certified-email-sender:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     client-purpose-updater:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     client-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     client-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     compute-agreements-consumer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     datalake-interface-exporter:
-      tag: "2.11.0-RC3"
-    delegation-items-archiver:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     delegation-outbound-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     delegation-process:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    delegation-items-archiver:
+      tag: "develop" #TODO
     delegation-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     delegation-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     documents-generator:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     documents-signer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    email-notification-dispatcher:
+      tag: "develop" #TODO
+    email-sender:
+      tag: "develop" #TODO
     eservice-descriptors-archiver:
-      tag: "2.11.0-RC3"
-    eservice-template-instances-updater:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     eservice-template-process:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     eservice-template-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     eservice-template-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    eservice-template-instances-updater:
+      tag: "develop" #TODO
     events-signer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     frontend:
-      tag: "1.5.0-RC2"
+      tag: "dev-latest"
+    in-app-notification-manager:
+      tag: "develop" #TODO
+    in-app-notification-dispatcher:
+      tag: "develop" #TODO
     key-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     key-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     m2m-event-dispatcher:
-      tag: "2.11.0-RC3"
+      tag: "2.10.0-RC7"
     m2m-event-manager:
-      tag: "2.11.0-RC3"
+      tag: "2.10.0-RC7"
     m2m-gateway:
-      tag: "2.11.0-RC3"
+      tag: "2.10.0-RC7"
+    notification-config-process:
+      tag: "develop" #TODO
+    notification-config-readmodel-writer-sql:
+      tag: "develop" #TODO
     notification-email-sender:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    notification-user-lifecycle-consumer:
+      tag: "develop" #TODO
+    notification-tenant-lifecycle-consumer:
+      tag: "develop" #TODO
     notifier:
-      tag: "1.0.19"
+      tag: "1.0.x-latest"
     notifier-seeder:
-      tag: "2.11.0-RC3"
-    party-registry-proxy:
-      tag: "1.0.15"
-    producer-key-readmodel-writer:
-      tag: "2.11.0-RC3"
-    producer-key-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     producer-keychain-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    producer-key-readmodel-writer:
+      tag: "develop" #TODO
+    producer-key-readmodel-writer-sql:
+      tag: "develop" #TODO
     producer-keychain-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
-    purpose-platformstate-writer:
-      tag: "2.11.0-RC3"
-    purpose-process:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    party-registry-proxy:
+      tag: "1.0.x-latest"
     purpose-outbound-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     purpose-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     purpose-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     purpose-template-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    purpose-platformstate-writer:
+      tag: "develop" #TODO
+    purpose-process:
+      tag: "develop" #TODO
     purpose-template-process:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     selfcare-onboarding-consumer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     ses-mock:
       tag: "20"
     signed-objects-persister:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     smtp-mock:
       tag: "1.10.4"
-    tenant-outbound-writer:
-      tag: "2.11.0-RC3"
     tenant-process:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     tenant-readmodel-writer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     tenant-readmodel-writer-sql:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    tenant-outbound-writer:
+      tag: "develop" #TODO
     token-details-persister-node:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     datalake-data-export:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     dtd-catalog-exporter:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     ipa-certified-attributes-importer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     ivass-certified-attributes-importer:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     m2m-event-cleaner:
-      tag: "2.11.0-RC3"
+      tag: "2.10.0-RC7"
     one-trust-notices:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     pn-consumers:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     readmodel-checker:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
     token-details-persister:
-      tag: "1.0.32"
+      tag: "1.0.x-latest"
     token-generation-readmodel-checker:
-      tag: "2.11.0-RC3"
+      tag: "develop" #TODO
+    in-app-notification-cleaner:
+      tag: "develop" #TODO
