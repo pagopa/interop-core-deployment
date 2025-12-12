@@ -66,3 +66,16 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user";
+      
+  V1.2__Update_Email_Notification_Preference.sql: |-
+    ALTER TABLE "${NAMESPACE}_notification_config".user_notification_config
+      ALTER COLUMN email_notification_preference TYPE BOOLEAN USING false;
+    
+    ALTER TABLE "${NAMESPACE}_notification_config".user_notification_config
+      ADD COLUMN email_digest_preference BOOLEAN DEFAULT false;
+    
+    ALTER TABLE "${NAMESPACE}_notification_config".user_notification_config
+      ALTER COLUMN email_digest_preference SET NOT NULL;
+    
+    ALTER TABLE "${NAMESPACE}_notification_config".user_notification_config
+      ALTER COLUMN email_digest_preference DROP DEFAULT;
