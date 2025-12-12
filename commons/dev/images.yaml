@@ -186,3 +186,5 @@ images:
       tag: "1.0.x-latest"
     token-generation-readmodel-checker:
       tag: "develop"
+    in-app-notification-cleaner:
+      tag: "develop"
