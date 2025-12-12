@@ -2,7 +2,7 @@ name: interop-be-notification-user-lifecycle-consumer
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-notification-user-lifecycle-consumer-dev-es1"
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-notification-user-lifecycle-consumer-qa-es1"
 
 service:
   create: false

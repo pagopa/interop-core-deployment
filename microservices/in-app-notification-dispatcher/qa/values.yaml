@@ -2,7 +2,7 @@ name: interop-be-in-app-notification-dispatcher
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-in-app-notification-dispatcher-dev-es1"
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-in-app-notification-dispatcher-qa-es1"
 
 service:
   create: false
