@@ -57,3 +57,7 @@ data:
   V1.3__Grant_Select_to_PublicCatalogUpdater.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "public_catalog_updater_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO "public_catalog_updater_user";
+
+  V1.4__Grant_Access_DocumentsGenerator_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_documents_generator_user";
