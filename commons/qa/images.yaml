@@ -1,190 +1,172 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "develop" #TODO
-    agreement-readmodel-writer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     agreement-platformstate-writer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     agreement-process:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
+    agreement-readmodel-writer:
+      tag: "2.11.0-RC5"
     agreement-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     api-gateway:
-      tag: "develop" #TODO
-    attribute-registry-readmodel-writer:
-      tag: "develop" #TODO
-    attribute-registry-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     attribute-registry-process:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
+    attribute-registry-readmodel-writer:
+      tag: "2.11.0-RC5"
+    attribute-registry-readmodel-writer-sql:
+      tag: "2.11.0-RC5"
     audit-signer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     authorization-management:
-      tag: "1.0.x-latest"
-    authorization-process:
-      tag: "develop" #TODO
+      tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
+    authorization-process:
+      tag: "2.11.0-RC5"
     authorization-server:
       tag: "1.0.x-latest"
     authorization-server-node:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     authorization-updater:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     backend-for-frontend:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     catalog-outbound-writer:
-      tag: "develop" #TODO
-    catalog-readmodel-writer:
-      tag: "develop" #TODO
-    catalog-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     catalog-platformstate-writer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     catalog-process:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
+    catalog-readmodel-writer:
+      tag: "2.11.0-RC5"
+    catalog-readmodel-writer-sql:
+      tag: "2.11.0-RC5"
     certified-email-sender:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     client-purpose-updater:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     client-readmodel-writer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     client-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     compute-agreements-consumer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     datalake-interface-exporter:
-      tag: "develop" #TODO
-    delegation-outbound-writer:
-      tag: "develop" #TODO
-    delegation-process:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     delegation-items-archiver:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
+    delegation-outbound-writer:
+      tag: "2.11.0-RC5"
+    delegation-process:
+      tag: "2.11.0-RC5"
     delegation-readmodel-writer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     delegation-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     documents-generator:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     documents-signer:
-      tag: "develop" #TODO
-    email-notification-dispatcher:
-      tag: "develop" #TODO
-    email-sender:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     eservice-descriptors-archiver:
-      tag: "develop" #TODO
-    eservice-template-process:
-      tag: "develop" #TODO
-    eservice-template-readmodel-writer:
-      tag: "develop" #TODO
-    eservice-template-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     eservice-template-instances-updater:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
+    eservice-template-process:
+      tag: "2.11.0-RC5"
+    eservice-template-readmodel-writer:
+      tag: "2.11.0-RC5"
+    eservice-template-readmodel-writer-sql:
+      tag: "2.11.0-RC5"
     events-signer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     frontend:
-      tag: "dev-latest"
-    in-app-notification-manager:
-      tag: "develop" #TODO
-    in-app-notification-dispatcher:
-      tag: "develop" #TODO
+      tag: "1.5.0-RC3"
     key-readmodel-writer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     key-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     m2m-event-dispatcher:
-      tag: "2.10.0-RC7"
+      tag: "2.11.0-RC5"
     m2m-event-manager:
-      tag: "2.10.0-RC7"
+      tag: "2.11.0-RC5"
     m2m-gateway:
-      tag: "2.10.0-RC7"
-    notification-config-process:
-      tag: "develop" #TODO
-    notification-config-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     notification-email-sender:
-      tag: "develop" #TODO
-    notification-user-lifecycle-consumer:
-      tag: "develop" #TODO
-    notification-tenant-lifecycle-consumer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     notifier:
       tag: "1.0.x-latest"
     notifier-seeder:
-      tag: "develop" #TODO
-    producer-keychain-readmodel-writer:
-      tag: "develop" #TODO
-    producer-key-readmodel-writer:
-      tag: "develop" #TODO
-    producer-key-readmodel-writer-sql:
-      tag: "develop" #TODO
-    producer-keychain-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     party-registry-proxy:
-      tag: "1.0.x-latest"
-    purpose-outbound-writer:
-      tag: "develop" #TODO
-    purpose-readmodel-writer:
-      tag: "develop" #TODO
-    purpose-readmodel-writer-sql:
-      tag: "develop" #TODO
-    purpose-template-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "1.0.15"
+    producer-key-readmodel-writer:
+      tag: "2.11.0-RC5"
+    producer-key-readmodel-writer-sql:
+      tag: "2.11.0-RC5"
+    producer-keychain-readmodel-writer:
+      tag: "2.11.0-RC5"
+    producer-keychain-readmodel-writer-sql:
+      tag: "2.11.0-RC5"
     purpose-platformstate-writer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     purpose-process:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
+    purpose-outbound-writer:
+      tag: "2.11.0-RC5"
+    purpose-readmodel-writer:
+      tag: "2.11.0-RC5"
+    purpose-readmodel-writer-sql:
+      tag: "2.11.0-RC5"
+    purpose-template-readmodel-writer-sql:
+      tag: "2.11.0-RC5"
     purpose-template-process:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     selfcare-onboarding-consumer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     ses-mock:
       tag: "20"
     signed-objects-persister:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     smtp-mock:
       tag: "1.10.4"
-    tenant-process:
-      tag: "develop" #TODO
-    tenant-readmodel-writer:
-      tag: "develop" #TODO
-    tenant-readmodel-writer-sql:
-      tag: "develop" #TODO
     tenant-outbound-writer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
+    tenant-process:
+      tag: "2.11.0-RC5"
+    tenant-readmodel-writer:
+      tag: "2.11.0-RC5"
+    tenant-readmodel-writer-sql:
+      tag: "2.11.0-RC5"
     token-details-persister-node:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     datalake-data-export:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     dtd-catalog-exporter:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     ipa-certified-attributes-importer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     ivass-certified-attributes-importer:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     m2m-event-cleaner:
-      tag: "2.10.0-RC7"
+      tag: "2.11.0-RC5"
     one-trust-notices:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     pn-consumers:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     readmodel-checker:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
     token-details-persister:
       tag: "1.0.x-latest"
     token-generation-readmodel-checker:
-      tag: "develop" #TODO
-    in-app-notification-cleaner:
-      tag: "develop" #TODO
+      tag: "2.11.0-RC5"
