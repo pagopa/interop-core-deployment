@@ -27,7 +27,7 @@ images:
     authorization-process:
       tag: "2.11.0-RC5"
     authorization-server:
-      tag: "1.0.x-latest"
+      tag: "1.0.15"
     authorization-server-node:
       tag: "2.11.0-RC5"
     authorization-updater:
@@ -97,7 +97,7 @@ images:
     notification-email-sender:
       tag: "2.11.0-RC5"
     notifier:
-      tag: "1.0.x-latest"
+      tag: "1.0.19"
     notifier-seeder:
       tag: "2.11.0-RC5"
     party-registry-proxy:
@@ -181,7 +181,7 @@ images:
     readmodel-checker:
       tag: "2.11.0-RC5"
     token-details-persister:
-      tag: "1.0.x-latest"
+      tag: "1.0.32"
     token-generation-readmodel-checker:
       tag: "2.11.0-RC5"
     in-app-notification-cleaner:
