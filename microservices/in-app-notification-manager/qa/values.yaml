@@ -2,7 +2,7 @@ name: "interop-be-in-app-notification-manager"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-in-app-notification-manager-qa-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-in-app-notification-manager-qa-es1"
 
 service:
   create: true

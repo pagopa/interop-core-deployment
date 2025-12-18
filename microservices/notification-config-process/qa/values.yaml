@@ -2,7 +2,7 @@ name: "interop-be-notification-config-process"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-notification-config-process-qa-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-notification-config-process-qa-es1"
 
 service:
   create: true
