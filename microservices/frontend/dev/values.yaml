@@ -51,7 +51,7 @@ frontend:
           sub_filter_once off;
           sub_filter_types *;
           sub_filter **CSP_NONCE** $request_id;
-          add_header Content-Security-Policy "default-src 'self'; object-src 'none'; connect-src 'self' https://api-eu.mixpanel.com https://privacyportal-de.onetrust.com https://interop-application-import-export-dev-es1.s3.eu-south-1.amazonaws.com https://interop-application-import-export-dev-es1.s3.eu-south-1.amazonaws.com https://interop-dev-public-es1.s3.eu-south-1.amazonaws.com; script-src 'nonce-$request_id'; style-src 'self' 'unsafe-inline'; worker-src 'none'; font-src 'self'; img-src 'self' https://interop-dev-public-es1.s3.eu-south-1.amazonaws.com data:; base-uri 'self'";
+          add_header Content-Security-Policy "default-src 'self'; object-src 'none'; connect-src 'self' https://api-eu.mixpanel.com https://privacyportal-de.onetrust.com https://interop-application-import-export-dev-es1.s3.eu-south-1.amazonaws.com https://interop-application-import-export-dev-es1.s3.eu-south-1.amazonaws.com https://interop-dev-public-es1.s3.eu-south-1.amazonaws.com https://interop-public-assets-dev.s3.eu-south-1.amazonaws.com; script-src 'nonce-$request_id'; style-src 'self' 'unsafe-inline'; worker-src 'none'; font-src 'self'; img-src 'self' https://interop-dev-public-es1.s3.eu-south-1.amazonaws.com https://interop-public-assets-dev.s3.eu-south-1.amazonaws.com data:; base-uri 'self'";
           add_header Strict-Transport-Security "max-age=31536000";
           add_header X-Content-Type-Options "nosniff";
           add_header X-Frame-Options "SAMEORIGIN";
