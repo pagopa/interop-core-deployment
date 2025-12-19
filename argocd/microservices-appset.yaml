@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: interop-microservices
-  namespace: dev-experimental-argocd-interop
+  namespace: dev-experimental-argocd-interop-apps
   labels:
     app.kubernetes.io/part-of: interop-appset-repo-server-microservices
     argocd.argoproj.io/instance: interop-appset-repo-server-app
