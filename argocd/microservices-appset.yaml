@@ -44,7 +44,7 @@ spec:
               {{- $ms := (index $msmap .ms.path.basename) | default dict -}}
               deployment:
                 image:
-                  tag: {{- if $ms.tag -}}{{ $ms.tag }}{{- else -}}dev{{- end -}}
+                  tag: {{ default "dev" $ms.tag }}
             parameters:
               - name: "name"
                 value: '{{.ms.path.basename}}'
