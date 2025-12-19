@@ -15,7 +15,7 @@ spec:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
             revision: feature/argocd
             files:
-            - path: commons/dev/images.yaml
+            - path: commons/dev-experimental-argocd-interop-apps/images.yaml
         - git:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
             revision: feature/argocd
@@ -35,9 +35,9 @@ spec:
           helm:
             releaseName: '{{.ms.path.basename}}'
             valueFiles:
-              - $values/commons/dev/values-microservice.yaml
-              - $values/microservices/{{.ms.path.basename}}/dev/values.yaml
-              - $values/commons/dev/images.yaml
+              - $values/commons/dev-experimental-argocd-interop-apps/values-microservice.yaml
+              - $values/microservices/{{.ms.path.basename}}/dev-experimental-argocd-interop-apps/values.yaml
+              - $values/commons/dev-experimental-argocd-interop-apps/images.yaml
             values: |
               {{- $images := .images | default dict -}}
               {{- $msmap := $images.microservices | default dict -}}
