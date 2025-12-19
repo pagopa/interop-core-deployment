@@ -13,12 +13,12 @@ spec:
         generators:
         - git:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
-            revision: develop
+            revision: feature/argocd
             files:
             - path: commons/dev/images.yaml
         - git:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
-            revision: develop
+            revision: feature/argocd
             pathParamPrefix: ms
             directories:
             - path: microservices/*
