@@ -15,7 +15,7 @@ spec:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
             revision: develop
             files:
-            - path: examples/interop-appset-repo-server/commons/dev/images.yaml
+            - path: commons/dev/images.yaml
         - git:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
             revision: develop
