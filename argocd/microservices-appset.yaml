@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: interop-microservices
+  namespace: dev-experimental-argocd-interop
+  labels:
+    app.kubernetes.io/part-of: interop-appset-repo-server-microservices
+    argocd.argoproj.io/instance: interop-appset-repo-server-app
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+        - git:
+            repoURL: https://github.com/pagopa/interop-core-deployment.git
+            revision: develop
+            files:
+            - path: examples/interop-appset-repo-server/commons/dev/images.yaml
+        - git:
+            repoURL: https://github.com/pagopa/interop-core-deployment.git
+            revision: develop
+            pathParamPrefix: ms
+            directories:
+            - path: microservices/*
+  template:
+    metadata:
+      name: '{{.ms.path.basename}}'
+      namespace: dev-experimental-argocd-interop-apps
+    spec:
+      project: interop-core-dev-experimental-argocd
+      sources:
+        - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
+          chart: interop-eks-microservice-chart
+          targetRevision: 1.33.0
+          helm:
+            releaseName: '{{.ms.path.basename}}'
+            valueFiles:
+              - $values/commons/dev/values-microservice.yaml
+              - $values/microservices/{{.ms.path.basename}}/dev/values.yaml
+            values: |
+              {{- $images := .images | default dict -}}
+              {{- $msmap := $images.microservices | default dict -}}
+              {{- $ms := (index $msmap .ms.path.basename) | default dict -}}
+              image:
+                tag: {{- if $ms.tag -}}{{ $ms.tag }}{{- else -}}dev{{- end -}}
+            parameters:
+              - name: "name"
+                value: '{{.ms.path.basename}}'
+        - repoURL: https://github.com/pagopa/interop-core-deployment.git
+          path: '.'
+          targetRevision: develop
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: dev-experimental-argocd-interop-apps
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true

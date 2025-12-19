@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: interop-appset-reposerver-root
+  namespace: dev-experimental-argocd
+spec:
+  project: interop-core-dev-experimental-argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-experimental-argocd
+  sources:
+    - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      targetRevision: develop
+      path: argocd
+      directory:
+        include: 'common-cm.yaml'
+    - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      targetRevision: develop
+      path: argocd
+      directory:
+        include: 'microservices-appset.yaml'
+  syncPolicy:
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - CreateNamespace=true
