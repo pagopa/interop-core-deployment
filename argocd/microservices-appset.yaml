@@ -49,7 +49,7 @@ spec:
                 value: '{{.ms.path.basename}}'
         - repoURL: https://github.com/pagopa/interop-core-deployment.git
           path: '.'
-          targetRevision: main
+          targetRevision: feature/argocd
           ref: values
       destination:
         server: https://kubernetes.default.svc

@@ -10,12 +10,12 @@ spec:
     namespace: dev-experimental-argocd
   sources:
     - repoURL: https://github.com/pagopa/interop-core-deployment.git
-      targetRevision: main
+      targetRevision: feature/argocd
       path: argocd
       directory:
         include: 'common-cm.yaml'
     - repoURL: https://github.com/pagopa/interop-core-deployment.git
-      targetRevision: main
+      targetRevision: feature/argocd
       path: argocd
       directory:
         include: 'microservices-appset.yaml'
