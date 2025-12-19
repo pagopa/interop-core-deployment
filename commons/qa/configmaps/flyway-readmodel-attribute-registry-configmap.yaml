@@ -57,3 +57,11 @@ data:
   V1.3__Grant_Access_DocumentsGenerator_Attribute.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_documents_generator_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_documents_generator_user";
+
+  V1.4__Grant_Access_NotificationDispatchers_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
