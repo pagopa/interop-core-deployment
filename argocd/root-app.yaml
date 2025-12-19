@@ -2,12 +2,12 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: interop-appset-reposerver-root
-  namespace: dev-experimental-argocd-interop-apps
+  namespace: dev-experimental-argocd-apps
 spec:
   project: interop-core-dev-experimental-argocd
   destination:
     server: https://kubernetes.default.svc
-    namespace: dev-experimental-argocd-interop-apps
+    namespace: dev-experimental-argocd-apps
   sources:
     - repoURL: https://github.com/pagopa/interop-core-deployment.git
       targetRevision: feature/argocd
