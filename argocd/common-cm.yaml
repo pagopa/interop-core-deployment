@@ -20,6 +20,6 @@ spec:
       recurse: true
   syncPolicy:
     automated:
-      enabled: true
+      enabled: false
     syncOptions:
       - CreateNamespace=true

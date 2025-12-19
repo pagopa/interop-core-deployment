@@ -21,5 +21,4 @@ spec:
         include: 'microservices-appset.yaml'
   syncPolicy:
     syncOptions:
-      - ApplyOutOfSyncOnly=true
       - CreateNamespace=true
