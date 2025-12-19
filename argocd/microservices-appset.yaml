@@ -37,6 +37,7 @@ spec:
             valueFiles:
               - $values/commons/dev/values-microservice.yaml
               - $values/microservices/{{.ms.path.basename}}/dev/values.yaml
+              - $values/commons/dev/images.yaml
             values: |
               {{- $images := .images | default dict -}}
               {{- $msmap := $images.microservices | default dict -}}
