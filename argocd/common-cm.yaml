@@ -14,7 +14,7 @@ spec:
     namespace: dev-experimental-argocd-interop-apps
   source:
     repoURL: https://github.com/pagopa/interop-core-deployment.git
-    targetRevision: develop
+    targetRevision: main
     path: commons/dev/configmaps
     directory:
       recurse: true
