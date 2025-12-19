@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/part-of: interop-appset-repo-server-cm
     argocd.argoproj.io/instance: interop-appset-repo-server-app
 spec:
-  project: interop-core-dev-experimental-argocd
+  project: interop-core-dev-prj
   destination:
     server: https://kubernetes.default.svc
     namespace: dev-experimental-argocd-interop-apps

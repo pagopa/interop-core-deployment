@@ -28,7 +28,7 @@ spec:
       name: '{{.ms.path.basename}}'
       namespace: dev-experimental-argocd-interop-apps
     spec:
-      project: interop-core-dev-experimental-argocd
+      project: interop-core-dev-prj
       sources:
         - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
           chart: interop-eks-microservice-chart
