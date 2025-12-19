@@ -41,8 +41,9 @@ spec:
               {{- $images := .images | default dict -}}
               {{- $msmap := $images.microservices | default dict -}}
               {{- $ms := (index $msmap .ms.path.basename) | default dict -}}
-              image:
-                tag: {{- if $ms.tag -}}{{ $ms.tag }}{{- else -}}dev{{- end -}}
+              deployment:
+                image:
+                  tag: {{- if $ms.tag -}}{{ $ms.tag }}{{- else -}}dev{{- end -}}
             parameters:
               - name: "name"
                 value: '{{.ms.path.basename}}'
