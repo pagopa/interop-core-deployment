@@ -147,19 +147,19 @@ images:
     token-details-persister-node:
       tag: "2.12.0-RC1"
     in-app-notification-manager:
-      tag: "develop" #TODO
+      tag: "2.12.0-RC1"
     in-app-notification-dispatcher:
-      tag: "develop" #TODO
+      tag: "2.12.0-RC1"
     email-notification-dispatcher:
-      tag: "develop" #TODO
+      tag: "2.12.0-RC1"
     notification-config-process:
-      tag: "develop" #TODO
+      tag: "2.12.0-RC1"
     notification-config-readmodel-writer-sql:
-      tag: "develop" #TODO
+      tag: "2.12.0-RC1"
     notification-user-lifecycle-consumer:
-      tag: "develop" #TODO
+      tag: "2.12.0-RC1"
     notification-tenant-lifecycle-consumer:
-      tag: "develop" #TODO
+      tag: "2.12.0-RC1"
 
   jobs:
     anac-certified-attributes-importer:
@@ -185,4 +185,4 @@ images:
     token-generation-readmodel-checker:
       tag: "2.12.0-RC1"
     in-app-notification-cleaner:
-      tag: "develop" #TODO
+      tag: "2.12.0-RC1"
