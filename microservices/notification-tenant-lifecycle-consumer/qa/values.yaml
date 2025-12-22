@@ -24,3 +24,4 @@ deployment:
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
+  replicas: 0
