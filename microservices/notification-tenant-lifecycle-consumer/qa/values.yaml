@@ -17,7 +17,6 @@ configmap:
   INTERNAL_JWT_SECONDS_DURATION: "1800"
 
 deployment:
-  replicas: 0
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
