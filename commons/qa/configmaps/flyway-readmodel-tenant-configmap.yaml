@@ -209,3 +209,8 @@ data:
   V1.6__Grant_Access_NotificationUserLifecycleConsumer_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_notification_user_lifecycle_consumer_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_notification_user_lifecycle_consumer_user";
+
+  V1.7__Grant_Access_NotificationConfigProcessUser_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_notification_config_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_notification_config_process_user";
+
