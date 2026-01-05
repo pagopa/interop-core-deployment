@@ -46,9 +46,9 @@ spec:
                 image:
                   tag: {{ get $ms "tag" | default "" }}
                   digest: {{ get $ms "digest" | default "" }}
-            parameters:
-              - name: "name"
-                value: '{{.ms.path.basename}}'
+            #parameters:
+            #  - name: "name"
+            #    value: '{{.ms.path.basename}}'
         - repoURL: https://github.com/pagopa/interop-core-deployment.git
           path: '.'
           targetRevision: feature/argocd
