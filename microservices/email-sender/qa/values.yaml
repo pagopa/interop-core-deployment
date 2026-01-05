@@ -1,38 +1,27 @@
-name: "interop-be-notification-email-sender"
-techStack: "nodejs"
+name: interop-be-email-sender
+techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-notification-email-sender-qa-es1"
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-email-sender-qa-es1"
 
 service:
   create: false
 
 configmap:
-  INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-email-sender"
+  TOPIC_STARTING_OFFSET: "latest"
   AWS_SES_ENDPOINT: "http://ses-mock.{{.Values.namespace}}.svc.cluster.local:8005"
   SENDER_MAIL: "noreply@notifiche.{{.Values.namespace}}.interop.pagopa.it"
   SENDER_LABEL: "noreply-{{.Values.namespace}}"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-email-sender"
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-notification-email-sender"
-  REDIS_NOTIFICATION_EMAIL_SENDER_TTL_SECONDS: "2592000"
-  SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
-  SMTP_PORT: "5025"
-  SMTP_SECURE: "false"
+  RETRY_DELAY_IN_MILLIS: "1000"
+  SUCCESS_DELAY_IN_MILLIS: "100"
+  SELFCARE_API_MAX_RETRIES: "3"
+  SELFCARE_API_RETRY_DELAY_IN_MILLIS: "1000"
 
 deployment:
-  replicas: 0
-  env:
-    TOPIC_STARTING_OFFSET: "latest"
-  envFromFieldRef:
-    AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
-    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
-    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
-    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    EMAIL_DISPATCH_TOPIC: "common-kafka.EMAIL_DISPATCH_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
@@ -50,13 +39,11 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    REDIS_NOTIFICATION_EMAIL_SENDER_HOST: "common-redis.REDIS_HOST"
-    REDIS_NOTIFICATION_EMAIL_SENDER_PORT: "common-redis.REDIS_PORT"
+    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
   envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    SMTP_USERNAME: "smtp-notifications.SMTP_USER"
-    SMTP_PASSWORD: "smtp-notifications.SMTP_PASSWORD"
-    READMODEL_SQL_DB_USERNAME: "platform-data-notification-email-sender-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-notification-email-sender-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-email-sender-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-email-sender-user.password"
+    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"

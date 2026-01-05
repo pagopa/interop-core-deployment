@@ -1,0 +1,26 @@
+name: interop-be-notification-tenant-lifecycle-consumer
+techStack: nodejs
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-notification-tenant-lifecycle-consumer-qa-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-tenant-lifecycle-consumer"
+  TOPIC_STARTING_OFFSET: "earliest"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "1800"
+
+deployment:
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
+    NOTIFICATION_CONFIG_PROCESS_URL: "common-services-urls.NOTIFICATION_CONFIG_PROCESS_URL"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"

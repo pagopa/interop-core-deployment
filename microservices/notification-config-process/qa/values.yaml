@@ -1,18 +1,16 @@
-name: "interop-be-delegation-process"
+name: "interop-be-notification-config-process"
 techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-notification-config-process-qa-es1"
 
 service:
   create: true
   containerPort: 8088
 
-serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-delegation-process-prod-es1"
-
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_delegation"
-  ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  DELEGATION_DOCUMENTS_PATH: "delegation"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_notification_config"
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/internal"
 
 deployment:
   flywayInitContainer:
@@ -25,19 +23,17 @@ deployment:
     envFromConfigmaps:
       FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
+      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
-  replicas: 2
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
-    FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -48,11 +44,6 @@ deployment:
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
     EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    READMODEL_DB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
-    READMODEL_DB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
@@ -73,16 +64,12 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
-    FEATURE_FLAG_DELEGATIONS_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_DELEGATIONS_CONTRACT_BUILDER"
+    FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-delegation-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-notification-config-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-notification-config-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
@@ -95,10 +82,3 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
-  resources:
-    limits:
-      cpu: "2000m"
-      memory: "4Gi"
-    requests:
-      cpu: "2000m"
-      memory: "4Gi"
