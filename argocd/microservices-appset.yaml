@@ -26,6 +26,9 @@ spec:
     metadata:
       name: '{{.ms.path.basename}}'
       namespace: dev-experimental-argocd-interop-apps
+      labels:
+        appset: interop-microservices
+        app.kubernetes.io/part-of: interop-appset-repo-server-microservices
     spec:
       project: interop-core-dev-experimental-argocd
       sources:
