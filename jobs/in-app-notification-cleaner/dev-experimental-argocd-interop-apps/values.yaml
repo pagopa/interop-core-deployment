@@ -1,5 +1,7 @@
 name: "interop-be-in-app-notification-cleaner"
 
+serviceAccount:
+
 cronjob:
   schedule: "0 3 * * *"
   failedJobsHistoryLimit: 1
