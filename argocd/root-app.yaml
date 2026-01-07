@@ -19,6 +19,11 @@ spec:
       path: argocd
       directory:
         include: 'microservices-appset.yaml'
+    - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      targetRevision: feature/argocd
+      path: argocd
+      directory:
+        include: 'cronjobs-appset.yaml'
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
