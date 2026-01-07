@@ -4,4 +4,4 @@ metadata:
   name: common-sqs
   namespace: dev-experimental-argocd-interop-apps
 data:
-  APPLICATION_AUDIT_FALLBACK_SQS_URL: "https://sqs.eu-south-1.amazonaws.com/505630707203/interop-analytics-application-audit-fallback-dev"
+  APPLICATION_AUDIT_FALLBACK_SQS_URL: "#https://sqs.eu-south-1.amazonaws.com/505630707203/interop-analytics-application-audit-fallback-dev"
