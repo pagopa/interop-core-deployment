@@ -15,10 +15,10 @@ cronjob:
   resources:
     requests:
       cpu: 1
-      memory: 8Gi
+      memory: 4Gi
     limits:
       cpu: 1
-      memory: 8Gi
+      memory: 4Gi
   envFromConfigmaps:
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
