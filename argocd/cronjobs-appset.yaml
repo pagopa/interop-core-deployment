@@ -26,6 +26,9 @@ spec:
     metadata:
       name: '{{.cj.path.basename}}'
       namespace: dev-experimental-argocd-interop-apps
+      labels:
+        appset: interop-cronjobs
+        app.kubernetes.io/part-of: interop-appset-repo-server-cronjobs
     spec:
       project: interop-core-dev-experimental-argocd
       sources:
