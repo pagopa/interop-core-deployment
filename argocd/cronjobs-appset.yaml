@@ -42,7 +42,7 @@ spec:
               {{- $images := .images | default dict -}}
               {{- $cjmap := $images.jobs | default dict -}}
               {{- $cj := (index $cjmap .cj.path.basename) | default dict -}}
-              deployment:
+              cronjob:
                 image:
                   tag: {{ get $cj "tag" | default "" }}
                   digest: {{ get $cj "digest" | default "" }}
