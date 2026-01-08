@@ -140,3 +140,9 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose_template".purpose_template_risk_analysis_form_signed_document TO "${NAMESPACE}_purpose_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".purpose_template_risk_analysis_form_signed_document TO "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".purpose_template_risk_analysis_form_signed_document TO readonly_user;
+
+  V1.5__Grant_Permissions_Document_Archiving_Unsigned_Signed_Document_Purpose_Template.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".purpose_template_risk_analysis_form_document TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".purpose_template_risk_analysis_form_signed_document TO "${NAMESPACE}_purpose_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_documents_generator_user";  
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_documents_generator_user";
