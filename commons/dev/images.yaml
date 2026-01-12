@@ -102,6 +102,8 @@ images:
       tag: "2.10.0-RC7"
     m2m-gateway:
       tag: "2.10.0-RC7"
+    m2m-gateway-v3:
+      tag: "develop"
     notification-config-process:
       tag: "develop"
     notification-config-readmodel-writer-sql:
