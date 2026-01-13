@@ -100,8 +100,6 @@ images:
       tag: "1.0.19"
     notifier-seeder:
       tag: "2.12.0-RC2"
-    party-registry-proxy:
-      tag: "1.0.15"
     producer-key-readmodel-writer:
       tag: "2.12.0-RC2"
     producer-key-readmodel-writer-sql:
