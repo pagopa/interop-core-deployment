@@ -14,6 +14,5 @@ data:
   IN_APP_NOTIFICATION_MANAGER_URL: "http://interop-be-in-app-notification-manager.att.svc.cluster.local:8088"
   NOTIFICATION_CONFIG_PROCESS_URL: "http://interop-be-notification-config-process.att.svc.cluster.local:8088"
   NOTIFIER_URL: "http://interop-be-notifier.att.svc.cluster.local:8088/notifier/1.0"
-  PARTY_REGISTRY_PROXY_URL: "http://interop-be-party-registry-proxy.att.svc.cluster.local:8088/party-registry-proxy/1.0"
   PURPOSE_PROCESS_URL: http://interop-be-purpose-process.att.svc.cluster.local:8088
   TENANT_PROCESS_URL: "http://interop-be-tenant-process.att.svc.cluster.local:8088"
