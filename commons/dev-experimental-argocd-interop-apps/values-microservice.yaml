@@ -17,11 +17,11 @@ deployment:
     NODE_ENV: "production"
   resources:
     requests:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "10m"
+      memory: "32Mi"
     limits:
-      cpu: "1000m"
-      memory: "2Gi"
+      cpu: "100m"
+      memory: "128Mi"
 
 local:
   interop_be_commons:
