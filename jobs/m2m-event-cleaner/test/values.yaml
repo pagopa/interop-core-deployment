@@ -1,0 +1,23 @@
+name: "interop-be-m2m-event-cleaner"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::895646477129:role/interop-be-m2m-event-cleaner-test-es1"
+
+configmap:
+  DELETE_OLDER_THAN_DAYS: "30"
+
+cronjob:
+  schedule: "0 4 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  envFromConfigmaps:
+    M2M_EVENT_DB_NAME: "common-m2m-events-db.DB_NAME"
+    M2M_EVENT_DB_HOST: "common-m2m-events-db.DB_HOST_RW"
+    M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
+    M2M_EVENT_DB_USE_SSL: "common-m2m-events-db.DB_USE_SSL"
+    M2M_EVENT_DB_SCHEMA: "common-m2m-events-db.DB_SCHEMA"
+  envFromSecrets:
+    M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-cleaner-user.username"
+    M2M_EVENT_DB_PASSWORD: "platform-data-m2m-event-cleaner-user.password"

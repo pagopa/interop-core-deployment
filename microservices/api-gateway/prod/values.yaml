@@ -42,7 +42,6 @@ deployment:
     DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
     NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
-    PARTY_REGISTRY_PROXY_URL: "common-services-urls.PARTY_REGISTRY_PROXY_URL"
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"

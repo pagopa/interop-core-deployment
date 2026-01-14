@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-safe-storage
+  namespace: test
+data:
+  BASE_URL: "http://vpce-0386194695328aec5-16nmk7cc-eu-south-1a.vpce-svc-075ebde4859d4c631.eu-south-1.vpce.amazonaws.com:8080"
+  DOC_TYPE: "INTEROP_LEGAL_FACTS"
+  DOC_STATUS: "SAVED"
+  LIVE_REQUESTS_DYNAMO_TABLE_NAME: "interop-safe-storage-signature-tracking-test"

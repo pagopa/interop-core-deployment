@@ -217,3 +217,11 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor TO "public_catalog_updater_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_template_version_ref TO "public_catalog_updater_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute TO "public_catalog_updater_user";
+
+  V1.5__Grant_Access_M2M_Event_Dispatcher_Catalog.sql: |- 
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";
+
+  V1.6__Grant_Access_DocumentsGenerator_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_documents_generator_user";
