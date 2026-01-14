@@ -21,7 +21,8 @@ frontend:
       ONETRUST_DOMAIN_SCRIPT_ID: "43ec7a2e-aca5-4317-810d-8f80dea732e2"
       CLIENT_ASSERTION_JWT_AUDIENCE: "auth.uat.interop.pagopa.it/client-assertion"
       M2M_JWT_AUDIENCE: "uat.interop.pagopa.it/m2m"
-      PRODUCER_ALLOWED_ORIGINS: "IPA"
+      PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
+      DELEGATIONS_ALLOWED_ORIGINS: "IPA"
       API_SIGNAL_HUB_PUSH_INTERFACE_URL: "https://raw.githubusercontent.com/pagopa/interop-signalhub-core/refs/heads/main/docs/openAPI/push-signals.yaml"
       API_SIGNAL_HUB_PULL_INTERFACE_URL: "https://raw.githubusercontent.com/pagopa/interop-signalhub-core/refs/heads/main/docs/openAPI/pull-signals.yaml"
       API_GATEWAY_V1_INTERFACE_URL: "https://selfcare.uat.interop.pagopa.it/m2m/v1-interface-specification.yaml"
@@ -35,6 +36,8 @@ frontend:
         WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
         FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
         FEATURE_FLAG_USE_SIGNED_DOCUMENT: "common-feature-flags.FEATURE_FLAG_USE_SIGNED_DOCUMENT"
+        FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
+
   nginx:
     default.conf: |-
       server {
