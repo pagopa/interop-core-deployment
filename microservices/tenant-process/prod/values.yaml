@@ -11,6 +11,7 @@ serviceAccount:
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_tenant"
   ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
+  DELEGATIONS_ALLOWED_ORIGINS: "IPA"
 
 deployment:
   flywayInitContainer:
