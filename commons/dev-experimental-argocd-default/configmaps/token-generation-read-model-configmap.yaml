@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-token-generation-read-model
+  namespace: dev-experimental-argocd-default
+data:
+  TOKEN_READMODEL_PLATFORM_STATES_TABLE_NAME: interop-platform-states-dev
+  TOKEN_READMODEL_TOKEN_STATES_TABLE_NAME: interop-token-generation-states-dev

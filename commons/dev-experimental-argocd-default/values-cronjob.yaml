@@ -1,0 +1,22 @@
+namespace: "dev-experimental-argocd-default"
+
+cronjob:
+  image:
+    repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
+    imagePullPolicy: Always
+    tag: $IMAGE_TAG_PLACEHOLDER
+    digest: $IMAGE_DIGEST_PLACEHOLDER
+  env:
+    LOG_LEVEL: "info"
+    NODE_ENV: "production"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+
+local:
+  interop_be_commons:
+    RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"
