@@ -1,0 +1,61 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: interop-default-cronjobs
+  labels:
+    app.kubernetes.io/part-of: interop-default-appset-cronjobs
+    argocd.argoproj.io/instance: interop-default-appset
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+        - git:
+            repoURL: https://github.com/pagopa/interop-core-deployment.git
+            revision: feature/argocd
+            files:
+            - path: commons/dev-experimental-argocd-default/images.yaml
+        - git:
+            repoURL: https://github.com/pagopa/interop-core-deployment.git
+            revision: feature/argocd
+            pathParamPrefix: cj
+            directories:
+            - path: jobs/*
+  template:
+    metadata:
+      name: '{{.cj.path.basename}}'
+      namespace: dev-experimental-argocd-default
+      labels:
+        appset: interop-default-cronjobs
+        app.kubernetes.io/part-of: interop-default-appset-cronjobs
+    spec:
+      project: interop-core-dev-experimental-argocd-default
+      sources:
+        - repoURL: https://pagopa.github.io/interop-eks-cronjob-chart
+          chart: interop-eks-cronjob-chart
+          targetRevision: 1.8.0
+          helm:
+            releaseName: '{{.cj.path.basename}}'
+            valueFiles:
+              - $values/commons/dev-experimental-argocd-default/values-cronjob.yaml
+              - $values/jobs/{{.cj.path.basename}}/dev-experimental-argocd-default/values.yaml
+              - $values/commons/dev-experimental-argocd-default/images.yaml
+            values: |
+              {{- $images := .images | default dict -}}
+              {{- $cjmap := $images.jobs | default dict -}}
+              {{- $cj := (index $cjmap .cj.path.basename) | default dict -}}
+              cronjob:
+                image:
+                  tag: {{ get $cj "tag" | default "" }}
+                  digest: {{ get $cj "digest" | default "" }}
+        - repoURL: https://github.com/pagopa/interop-core-deployment.git
+          path: '.'
+          targetRevision: feature/argocd
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: dev-experimental-argocd-default
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true

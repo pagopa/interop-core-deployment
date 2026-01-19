@@ -1,0 +1,61 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: interop-default-microservices
+  labels:
+    app.kubernetes.io/part-of: interop-default-appset-microservices
+    argocd.argoproj.io/instance: interop-default-appset
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+        - git:
+            repoURL: https://github.com/pagopa/interop-core-deployment.git
+            revision: feature/argocd
+            files:
+            - path: commons/dev-experimental-argocd-default/images.yaml
+        - git:
+            repoURL: https://github.com/pagopa/interop-core-deployment.git
+            revision: feature/argocd
+            pathParamPrefix: ms
+            directories:
+            - path: microservices/*
+  template:
+    metadata:
+      name: '{{.ms.path.basename}}'
+      namespace: dev-experimental-argocd-default
+      labels:
+        appset: interop-default-microservices
+        app.kubernetes.io/part-of: interop-default-appset-microservices
+    spec:
+      project: interop-core-dev-experimental-argocd-default
+      sources:
+        - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
+          chart: interop-eks-microservice-chart
+          targetRevision: 1.33.0
+          helm:
+            releaseName: '{{.ms.path.basename}}'
+            valueFiles:
+              - $values/commons/dev-experimental-argocd-default/values-microservice.yaml
+              - $values/microservices/{{.ms.path.basename}}/dev-experimental-argocd-default/values.yaml
+              - $values/commons/dev-experimental-argocd-default/images.yaml
+            values: |
+              {{- $images := .images | default dict -}}
+              {{- $msmap := $images.microservices | default dict -}}
+              {{- $ms := (index $msmap .ms.path.basename) | default dict -}}
+              deployment:
+                image:
+                  tag: {{ get $ms "tag" | default "" }}
+                  digest: {{ get $ms "digest" | default "" }}
+        - repoURL: https://github.com/pagopa/interop-core-deployment.git
+          path: '.'
+          targetRevision: feature/argocd
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: dev-experimental-argocd-default
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
