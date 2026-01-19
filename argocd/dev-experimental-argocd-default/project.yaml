@@ -10,6 +10,8 @@ spec:
     - group: '*'
       kind: '*'
   destinations:
+    - namespace: 'dev-experimental-argocd-default'
+      server: '*'
     - namespace: 'dev-experimental-argocd-default-apps'
       server: '*'
   sourceRepos:
