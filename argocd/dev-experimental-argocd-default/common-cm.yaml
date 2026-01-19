@@ -11,11 +11,11 @@ spec:
   project: interop-core-dev-experimental-argocd-default
   destination:
     server: https://kubernetes.default.svc
-    namespace: dev-experimental-argocd-default
+    namespace: dev-experimental-argocd-default-apps
   source:
     repoURL: https://github.com/pagopa/interop-core-deployment.git
     targetRevision: feature/argocd
-    path: commons/dev-experimental-argocd-default/configmaps
+    path: commons/dev-experimental-argocd-default-apps/configmaps
     directory:
       recurse: true
   syncPolicy:

@@ -15,7 +15,7 @@ spec:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
             revision: feature/argocd
             files:
-            - path: commons/dev-experimental-argocd-default/images.yaml
+            - path: commons/dev-experimental-argocd-default-apps/images.yaml
         - git:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
             revision: feature/argocd
@@ -25,7 +25,7 @@ spec:
   template:
     metadata:
       name: '{{.ms.path.basename}}'
-      namespace: dev-experimental-argocd-default
+      namespace: dev-experimental-argocd-default-apps
       labels:
         appset: interop-default-microservices
         app.kubernetes.io/part-of: interop-default-appset-microservices
@@ -38,9 +38,9 @@ spec:
           helm:
             releaseName: '{{.ms.path.basename}}'
             valueFiles:
-              - $values/commons/dev-experimental-argocd-default/values-microservice.yaml
-              - $values/microservices/{{.ms.path.basename}}/dev-experimental-argocd-default/values.yaml
-              - $values/commons/dev-experimental-argocd-default/images.yaml
+              - $values/commons/dev-experimental-argocd-default-apps/values-microservice.yaml
+              - $values/microservices/{{.ms.path.basename}}/dev-experimental-argocd-default-apps/values.yaml
+              - $values/commons/dev-experimental-argocd-default-apps/images.yaml
             values: |
               {{- $images := .images | default dict -}}
               {{- $msmap := $images.microservices | default dict -}}
@@ -55,7 +55,7 @@ spec:
           ref: values
       destination:
         server: https://kubernetes.default.svc
-        namespace: dev-experimental-argocd-default
+        namespace: dev-experimental-argocd-default-apps
       syncPolicy:
         syncOptions:
           - CreateNamespace=true

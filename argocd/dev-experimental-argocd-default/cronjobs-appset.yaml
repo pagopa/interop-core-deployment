@@ -15,7 +15,7 @@ spec:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
             revision: feature/argocd
             files:
-            - path: commons/dev-experimental-argocd-default/images.yaml
+            - path: commons/dev-experimental-argocd-default-apps/images.yaml
         - git:
             repoURL: https://github.com/pagopa/interop-core-deployment.git
             revision: feature/argocd
@@ -25,7 +25,7 @@ spec:
   template:
     metadata:
       name: '{{.cj.path.basename}}'
-      namespace: dev-experimental-argocd-default
+      namespace: dev-experimental-argocd-default-apps
       labels:
         appset: interop-default-cronjobs
         app.kubernetes.io/part-of: interop-default-appset-cronjobs
@@ -38,9 +38,9 @@ spec:
           helm:
             releaseName: '{{.cj.path.basename}}'
             valueFiles:
-              - $values/commons/dev-experimental-argocd-default/values-cronjob.yaml
-              - $values/jobs/{{.cj.path.basename}}/dev-experimental-argocd-default/values.yaml
-              - $values/commons/dev-experimental-argocd-default/images.yaml
+              - $values/commons/dev-experimental-argocd-default-apps/values-cronjob.yaml
+              - $values/jobs/{{.cj.path.basename}}/dev-experimental-argocd-default-apps/values.yaml
+              - $values/commons/dev-experimental-argocd-default-apps/images.yaml
             values: |
               {{- $images := .images | default dict -}}
               {{- $cjmap := $images.jobs | default dict -}}
@@ -55,7 +55,7 @@ spec:
           ref: values
       destination:
         server: https://kubernetes.default.svc
-        namespace: dev-experimental-argocd-default
+        namespace: dev-experimental-argocd-default-apps
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
