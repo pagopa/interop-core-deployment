@@ -10,7 +10,7 @@ serviceAccount:
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_attribute_registry"
-  PRODUCER_ALLOWED_ORIGINS: "IPA"
+  PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
   ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
 
 deployment:

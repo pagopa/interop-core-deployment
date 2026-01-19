@@ -13,6 +13,7 @@ configmap:
   ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
   DELEGATION_DOCUMENTS_PATH: "delegation"
+  DELEGATIONS_ALLOWED_ORIGINS: "IPA"
 
 deployment:
   flywayInitContainer:
