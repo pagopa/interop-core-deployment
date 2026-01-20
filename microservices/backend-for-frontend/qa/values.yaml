@@ -68,7 +68,7 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   BFF_SWAGGER_UI_ENABLED: true
-  FRONTEND_BASE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/ui/it"
+  FRONTEND_BASE_URL: "https://uat.selfcare.pagopa.it"
 
 deployment:
   env:
