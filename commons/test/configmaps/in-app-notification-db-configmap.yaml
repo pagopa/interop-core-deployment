@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-in-app-notification-db
+  namespace: test
+data:
+  # TODO: verify DB endpoint
+  DB_HOST: "interop-platform-data-test.cluster-ciwztfqful5r.eu-south-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "in_app_notification"
+  DB_USE_SSL: "true"
+  DB_SCHEMA: "test_notification"

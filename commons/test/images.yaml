@@ -1,170 +1,170 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     agreement-platformstate-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     agreement-process:
-      tag: "2.11.3"
+      tag: "placeholder"
     agreement-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     agreement-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     api-gateway:
-      tag: "2.11.3"
+      tag: "placeholder"
     attribute-registry-process:
-      tag: "2.11.3"
+      tag: "placeholder"
     attribute-registry-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     audit-signer:
-      tag: "2.11.3"
+      tag: "placeholder"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     authorization-process:
-      tag: "2.11.3"
+      tag: "placeholder"
     authorization-server:
       tag: "1.0.15"
     authorization-server-node:
-      tag: "2.11.3"
+      tag: "placeholder"
     authorization-updater:
-      tag: "2.11.3"
+      tag: "placeholder"
     backend-for-frontend:
-      tag: "2.11.3"
+      tag: "placeholder"
     catalog-outbound-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     catalog-platformstate-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     catalog-process:
-      tag: "2.11.3"
+      tag: "placeholder"
     catalog-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     catalog-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     certified-email-sender:
-      tag: "2.11.3"
+      tag: "placeholder"
     client-purpose-updater:
-      tag: "2.11.3"
+      tag: "placeholder"
     client-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     client-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     compute-agreements-consumer:
-      tag: "2.11.3"
+      tag: "placeholder"
     datalake-interface-exporter:
-      tag: "2.11.3"
+      tag: "placeholder"
     delegation-items-archiver:
-      tag: "2.11.3"
+      tag: "placeholder"
     delegation-outbound-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     delegation-process:
-      tag: "2.11.3"
+      tag: "placeholder"
     delegation-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     delegation-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     documents-generator:
-      tag: "2.11.3"
+      tag: "placeholder"
     documents-signer:
-      tag: "2.11.3"
+      tag: "placeholder"
     eservice-descriptors-archiver:
-      tag: "2.11.3"
+      tag: "placeholder"
     eservice-template-instances-updater:
-      tag: "2.11.3"
+      tag: "placeholder"
     eservice-template-process:
-      tag: "2.11.3"
+      tag: "placeholder"
     eservice-template-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     eservice-template-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     events-signer:
-      tag: "2.11.3"
+      tag: "placeholder"
     frontend:
       tag: "1.6.0"
     key-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     key-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     m2m-event-dispatcher:
-      tag: "2.11.3"
+      tag: "placeholder"
     m2m-event-manager:
-      tag: "2.11.3"
+      tag: "placeholder"
     m2m-gateway:
-      tag: "2.11.3"
+      tag: "placeholder"
     notification-email-sender:
-      tag: "2.11.3"
+      tag: "placeholder"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "2.11.3"
+      tag: "placeholder"
     producer-key-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     producer-key-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     producer-keychain-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     purpose-platformstate-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     purpose-process:
-      tag: "2.11.3"
+      tag: "placeholder"
     purpose-outbound-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     purpose-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     purpose-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     purpose-template-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     purpose-template-process:
-      tag: "2.11.3"
+      tag: "placeholder"
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
-      tag: "2.11.3"
+      tag: "placeholder"
     selfcare-onboarding-consumer:
-      tag: "2.11.3"
+      tag: "placeholder"
     ses-mock:
       tag: "20"
     signed-objects-persister:
-      tag: "2.11.3"
+      tag: "placeholder"
     smtp-mock:
       tag: "1.10.4"
     tenant-outbound-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     tenant-process:
-      tag: "2.11.3"
+      tag: "placeholder"
     tenant-readmodel-writer:
-      tag: "2.11.3"
+      tag: "placeholder"
     tenant-readmodel-writer-sql:
-      tag: "2.11.3"
+      tag: "placeholder"
     token-details-persister-node:
-      tag: "2.11.3"
+      tag: "placeholder"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.11.3"
+      tag: "placeholder"
     datalake-data-export:
-      tag: "2.11.3"
+      tag: "placeholder"
     dtd-catalog-exporter:
-      tag: "2.11.3"
+      tag: "placeholder"
     ipa-certified-attributes-importer:
-      tag: "2.11.3"
+      tag: "placeholder"
     ivass-certified-attributes-importer:
-      tag: "2.11.3"
+      tag: "placeholder"
     one-trust-notices:
-      tag: "2.11.3"
+      tag: "placeholder"
     m2m-event-cleaner:
-      tag: "2.11.3"
+      tag: "placeholder"
     pn-consumers:
-      tag: "2.11.3"
+      tag: "placeholder"
     readmodel-checker:
-      tag: "2.11.3"
+      tag: "placeholder"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "2.11.3"
+      tag: "placeholder"
