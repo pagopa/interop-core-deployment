@@ -14,7 +14,6 @@ configmap:
   DELEGATION_DOCUMENTS_PATH: "{{.Values.namespace}}/generated-documents-unsigned/delegation"
   AGREEMENT_DOCUMENTS_PATH: "{{.Values.namespace}}/generated-documents-unsigned/agreement"
   RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/generated-documents-unsigned/risk-analysis"
-  RISK_ANALYSIS_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/generated-documents-unsigned/risk-analysis-template"
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_SUBJECT: "interop-documents-generator"
   INTERNAL_JWT_ISSUER: "interop.pagopa.it"
