@@ -10,7 +10,7 @@ service:
   containerPort: 8088
 
 configmap:
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui"
+  ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/ui"
 
 deployment:
   flywayInitContainer:
