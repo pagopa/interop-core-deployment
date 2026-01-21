@@ -11,7 +11,7 @@ service:
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_notification_config"
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/internal"
+  ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/ui,uat.interop.pagopa.it/internal"
 
 deployment:
   flywayInitContainer:
