@@ -95,5 +95,6 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose_template" TO "readonly_user";
 
+  V1.1__Grant_Access_PurposeProcess_Purpose_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose_template" to "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_purpose_process_user";

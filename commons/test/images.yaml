@@ -144,6 +144,22 @@ images:
       tag: "placeholder"
     token-details-persister-node:
       tag: "placeholder"
+    in-app-notification-manager:
+      tag: "placeholder"
+    in-app-notification-dispatcher:
+      tag: "placeholder"
+    email-notification-dispatcher:
+      tag: "placeholder"
+    notification-config-process:
+      tag: "placeholder"
+    notification-config-readmodel-writer-sql:
+      tag: "placeholder"
+    notification-user-lifecycle-consumer:
+      tag: "placeholder"
+    notification-tenant-lifecycle-consumer:
+      tag: "placeholder"
+    email-sender:
+      tag: "placeholder"
 
   jobs:
     anac-certified-attributes-importer:
@@ -167,4 +183,6 @@ images:
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
+      tag: "placeholder"
+    in-app-notification-cleaner:
       tag: "placeholder"
