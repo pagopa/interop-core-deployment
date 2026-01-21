@@ -12,6 +12,7 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-agreement-outbound-writer"
 
 deployment:
+  args: ["echo 'hello there'; sleep 30; exit 1;"]
   env:
     TOPIC_STARTING_OFFSET: "earliest"
   envFromFieldRef:
