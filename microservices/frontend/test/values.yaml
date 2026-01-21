@@ -36,7 +36,8 @@ frontend:
         WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
         FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
         FEATURE_FLAG_USE_SIGNED_DOCUMENT: "common-feature-flags.FEATURE_FLAG_USE_SIGNED_DOCUMENT"
-        FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
+        # will be enable after running script to populate users
+        FEATURE_FLAG_NOTIFICATION_CONFIG: "false"
 
   nginx:
     default.conf: |-
