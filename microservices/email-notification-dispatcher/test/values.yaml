@@ -15,7 +15,7 @@ configmap:
 
 deployment:
   env:
-    BFF_URL: "https://uat.selfcare.pagopa.it/1.0/backend-for-frontend"
+    BFF_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/1.0/backend-for-frontend"
   envFromConfigmaps:
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
     ATTRIBUTE_TOPIC: "common-kafka.ATTRIBUTE_TOPIC"
