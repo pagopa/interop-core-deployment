@@ -83,7 +83,7 @@ images:
     events-signer:
       tag: "placeholder"
     frontend:
-      tag: "1.6.0"
+      tag: "1.6.1"
     key-readmodel-writer:
       tag: "placeholder"
     key-readmodel-writer-sql:
