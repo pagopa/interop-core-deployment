@@ -28,6 +28,7 @@ frontend:
       API_GATEWAY_V1_INTERFACE_URL: "https://selfcare.uat.interop.pagopa.it/m2m/v1-interface-specification.yaml"
       API_GATEWAY_V2_INTERFACE_URL: "https://selfcare.uat.interop.pagopa.it/m2m/v2-interface-specification.yaml"
       SIGNALHUB_PERSONAL_DATA_PROCESS_URL: "https://selfcare.uat.interop.pagopa.it/signalhub/pdnd_designazione_responsabilita_dati_personali_sh_v1.pdf"
+      FEATURE_FLAG_NOTIFICATION_CONFIG: "false"
       fromConfigmaps:
         FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
         FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
@@ -37,7 +38,7 @@ frontend:
         FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
         FEATURE_FLAG_USE_SIGNED_DOCUMENT: "common-feature-flags.FEATURE_FLAG_USE_SIGNED_DOCUMENT"
         # will be enable after running script to populate users
-        FEATURE_FLAG_NOTIFICATION_CONFIG: "false"
+        # FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
 
   nginx:
     default.conf: |-
