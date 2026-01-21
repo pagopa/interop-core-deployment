@@ -17,7 +17,7 @@ configmap:
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_SECONDS_DURATION: "1800"
   # TODO: verify INTEROP_PRODUCT value for test environment
-  INTEROP_PRODUCT: "prod-interop"
+  INTEROP_PRODUCT: "prod-interop-coll"
 
 deployment:
   replicas: 0
