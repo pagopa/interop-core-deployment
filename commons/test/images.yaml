@@ -1,188 +1,188 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     agreement-platformstate-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     agreement-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     agreement-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     agreement-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     api-gateway:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     attribute-registry-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     attribute-registry-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     attribute-registry-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     audit-signer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     authorization-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     authorization-server:
       tag: "1.0.15"
     authorization-server-node:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     authorization-updater:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     backend-for-frontend:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     catalog-outbound-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     catalog-platformstate-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     catalog-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     catalog-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     catalog-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     certified-email-sender:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     client-purpose-updater:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     client-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     client-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     compute-agreements-consumer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     datalake-interface-exporter:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     delegation-items-archiver:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     delegation-outbound-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     delegation-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     delegation-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     delegation-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     documents-generator:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     documents-signer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     eservice-descriptors-archiver:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     eservice-template-instances-updater:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     eservice-template-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     eservice-template-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     eservice-template-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     events-signer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     frontend:
       tag: "1.6.1"
     key-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     key-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     m2m-event-dispatcher:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     m2m-event-manager:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     m2m-gateway:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     notification-email-sender:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     producer-key-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     producer-key-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     producer-keychain-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     producer-keychain-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     purpose-platformstate-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     purpose-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     purpose-outbound-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     purpose-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     purpose-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     purpose-template-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     purpose-template-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     selfcare-onboarding-consumer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     ses-mock:
       tag: "20"
     signed-objects-persister:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     smtp-mock:
       tag: "1.10.4"
     tenant-outbound-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     tenant-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     tenant-readmodel-writer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     tenant-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     token-details-persister-node:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     in-app-notification-manager:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     in-app-notification-dispatcher:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     email-notification-dispatcher:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     notification-config-process:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     notification-config-readmodel-writer-sql:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     notification-user-lifecycle-consumer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     notification-tenant-lifecycle-consumer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     email-sender:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     datalake-data-export:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     dtd-catalog-exporter:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     ipa-certified-attributes-importer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     ivass-certified-attributes-importer:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     one-trust-notices:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     m2m-event-cleaner:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     pn-consumers:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     readmodel-checker:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
     in-app-notification-cleaner:
-      tag: "placeholder"
+      tag: "2.12.0-RC7"
