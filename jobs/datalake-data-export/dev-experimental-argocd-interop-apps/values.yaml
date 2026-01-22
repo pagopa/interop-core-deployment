@@ -7,7 +7,7 @@ configmap:
   DATALAKE_STORAGE_BUCKET: "interop-data-lake-exports-dev-es1"
 
 cronjob:
-  schedule: "45 6 * * *"
+  schedule: "* * * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
