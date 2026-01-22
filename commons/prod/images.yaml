@@ -134,6 +134,20 @@ images:
       tag: "2.11.3"
     token-details-persister-node:
       tag: "2.11.3"
+    in-app-notification-manager:
+      tag: "2.11.3"
+    in-app-notification-dispatcher:
+      tag: "2.11.3"
+    email-notification-dispatcher:
+      tag: "2.11.3"
+    notification-config-process:
+      tag: "2.11.3"
+    notification-config-readmodel-writer-sql:
+      tag: "2.11.3"
+    notification-user-lifecycle-consumer:
+      tag: "2.11.3"
+    notification-tenant-lifecycle-consumer:
+      tag: "2.11.3"
 
   jobs:
     anac-certified-attributes-importer:
@@ -157,4 +171,6 @@ images:
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
+      tag: "2.11.3"
+    in-app-notification-cleaner:
       tag: "2.11.3"

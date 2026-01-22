@@ -22,3 +22,5 @@ data:
   TENANT_OUTBOUND_TOPIC: "outbound.prod_tenant.events"
   TENANT_TOPIC: "event-store.prod_tenant.events"
   TOKEN_AUDITING_TOPIC: "prod_authorization-server.generated-jwt"
+  NOTIFICATION_CONFIG_TOPIC: "event-store.prod_notification_config.events"
+  EMAIL_DISPATCH_TOPIC: "prod_email-dispatch.emails"
