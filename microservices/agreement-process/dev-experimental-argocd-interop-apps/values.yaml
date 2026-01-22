@@ -17,7 +17,7 @@ configmap:
 
 deployment:
   flywayInitContainer:
-    create: true
+    create: false
     migrationsConfigmap: "event-store-migrations"
     env:
       FLYWAY_CREATE_SCHEMAS: "true"
@@ -73,14 +73,14 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-  envFromSecrets:
-    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-agreement-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-agreement-process-user.password"
+  #envFromSecrets:
+  #  SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
+  #  EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
+  #  EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
+  #  READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+  #  READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+  #  READMODEL_SQL_DB_USERNAME: "platform-data-agreement-process-user.username"
+  #  READMODEL_SQL_DB_PASSWORD: "platform-data-agreement-process-user.password"
   livenessProbe:
     httpGet:
       path: "/status"
@@ -98,5 +98,5 @@ deployment:
       cpu: "2"
       memory: "4Gi"
     requests:
-      cpu: "2"
-      memory: "4Gi"
+      cpu: "1"
+      memory: "100Mi"
