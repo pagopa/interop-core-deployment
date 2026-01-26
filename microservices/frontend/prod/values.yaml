@@ -14,7 +14,7 @@ frontend:
     window.pagopa_env:
       STAGE: "PROD"
       AUTHORIZATION_SERVER_TOKEN_CREATION_URL: "https://auth.interop.pagopa.it/token.oauth2"
-      INTEROP_RESOURCES_BASE_URL: "https://interop-prod-public-es1.s3.eu-south-1.amazonaws.com"
+      INTEROP_RESOURCES_BASE_URL: "https://interop-public-assets-prod.s3.eu-south-1.amazonaws.com"
       BACKEND_FOR_FRONTEND_URL: "https://selfcare.interop.pagopa.it/1.0/backend-for-frontend"
       API_GATEWAY_INTERFACE_URL: "https://selfcare.interop.pagopa.it/m2m/interface-specification.yaml"
       MIXPANEL_PROJECT_ID: "9a9131451cf2ea0a696854e2e57ebe3c"
@@ -52,7 +52,7 @@ frontend:
           sub_filter_once off;
           sub_filter_types *;
           sub_filter **CSP_NONCE** $request_id;
-          add_header Content-Security-Policy "default-src 'self'; object-src 'none'; connect-src 'self' https://api-eu.mixpanel.com https://privacyportal-de.onetrust.com https://interop-application-import-export-prod-es1.s3.eu-south-1.amazonaws.com https://interop-application-import-export-prod-es1.s3.eu-south-1.amazonaws.com https://interop-prod-public-es1.s3.eu-south-1.amazonaws.com; script-src 'nonce-$request_id'; style-src 'self' 'unsafe-inline'; worker-src 'none'; font-src 'self'; img-src 'self' data: https://interop-prod-public-es1.s3.eu-south-1.amazonaws.com; base-uri 'self'";
+          add_header Content-Security-Policy "default-src 'self'; object-src 'none'; connect-src 'self' https://api-eu.mixpanel.com https://privacyportal-de.onetrust.com https://interop-application-import-export-prod-es1.s3.eu-south-1.amazonaws.com https://interop-application-import-export-prod-es1.s3.eu-south-1.amazonaws.com https://interop-public-assets-prod.s3.eu-south-1.amazonaws.com; script-src 'nonce-$request_id'; style-src 'self' 'unsafe-inline'; worker-src 'none'; font-src 'self'; img-src 'self' data: https://interop-public-assets-prod.s3.eu-south-1.amazonaws.com; base-uri 'self'";
           add_header Strict-Transport-Security "max-age=31536000";
           add_header X-Content-Type-Options "nosniff";
           add_header X-Frame-Options "SAMEORIGIN";
