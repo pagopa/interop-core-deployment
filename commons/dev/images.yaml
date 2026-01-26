@@ -126,8 +126,6 @@ images:
       tag: "develop"
     producer-keychain-readmodel-writer-sql:
       tag: "develop"
-    party-registry-proxy:
-      tag: "1.0.x-latest"
     purpose-outbound-writer:
       tag: "develop"
     purpose-readmodel-writer:

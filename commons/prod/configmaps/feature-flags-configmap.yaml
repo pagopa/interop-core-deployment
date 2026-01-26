@@ -14,7 +14,7 @@ data:
   # Disabled as part of migration to the new document-builder feature, which replaces the process contract builder; this is a permanent change.
   FEATURE_FLAG_DELEGATIONS_CONTRACT_BUILDER: "false"
   FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS: "true"
-  FEATURE_FLAG_NOTIFICATION_CONFIG: "false"
+  FEATURE_FLAG_NOTIFICATION_CONFIG: "true"
   FEATURE_FLAG_PURPOSE_TEMPLATE: "true"
   # Disabled as part of migration to the new document-builder feature, which replaces the process contract builder; this is a permanent change.
   FEATURE_FLAG_PURPOSES_CONTRACT_BUILDER: "false"

@@ -39,7 +39,8 @@ configmap:
   ALLOW_LIST_CONTAINER: "interop-allow-list-{{.Values.namespace}}-es1"
   ALLOW_LIST_PATH: "allowlist"
   ALLOW_LIST_FILE_NAME: "allowlist.txt"
-  TENANT_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,PDND_INFOCAMERE-SCP"
+  TENANT_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
+  PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
   PRIVACY_NOTICES_DYNAMO_TABLE_NAME: "interop-privacy-notices-{{.Values.namespace}}"
   PRIVACY_NOTICES_USERS_DYNAMO_TABLE_NAME: "interop-privacy-notices-acceptances-{{.Values.namespace}}"
   PRIVACY_NOTICES_PP_UUID: "0df21ff6-3e8f-4320-af8f-23dea9135d57"
@@ -67,7 +68,7 @@ configmap:
   DELEGATION_SIGNED_CONTRACTS_CONTAINER: "interop-signed-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
-  FRONTEND_BASE_URL: "https://selfcare.uat.interop.pagopa.it/ui/it"
+  FRONTEND_BASE_URL: "https://selfcare.pagopa.it"
 
 deployment:
   env:

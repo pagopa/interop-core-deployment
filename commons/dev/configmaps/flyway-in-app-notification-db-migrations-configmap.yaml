@@ -39,3 +39,6 @@ data:
       "${NAMESPACE}_in_app_notification_cleaner_user";
 
     GRANT DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_cleaner_user";
+
+  V1.3__Add_Select_Grant_Cleaner_User.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification" TO "${NAMESPACE}_in_app_notification_cleaner_user";
