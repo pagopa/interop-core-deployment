@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-notification-config
+  namespace: prod
+data:
+  V1__Init_NotificationConfig.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_notification_config";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_notification_config" to
+      "${NAMESPACE}_notification_config_rmw_user",
+      "${NAMESPACE}_notification_config_process_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_notification_config".tenant_notification_config (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      tenant_id UUID NOT NULL,
+      enabled BOOLEAN NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      updated_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id),
+      CONSTRAINT tenant_notification_config_id_metadata_version_unique UNIQUE (id, metadata_version),
+      CONSTRAINT tenant_notification_config_tenant_id_unique UNIQUE (tenant_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_notification_config".user_notification_config (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      user_id UUID NOT NULL,
+      tenant_id UUID NOT NULL,
+      user_roles VARCHAR[] NOT NULL,
+      in_app_notification_preference BOOLEAN NOT NULL,
+      email_notification_preference VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      updated_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id),
+      CONSTRAINT user_notification_config_id_metadata_version_unique UNIQUE (id, metadata_version),
+      CONSTRAINT user_notification_config_user_id_tenant_id_unique UNIQUE (user_id, tenant_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_notification_config".user_enabled_in_app_notification (
+      user_notification_config_id UUID NOT NULL REFERENCES "${NAMESPACE}_notification_config".user_notification_config (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      notification_type VARCHAR NOT NULL,
+      PRIMARY KEY (user_notification_config_id, notification_type),
+      FOREIGN KEY (user_notification_config_id, metadata_version) REFERENCES "${NAMESPACE}_notification_config".user_notification_config (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_notification_config".user_enabled_email_notification (
+      user_notification_config_id UUID NOT NULL REFERENCES "${NAMESPACE}_notification_config".user_notification_config (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      notification_type VARCHAR NOT NULL,
+      PRIMARY KEY (user_notification_config_id, notification_type),
+      FOREIGN KEY (user_notification_config_id, metadata_version) REFERENCES "${NAMESPACE}_notification_config".user_notification_config (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_notification_config_rmw_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_notification_config_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "readonly_user";
+
+  V1.1__Grant_Access_NotificationDispatchers_NotificationConfig.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_notification_config" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+
+  V1.2__Update_Email_Notification_Preference.sql: |-
+    ALTER TABLE "${NAMESPACE}_notification_config".user_notification_config
+      ALTER COLUMN email_notification_preference TYPE BOOLEAN USING false;
+
+    ALTER TABLE "${NAMESPACE}_notification_config".user_notification_config
+      ADD COLUMN email_digest_preference BOOLEAN DEFAULT false;
+
+    ALTER TABLE "${NAMESPACE}_notification_config".user_notification_config
+      ALTER COLUMN email_digest_preference SET NOT NULL;
+
+    ALTER TABLE "${NAMESPACE}_notification_config".user_notification_config
+      ALTER COLUMN email_digest_preference DROP DEFAULT;

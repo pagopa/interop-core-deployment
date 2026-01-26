@@ -1,0 +1,65 @@
+name: "interop-be-in-app-notification-manager"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::697818730278:role/interop-be-in-app-notification-manager-prod-es1"
+
+service:
+  create: true
+  containerPort: 8088
+
+configmap:
+  ACCEPTED_AUDIENCES: "interop.pagopa.it/ui"
+
+deployment:
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "flyway-in-app-notification"
+    env:
+      FLYWAY_CREATE_SCHEMAS: true
+      FLYWAY_PLACEHOLDER_REPLACEMENT: true
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_SCHEMAS: "{{.Values.namespace}}_notification"
+    envFromConfigmaps:
+      POSTGRES_HOST: "common-in-app-notification-db.DB_HOST"
+      POSTGRES_PORT: "common-in-app-notification-db.DB_PORT"
+      POSTGRES_DB: "common-in-app-notification-db.DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "platform-data-flyway-user.username"
+      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
+  env:
+    PORT: "8088"
+    HOST: "0.0.0.0"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+  envFromFieldRef:
+    POD_NAME: "metadata.name"
+    NODE_IP: "status.hostIP"
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    IN_APP_NOTIFICATION_DB_HOST: "common-in-app-notification-db.DB_HOST"
+    IN_APP_NOTIFICATION_DB_PORT: "common-in-app-notification-db.DB_PORT"
+    IN_APP_NOTIFICATION_DB_NAME: "common-in-app-notification-db.DB_NAME"
+    IN_APP_NOTIFICATION_DB_USE_SSL: "common-in-app-notification-db.DB_USE_SSL"
+    IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"
+    FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
+  envFromSecrets:
+    IN_APP_NOTIFICATION_DB_USERNAME: "platform-data-in-app-notification-manager-user.username"
+    IN_APP_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-notification-manager-user.password"
+  livenessProbe:
+    httpGet:
+      path: /status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+  readinessProbe:
+    httpGet:
+      path: /status
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
