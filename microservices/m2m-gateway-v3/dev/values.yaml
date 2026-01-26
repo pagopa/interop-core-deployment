@@ -20,6 +20,10 @@ deployment:
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
+    DPOP_CACHE_TABLE: "interop-m2m-gateway-dpop-cache-dev"
+    DPOP_HTU: "api.dev.interop.pagopa.it/m2m-gateway/v3"
+    DPOP_IAT_TOLERANCE_SECONDS: "10"
+    DPOP_DURATION_SECONDS: "60"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -42,6 +46,7 @@ deployment:
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
+    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
 
   livenessProbe:
     httpGet:
