@@ -67,7 +67,7 @@ configmap:
   DELEGATION_SIGNED_CONTRACTS_CONTAINER: "interop-signed-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
-  FRONTEND_BASE_URL: "https://selfcare.interop.pagopa.it/ui/it"
+  FRONTEND_BASE_URL: "https://selfcare.interop.pagopa.it"
 
 deployment:
   replicas: 2
