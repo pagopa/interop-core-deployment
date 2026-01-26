@@ -13,6 +13,29 @@ service:
     protocol: HTTP
 
 configmap:
+  M2M_GATEWAY_INTERFACE_VERSION: v3
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
+  RATE_LIMITER_MAX_REQUESTS: "9999999"
+  RATE_LIMITER_BURST_PERCENTAGE: "1.0"
+  RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
+  RATE_LIMITER_TIMEOUT_MILLIS: "300"
+  DEFAULT_POLLING_RETRY_DELAY: "300"
+  DEFAULT_POLLING_MAX_RETRIES: "20"
+  ESERVICE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  ESERVICE_DOCUMENTS_PATH: "eservices/docs"
+  ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
+  RISK_ANALYSIS_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
+  AGREEMENT_CONSUMER_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  AGREEMENT_CONSUMER_DOCUMENTS_PATH: "{{.Values.namespace}}/agreement/consumer-docs"
+  AGREEMENT_CONSUMER_CONTRACTS_PATH: "{{.Values.namespace}}/agreement/contracts"
+  PURPOSE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
+  DPOP_CACHE_TABLE: "interop-m2m-gateway-dpop-cache-dev"
+  DPOP_HTU: "https://api.dev.interop.pagopa.it/m2m-gateway/v3"
+  DPOP_IAT_TOLERANCE_SECONDS: "10"
+  DPOP_DURATION_SECONDS: "60"
 
 deployment:
   env:
@@ -20,10 +43,6 @@ deployment:
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
-    DPOP_CACHE_TABLE: "interop-m2m-gateway-dpop-cache-dev"
-    DPOP_HTU: "api.dev.interop.pagopa.it/m2m-gateway/v3"
-    DPOP_IAT_TOLERANCE_SECONDS: "10"
-    DPOP_DURATION_SECONDS: "60"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
