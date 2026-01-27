@@ -18,6 +18,7 @@ configmap:
   SELFCARE_API_RETRY_DELAY_IN_MILLIS: "1000"
 
 deployment:
+  replicas: 0
   envFromConfigmaps:
     EMAIL_DISPATCH_TOPIC: "common-kafka.EMAIL_DISPATCH_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
