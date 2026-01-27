@@ -12,6 +12,7 @@ configmap:
   ACCEPTED_AUDIENCES: "interop.pagopa.it/ui"
 
 deployment:
+  replicas: 1
   flywayInitContainer:
     create: true
     migrationsConfigmap: "flyway-in-app-notification"
