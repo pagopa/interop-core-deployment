@@ -10,7 +10,7 @@ service:
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-email-sender"
   TOPIC_STARTING_OFFSET: "latest"
-  SENDER_MAIL: "noreply@notifiche.{{.Values.namespace}}.interop.pagopa.it"
+  SENDER_MAIL: "noreply@notifiche.interop.pagopa.it"
   SENDER_LABEL: "noreply-{{.Values.namespace}}"
   RETRY_DELAY_IN_MILLIS: "1000"
   SUCCESS_DELAY_IN_MILLIS: "100"
