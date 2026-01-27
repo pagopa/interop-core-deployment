@@ -13,7 +13,6 @@ configmap:
   PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-notification-dispatcher-transactional-id"
 
 deployment:
-  replicas: 0
   env:
     BFF_URL: "https://selfcare.interop.pagopa.it/1.0/backend-for-frontend"
   envFromConfigmaps:
