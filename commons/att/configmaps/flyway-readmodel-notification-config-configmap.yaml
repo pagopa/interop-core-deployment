@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-read-model-notification-config
-  namespace: prod
+  namespace: att
 data:
   V1__Init_NotificationConfig.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_notification_config";
