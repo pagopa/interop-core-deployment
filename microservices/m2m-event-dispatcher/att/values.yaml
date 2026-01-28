@@ -3,7 +3,7 @@ techStack: nodejs
 
 serviceAccount:
   roleArn: "arn:aws:iam::533267098416:role/interop-be-m2m-event-dispatcher-att-es1"
-  
+
 service:
   create: false
 
