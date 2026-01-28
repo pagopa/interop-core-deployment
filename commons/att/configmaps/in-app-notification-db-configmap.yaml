@@ -4,7 +4,7 @@ metadata:
   name: common-in-app-notification-db
   namespace: att
 data:
-  DB_HOST: "TBD"
+  DB_HOST: "interop-platform-data-att.cluster-c5mm6mwy4v3q.eu-south-1.rds.amazonaws.com"
   DB_PORT: "5432"
   DB_NAME: "in_app_notification"
   DB_USE_SSL: "true"
