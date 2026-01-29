@@ -65,3 +65,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user";
+
+  V1.5__Grant_Select_to_PublicCatalogUpdater.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO "public_catalog_updater_user";
