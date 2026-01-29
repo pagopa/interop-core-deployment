@@ -6,7 +6,7 @@ serviceAccount:
 
 service:
   create: false
-  
+
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-compute-agreements-consumer"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-compute-agreements-consumer"

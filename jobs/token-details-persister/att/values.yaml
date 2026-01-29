@@ -17,8 +17,8 @@ cronjob:
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
   automountServiceAccountToken: false
-  command: ["bin/interop-be-token-details-persister"]
-  args: ["-Dconfig.override_with_env_vars=true"]
+  command: [ "bin/interop-be-token-details-persister" ]
+  args: [ "-Dconfig.override_with_env_vars=true" ]
   env:
     JWT_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/533267098416/generated-jwt"
   envFromFieldRef:

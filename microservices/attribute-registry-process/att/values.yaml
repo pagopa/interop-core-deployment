@@ -70,15 +70,16 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"    
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
   envFromSecrets:
     READMODEL_SQL_DB_PASSWORD: "platform-data-attribute-registry-process-user.password"
     READMODEL_SQL_DB_USERNAME: "platform-data-attribute-registry-process-user.username"
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"    
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
   livenessProbe:
     httpGet:
       path: /status
