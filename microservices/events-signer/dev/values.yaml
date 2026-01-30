@@ -24,6 +24,7 @@ deployment:
     CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
     DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
     PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    PURPOSE_TEMPLATE_TOPIC: "common-kafka.PURPOSE_TEMPLATE_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     SAFE_STORAGE_BASE_URL: "common-safe-storage.BASE_URL"
     SAFE_STORAGE_DOC_TYPE: "common-safe-storage.DOC_TYPE"
@@ -32,7 +33,7 @@ deployment:
 
   envFromSecrets:
     SAFE_STORAGE_API_KEY: "safe-storage-signing-credentials.password"
-    
+
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
