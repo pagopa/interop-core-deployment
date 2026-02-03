@@ -48,8 +48,8 @@ spec:
               {{- $images := .images | default dict -}}
               {{- $msmap := $images.microservices | default dict -}}
               {{- $ms := (index $msmap .name) | default dict -}}
-              enableRolloutAnnotations: true
               deployment:
+                enableRolloutAnnotations: true
                 image:
                   tag: {{ get $ms "tag" | default "" }}
                   digest: {{ get $ms "digest" | default "" }}
