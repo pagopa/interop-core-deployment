@@ -52,10 +52,12 @@ spec:
               {{- $images := .images | default dict -}}
               {{- $msmap := $images.microservices | default dict -}}
               {{- $ms := (index $msmap .name) | default dict -}}
-              namespace: {{ .destination.namespace | quote }}
+              namespace: dev-experimental-argocd-interop-sync
               enableLookup: true
               deployment:
                 enableRolloutAnnotations: true
+                env:
+                  DEBUG_NAMESPACE: "{{ .Values.namespace }}"
                 image:
                   tag: {{ get $ms "tag" | default "" }}
                   digest: {{ get $ms "digest" | default "" }}        
