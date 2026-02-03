@@ -27,7 +27,7 @@ spec:
                 - path: commons/dev-experimental-argocd-interop-sync/images.yaml
   template:
     metadata:
-      name: '{{.name}}'
+      name: 'cm-sync-{{.name}}'
       namespace: dev-experimental-argocd-interop-sync
       labels:
         appset: interop-microservices-specific
