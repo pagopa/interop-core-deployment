@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: configmap-sync-app
+  namespace: dev-experimental-argocd-interop-sync
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: interop-core-dev-experimental-argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-experimental-argocd-interop-sync
+  sources:
+    - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      targetRevision: feature/argocd
+      path: argocd/configmap-sync
+      directory:
+        include: 'common-cm.yaml'
+    - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      targetRevision: feature/argocd
+      path: argocd/configmap-sync
+      directory:
+        include: 'microservices.yaml'

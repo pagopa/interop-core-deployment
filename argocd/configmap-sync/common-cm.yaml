@@ -1,0 +1,21 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: configmap-sync-configmaps
+  labels:
+    app.kubernetes.io/part-of: configmapsync-cm
+    argocd.argoproj.io/instance: configmap-sync-app    
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: interop-core-dev-experimental-argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-experimental-argocd-interop-sync
+  source:
+    repoURL: https://github.com/pagopa/interop-core-deployment.git
+    targetRevision: feature/argocd
+    path: commons/dev-experimental-argocd-interop-sync/configmaps
+    directory:
+      recurse: true
