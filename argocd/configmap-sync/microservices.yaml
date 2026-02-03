@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: cm-sync-microservices
-  namespace: dev-experimental-argocd-interop-sync
+  namespace: dev-experimental-argocd
   labels:
     app.kubernetes.io/part-of: configmap-sync-microservices
     argocd.argoproj.io/instance: configmap-sync-app-root
