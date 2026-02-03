@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: configmap-sync-app-root
-  namespace: dev-experimental-argocd
+  namespace: dev-experimental-argocd-interop-sync
 spec:
   project: interop-core-dev-experimental-argocd
   destination:
