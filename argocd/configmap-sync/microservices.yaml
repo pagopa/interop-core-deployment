@@ -20,11 +20,6 @@ spec:
                 - name: authorization-server
                 - name: catalog-process
                 - name: backend-for-frontend
-          - git:
-              repoURL: https://github.com/pagopa/interop-core-deployment.git
-              revision: feature/argocd
-              files:
-                - path: commons/dev-experimental-argocd-interop-sync/images.yaml
   template:
     metadata:
       name: 'cm-sync-{{.name}}'
@@ -49,7 +44,7 @@ spec:
               - $values/microservices/{{.name}}/dev-experimental-argocd-interop-sync/values.yaml
               - $values/commons/dev-experimental-argocd-interop-sync/images.yaml
             values: |
-              {{- $images := .images | default dict -}}
+              {{- $images := .Values.images | default dict -}}
               {{- $msmap := $images.microservices | default dict -}}
               {{- $ms := (index $msmap .name) | default dict -}}
               enableLookup: true
