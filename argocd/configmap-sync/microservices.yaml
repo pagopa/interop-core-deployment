@@ -1,9 +1,9 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: cm-sync-microservices-specific
+  name: cm-sync-microservices
   labels:
-    app.kubernetes.io/part-of: configmapsync-microservices-specific
+    app.kubernetes.io/part-of: configmapsync-microservices
     argocd.argoproj.io/instance: configmap-sync-app
   annotations:
     argocd.argoproj.io/sync-wave: "10"
@@ -23,7 +23,7 @@ spec:
               repoURL: https://github.com/pagopa/interop-core-deployment.git
               revision: feature/argocd
               files:
-                - path: commons/dev-experimental-argocd-apps/images.yaml
+                - path: commons/dev-experimental-argocd-interop-sync/images.yaml
   template:
     metadata:
       name: '{{.name}}'
