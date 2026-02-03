@@ -48,6 +48,7 @@ spec:
               {{- $images := .images | default dict -}}
               {{- $msmap := $images.microservices | default dict -}}
               {{- $ms := (index $msmap .name) | default dict -}}
+              enableLookup: true
               deployment:
                 enableRolloutAnnotations: true
                 image:
