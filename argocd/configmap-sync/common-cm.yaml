@@ -3,7 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: configmap-sync-configmaps
-  namespace: dev-experimental-argocd
+  namespace: dev-experimental-argocd-interop-sync
   labels:
     app.kubernetes.io/part-of: configmap-sync-cm
     argocd.argoproj.io/instance: configmap-sync-app-root
