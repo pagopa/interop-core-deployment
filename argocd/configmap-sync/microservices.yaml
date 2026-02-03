@@ -56,8 +56,6 @@ spec:
               enableLookup: true
               deployment:
                 enableRolloutAnnotations: true
-                env:
-                  DEBUG_NAMESPACE: "{{ .namespace }}"
                 image:
                   tag: {{ get $ms "tag" | default "" }}
                   digest: {{ get $ms "digest" | default "" }}        
