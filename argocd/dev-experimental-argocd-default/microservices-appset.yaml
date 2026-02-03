@@ -45,6 +45,7 @@ spec:
               {{- $images := .images | default dict -}}
               {{- $msmap := $images.microservices | default dict -}}
               {{- $ms := (index $msmap .ms.path.basename) | default dict -}}
+              enableLookup: true
               deployment:
                 image:
                   tag: {{ get $ms "tag" | default "" }}
