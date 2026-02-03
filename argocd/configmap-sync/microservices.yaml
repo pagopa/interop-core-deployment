@@ -57,7 +57,7 @@ spec:
               deployment:
                 enableRolloutAnnotations: true
                 env:
-                  DEBUG_NAMESPACE: "{{ .Values.namespace }}"
+                  DEBUG_NAMESPACE: "{{ .namespace }}"
                 image:
                   tag: {{ get $ms "tag" | default "" }}
                   digest: {{ get $ms "digest" | default "" }}        
