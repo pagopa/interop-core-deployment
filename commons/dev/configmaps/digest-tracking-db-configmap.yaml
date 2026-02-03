@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-digest-tracking-db
+  namespace: dev
+data:
+  DB_HOST: "interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com" # to check where to create db
+  DB_PORT: "5432"
+  DB_NAME: "digest_tracking"
+  DB_USE_SSL: "true"
+  DB_SCHEMA: "dev_digest_tracking"

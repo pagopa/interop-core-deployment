@@ -174,3 +174,9 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user";
+
+  V1.13__Grant_Access_EmailDigestDispatcher_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" TO
+    "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO
+     "${NAMESPACE}_email_digest_dispatcher_user";
