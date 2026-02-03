@@ -13,7 +13,7 @@ spec:
   project: interop-core-dev-experimental-argocd
   destination:
     server: https://kubernetes.default.svc
-    namespace: dev-experimental-argocd
+    namespace: dev-experimental-argocd-interop-sync
   source:
     repoURL: https://github.com/pagopa/interop-core-deployment.git
     targetRevision: feature/argocd
