@@ -35,6 +35,10 @@ spec:
     spec:
       project: interop-core-dev-experimental-argocd
       sources:
+        - repoURL: https://github.com/pagopa/interop-core-deployment.git
+          path: '.'
+          targetRevision: feature/argocd
+          ref: values
         - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
           chart: interop-eks-microservice-chart
           targetRevision: 1.33.0
@@ -53,11 +57,7 @@ spec:
                 enableRolloutAnnotations: true
                 image:
                   tag: {{ get $ms "tag" | default "" }}
-                  digest: {{ get $ms "digest" | default "" }}
-        - repoURL: https://github.com/pagopa/interop-core-deployment.git
-          path: '.'
-          targetRevision: feature/argocd
-          ref: values
+                  digest: {{ get $ms "digest" | default "" }}        
       destination:
         server: https://kubernetes.default.svc
         namespace: dev-experimental-argocd
