@@ -2,8 +2,7 @@ name: "interop-be-catalog-process"
 techStack: "nodejs"
 
 service:
-  create: true
-  containerPort: 8088
+  create: false
 
 serviceAccount:
   roleArn: "arn:aws:iam::505630707203:role/interop-be-catalog-process-dev-es1"
@@ -19,21 +18,8 @@ configmap:
 
 deployment:
   flywayInitContainer:
-    create: true
-    migrationsConfigmap: "event-store-migrations"
-    env:
-      FLYWAY_CREATE_SCHEMAS: "true"
-      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
-      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
-    envFromConfigmaps:
-      FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
-      FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
-      POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
-      POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "event-store.POSTGRES_USR"
-      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
+    create: false
+    
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -75,22 +61,11 @@ deployment:
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
     FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
-  envFromSecrets:
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-catalog-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-process-user.password"
-  livenessProbe:
-    httpGet:
-      path: /status
-      port: http
-    initialDelaySeconds: 15
-    periodSeconds: 5
-  readinessProbe:
-    httpGet:
-      path: /status
-      port: http
-    initialDelaySeconds: 15
-    periodSeconds: 5
+    
+  resources:
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+    requests:
+      cpu: "100m"
+      memory: "128Mi"

@@ -18,30 +18,12 @@ configmap:
 deployment:
   flywayInitContainer:
     create: false
-    migrationsConfigmap: "event-store-migrations"
-    env:
-      FLYWAY_CREATE_SCHEMAS: "true"
-      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
-      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
-    envFromConfigmaps:
-      FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
-      FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
-      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
-      POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
-      POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-    envFromSecrets:
-      FLYWAY_USER: "event-store.POSTGRES_USR"
-      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
+    
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
-  envFromFieldRef:
-    POD_NAME: "metadata.name"
-    NODE_IP: "status.hostIP"
-    AWS_ROLE_SESSION_NAME: "metadata.name"
-    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
     FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER"
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
@@ -81,22 +63,11 @@ deployment:
   #  READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
   #  READMODEL_SQL_DB_USERNAME: "platform-data-agreement-process-user.username"
   #  READMODEL_SQL_DB_PASSWORD: "platform-data-agreement-process-user.password"
-  livenessProbe:
-    httpGet:
-      path: "/status"
-      port: http
-    initialDelaySeconds: 15
-    periodSeconds: 5
-  readinessProbe:
-    httpGet:
-      path: "/status"
-      port: http
-    initialDelaySeconds: 15
-    periodSeconds: 5
+  
   resources:
     limits:
-      cpu: "2"
-      memory: "4Gi"
+      cpu: "200m"
+      memory: "128Mi"
     requests:
-      cpu: "1"
-      memory: "100Mi"
+      cpu: "100m"
+      memory: "128Mi"
