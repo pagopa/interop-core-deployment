@@ -2,10 +2,10 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: cm-sync-microservices
-  namespace: dev-experimental-argocd-interop-sync
+  namespace: dev-experimental-argocd
   labels:
-    app.kubernetes.io/part-of: configmapsync-microservices
-    argocd.argoproj.io/instance: configmap-sync-app
+    app.kubernetes.io/part-of: configmap-sync-microservices
+    argocd.argoproj.io/instance: configmap-sync-app-root
   annotations:
     argocd.argoproj.io/sync-wave: "10"
 spec:
@@ -58,7 +58,7 @@ spec:
           ref: values
       destination:
         server: https://kubernetes.default.svc
-        namespace: dev-experimental-argocd-interop-sync
+        namespace: dev-experimental-argocd
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
