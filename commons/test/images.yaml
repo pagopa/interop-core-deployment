@@ -186,3 +186,5 @@ images:
       tag: "2.12.0-RC11"
     in-app-notification-cleaner:
       tag: "2.12.0-RC11"
+    check-selfcare-diff:
+      tag: "develop"
