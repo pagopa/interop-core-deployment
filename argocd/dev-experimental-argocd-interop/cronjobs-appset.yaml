@@ -34,7 +34,7 @@ spec:
         env: '{{.env}}'
         cronjob: '{{.cj.path.basename}}'
     spec:
-      project: '{{project}}'
+      project: '{{.project}}'
       destination:
         server: https://kubernetes.default.svc
         namespace: dev-experimental-argocd-interop-apps
