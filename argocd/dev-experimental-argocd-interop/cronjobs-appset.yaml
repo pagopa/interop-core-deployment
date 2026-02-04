@@ -37,7 +37,7 @@ spec:
       project: '{{project}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{namespace}}'
+        namespace: dev-experimental-argocd-interop-apps
       source:
         repoURL: https://github.com/pagopa/interop-core-deployment.git
         targetRevision: feature/argocd
