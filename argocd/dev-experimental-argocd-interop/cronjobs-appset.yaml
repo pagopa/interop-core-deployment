@@ -47,7 +47,7 @@ spec:
           env:
           - name: ENV
             value: '{{.env}}'
-          - name: SERVICE
+          - name: CRONJOB
             value: '{{.cj.path.basename}}'
           - name: IMAGES_FILE
             value: "commons/{{.env}}/images.yaml"
