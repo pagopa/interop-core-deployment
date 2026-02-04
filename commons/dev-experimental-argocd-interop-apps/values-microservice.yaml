@@ -7,8 +7,8 @@ service:
 deployment:
   enableRolloutAnnotations: true
   replicas: 1
-  command: ["/bin/sh", "-c"]
-  args: ["echo 'hello there'; sleep 300; exit 0;"]
+  command: [ "/bin/sh", "-c" ]
+  args: [ "echo 'hello there'; sleep 3000; exit 0;" ]
   image:
     repositoryPrefix: "docker.io"
     #repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
