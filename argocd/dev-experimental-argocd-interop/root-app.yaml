@@ -2,28 +2,28 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: interop-app-root
-  namespace: dev-experimental-argocd
+  namespace: dev-experimental-argocd-interop
 spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
     namespace: dev-experimental-argocd
   sources:
-    - repoURL: https://github.com/pagopa/interop-core-deployment.git
-      targetRevision: feature/argocd
-      path: argocd/dev-experimental-argocd-interop
-      directory:
-        include: 'common-cm.yaml'
-    - repoURL: https://github.com/pagopa/interop-core-deployment.git
-      targetRevision: feature/argocd
-      path: argocd/dev-experimental-argocd-interop
-      directory:
-        include: 'microservices-appset.yaml'
-    - repoURL: https://github.com/pagopa/interop-core-deployment.git
-      targetRevision: feature/argocd
-      path: argocd/dev-experimental-argocd-interop
-      directory:
-        include: 'cronjobs-appset.yaml'
+  - repoURL: https://github.com/pagopa/interop-core-deployment.git
+    targetRevision: feature/argocd
+    path: argocd/dev-experimental-argocd-interop
+    directory:
+      include: 'common-cm.yaml'
+  - repoURL: https://github.com/pagopa/interop-core-deployment.git
+    targetRevision: feature/argocd
+    path: argocd/dev-experimental-argocd-interop
+    directory:
+      include: 'microservices-appset.yaml'
+  - repoURL: https://github.com/pagopa/interop-core-deployment.git
+    targetRevision: feature/argocd
+    path: argocd/dev-experimental-argocd-interop
+    directory:
+      include: 'cronjobs-appset.yaml'
   syncPolicy:
     syncOptions:
-      - CreateNamespace=true
+    - CreateNamespace=true
