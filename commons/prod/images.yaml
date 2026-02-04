@@ -177,4 +177,4 @@ images:
     in-app-notification-cleaner:
       tag: "2.12.1"
     check-selfcare-diff:
-      tag: "develop"
+      tag: "2.12.1"
