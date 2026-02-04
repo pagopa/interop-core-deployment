@@ -5,6 +5,8 @@ metadata:
   labels:
     app.kubernetes.io/part-of: interop-appset-cronjobs
     argocd.argoproj.io/instance: interop-cj-appset
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
 spec:
   goTemplate: true
   goTemplateOptions: [ "missingkey=error" ]
