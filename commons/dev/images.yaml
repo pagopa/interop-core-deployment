@@ -188,5 +188,3 @@ images:
       tag: "develop"
     in-app-notification-cleaner:
       tag: "develop"
-    check-selfcare-diff:
-      tag: "develop"
