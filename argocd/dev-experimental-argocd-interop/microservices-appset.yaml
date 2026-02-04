@@ -27,7 +27,7 @@ spec:
   template:
     metadata:
       name: '{{.ms.path.basename}}'
-      namespace: '{{namespace}}'
+      namespace: dev-experimental-argocd-interop-apps
       labels:
         appset: interop-microservices-appset
         app.kubernetes.io/part-of: interop-appset-microservices
