@@ -31,7 +31,7 @@ spec:
       labels:
         appset: interop-microservices-appset
         app.kubernetes.io/part-of: interop-appset-microservices
-        env: '{{env}}'
+        env: '{{.env}}'
       service: '{{.ms.path.basename}}'
     spec:
       project: '{{project}}'
@@ -46,10 +46,10 @@ spec:
           name: infra-commons-microservices-plugin
           env:
           - name: ENV
-            value: '{{env}}'
+            value: '{{.env}}'
           - name: SERVICE
             value: '{{.ms.path.basename}}'
           - name: IMAGES_FILE
-            value: "commons/{{env}}/images.yaml"
+            value: "commons/{{.env}}/images.yaml"
           - name: PROJECT_DIR
             value: "."
