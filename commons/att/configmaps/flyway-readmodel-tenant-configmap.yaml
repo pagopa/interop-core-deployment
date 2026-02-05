@@ -154,7 +154,7 @@ data:
     CREATE INDEX idx_tenant_verified_attribute_tenant_id ON "${NAMESPACE}_tenant".tenant_verified_attribute (tenant_id);
     CREATE INDEX idx_verifier_attr_id ON "${NAMESPACE}_tenant".tenant_verified_attribute_verifier (tenant_verified_attribute_id);
     CREATE INDEX idx_revoker_attr_id ON "${NAMESPACE}_tenant".tenant_verified_attribute_revoker (tenant_verified_attribute_id);
-
+  
   V1.1__Grant_Access_Jobs_Consumers_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_selfcare_client_users_updater_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant TO "${NAMESPACE}_selfcare_client_users_updater_user";
