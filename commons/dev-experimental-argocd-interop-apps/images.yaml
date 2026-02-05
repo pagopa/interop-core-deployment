@@ -209,6 +209,8 @@ images:
     purpose-template-process:
       #tag: "develop"
       tag: "latest"
+    busybox:
+      tag: "1.36.1"
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
