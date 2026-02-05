@@ -18,6 +18,7 @@ configmap:
   INTEROP_PRODUCT: "prod-interop-atst"
 
 deployment:
+  replica: 0
   envFromConfigmaps:
     KAFKA_BROKERS: "common-selfcare.SELFCARE_KAFKA_BROKERS"
     NOTIFICATION_CONFIG_PROCESS_URL: "common-services-urls.NOTIFICATION_CONFIG_PROCESS_URL"
