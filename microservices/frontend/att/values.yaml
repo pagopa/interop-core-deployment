@@ -14,7 +14,7 @@ frontend:
     window.pagopa_env:
       STAGE: "ATT"
       AUTHORIZATION_SERVER_TOKEN_CREATION_URL: "https://auth.{{.Values.namespace}}.interop.pagopa.it/token.oauth2"
-      INTEROP_RESOURCES_BASE_URL: "https://interop-{{.Values.namespace}}-public-es1.s3.eu-south-1.amazonaws.com"
+      INTEROP_RESOURCES_BASE_URL: "https://interop-public-assets-{{.Values.namespace}}.s3.eu-south-1.amazonaws.com"
       BACKEND_FOR_FRONTEND_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/1.0/backend-for-frontend"
       API_GATEWAY_INTERFACE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/m2m/interface-specification.yaml"
       MIXPANEL_PROJECT_ID: "fill_me"
