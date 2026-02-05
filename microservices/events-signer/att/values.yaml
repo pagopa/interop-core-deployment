@@ -18,6 +18,7 @@ configmap:
   S3_BUCKET: "interop-domain-events-{{.Values.local.env}}-es1"
 
 deployment:
+  replicas: 0
   envFromConfigmaps:
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
     AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
