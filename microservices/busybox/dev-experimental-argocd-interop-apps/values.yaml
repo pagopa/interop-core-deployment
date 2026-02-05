@@ -1,6 +1,9 @@
 name: busybox
 techStack: "nodejs"
 
+serviceAccount:
+  roleArn: "fake"
+
 service:
   create: true
   portName: http
