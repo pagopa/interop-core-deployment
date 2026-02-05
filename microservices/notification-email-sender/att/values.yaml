@@ -20,7 +20,7 @@ configmap:
   SMTP_SECURE: "false"
 
 deployment:
-  replica: 0
+  replicas: 0
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:
