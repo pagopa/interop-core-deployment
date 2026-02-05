@@ -11,14 +11,13 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-user-lifecycle-consumer"
   TOPIC_STARTING_OFFSET: "latest"
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
-  INTERNAL_JWT_SUBJECT: "interop-m2m"
-  INTERNAL_JWT_ISSUER: "att.interop.pagopa.it"
-  INTERNAL_JWT_AUDIENCE: "att.interop.pagopa.it/internal"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_SECONDS_DURATION: "1800"
   INTEROP_PRODUCT: "prod-interop-atst"
 
 deployment:
-  replicas: 0
   envFromConfigmaps:
     KAFKA_BROKERS: "common-selfcare.SELFCARE_KAFKA_BROKERS"
     NOTIFICATION_CONFIG_PROCESS_URL: "common-services-urls.NOTIFICATION_CONFIG_PROCESS_URL"
