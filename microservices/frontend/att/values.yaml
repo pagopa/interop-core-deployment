@@ -14,27 +14,30 @@ frontend:
     window.pagopa_env:
       STAGE: "ATT"
       AUTHORIZATION_SERVER_TOKEN_CREATION_URL: "https://auth.{{.Values.namespace}}.interop.pagopa.it/token.oauth2"
-      INTEROP_RESOURCES_BASE_URL: "https://interop-{{.Values.namespace}}-public-es1.s3.eu-south-1.amazonaws.com"
+      INTEROP_RESOURCES_BASE_URL: "https://interop-public-assets-{{.Values.namespace}}.s3.eu-south-1.amazonaws.com"
       BACKEND_FOR_FRONTEND_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/1.0/backend-for-frontend"
-      API_GATEWAY_INTERFACE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/m2m/v1-interface-specification.yaml"
-      API_GATEWAY_V1_INTERFACE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/m2m/v1-interface-specification.yaml"
-      API_GATEWAY_V2_INTERFACE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/m2m/v2-interface-specification.yaml"
+      API_GATEWAY_INTERFACE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/m2m/interface-specification.yaml"
       MIXPANEL_PROJECT_ID: "fill_me"
       ONETRUST_DOMAIN_SCRIPT_ID: "fill_me"
       CLIENT_ASSERTION_JWT_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
       M2M_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/m2m"
       PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
+      DELEGATIONS_ALLOWED_ORIGINS: "IPA"
       API_SIGNAL_HUB_PUSH_INTERFACE_URL: "https://raw.githubusercontent.com/pagopa/interop-signalhub-core/refs/heads/main/docs/openAPI/push-signals.yaml"
       API_SIGNAL_HUB_PULL_INTERFACE_URL: "https://raw.githubusercontent.com/pagopa/interop-signalhub-core/refs/heads/main/docs/openAPI/pull-signals.yaml"
-      SIGNALHUB_PERSONAL_DATA_PROCESS_URL: "https://selfcare.att.interop.pagopa.it/signalhub/pdnd_designazione_responsabilita_dati_personali_sh_v1.pdf"
+      API_GATEWAY_V1_INTERFACE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/m2m/v1-interface-specification.yaml"
+      API_GATEWAY_V2_INTERFACE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/m2m/v2-interface-specification.yaml"
+      SIGNALHUB_PERSONAL_DATA_PROCESS_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/signalhub/pdnd_designazione_responsabilita_dati_personali_sh_v1.pdf"
+      FEATURE_FLAG_NOTIFICATION_CONFIG: "false"
       fromConfigmaps:
         FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
         FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
-        FEATURE_FLAG_SIGNALHUB_WHITELIST: "common-feature-flags.FEATURE_FLAG_SIGNALHUB_WHITELIST"
         SELFCARE_BASE_URL: "common-selfcare.SELFCARE_BASE_URL"
         SELFCARE_LOGIN_URL: "common-selfcare.SELFCARE_LOGIN_URL"
         WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
-
+        FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
+        FEATURE_FLAG_USE_SIGNED_DOCUMENT: "common-feature-flags.FEATURE_FLAG_USE_SIGNED_DOCUMENT"
+        #FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
   nginx:
     default.conf: |-
       server {

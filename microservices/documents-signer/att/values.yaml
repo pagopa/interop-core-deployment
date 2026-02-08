@@ -1,0 +1,36 @@
+name: interop-be-documents-signer
+techStack: nodejs
+
+serviceAccount:
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-documents-signer-{{.Values.local.env}}-es1"
+
+service:
+  create: false
+
+configmap:
+  SERVICE_NAME: "documents-signer"
+  SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-documents-signer"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-documents-signer"
+  TOPIC_STARTING_OFFSET: "earliest"
+  S3_BUCKET: "interop-application-documents-{{.Values.local.env}}-es1"
+
+deployment:
+  replicas: 0
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
+    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
+    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
+    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
+    AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
+    SAFE_STORAGE_BASE_URL: "common-safe-storage.BASE_URL"
+    SAFE_STORAGE_DOC_TYPE: "common-safe-storage.DOC_TYPE"
+    SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"
+    SIGNATURE_REFERENCES_TABLE_NAME: "common-safe-storage.LIVE_REQUESTS_DYNAMO_TABLE_NAME"
+
+  envFromSecrets:
+    SAFE_STORAGE_API_KEY: "safe-storage-signing-credentials.password"
+
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"
