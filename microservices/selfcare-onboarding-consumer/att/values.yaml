@@ -6,7 +6,7 @@ serviceAccount:
 
 service:
   create: false
-  
+
 configmap:
   KAFKA_BROKERS: "selc-p-eventhub-ns.servicebus.windows.net:9093"
   KAFKA_CLIENT_ID: "interop-{{.Values.namespace}}"
@@ -20,7 +20,6 @@ configmap:
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_SECONDS_DURATION: "3600"
-
 
 deployment:
   envFromConfigmaps:

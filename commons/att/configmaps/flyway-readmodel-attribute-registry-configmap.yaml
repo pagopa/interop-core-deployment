@@ -49,3 +49,23 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_ivass_certified_attributes_importer_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_ivass_certified_attributes_importer_user";
+
+  V1.2__Grant_Access_PurposeTemplateProcess_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.3__Grant_Select_to_PublicCatalogUpdater.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO "public_catalog_updater_user";
+
+  V1.4__Grant_Access_DocumentsGenerator_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_documents_generator_user";
+
+  V1.5__Grant_Access_NotificationDispatchers_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
