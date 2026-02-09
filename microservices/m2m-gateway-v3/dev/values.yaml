@@ -66,8 +66,8 @@ deployment:
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
     SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
+  envFromSecrets:
     SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
-
   livenessProbe:
     httpGet:
       path: "/m2m-gateway/v3/status"
