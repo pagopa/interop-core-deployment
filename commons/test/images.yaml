@@ -1,190 +1,190 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     agreement-platformstate-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     agreement-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     agreement-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     agreement-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     api-gateway:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     attribute-registry-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     attribute-registry-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     attribute-registry-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     audit-signer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     authorization-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     authorization-server:
       tag: "1.0.15"
     authorization-server-node:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     authorization-updater:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     backend-for-frontend:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     catalog-outbound-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     catalog-platformstate-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     catalog-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     catalog-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     catalog-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     certified-email-sender:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     client-purpose-updater:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     client-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     client-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     compute-agreements-consumer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     datalake-interface-exporter:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     delegation-items-archiver:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     delegation-outbound-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     delegation-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     delegation-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     delegation-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     documents-generator:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     documents-signer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     eservice-descriptors-archiver:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     eservice-template-instances-updater:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     eservice-template-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     eservice-template-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     eservice-template-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     events-signer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     frontend:
       tag: "1.6.2-RC3"
     key-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     key-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     m2m-event-dispatcher:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     m2m-event-manager:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     m2m-gateway:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     notification-email-sender:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     producer-key-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     producer-key-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     producer-keychain-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     producer-keychain-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     purpose-platformstate-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     purpose-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     purpose-outbound-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     purpose-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     purpose-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     purpose-template-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     purpose-template-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     redis:
       tag: "7.0.4"
     selfcare-client-users-updater:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     selfcare-onboarding-consumer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     ses-mock:
       tag: "20"
     signed-objects-persister:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     smtp-mock:
       tag: "1.10.4"
     tenant-outbound-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     tenant-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     tenant-readmodel-writer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     tenant-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     token-details-persister-node:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     in-app-notification-manager:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     in-app-notification-dispatcher:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     email-notification-dispatcher:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     notification-config-process:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     notification-config-readmodel-writer-sql:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     notification-user-lifecycle-consumer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     notification-tenant-lifecycle-consumer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     email-sender:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     datalake-data-export:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     dtd-catalog-exporter:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     ipa-certified-attributes-importer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     ivass-certified-attributes-importer:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     one-trust-notices:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     m2m-event-cleaner:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     pn-consumers:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     readmodel-checker:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     in-app-notification-cleaner:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
     check-selfcare-diff:
-      tag: "2.12.0-RC11"
+      tag: "2.12.2"
