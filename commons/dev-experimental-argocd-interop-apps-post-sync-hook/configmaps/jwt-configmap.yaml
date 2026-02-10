@@ -4,6 +4,6 @@ metadata:
   name: common-jwt-postsync-hook
   namespace: dev-experimental-argocd-interop-apps
 data:
-  WELL_KNOWN_URLS: https://dev.interop.pagopa.it/.well-known/jwks.json
+  WELL_KNOWN_URLS: https://dev.interop.pagopa.it/.well-known/jwks.json_update
   SELFCARE_WELL_KNOWN_URLS: "https://uat.selfcare.pagopa.it/.well-known/jwks.json"
   BFF_WELL_KNOWN_URLS: "https://dev.interop.pagopa.it/.well-known/jwks.json,https://uat.selfcare.pagopa.it/.well-known/jwks.json"
