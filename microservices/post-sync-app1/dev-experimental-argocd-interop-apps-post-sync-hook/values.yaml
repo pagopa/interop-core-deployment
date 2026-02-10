@@ -10,7 +10,6 @@ service:
 deployment:
   args: ["echo 'hello there'; sleep 3000; exit 0;"]
   envFromConfigmaps:
-    PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
     AGREEMENT_TOPIC: "common-kafka-postsync-hook.AGREEMENT_TOPIC"
     AGREEMENT_OUTBOUND_TOPIC: "common-kafka-postsync-hook.AGREEMENT_OUTBOUND_TOPIC"
     
