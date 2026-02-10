@@ -32,7 +32,7 @@ spec:
         appset: interop-microservices-appset-post-sync-hook
         app.kubernetes.io/part-of: interop-appset-microservices-post-sync-hook 
         env: '{{.env}}'
-      service: '{{ (split "/" .ms.path)._1 }}'
+      service: '{{ base (dir .ms.path) }}'
     spec:
       project: '{{.project}}'
       destination:
@@ -48,7 +48,7 @@ spec:
           - name: ENV
             value: '{{.env}}'
           - name: SERVICE
-            value: '{{.ms.path.basename}}'
+            value: '{{ base (dir .ms.path) }}'
           - name: IMAGES_FILE
             value: "commons/{{.env}}/images.yaml"
           - name: PROJECT_DIR
