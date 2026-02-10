@@ -15,7 +15,7 @@ spec:
       generators:
       - list:
           elements:
-          - env: dev-experimental-argocd-interop-apps
+          - env: dev-experimental-argocd-interop-apps-post-sync-hook
             namespace: dev-experimental-argocd-interop-apps
             project: default
       - git:
