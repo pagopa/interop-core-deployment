@@ -29,8 +29,8 @@ spec:
       name: '{{.ms.path.basename}}'
       namespace: dev-experimental-argocd-interop-apps
       labels:
-        appset: interop-microservices-appset
-        app.kubernetes.io/part-of: interop-appset-microservices
+        appset: interop-microservices-appset-post-sync-hook
+        app.kubernetes.io/part-of: interop-appset-microservices-post-sync-hook 
         env: '{{.env}}'
       service: '{{.ms.path.basename}}'
     spec:
