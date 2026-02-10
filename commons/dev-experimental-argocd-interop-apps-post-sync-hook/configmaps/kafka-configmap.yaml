@@ -15,7 +15,7 @@ data:
   DELEGATION_TOPIC: "event-store.dev_delegation.events"
   EMAIL_DISPATCH_TOPIC: "dev_email-dispatch.emails"
   ESERVICE_TEMPLATE_OUTBOUND_TOPIC: "outbound.dev_eservice_template.events"
-  ESERVICE_TEMPLATE_TOPIC: "event-store.dev_eservice_template.events"
+  ESERVICE_TEMPLATE_TOPIC: "event-store.dev_eservice_template.events_should_not_update_ms"
   KAFKA_BROKERS: "#b-1.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,#b-3.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,#b-2.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098"
   NOTIFICATION_CONFIG_TOPIC: "event-store.dev_notification_config.events"
   PURPOSE_OUTBOUND_TOPIC: "outbound.dev_purpose.events"
