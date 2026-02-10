@@ -1,8 +1,8 @@
-name: "interop-be-agreement-platformstate-writer"
+name: "post-sync-app2"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-agreement-platformstate-writer-dev-es1"
+  roleArn: "arn:aws:iam::505630707203:role/post-sync-app2-dev-es1"
 
 service:
   create: false
