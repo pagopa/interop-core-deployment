@@ -79,3 +79,7 @@ data:
 
     ALTER TABLE "${NAMESPACE}_notification_config".user_notification_config
       ALTER COLUMN email_digest_preference DROP DEFAULT;
+
+  V1.3__Grant_Access_CheckSelfcareDiff_NotificationConfig.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_check_selfcare_diff_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_check_selfcare_diff_user";
