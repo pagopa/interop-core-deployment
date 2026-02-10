@@ -23,7 +23,7 @@ spec:
           revision: feature/argocd
           pathParamPrefix: ms
           directories:
-          - path: microservices/*
+          - path: microservices/*/{{.env}}
   template:
     metadata:
       name: '{{.ms.path.basename}}-post-sync-hook'
