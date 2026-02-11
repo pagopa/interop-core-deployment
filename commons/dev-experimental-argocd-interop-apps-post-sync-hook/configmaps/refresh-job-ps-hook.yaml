@@ -66,6 +66,6 @@ spec:
               echo "Forcing hard refresh on target applications..."
               
               kubectl patch applicationset interop-microservices-appset-post-sync-hook \
-                -n dev-experimental-argocd-interop-apps \
+                -n dev-experimental-argocd \
                 --type merge \
                 -p '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}'
