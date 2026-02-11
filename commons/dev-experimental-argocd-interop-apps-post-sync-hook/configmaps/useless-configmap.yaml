@@ -8,3 +8,4 @@ data:
   NOT_REFERENCED_2: "this is a useless configmap that should not trigger the post-sync hook"
   NOT_REFERENCED_3: "this is a useless configmap that should not trigger the post-sync hook"
   NOT_REFERENCED_4: "this is a useless configmap that should not trigger the post-sync hook"
+  NOT_REFERENCED_5: "this is a useless configmap that should not trigger the post-sync hook"
