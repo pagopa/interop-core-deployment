@@ -3,12 +3,18 @@ kind: ServiceAccount
 metadata:
   name: refresh-sa
   namespace: dev-experimental-argocd-interop-apps
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: refresh-role
   namespace: dev-experimental-argocd-interop-apps
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 rules:
   - apiGroups: ["argoproj.io"]
     resources:
@@ -23,6 +29,9 @@ kind: RoleBinding
 metadata:
   name: refresh-rolebinding
   namespace: dev-experimental-argocd-interop-apps
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 subjects:
   - kind: ServiceAccount
     name: refresh-sa
