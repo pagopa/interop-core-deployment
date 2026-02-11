@@ -1,0 +1,25 @@
+name: "interop-be-check-selfcare-diff"
+
+cronjob:
+  schedule: "0 2 * * *"  # Daily at 2 AM UTC
+  failedJobsHistoryLimit: 2
+  successfulJobsHistoryLimit: 1
+  restartPolicy: OnFailure
+
+  env:
+    INTEROP_PRODUCT: "prod-interop-coll"
+    SELFCARE_API_CONCURRENCY: "5"
+
+  envFromConfigmaps:
+    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    READMODEL_SQL_DB_SCHEMA_NOTIFICATION_CONFIG: "common-read-model-sql.DB_SCHEMA_NOTIFICATION_CONFIG"
+
+  envFromSecrets:
+    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
+    READMODEL_SQL_DB_USERNAME: "platform-data-check-selfcare-diff-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-check-selfcare-diff-user.password"
