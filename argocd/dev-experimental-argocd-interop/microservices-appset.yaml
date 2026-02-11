@@ -23,16 +23,16 @@ spec:
           revision: feature/argocd
           pathParamPrefix: ms
           directories:
-          - path: microservices/*
+          - path: microservices/*/{{.env}}
   template:
     metadata:
-      name: '{{.ms.path.basename}}'
+      name: '{{ base (dir .ms.path.path) }}-interop-dev'
       namespace: dev-experimental-argocd-interop-apps
       labels:
         appset: interop-microservices-appset
         app.kubernetes.io/part-of: interop-appset-microservices
         env: '{{.env}}'
-      service: '{{.ms.path.basename}}'
+      service: '{{ base (dir .ms.path.path) }}-interop-dev'
     spec:
       project: '{{.project}}'
       destination:
@@ -48,7 +48,7 @@ spec:
           - name: ENV
             value: '{{.env}}'
           - name: SERVICE
-            value: '{{.ms.path.basename}}'
+            value: '{{ base (dir .ms.path.path) }}'
           - name: IMAGES_FILE
             value: "commons/{{.env}}/images.yaml"
           - name: PROJECT_DIR
