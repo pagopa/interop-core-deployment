@@ -5,3 +5,4 @@ metadata:
   namespace: dev-experimental-argocd-interop-apps
 data:
   NOT_REFERENCED_1: "this is a useless configmap that should not trigger the post-sync hook"
+  NOT_REFERENCED_2: "this is a useless configmap that should not trigger the post-sync hook"
