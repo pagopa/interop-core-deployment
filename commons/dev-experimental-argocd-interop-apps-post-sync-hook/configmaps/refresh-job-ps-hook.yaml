@@ -41,8 +41,7 @@ metadata:
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
-  ttlSecondsAfterFinished: 30
-  backoffLimit: 0
+  ttlSecondsAfterFinished: 300
   template:
     spec:
       serviceAccountName: refresh-sa
