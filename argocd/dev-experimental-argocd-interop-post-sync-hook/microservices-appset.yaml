@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: interop-microservices-appset-post-sync-hook
+  namespace: dev-experimental-argocd-interop-apps
   labels:
     app.kubernetes.io/part-of: interop-appset-microservices-post-sync-hook
     argocd.argoproj.io/instance: interop-ms-appset-post-sync-hook

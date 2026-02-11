@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: interop-configmaps-post-sync-hook
-  namespace: dev-experimental-argocd-interop
+  namespace: dev-experimental-argocd-interop-apps
   annotations:
     argocd.argoproj.io/sync-wave: "0"
   labels:

@@ -22,9 +22,6 @@ kind: RoleBinding
 metadata:
   name: configmap-verifier-binding
   namespace: dev-experimental-argocd-interop-apps
-  annotations:
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role

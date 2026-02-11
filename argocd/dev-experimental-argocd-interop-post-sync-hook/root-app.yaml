@@ -2,12 +2,12 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: interop-app-root-post-sync-hook
-  namespace: dev-experimental-argocd-interop
+  namespace: dev-experimental-argocd-interop-apps
 spec:
   project: default
   destination:
     server: https://kubernetes.default.svc
-    namespace: dev-experimental-argocd
+    namespace: dev-experimental-argocd-interop-apps
   sources:
   - repoURL: https://github.com/pagopa/interop-core-deployment.git
     targetRevision: feature/argocd
