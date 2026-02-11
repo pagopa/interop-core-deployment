@@ -24,7 +24,7 @@ spec:
           revision: feature/argocd
           pathParamPrefix: ms
           directories:
-          - path: microservices/*/{{.env}}
+          - path: microservices/*/dev-experimental-argocd-interop-apps-post-sync-hook
   template:
     metadata:
       name: '{{ base (dir .ms.path.path) }}-post-sync-hook'
