@@ -57,7 +57,7 @@ spec:
               echo "Forcing hard refresh on target applications..."
               
               TARGET_APPSET="interop-microservices-appset-post-sync-hook"
-              TARGET_NAMESPACE="dev-experimental-argocd"
+              TARGET_NAMESPACE="dev-experimental-argocd-interop-apps"
 
               echo "🔍 Checking if ApplicationSet ${TARGET_APPSET} exists in namespace ${TARGET_NAMESPACE}..."
 
