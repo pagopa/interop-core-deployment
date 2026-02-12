@@ -4,7 +4,8 @@ metadata:
   name: common-digest-tracking-db
   namespace: dev
 data:
-  DB_HOST: "interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com" # to check where to create db
+  DB_HOST_RW: "interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "interop-platform-data-dev.cluster-ro-cevisn7oellx.eu-south-1.rds.amazonaws.com"
   DB_PORT: "5432"
   DB_NAME: "digest_tracking"
   DB_USE_SSL: "true"
