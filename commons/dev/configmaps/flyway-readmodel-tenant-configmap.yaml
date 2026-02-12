@@ -230,6 +230,10 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_notification_user_lifecycle_consumer_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_notification_user_lifecycle_consumer_user";
 
+  V1.5.4__Grant_Access_authorization_process_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_authorization_process_user";
+
   V1.5.14__Grant_Access_EmailDigestDispatchers_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" TO
       "${NAMESPACE}_email_digest_dispatcher_user";

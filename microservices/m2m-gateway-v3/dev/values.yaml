@@ -33,7 +33,7 @@ configmap:
   PURPOSE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
   DPOP_CACHE_TABLE: "interop-m2m-gateway-dpop-cache-dev"
-  DPOP_HTU: "https://api.dev.interop.pagopa.it/m2m-gateway/v3"
+  DPOP_HTU_BASE: "https://api.dev.interop.pagopa.it/v3"
   DPOP_IAT_TOLERANCE_SECONDS: "10"
   DPOP_DURATION_SECONDS: "60"
 
@@ -66,7 +66,8 @@ deployment:
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
     SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
-
+  envFromSecrets:
+    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
   livenessProbe:
     httpGet:
       path: "/m2m-gateway/v3/status"
