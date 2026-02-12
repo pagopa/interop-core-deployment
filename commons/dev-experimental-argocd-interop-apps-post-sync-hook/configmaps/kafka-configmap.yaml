@@ -4,7 +4,7 @@ metadata:
   name: common-kafka-postsync-hook
   namespace: dev-experimental-argocd-interop-apps
 data:
-  AGREEMENT_OUTBOUND_TOPIC: "outbound.dev_agreement.events_update1"
+  AGREEMENT_OUTBOUND_TOPIC: "outbound.dev_agreement.events_update21"
   AGREEMENT_TOPIC: "event-store.dev_agreement.events_updateboth"
   APPLICATION_AUDIT_TOPIC: "dev_application.audit"
   ATTRIBUTE_TOPIC: "event-store.dev_attribute_registry.events"
