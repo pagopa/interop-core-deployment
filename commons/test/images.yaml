@@ -186,3 +186,5 @@ images:
       tag: "2.13.0-RC2"
     in-app-notification-cleaner:
       tag: "2.13.0-RC2"
+    check-selfcare-diff:
+      tag: "2.12.2"
