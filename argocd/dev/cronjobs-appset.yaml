@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: interop-cronjobs-appset
+  labels:
+    app.kubernetes.io/part-of: interop-dev-appset-cronjobs
+    argocd.argoproj.io/instance: interop-cj-dev-appset
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  goTemplate: true
+  goTemplateOptions: [ "missingkey=error" ]
+  generators:
+  - matrix:
+      generators:
+      - list:
+          elements:
+          - env: dev
+            namespace: dev
+            project: default
+      - git:
+          repoURL: https://github.com/pagopa/interop-core-deployment.git
+          revision: feature/argocd
+          pathParamPrefix: cj
+          directories:
+          - path: jobs/*
+  template:
+    metadata:
+      name: '{{.cj.path.basename}}'
+      namespace: { ? { .namespace } }
+      labels:
+        appset: interop-cronjobs-appset
+        app.kubernetes.io/part-of: interop-dev-appset-cronjobs
+        env: '{{.env}}'
+        cronjob: '{{.cj.path.basename}}'
+    spec:
+      project: '{{.project}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: { ? { .namespace } }
+      source:
+        repoURL: https://github.com/pagopa/interop-core-deployment.git
+        targetRevision: feature/argocd
+        path: '.'
+        plugin:
+          name: infra-commons-cronjobs-plugin
+          env:
+          - name: ENV
+            value: '{{.env}}'
+          - name: CRONJOB
+            value: '{{.cj.path.basename}}'
+          - name: IMAGES_FILE
+            value: "commons/{{.env}}/images.yaml"
+          - name: PROJECT_DIR
+            value: "."
