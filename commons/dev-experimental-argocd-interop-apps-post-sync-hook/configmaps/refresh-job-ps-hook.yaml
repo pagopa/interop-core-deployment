@@ -54,6 +54,8 @@ spec:
             - sh
             - -c
             - |
+              set -euo pipefail
+              
               echo "Forcing hard refresh on target applications..."
               
               TARGET_APPSET="interop-microservices-appset-post-sync-hook"
