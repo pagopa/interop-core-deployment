@@ -29,6 +29,7 @@ frontend:
       API_GATEWAY_V2_INTERFACE_URL: "https://selfcare.uat.interop.pagopa.it/m2m/v2-interface-specification.yaml"
       SIGNALHUB_PERSONAL_DATA_PROCESS_URL: "https://selfcare.uat.interop.pagopa.it/signalhub/pdnd_designazione_responsabilita_dati_personali_sh_v1.pdf"
       ERROR_DATA_DURATION_TIME: "120000"
+      AVATAR_BASEPATH: "https://selfcare.pagopa.it"
       fromConfigmaps:
         FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
         FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
