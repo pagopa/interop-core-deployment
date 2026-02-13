@@ -12,9 +12,9 @@ configmap:
   SQS_MAX_NUMBER_OF_MSGS: "5"
   SQS_LONG_POLL_WAIT_TIME_SECONDS: "20"
   SQS_VISIBILITY_TIMEOUT_SECONDS: "20"
-  S3_BUCKET_SIGNED_DOCUMENTS: "interop-signed-application-documents-{{.Values.local.env}}-es1"
-  S3_BUCKET_EVENTS: "interop-signed-domain-events-{{.Values.local.env}}-es1"
-  S3_BUCKET_AUDIT: "interop-signed-jwt-audit-{{.Values.local.env}}-es1"
+  S3_BUCKET_SIGNED_DOCUMENTS: "interop-signed-application-documents-v2-{{.Values.local.env}}-es1"
+  S3_BUCKET_EVENTS: "interop-signed-domain-events-v2-{{.Values.local.env}}-es1"
+  S3_BUCKET_AUDIT: "interop-signed-jwt-audit-v2-{{.Values.local.env}}-es1"
   SQS_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/interop-safe-storage-completed-tasks-{{.Values.namespace}}"
   SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-signed-objects-persister"
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
@@ -32,6 +32,7 @@ deployment:
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    PURPOSE_TEMPLATE_PROCESS_URL: "common-services-urls.PURPOSE_TEMPLATE_PROCESS_URL"
 
   envFromSecrets:
     SAFE_STORAGE_API_KEY: "safe-storage-signing-credentials.password"
