@@ -36,6 +36,9 @@ configmap:
   RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
   PURPOSE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
+  RISK_ANALYSIS_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  RISK_ANALYSIS_TEMPLATE_SIGNED_DOCUMENTS_CONTAINER: "interop-signed-application-documents-v2-{{.Values.namespace}}-es1"
+  RISK_ANALYSIS_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis-template/docs"
   ALLOW_LIST_CONTAINER: "interop-allow-list-{{.Values.namespace}}-es1"
   ALLOW_LIST_PATH: "allowlist"
   ALLOW_LIST_FILE_NAME: "allowlist.txt"
@@ -82,7 +85,7 @@ deployment:
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
-  envFromConfigmaps:    
+  envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.BFF_WELL_KNOWN_URLS"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
