@@ -1,0 +1,48 @@
+name: interop-be-email-digest-dispatcher
+
+serviceAccount:
+  roleArn: "arn:aws:iam::755649575658:role/interop-be-email-digest-dispatcher-qa-es1"
+
+configmap:
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-email-digest-dispatcher"
+  TOPIC_STARTING_OFFSET: "latest"
+  PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-digest-dispatcher-transactional-id"
+
+cronjob:
+  schedule: "0 3 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  restartPolicy: OnFailure
+
+  env:
+    BFF_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/1.0/backend-for-frontend"
+    DIGEST_FREQUENCY_HOURS: "1"
+    PRIORITY_PRODUCER_IDS: "e79a24cd-8edc-441e-ae8d-e87c3aea0059,69e2865e-65ab-4e48-a638-2037a9ee2ee7" # Comune di Milano, PagoPa
+  envFromConfigmaps:
+    EMAIL_DISPATCH_TOPIC: "common-kafka.EMAIL_DISPATCH_TOPIC"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
+    READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
+    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_NOTIFICATION_CONFIG: "common-read-model-sql.DB_SCHEMA_NOTIFICATION_CONFIG"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    DIGEST_TRACKING_DB_HOST: "common-digest-tracking-db.DB_HOST_RW"
+    DIGEST_TRACKING_DB_PORT: "common-digest-tracking-db.DB_PORT"
+    DIGEST_TRACKING_DB_NAME: "common-digest-tracking-db.DB_NAME"
+    DIGEST_TRACKING_DB_USE_SSL: "common-digest-tracking-db.DB_USE_SSL"
+    DIGEST_TRACKING_DB_SCHEMA: "common-digest-tracking-db.DB_SCHEMA"
+  envFromSecrets:
+    DIGEST_TRACKING_DB_USERNAME: "platform-data-email-digest-dispatcher-user.username"
+    DIGEST_TRACKING_DB_PASSWORD: "platform-data-email-digest-dispatcher-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-email-digest-dispatcher-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-email-digest-dispatcher-user.password"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
