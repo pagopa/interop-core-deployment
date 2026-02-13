@@ -35,7 +35,7 @@ configmap:
   DPOP_CACHE_TABLE: "interop-m2m-gateway-dpop-cache-{{.Values.namespace}}"
   DPOP_HTU_BASE: "https://api.{{.Values.namespace}}.interop.pagopa.it/v3"
   DPOP_IAT_TOLERANCE_SECONDS: "10"
-  DPOP_DURATION_SECONDS: "60"
+  DPOP_DURATION_SECONDS: "90"
   INTEGRITY_REST_JWT_KID: 82c7fd13-fe23-4f03-8810-111c909e05bf
   INTEGRITY_REST_JWT_SUBJECT: "test"
   INTEGRITY_REST_JWT_ISSUER: "api.qa.interop.pagopa.it/v3"
