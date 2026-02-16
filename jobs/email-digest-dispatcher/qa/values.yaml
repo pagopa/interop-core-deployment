@@ -9,10 +9,27 @@ configmap:
   PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-digest-dispatcher-transactional-id"
 
 cronjob:
-  schedule: "0 3 * * *"
+  schedule: "0 * * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: OnFailure
+
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "flyway-digest-tracking"
+    env:
+      FLYWAY_CREATE_SCHEMAS: true
+      FLYWAY_PLACEHOLDER_REPLACEMENT: true
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_SCHEMAS: "{{.Values.namespace}}_digest_tracking"
+    envFromConfigmaps:
+      POSTGRES_HOST: "common-digest-tracking-db.DB_HOST_RW"
+      POSTGRES_PORT: "common-digest-tracking-db.DB_PORT"
+      POSTGRES_DB: "common-digest-tracking-db.DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "platform-data-flyway-user.username"
+      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   env:
     BFF_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/1.0/backend-for-frontend"
