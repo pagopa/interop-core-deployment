@@ -24,7 +24,7 @@ cronjob:
       FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
       FLYWAY_SCHEMAS: "{{.Values.namespace}}_digest_tracking"
     envFromConfigmaps:
-      POSTGRES_HOST: "common-digest-tracking-db.DB_HOST"
+      POSTGRES_HOST: "common-digest-tracking-db.DB_HOST_RW"
       POSTGRES_PORT: "common-digest-tracking-db.DB_PORT"
       POSTGRES_DB: "common-digest-tracking-db.DB_NAME"
     envFromSecrets:
