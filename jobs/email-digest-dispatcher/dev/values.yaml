@@ -14,9 +14,26 @@ cronjob:
   successfulJobsHistoryLimit: 1
   restartPolicy: OnFailure
 
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "flyway-digest-tracking"
+    env:
+      FLYWAY_CREATE_SCHEMAS: true
+      FLYWAY_PLACEHOLDER_REPLACEMENT: true
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_SCHEMAS: "{{.Values.namespace}}_digest_tracking"
+    envFromConfigmaps:
+      POSTGRES_HOST: "common-digest-tracking-db.DB_HOST_RW"
+      POSTGRES_PORT: "common-digest-tracking-db.DB_PORT"
+      POSTGRES_DB: "common-digest-tracking-db.DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "platform-data-flyway-user.username"
+      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
+
   env:
     BFF_URL: "https://selfcare.dev.interop.pagopa.it/0.0/backend-for-frontend"
-    DIGEST_FREQUENCY_HOURS: "1" 
+    DIGEST_FREQUENCY_HOURS: "1"
     PRIORITY_PRODUCER_IDS: "e79a24cd-8edc-441e-ae8d-e87c3aea0059,69e2865e-65ab-4e48-a638-2037a9ee2ee7" # Comune di Milano, PagoPa
   envFromConfigmaps:
     EMAIL_DISPATCH_TOPIC: "common-kafka.EMAIL_DISPATCH_TOPIC"
