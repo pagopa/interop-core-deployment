@@ -160,6 +160,8 @@ images:
       tag: "2.14.0-RC1"
     email-sender:
       tag: "2.14.0-RC1"
+    email-digest-dispatcher:
+      tag: "2.14.0-RC1"
 
   jobs:
     anac-certified-attributes-importer:

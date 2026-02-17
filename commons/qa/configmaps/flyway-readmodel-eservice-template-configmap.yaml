@@ -150,3 +150,7 @@ data:
 
   V1.4__Add_Column_PersonalData_EServiceTemplate.sql: |-
     ALTER TABLE IF EXISTS "${NAMESPACE}_eservice_template".eservice_template ADD COLUMN IF NOT EXISTS personal_data BOOLEAN;
+
+  V1.5__Grant_Access_EmailDigestDispatcher_EServiceTemplate.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_email_digest_dispatcher_user";
