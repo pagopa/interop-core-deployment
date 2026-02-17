@@ -94,6 +94,8 @@ images:
       tag: "2.14.0-RC1"
     m2m-gateway:
       tag: "2.14.0-RC1"
+    m2m-gateway-v3:
+      tag: "2.14.0-RC1"      
     notification-email-sender:
       tag: "2.14.0-RC1"
     notifier:
@@ -160,8 +162,6 @@ images:
       tag: "2.14.0-RC1"
     email-sender:
       tag: "2.14.0-RC1"
-    email-digest-dispatcher:
-      tag: "2.14.0-RC1"
 
   jobs:
     anac-certified-attributes-importer:
@@ -170,6 +170,8 @@ images:
       tag: "2.14.0-RC1"
     dtd-catalog-exporter:
       tag: "2.14.0-RC1"
+    email-digest-dispatcher:
+      tag: "2.14.0-RC1"      
     ipa-certified-attributes-importer:
       tag: "2.14.0-RC1"
     ivass-certified-attributes-importer:
