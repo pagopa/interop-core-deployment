@@ -73,3 +73,7 @@ data:
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_client" to "${NAMESPACE}_token_generation_readmodel_checker_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_client" TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+
+  V1.2__Grant_Access_Purpose_Process_User_Client.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_client" to "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_client" TO "${NAMESPACE}_purpose_process_user";
