@@ -161,7 +161,7 @@ images:
     email-sender:
       tag: "2.13.0-RC2"
     email-digest-dispatcher:
-      tag: "TODO"
+      tag: "2.14.0-RC1"
 
   jobs:
     anac-certified-attributes-importer:
