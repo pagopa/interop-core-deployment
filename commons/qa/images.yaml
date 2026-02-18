@@ -171,7 +171,7 @@ images:
     dtd-catalog-exporter:
       tag: "2.14.0-RC1"
     email-digest-dispatcher:
-      tag: "2.14.0-RC1"      
+      tag: "2.14.0-RC2"
     ipa-certified-attributes-importer:
       tag: "2.14.0-RC1"
     ivass-certified-attributes-importer:
