@@ -13,6 +13,11 @@ spec:
     targetRevision: feature/argocd
     path: argocd/dev-experimental-argocd-interop-post-sync-hook
     directory:
+      include: 'external-secrets.yaml'
+  - repoURL: https://github.com/pagopa/interop-core-deployment.git
+    targetRevision: feature/argocd
+    path: argocd/dev-experimental-argocd-interop-post-sync-hook
+    directory:
       include: 'common-cm.yaml'
   - repoURL: https://github.com/pagopa/interop-core-deployment.git
     targetRevision: feature/argocd
