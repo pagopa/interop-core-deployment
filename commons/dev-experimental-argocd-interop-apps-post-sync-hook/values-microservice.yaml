@@ -44,4 +44,4 @@ autoscaling:
 
 locals:
   secrets:
-    dbhash: "fakehash"
+    dbhash: "fakehash_new"
