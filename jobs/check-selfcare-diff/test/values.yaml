@@ -7,6 +7,7 @@ cronjob:
   restartPolicy: OnFailure
 
   env:
+    LOG_LEVEL: "warn"
     INTEROP_PRODUCT: "prod-interop-coll"
     SELFCARE_API_CONCURRENCY: "5"
 
