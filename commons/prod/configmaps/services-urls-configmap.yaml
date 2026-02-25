@@ -17,4 +17,4 @@ data:
   PURPOSE_PROCESS_URL: "http://interop-be-purpose-process.prod.svc.cluster.local:8088"
   PURPOSE_TEMPLATE_PROCESS_URL: "http://interop-be-purpose-template-process.prod.svc.cluster.local:8088"
   TENANT_PROCESS_URL: "http://interop-be-tenant-process.prod.svc.cluster.local:8088"
-  EVENT_MANAGER_URL: "http://interop-be-event-manager.prod.svc.cluster.local:8088"
+  EVENT_MANAGER_URL: "http://interop-be-m2m-event-manager.prod.svc.cluster.local:8088"
