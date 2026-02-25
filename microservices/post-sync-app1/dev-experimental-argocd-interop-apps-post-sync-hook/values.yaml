@@ -15,10 +15,3 @@ deployment:
     AGREEMENT_TOPIC: "common-kafka-postsync-hook.AGREEMENT_TOPIC"
     AGREEMENT_OUTBOUND_TOPIC: "common-kafka-postsync-hook.AGREEMENT_OUTBOUND_TOPIC"
     
-locals:
-  externalSecrets:
-    remoteSecrets:
-    - id: "experimental-eso/foo/bar"
-      version: "862ccc7f-36bf-4fe5-bc41-1f7c3a8c0a89"
-    - id: "rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user"
-      version: "terraform-20260212133048976200000002"

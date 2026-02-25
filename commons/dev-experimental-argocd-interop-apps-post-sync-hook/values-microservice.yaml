@@ -37,6 +37,13 @@ local:
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "505630707203"
   env: "dev"
+  externalSecrets:
+    markerValue: "v1"
+    remoteSecrets:
+    - id: "experimental-eso/foo/bar"
+      version: "862ccc7f-36bf-4fe5-bc41-1f7c3a8c0a89"
+    - id: "rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user"
+      version: "terraform-20260212133048976200000002"
 
 autoscaling:
   keda:
