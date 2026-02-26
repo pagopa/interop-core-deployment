@@ -1,0 +1,17 @@
+name: "post-sync-app2"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/post-sync-app2-dev-es1"
+
+service:
+  create: false
+
+deployment:
+  args: ["echo 'hello there'; sleep 3000; exit 0;"]
+  envFromConfigmaps:
+    AGREEMENT_TOPIC: "common-kafka-postsync-hook.AGREEMENT_TOPIC"
+    KAFKA_BROKERS: "common-kafka-postsync-hook.KAFKA_BROKERS"
+    WELL_KNOWN_URLS: "common-jwt-postsync-hook.WELL_KNOWN_URLS"
+    SELFCARE_WELL_KNOWN_URLS: "common-jwt-postsync-hook.SELFCARE_WELL_KNOWN_URLS"
+  

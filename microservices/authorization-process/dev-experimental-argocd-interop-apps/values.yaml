@@ -1,4 +1,4 @@
-name: "interop-be-purpose-template-process"
+name: "interop-be-authorization-process"
 techStack: "nodejs"
 
 service:
@@ -6,17 +6,16 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-template-process-dev-es1-foo"
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-authorization-process-dev-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  MAX_ESERVICES_PER_LINK_REQUEST: "25"
+  MAX_KEYS_PER_CLIENT: "100"
+  MAX_KEYS_PER_PRODUCER_KEYCHAIN: "30"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_authorization"
 
 deployment:
-  flywayInitContainer:
+  flywayInitContainer: 
     create: true
     migrationsConfigmap: "event-store-migrations"
     env:
@@ -44,6 +43,7 @@ deployment:
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
     EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
@@ -71,14 +71,15 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
+    FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
   envFromSecrets:
+    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-template-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-template-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-authorization-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-authorization-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

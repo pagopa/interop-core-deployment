@@ -1,42 +1,32 @@
-name: "interop-be-purpose-template-process"
+name: "interop-be-api-gateway"
 techStack: "nodejs"
 
 service:
   create: true
   containerPort: 8088
+  albHealthCheck:
+    path: "/api-gateway/0.0/status"
+    protocol: "HTTP"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-template-process-dev-es1-foo"
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-api-gateway-dev-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  MAX_ESERVICES_PER_LINK_REQUEST: "25"
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
+  BASE_URL: "api.{{.Values.namespace}}.interop.pagopa.it"
+  API_GATEWAY_INTERFACE_VERSION: "0.0"
+  RATE_LIMITER_MAX_REQUESTS: "9999999"
+  RATE_LIMITER_BURST_PERCENTAGE: "1.0"
+  RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
+  RATE_LIMITER_TIMEOUT_MILLIS: "300"
 
 deployment:
-  flywayInitContainer:
-    create: true
-    migrationsConfigmap: "event-store-migrations"
-    env:
-      FLYWAY_CREATE_SCHEMAS: "true"
-      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
-      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
-    envFromConfigmaps:
-      FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
-      FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
-      POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
-      POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "event-store.POSTGRES_USR"
-      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
+  replicas: 2
   env:
-    PORT: "8088"
     HOST: "0.0.0.0"
-    EVENTSTORE_DB_USE_SSL: "true"
+    PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -44,15 +34,23 @@ deployment:
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
-    EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
-    EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
-    EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
+    ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
+    AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
+    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
+    DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
+    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
+    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    PARTY_REGISTRY_PROXY_URL: "common-services-urls.PARTY_REGISTRY_PROXY_URL"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
-    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
-    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
+    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
@@ -71,23 +69,27 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
   envFromSecrets:
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-template-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-template-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-api-gateway-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-api-gateway-user.password"
   livenessProbe:
     httpGet:
-      path: /status
+      path: "/api-gateway/0.0/status"
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
   readinessProbe:
     httpGet:
-      path: /status
+      path: "/api-gateway/0.0/status"
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "2Gi"
+    requests:
+      cpu: "500m"
+      memory: "2Gi"

@@ -1,0 +1,17 @@
+name: "post-sync-app1"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/post-sync-app1-dev-es1"
+
+service:
+  create: false
+
+deployment:
+  args: ["echo 'hello there'; sleep 3000; exit 0;"]
+  env:
+    dbhash: "{{ .Values.locals.secrets.dbhash }}"
+  envFromConfigmaps:
+    AGREEMENT_TOPIC: "common-kafka-postsync-hook.AGREEMENT_TOPIC"
+    AGREEMENT_OUTBOUND_TOPIC: "common-kafka-postsync-hook.AGREEMENT_OUTBOUND_TOPIC"
+    

@@ -1,0 +1,24 @@
+name: "interop-be-tenant-outbound-writer"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-tenant-outbound-writer-dev-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-tenant-outbound-writer"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-tenant-outbound-writer"
+
+deployment:
+  env:
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
+    TENANT_OUTBOUND_TOPIC: "common-kafka.TENANT_OUTBOUND_TOPIC"
+    PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"

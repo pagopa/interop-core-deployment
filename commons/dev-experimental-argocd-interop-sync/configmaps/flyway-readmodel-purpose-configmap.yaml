@@ -1,0 +1,185 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-purpose
+  namespace: dev-experimental-argocd-interop-sync
+data:
+  V1__Init_Purpose.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_purpose";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to
+      "${NAMESPACE}_purpose_rmw_user",
+      "${NAMESPACE}_purpose_process_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      eservice_id UUID NOT NULL,
+      consumer_id UUID NOT NULL,
+      delegation_id UUID,
+      suspended_by_consumer BOOLEAN,
+      suspended_by_producer BOOLEAN,
+      title VARCHAR NOT NULL,
+      description VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      updated_at TIMESTAMP WITH TIME ZONE,
+      is_free_of_charge BOOLEAN NOT NULL,
+      free_of_charge_reason VARCHAR,
+      PRIMARY KEY (id),
+      CONSTRAINT purpose_id_metadata_version_unique UNIQUE (id, metadata_version)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose TO readonly_user;    
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_risk_analysis_form (
+      id UUID,
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      version VARCHAR NOT NULL,
+      risk_analysis_id UUID,
+      PRIMARY KEY (id, purpose_id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form TO readonly_user;        
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_risk_analysis_answer (
+      id UUID,
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      risk_analysis_form_id UUID NOT NULL,
+      kind VARCHAR NOT NULL,
+      "key" VARCHAR NOT NULL,
+      value VARCHAR ARRAY,
+      PRIMARY KEY (id, purpose_id),
+      FOREIGN KEY (risk_analysis_form_id, purpose_id) REFERENCES "${NAMESPACE}_purpose".purpose_risk_analysis_form (id, purpose_id) ON DELETE CASCADE,
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer TO readonly_user;        
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_version (
+      id UUID,
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      state VARCHAR NOT NULL,
+      daily_calls INTEGER NOT NULL,
+      rejection_reason VARCHAR,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      updated_at TIMESTAMP WITH TIME ZONE,
+      first_activation_at TIMESTAMP WITH TIME ZONE,
+      suspended_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version TO readonly_user;        
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_version_document (
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      purpose_version_id UUID UNIQUE NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose_version (id) ON DELETE CASCADE,
+      id UUID NOT NULL,
+      content_type VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id, purpose_version_id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_document TO readonly_user;
+
+  V1.1__Permission_Process_Purpose.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_authorization_process_user";
+
+  V1.2__Grant_Usage_Schema_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_authorization_process_user";    
+
+  V1.3__Grant_Access_JobDatalakeExport_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_datalake_data_export_user";
+
+  V1.4__Grant_Access_DelegationItemArchiver_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_delegation_items_archiver_user";
+
+  V1.5__Grant_Access_PNConsumers_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_pn_consumers_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_pn_consumers_user";
+
+  V1.6__Grant_Access_TokenGenerationRMChecker_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+
+  V1.7__Update_NotNull_Column_RiskAnalysisAnswer_Purpose.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ADD COLUMN IF NOT EXISTS "value" VARCHAR[];
+    UPDATE "${NAMESPACE}_purpose".purpose_risk_analysis_answer SET value = '{}' WHERE "value" IS NULL;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ALTER COLUMN "value" SET NOT NULL;
+
+  V1.8__Add_Column_PurposeTemplateId_Purpose.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS purpose_template_id UUID;
+
+  V1.9__Create_Table_PurposeVersionStamp.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_version_stamp (
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      purpose_version_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose_version (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      who UUID NOT NULL,
+      "when" TIMESTAMP WITH TIME ZONE NOT NULL,
+      kind VARCHAR NOT NULL,
+      PRIMARY KEY (purpose_version_id, kind),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO readonly_user;
+
+  V1.10__Allow_AuthorizationProcess_To_Read_PurposeVersionStamp.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_authorization_process_user";
+
+  V1.11__Allow_Jobs_To_Read_PurposeVersionStamp.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_pn_consumers_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+
+  V1.12__Allow_DelegationItemsArchiver_To_Read_PurposeVersionStamp.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_delegation_items_archiver_user";
+
+  V1.13__Add_Archiviazione_Documentale_signed_document_table.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_version_signed_document (
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      purpose_version_id UUID UNIQUE NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose_version (id) ON DELETE CASCADE,
+      id UUID NOT NULL,
+      content_type VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      signed_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id, purpose_version_id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO readonly_user;
+
+  V1.14__Grant_permissions_for_Archiviazione_Documentale_signed_contract_table.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_authorization_process_user"; 
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_pn_consumers_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+
+  V1.15__Grant_Access_NotificationDispatchers_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";

@@ -1,0 +1,43 @@
+namespace: dev-experimental-argocd-interop-apps
+
+service:
+  targetPort: http
+  portName: http
+
+deployment:
+  enableRolloutAnnotations: true
+  replicas: 1
+  command: [ "/bin/sh", "-c" ]
+  args: [ "echo 'hello there'; sleep 3000; exit 0;" ]
+  image:
+    repositoryPrefix: "docker.io"
+    #repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
+    imagePullPolicy: Always
+    tag: "20"
+    repositoryName: "node"
+    #tag: $IMAGE_TAG_PLACEHOLDER
+    #digest: $IMAGE_DIGEST_PLACEHOLDER
+  env:
+    LOG_LEVEL: "info"
+    NODE_ENV: "production"
+  resources:
+    requests:
+      cpu: "10m"
+      memory: "32Mi"
+    limits:
+      cpu: "100m"
+      memory: "128Mi"
+  flywayInitContainer:
+    create: false
+
+local:
+  interop_be_commons:
+    RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"
+    DEV_ENDPOINTS_ENABLED: "true"
+    ENABLED_PROJECTIONS: "false"
+  awsAccountId: "505630707203"
+  env: "dev"
+  
+autoscaling:
+  keda:
+    create: false

@@ -6,7 +6,7 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-template-process-dev-es1-foo"
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-template-process-dev-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"

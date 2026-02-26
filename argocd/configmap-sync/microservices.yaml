@@ -1,0 +1,67 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cm-sync-microservices
+  namespace: dev-experimental-argocd
+  labels:
+    app.kubernetes.io/part-of: configmap-sync-microservices
+    argocd.argoproj.io/instance: configmap-sync-app-root
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          - list:
+              elements:
+                - name: agreement-process
+                - name: authorization-server
+                - name: catalog-process
+                - name: backend-for-frontend
+          - git:
+              repoURL: https://github.com/pagopa/interop-core-deployment.git
+              revision: feature/argocd
+              files:
+                - path: commons/dev-experimental-argocd-interop-sync/images.yaml
+  template:
+    metadata:
+      name: 'cm-sync-{{.name}}'
+      namespace: dev-experimental-argocd-interop-sync
+      labels:
+        appset: interop-microservices-specific
+        app.kubernetes.io/part-of: interop-appset-microservices-specific
+    spec:
+      project: interop-core-dev-experimental-argocd
+      sources:
+        - repoURL: https://github.com/pagopa/interop-core-deployment.git
+          path: '.'
+          targetRevision: feature/argocd
+          ref: values
+        - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
+          chart: interop-eks-microservice-chart
+          targetRevision: 1.33.0
+          helm:
+            releaseName: '{{.name}}'
+            valueFiles:
+              - $values/commons/dev-experimental-argocd-interop-sync/values-microservice.yaml
+              - $values/microservices/{{.name}}/dev-experimental-argocd-interop-sync/values.yaml
+              - $values/commons/dev-experimental-argocd-interop-sync/images.yaml
+            values: |
+              {{- $images := .images | default dict -}}
+              {{- $msmap := $images.microservices | default dict -}}
+              {{- $ms := (index $msmap .name) | default dict -}}
+              namespace: dev-experimental-argocd-interop-sync
+              enableLookup: true
+              deployment:
+                enableRolloutAnnotations: true
+                image:
+                  tag: {{ get $ms "tag" | default "" }}
+                  digest: {{ get $ms "digest" | default "" }}        
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: dev-experimental-argocd-interop-sync
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true

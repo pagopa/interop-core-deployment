@@ -1,4 +1,4 @@
-name: "interop-be-purpose-template-process"
+name: "interop-be-delegation-process"
 techStack: "nodejs"
 
 service:
@@ -6,14 +6,14 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-template-process-dev-es1-foo"
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-delegation-process-dev-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_delegation"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  MAX_ESERVICES_PER_LINK_REQUEST: "25"
+  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
+  DELEGATION_DOCUMENTS_PATH: "delegation"
+  DELEGATIONS_ALLOWED_ORIGINS: "IPA"
 
 deployment:
   flywayInitContainer:
@@ -43,6 +43,7 @@ deployment:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
+    FEATURE_FLAG_DELEGATIONS_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_DELEGATIONS_CONTRACT_BUILDER"
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
@@ -71,14 +72,13 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-template-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-template-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-delegation-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

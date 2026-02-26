@@ -1,19 +1,20 @@
-name: "interop-be-purpose-template-process"
+name: "interop-be-eservice-template-process"
 techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-eservice-template-process-dev-es1"
 
 service:
   create: true
   containerPort: 8088
 
-serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-template-process-dev-es1-foo"
-
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_eservice_template"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
+  ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
+  PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  MAX_ESERVICES_PER_LINK_REQUEST: "25"
 
 deployment:
   flywayInitContainer:
@@ -26,9 +27,9 @@ deployment:
     envFromConfigmaps:
       FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
+      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
@@ -71,14 +72,14 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
+    FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-template-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-template-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-eservice-template-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-template-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
