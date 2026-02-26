@@ -16,11 +16,11 @@ patches:
     patch: |-
       - op: replace
         path: /spec/target/template/metadata/annotations/externalsecret~1secret-applied-hash
-        value: "v4"
+        value: "v5"
   - target:
       kind: Secret
       name: experimental-eso-markertest
     patch: |-
       - op: replace
         path: /metadata/annotations/externalsecret~1secret-contract-hash
-        value: "v4"
+        value: "v5"
