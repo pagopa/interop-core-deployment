@@ -188,3 +188,5 @@ images:
       tag: "2.14.0-RC4"
     check-selfcare-diff:
       tag: "2.14.0-RC4"
+    email-digest-dispatcher:
+      tag: "2.14.0-RC4"
