@@ -8,7 +8,6 @@ service:
   create: false
 
 configmap:
-  SERVICE_NAME: "documents-signer"
   SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-documents-signer"
   KAFKA_GROUP_ID: "{{.Values.local.env}}-documents-signer"
   TOPIC_STARTING_OFFSET: "latest"
