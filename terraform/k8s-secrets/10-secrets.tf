@@ -13,10 +13,26 @@ data "aws_secretsmanager_secret" "tagged_object" {
   name = each.value
 }
 
-data "aws_secretsmanager_secret_version" "filtered" {
-  depends_on = [data.aws_secretsmanager_secret.tagged_object]
+data "external" "filter_secrets_with_versions" {
+  program = ["bash", "${path.module}/assets/scripts/filter_secrets_with_versions.sh"]
 
-  for_each = { for key, object in data.aws_secretsmanager_secret.tagged_object : key => object if(object.tags["EKSClusterName"] == var.eks_cluster_name && (contains(local.terraform_states_list, object.tags["TerraformState"])) && contains(split(" ", object.tags["EKSClusterNamespacesSpaceSeparated"]), var.env) ) }
+  query = {
+    secretsARNs = jsonencode([for key, value in data.aws_secretsmanager_secret.tagged_object : value.arn])
+  }
+}
+
+data "aws_secretsmanager_secret" "tagged_object_with_versions" {
+  depends_on = [data.external.filter_secrets_with_versions]
+
+  for_each = toset(jsondecode(data.external.filter_secrets_with_versions.result.secretsNames))
+
+  name = each.value
+}
+
+data "aws_secretsmanager_secret_version" "filtered" {
+  depends_on = [data.aws_secretsmanager_secret.tagged_object_with_versions]
+
+  for_each = { for key, object in data.aws_secretsmanager_secret.tagged_object_with_versions : key => object if(object.tags["EKSClusterName"] == var.eks_cluster_name && (contains(local.terraform_states_list, object.tags["TerraformState"])) && contains(split(" ", object.tags["EKSClusterNamespacesSpaceSeparated"]), var.env)) }
 
   secret_id = each.value.name
 }
@@ -24,7 +40,7 @@ data "aws_secretsmanager_secret_version" "filtered" {
 locals {
   sv_namespaces_pairs = [
     for sv_key, sv_value in data.aws_secretsmanager_secret_version.filtered : {
-      eks_replica_secret_name = data.aws_secretsmanager_secret.tagged_object[sv_value.secret_id].tags["EKSReplicaSecretName"],
+      eks_replica_secret_name = data.aws_secretsmanager_secret.tagged_object_with_versions[sv_value.secret_id].tags["EKSReplicaSecretName"],
       secret_version          = sv_value,
       namespace               = var.env
     }
