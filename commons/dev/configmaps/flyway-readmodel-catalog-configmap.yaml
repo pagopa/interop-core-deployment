@@ -247,3 +247,6 @@ data:
     "${NAMESPACE}_email_digest_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO
      "${NAMESPACE}_email_digest_dispatcher_user";
+
+  V1.17__Add_Column_InstanceLabel_EService.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS instance_label VARCHAR;
