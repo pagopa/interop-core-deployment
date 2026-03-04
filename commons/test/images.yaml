@@ -190,3 +190,5 @@ images:
       tag: "2.14.0-RC6"
     check-selfcare-diff:
       tag: "2.14.0-RC6"
+    email-digest-dispatcher:
+      tag: "2.14.0-RC6"      
