@@ -90,6 +90,8 @@ images:
       tag: "2.13.2"
     m2m-gateway:
       tag: "2.13.2"
+    m2m-gateway-v3:
+      tag: ""
     notification-email-sender:
       tag: "2.13.2"
     notifier:
