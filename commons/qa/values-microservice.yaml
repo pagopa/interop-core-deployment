@@ -41,5 +41,5 @@ autoscaling:
       metadata:
         timezone: Europe/Rome
         start: 0 8 * * 1-5
-        end: 0 20 * * 1-5
+        end: 59 23 * * 1-5
         desiredReplicas: "{{.Values.deployment.replicas}}" # must be a string
