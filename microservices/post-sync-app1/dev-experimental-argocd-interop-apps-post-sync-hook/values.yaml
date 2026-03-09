@@ -15,3 +15,37 @@ deployment:
     AGREEMENT_TOPIC: "common-kafka-postsync-hook.AGREEMENT_TOPIC"
     AGREEMENT_OUTBOUND_TOPIC: "common-kafka-postsync-hook.AGREEMENT_OUTBOUND_TOPIC"
     
+externalSecrets:
+  data:
+    - secretKey: FOO
+      remoteRef:
+        key: experimental-eso/foo/bar
+        property: foo
+        version: "uuid/f8cbdd4b-5c96-424f-875f-03ac339fccec"
+    - secretKey: IKI
+      remoteRef:
+        key: experimental-eso/foo/bar
+        property: iki
+        version: "uuid/1417190e-06b2-4894-b340-262415498194"
+    - secretKey: IKI2
+      remoteRef:
+        key: experimental-eso/foo/bar
+        property: iki
+    - secretKey: IKI3
+      remoteRef:
+        key: experimental-eso/foo/bar
+        property: iki
+        version: "AWSCURRENT"
+    - secretKey: IKI4
+      remoteRef:
+        key: experimental-eso/foo/bar
+        property: iki
+        version: "AWSPREVIOUS"
+    - secretKey: DATABASE
+      remoteRef:
+        key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
+        property: database
+    - secretKey: USERNAME
+      remoteRef:
+        key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
+        property: username

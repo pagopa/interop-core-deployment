@@ -15,3 +15,23 @@ deployment:
     WELL_KNOWN_URLS: "common-jwt-postsync-hook.WELL_KNOWN_URLS"
     SELFCARE_WELL_KNOWN_URLS: "common-jwt-postsync-hook.SELFCARE_WELL_KNOWN_URLS"
   
+   
+externalSecrets:
+  data:
+    - secretKey: FOO
+      remoteRef:
+        key: experimental-eso/foo/bar
+        property: foo
+        version: "uuid/f8cbdd4b-5c96-424f-875f-03ac339fccec"
+    - secretKey: USERNAME
+      remoteRef:
+        key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
+        property: username
+    - secretKey: kEYDOESNOTEXIST
+      remoteRef:
+        key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user_doesnotexist
+        property: username
+    - secretKey: PROPDOESNOTEXIST
+      remoteRef:
+        key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
+        property: username_doesnotexist
