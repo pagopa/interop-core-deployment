@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-digest-tracking
-  namespace: test
+  namespace: prod
 data:
   V1__Init.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_digest_tracking";

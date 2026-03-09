@@ -32,7 +32,7 @@ cronjob:
       FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   env:
-    BFF_URL: "https://selfcare.uat.interop.pagopa.it/1.0/backend-for-frontend"
+    BFF_URL: "https://selfcare.interop.pagopa.it/1.0/backend-for-frontend"
     DIGEST_FREQUENCY_HOURS: "24"
     PRIORITY_PRODUCER_IDS: "e79a24cd-8edc-441e-ae8d-e87c3aea0059,69e2865e-65ab-4e48-a638-2037a9ee2ee7" # Comune di Milano, PagoPa
   envFromConfigmaps:
