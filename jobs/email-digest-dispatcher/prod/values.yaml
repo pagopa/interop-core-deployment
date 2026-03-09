@@ -34,6 +34,9 @@ cronjob:
   env:
     BFF_URL: "https://selfcare.interop.pagopa.it/1.0/backend-for-frontend"
     DIGEST_FREQUENCY_HOURS: "24"
+    #Ministero delle infrastrutture e dei trasporti,Istituto Nazionale Previdenza Sociale - INPS,Ministero del Lavoro e delle Politiche Sociali,Agenzia delle Entrate,Dipartimento della Funzione Pubblica,Ministero dell'Interno,MINISTERO DELL'UNIVERSITA' E DELLA RICERCA,Ministero dell'istruzione e del merito",
+    PRIORITY_PRODUCER_IDS: "6c07e769-b418-4210-bc0f-7d56470a06e9,53b40136-65f2-424b-acfb-7fae17e35c60,2e1c950b-26d6-471a-b5ec-bd233d5b1f07,bce8d16d-d26f-4c35-a835-35cca48ff8a5,87ac321d-f13f-49f3-8aa8-2aaae9dc2115,2a9ad360-90ef-4499-ab2c-112b0fbcecc7,27aaf0d7-850b-4aca-92b8-f4df70217448,86a2adeb-bf90-4248-b471-58ba3539f423" 
+    
   envFromConfigmaps:
     EMAIL_DISPATCH_TOPIC: "common-kafka.EMAIL_DISPATCH_TOPIC"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
