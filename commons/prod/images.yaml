@@ -79,7 +79,7 @@ images:
     events-signer:
       tag: "2.14.0"
     frontend:
-      tag: "1.7.1"
+      tag: "1.8.0"
     key-readmodel-writer:
       tag: "2.14.0"
     key-readmodel-writer-sql:
@@ -178,3 +178,6 @@ images:
       tag: "2.14.0"
     check-selfcare-diff:
       tag: "2.14.0"
+    email-digest-dispatcher:
+      tag: "2.14.0"
+  
