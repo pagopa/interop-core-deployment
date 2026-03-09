@@ -41,3 +41,8 @@ local:
 autoscaling:
   keda:
     create: false
+
+externalSecrets:
+  create: true
+  secretStoreRef:
+    name: "aws-secretsmanager"
