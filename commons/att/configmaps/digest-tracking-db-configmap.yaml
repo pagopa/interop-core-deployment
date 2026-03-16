@@ -4,8 +4,8 @@ metadata:
   name: common-digest-tracking-db
   namespace: att
 data:
-  DB_HOST_RW: "interop-platform-data-prod.cluster-cgo3fcsduspu.eu-south-1.rds.amazonaws.com"
-  DB_HOST_RO: "interop-platform-data-prod.cluster-ro-cgo3fcsduspu.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RW: "interop-platform-data-att.cluster-c5mm6mwy4v3q.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "interop-platform-data-att.cluster-ro-c5mm6mwy4v3q.eu-south-1.rds.amazonaws.com"
   DB_PORT: "5432"
   DB_NAME: "digest_tracking"
   DB_USE_SSL: "true"
