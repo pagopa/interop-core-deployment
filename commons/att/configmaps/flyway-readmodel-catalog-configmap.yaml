@@ -237,3 +237,6 @@ data:
   V1.8__Grant_Access_EmailDigestDispatcher_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_email_digest_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_email_digest_dispatcher_user";
+
+  V1.9__Add_Column_InstanceLabel_EService.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS instance_label VARCHAR;
