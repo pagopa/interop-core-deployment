@@ -30,6 +30,7 @@ frontend:
       AVATAR_BASEPATH: "https://selc-u-checkout-cdn-endpoint.azureedge.net"
       ERROR_DATA_DURATION_TIME: "120000"
       SELFCARE_PRODUCT_ID: "prod-interop"
+      DOCUMENTATION_URL: "https://developer.pagopa.it/pdnd-interoperabilita/guides/manuale-operativo-pdnd-interoperabilita/v1.0"
       fromConfigmaps:
         FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
         FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
