@@ -6,6 +6,19 @@ service:
 
 deployment:
   replicas: 1
+  enableRolloutAnnotations: true
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0%
+      maxSurge: 50%
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
   image:
     repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
@@ -14,19 +27,6 @@ deployment:
   env:
     LOG_LEVEL: "info"
     NODE_ENV: "production"
-  resources:
-    requests:
-      cpu: "1000m"
-      memory: "2Gi"
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"
-  enableRolloutAnnotations: true
-  strategy:
-    type: "RollingUpdate"
-    rollingUpdate:
-      maxUnavailable: 0%
-      maxSurge: 50%
 
 local:
   interop_be_commons:
