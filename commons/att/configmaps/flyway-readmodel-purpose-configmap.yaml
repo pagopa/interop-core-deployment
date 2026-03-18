@@ -116,7 +116,7 @@ data:
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ADD COLUMN IF NOT EXISTS "value" VARCHAR[];
     UPDATE "${NAMESPACE}_purpose".purpose_risk_analysis_answer SET value = '{}' WHERE "value" IS NULL;
     ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_answer ALTER COLUMN "value" SET NOT NULL;
-    
+
   V1.3__Add_Column_PurposeTemplateId_Purpose.sql: |-
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS purpose_template_id UUID;
 
@@ -170,3 +170,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user";
+
+  V1.7__Grant_Access_EmailDigestDispatcher_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_digest_dispatcher_user";

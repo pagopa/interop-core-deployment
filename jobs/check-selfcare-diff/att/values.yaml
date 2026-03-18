@@ -9,7 +9,7 @@ cronjob:
 
   env:
     LOG_LEVEL: "warn"
-    INTEROP_PRODUCT: "prod-interop-coll"
+    INTEROP_PRODUCT: "prod-interop-atst"
     SELFCARE_API_CONCURRENCY: "5"
 
   envFromConfigmaps:
