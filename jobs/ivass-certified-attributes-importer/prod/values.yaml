@@ -1,7 +1,7 @@
 name: "interop-be-ivass-certified-attributes-importer"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-ivass-certified-attributes-importer-prod-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-ivass-certified-attributes-importer-prod-es1"
 
 configmap:
   SOURCE_URL: "https://infostat-ivass.bancaditalia.it/RIGAInquiry-public/getAreaDownloadExport.do?referenceDate=&product=VFLUSSO_IMPRESE&language=IT&exportType=CSV&username=OBLIXANONYMOUS&isCompressed=S"

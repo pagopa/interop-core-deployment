@@ -2,7 +2,7 @@ name: "interop-be-backend-for-frontend"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-backend-for-frontend-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-backend-for-frontend-test-es1"
 
 service:
   create: true

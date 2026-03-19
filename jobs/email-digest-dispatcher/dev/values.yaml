@@ -1,7 +1,7 @@
 name: interop-be-email-digest-dispatcher
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-email-digest-dispatcher-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-email-digest-dispatcher-dev-es1"
 
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-email-digest-dispatcher"

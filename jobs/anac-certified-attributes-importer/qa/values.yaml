@@ -1,7 +1,7 @@
 name: "interop-be-anac-certified-attributes-importer"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-anac-certified-attributes-importer-qa-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-anac-certified-attributes-importer-qa-es1"
 
 configmap:
   SFTP_PORT: "22"

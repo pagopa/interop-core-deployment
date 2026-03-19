@@ -1,7 +1,7 @@
 name: "interop-be-pn-consumers"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-pn-consumers-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-pn-consumers-vapt-es1"
 
 configmap:
   PN_ESERVICE_ID: "cfc8a94d-001a-4ab6-bb5c-2509b2a68af1"

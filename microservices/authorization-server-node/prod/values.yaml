@@ -2,7 +2,7 @@ name: "interop-be-authorization-server-node"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-authorization-server-prod-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-authorization-server-prod-es1"
 
 service:
   create: true

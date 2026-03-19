@@ -5,7 +5,7 @@ service:
   create: false
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-notification-email-sender-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-notification-email-sender-vapt-es1"
 
 configmap:
   INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"

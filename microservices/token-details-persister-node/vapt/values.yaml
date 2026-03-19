@@ -5,7 +5,7 @@ service:
   create: false
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-token-details-persister-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-token-details-persister-vapt-es1"
 
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-token-details-persister"

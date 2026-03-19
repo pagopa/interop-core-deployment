@@ -2,7 +2,7 @@ name: "interop-be-agreement-process"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-agreement-process-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-agreement-process-dev-es1"
 
 service:
   create: true
