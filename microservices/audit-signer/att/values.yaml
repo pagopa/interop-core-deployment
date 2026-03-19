@@ -2,7 +2,7 @@ name: interop-be-audit-signer
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-audit-signer-{{.Values.local.env}}-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-audit-signer-{{.Values.namespace}}-es1"
 
 service:
   create: false
