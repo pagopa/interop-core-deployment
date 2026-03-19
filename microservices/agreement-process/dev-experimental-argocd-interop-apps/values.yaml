@@ -1,23 +1,23 @@
-name: "interop-be-purpose-template-process"
+name: "interop-be-agreement-process"
 techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-agreement-process-dev-es1"
 
 service:
   create: true
   containerPort: 8088
 
-serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-template-process-dev-es1-foo"
-
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_agreement"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  MAX_ESERVICES_PER_LINK_REQUEST: "25"
+  AGREEMENT_CONTRACTS_PATH: "{{.Values.namespace}}/agreement/contracts"
+  CONSUMER_DOCUMENTS_PATH: "{{.Values.namespace}}/agreement/consumer-docs"
 
 deployment:
   flywayInitContainer:
-    create: true
+    create: false
     migrationsConfigmap: "event-store-migrations"
     env:
       FLYWAY_CREATE_SCHEMAS: "true"
@@ -26,9 +26,9 @@ deployment:
     envFromConfigmaps:
       FLYWAY_SCHEMAS: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.EVENTSTORE_DB_SCHEMA"
+      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-      POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
     envFromSecrets:
       FLYWAY_USER: "event-store.POSTGRES_USR"
       FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
@@ -43,7 +43,9 @@ deployment:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
+    FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER"
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
     EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
@@ -71,23 +73,30 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
-  envFromSecrets:
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-template-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-template-process-user.password"
+  #envFromSecrets:
+  #  SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
+  #  EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
+  #  EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
+  #  READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+  #  READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+  #  READMODEL_SQL_DB_USERNAME: "platform-data-agreement-process-user.username"
+  #  READMODEL_SQL_DB_PASSWORD: "platform-data-agreement-process-user.password"
   livenessProbe:
     httpGet:
-      path: /status
+      path: "/status"
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
   readinessProbe:
     httpGet:
-      path: /status
+      path: "/status"
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
+  resources:
+    limits:
+      cpu: "2"
+      memory: "4Gi"
+    requests:
+      cpu: "1"
+      memory: "100Mi"
