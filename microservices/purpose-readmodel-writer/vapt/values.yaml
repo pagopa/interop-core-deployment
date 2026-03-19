@@ -2,7 +2,7 @@ name: "interop-be-purpose-readmodel-writer"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-purpose-readmodel-writer-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-purpose-readmodel-writer-{{.Values.namespace}}-es1"
 
 service:
   create: false

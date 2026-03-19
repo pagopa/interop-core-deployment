@@ -2,7 +2,7 @@ name: "interop-be-agreement-platformstate-writer"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-agreement-platformstate-writer-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-agreement-platformstate-writer-{{.Values.namespace}}-es1"
 
 service:
   create: false

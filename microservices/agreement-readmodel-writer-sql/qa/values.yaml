@@ -2,7 +2,7 @@ name: interop-be-agreement-readmodel-writer-sql
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-agreement-readmodel-writer-qa-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-agreement-readmodel-writer-{{.Values.namespace}}-es1"
 
 service:
   create: false

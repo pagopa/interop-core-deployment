@@ -1,7 +1,7 @@
 name: "interop-be-dtd-catalog-exporter"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-dtd-catalog-exporter-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-dtd-catalog-exporter-{{.Values.namespace}}-es1"
 
 configmap:
   S3_BUCKET: "interop-public-catalog-dev-es1"

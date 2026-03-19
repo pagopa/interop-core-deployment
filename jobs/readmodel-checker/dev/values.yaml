@@ -1,7 +1,7 @@
 name: "interop-be-readmodel-checker"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-readmodel-checker-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-readmodel-checker-{{.Values.namespace}}-es1"
 
 service:
   create: false

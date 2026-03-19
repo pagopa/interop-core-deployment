@@ -3,7 +3,7 @@ techStack: nodejs
 
 serviceAccount:
   # TODO: verify IAM role exists
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-in-app-notification-dispatcher-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-in-app-notification-dispatcher-{{.Values.namespace}}-es1"
 
 service:
   create: false

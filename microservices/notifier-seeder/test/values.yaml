@@ -2,7 +2,7 @@ name: "interop-be-notifier-seeder"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-notifier-seeder-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-notifier-seeder-{{.Values.namespace}}-es1"
 
 service:
   create: false

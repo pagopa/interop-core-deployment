@@ -2,7 +2,7 @@ name: "interop-be-delegation-items-archiver"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-delegation-items-archiver-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-delegation-items-archiver-{{.Values.namespace}}-es1"
 
 service:
   create: false

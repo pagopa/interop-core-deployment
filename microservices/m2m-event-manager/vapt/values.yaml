@@ -2,7 +2,7 @@ name: "interop-be-m2m-event-manager"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-m2m-event-manager-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-m2m-event-manager-{{.Values.namespace}}-es1"
 
 service:
   create: true

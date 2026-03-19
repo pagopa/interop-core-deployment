@@ -2,7 +2,7 @@ name: interop-be-email-notification-dispatcher
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-email-notification-dispatcher-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-email-notification-dispatcher-{{.Values.namespace}}-es1"
 
 service:
   create: false

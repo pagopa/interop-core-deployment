@@ -2,7 +2,7 @@ name: "interop-be-m2m-gateway"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-m2m-gateway-prod-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-m2m-gateway-{{.Values.namespace}}-es1"
 
 service:
   create: true

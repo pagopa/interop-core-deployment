@@ -2,7 +2,7 @@ name: interop-be-eservice-template-instances-updater
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-eservice-template-instances-updater-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-eservice-template-instances-updater-{{.Values.namespace}}-es1"
 
 service:
   create: false

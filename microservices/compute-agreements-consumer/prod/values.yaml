@@ -2,7 +2,7 @@ name: "interop-be-compute-agreements-consumer"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-compute-agreements-consumer-prod-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-compute-agreements-consumer-{{.Values.namespace}}-es1"
 
 service:
   create: false

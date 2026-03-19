@@ -2,7 +2,7 @@ name: interop-be-key-readmodel-writer-sql
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-key-readmodel-writer-att-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-key-readmodel-writer-{{.Values.namespace}}-es1"
 
 service:
   create: false
