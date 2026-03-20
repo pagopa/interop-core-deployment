@@ -2,7 +2,7 @@ name: "interop-be-authorization-platformstate-writer"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-authorization-platformstate-writer-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-authorization-platformstate-writer-{{.Values.namespace}}-es1"
 
 service:
   create: false
