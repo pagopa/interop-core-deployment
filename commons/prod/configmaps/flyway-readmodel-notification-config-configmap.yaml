@@ -83,3 +83,7 @@ data:
   V1.3__Grant_Access_CheckSelfcareDiff_NotificationConfig.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_check_selfcare_diff_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_check_selfcare_diff_user";
+
+  V1.4__Grant_Access_EmailDigestDispatcher_NotificationConfig.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_notification_config" TO "${NAMESPACE}_email_digest_dispatcher_user";
