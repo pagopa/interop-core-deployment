@@ -154,7 +154,7 @@ data:
     CREATE INDEX idx_tenant_verified_attribute_tenant_id ON "${NAMESPACE}_tenant".tenant_verified_attribute (tenant_id);
     CREATE INDEX idx_verifier_attr_id ON "${NAMESPACE}_tenant".tenant_verified_attribute_verifier (tenant_verified_attribute_id);
     CREATE INDEX idx_revoker_attr_id ON "${NAMESPACE}_tenant".tenant_verified_attribute_revoker (tenant_verified_attribute_id);
-  
+
   V1.1__Grant_Access_Jobs_Consumers_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_selfcare_client_users_updater_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant TO "${NAMESPACE}_selfcare_client_users_updater_user";
@@ -217,3 +217,13 @@ data:
   V1.8__Grant_Access_NotificationConfigProcessUser_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_notification_config_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_notification_config_process_user";
+
+  V1.9__Grant_Access_CheckSelfcareDiff_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_check_selfcare_diff_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_check_selfcare_diff_user";
+
+  V1.10__Grant_Access_EmailDigestDispatcher_AuthorizationProcess_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_authorization_process_user";
