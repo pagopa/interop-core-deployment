@@ -9,7 +9,7 @@ configmap:
   PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-digest-dispatcher-transactional-id"
 
 cronjob:
-  schedule: "0 0 * * 0"
+  schedule: "0 7 * * 1"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: OnFailure
