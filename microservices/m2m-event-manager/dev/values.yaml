@@ -14,6 +14,8 @@ configmap:
 deployment:
   flywayInitContainer:
     create: true
+    executeFlywayRepair: true
+    executeFlywayMigrate: false
     migrationsConfigmap: "flyway-m2m-events"
     env:
       FLYWAY_CREATE_SCHEMAS: "true"
