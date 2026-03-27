@@ -1,4 +1,4 @@
-name: "interop-be-purpose-template-process"
+name: "interop-be-purpose-process"
 techStack: "nodejs"
 
 service:
@@ -6,14 +6,13 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-template-process-dev-es1-foo"
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-process-dev-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
+  RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  MAX_ESERVICES_PER_LINK_REQUEST: "25"
 
 deployment:
   flywayInitContainer:
@@ -43,6 +42,7 @@ deployment:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
+    FEATURE_FLAG_PURPOSES_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_PURPOSES_CONTRACT_BUILDER"
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
@@ -77,8 +77,8 @@ deployment:
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
     READMODEL_DB_USERNAME: "read-model.READONLY_USR"
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-template-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-template-process-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-process-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
@@ -91,3 +91,10 @@ deployment:
       port: http
     initialDelaySeconds: 15
     periodSeconds: 5
+  resources:
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+    requests:
+      cpu: "2"
+      memory: "2Gi"
