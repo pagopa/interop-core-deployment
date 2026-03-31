@@ -21,3 +21,5 @@ cronjob:
 local:
   interop_be_commons:
     RSA_KEYS_IDENTIFIERS: "65ce3bd3-88ed-40c1-9787-0a55e7f35332"
+  awsAccountId: "565393043798"
+  env: "vapt"

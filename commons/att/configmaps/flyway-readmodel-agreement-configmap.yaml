@@ -98,7 +98,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_delegation_process_user";
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_purpose_process_user";
     GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_tenant_process_user";
-    
+
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_catalog_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_authorization_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_delegation_process_user";
@@ -165,3 +165,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user";
+
+  V1.6__Grant_Access_EmailDigestDispatcher_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_email_digest_dispatcher_user";

@@ -32,6 +32,7 @@ deployment:
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    PURPOSE_TEMPLATE_PROCESS_URL: "common-services-urls.PURPOSE_TEMPLATE_PROCESS_URL"
 
   envFromSecrets:
     SAFE_STORAGE_API_KEY: "safe-storage-signing-credentials.password"

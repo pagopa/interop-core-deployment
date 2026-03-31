@@ -239,3 +239,7 @@ data:
       "${NAMESPACE}_email_digest_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO
       "${NAMESPACE}_email_digest_dispatcher_user";
+
+  V1.6__Add_SelfcareInstitutionType_Tenant.sql: |-
+    ALTER TABLE "${NAMESPACE}_tenant".tenant
+      ADD COLUMN selfcare_institution_type VARCHAR;
