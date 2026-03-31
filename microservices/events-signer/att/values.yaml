@@ -8,7 +8,6 @@ service:
   create: false
 
 configmap:
-  SERVICE_NAME: "events-signer"
   KAFKA_GROUP_ID: "{{.Values.local.env}}-events-signer"
   AVERAGE_KAFKA_MESSAGE_SIZE_IN_BYTES: "5000"
   MESSAGES_TO_READ_PER_BATCH: "500"
