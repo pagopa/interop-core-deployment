@@ -1,0 +1,35 @@
+name: "interop-be-private-certified-attributes-importer"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-private-certified-attributes-importer-att-es1"
+
+configmap:
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "att.interop-m2m"
+  INTERNAL_JWT_ISSUER: "att.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "att.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "1800"
+
+cronjob:
+  schedule: "30 7 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  envFromConfigmaps:
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    ATTRIBUTE_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    READMODEL_SQL_DB_USERNAME: "platform-data-private-certified-attributes-importer-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-private-certified-attributes-importer-user.password"
