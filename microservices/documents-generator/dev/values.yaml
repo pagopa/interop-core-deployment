@@ -2,7 +2,7 @@ name: interop-be-documents-generator
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-documents-generator-{{.Values.local.env}}-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-documents-generator-{{.Values.namespace}}-es1"
 
 service:
   create: false

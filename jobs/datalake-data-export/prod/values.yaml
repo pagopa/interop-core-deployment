@@ -1,7 +1,7 @@
 name: "interop-be-datalake-data-export"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-datalake-data-export-prod-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-datalake-data-export-{{.Values.namespace}}-es1"
 
 configmap:
   DATALAKE_STORAGE_BUCKET: "interop-data-lake-exports-prod-es1"
