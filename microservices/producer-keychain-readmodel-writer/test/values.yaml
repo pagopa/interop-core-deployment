@@ -2,7 +2,7 @@ name: "interop-be-producer-keychain-readmodel-writer"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-producer-keychain-readmodel-writer-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-producer-keychain-readmodel-writer-{{.Values.namespace}}-es1"
 
 service:
   create: false

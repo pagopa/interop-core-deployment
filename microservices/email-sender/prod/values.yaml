@@ -2,7 +2,7 @@ name: interop-be-email-sender
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-email-sender-prod-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-email-sender-{{.Values.namespace}}-es1"
 
 service:
   create: false

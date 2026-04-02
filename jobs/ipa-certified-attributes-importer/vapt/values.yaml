@@ -1,7 +1,7 @@
 name: "interop-be-ipa-certified-attributes-importer"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-ipa-certified-attributes-importer-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-ipa-certified-attributes-importer-{{.Values.namespace}}-es1"
 
 configmap:
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"

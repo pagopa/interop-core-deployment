@@ -3,7 +3,7 @@ techStack: nodejs
 
 serviceAccount:
   # TODO: verify IAM role exists
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-notification-config-readmodel-writer-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-notification-config-readmodel-writer-{{.Values.namespace}}-es1"
 
 service:
   create: false
