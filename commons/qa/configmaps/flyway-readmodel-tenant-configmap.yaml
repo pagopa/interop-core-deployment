@@ -221,3 +221,6 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_authorization_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_authorization_process_user";
 
+  V1.9__Add_SelfcareInstitutionType_Tenant.sql: |-
+    ALTER TABLE "${NAMESPACE}_tenant".tenant
+      ADD COLUMN selfcare_institution_type VARCHAR;
