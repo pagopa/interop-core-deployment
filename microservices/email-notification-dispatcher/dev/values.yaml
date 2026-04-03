@@ -9,10 +9,11 @@ service:
 
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-email-notification-dispatcher"
-  TOPIC_STARTING_OFFSET: "latest"
+  ù
   PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-notification-dispatcher-transactional-id"
 
 deployment:
+  replicas: 0
   env:
     BFF_URL: "https://selfcare.dev.interop.pagopa.it/0.0/backend-for-frontend"
   envFromConfigmaps:

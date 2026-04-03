@@ -13,6 +13,7 @@ configmap:
   NOTIFICATION_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/persistence-events.fifo"
 
 deployment:
+  replicas: 0 
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:

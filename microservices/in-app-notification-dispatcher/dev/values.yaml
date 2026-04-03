@@ -12,6 +12,7 @@ configmap:
   TOPIC_STARTING_OFFSET: "latest"
 
 deployment:
+  replicas: 0
   flywayInitContainer:
     create: true
     migrationsConfigmap: "flyway-in-app-notification"

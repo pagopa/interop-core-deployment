@@ -12,6 +12,7 @@ configmap:
   TOPIC_STARTING_OFFSET: "earliest"
 
 deployment:
+  replicas: 0
   flywayInitContainer:
     create: true
     migrationsConfigmap: "flyway-read-model-producer-key"

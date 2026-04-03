@@ -12,6 +12,7 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-authorization-platformstate-writer"
 
 deployment:
+  replicas: 0
   env:
     TOPIC_STARTING_OFFSET: "earliest"
   envFromFieldRef:
