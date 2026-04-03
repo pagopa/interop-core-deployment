@@ -9,7 +9,6 @@ service:
 
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-email-notification-dispatcher"
-  ù
   PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-notification-dispatcher-transactional-id"
 
 deployment:
