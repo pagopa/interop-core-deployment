@@ -6,7 +6,7 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-attribute-registry-process-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-attribute-registry-process-{{.Values.namespace}}-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_attribute_registry"

@@ -2,7 +2,7 @@ name: "interop-be-delegation-outbound-writer"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-delegation-outbound-writer-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-delegation-outbound-writer-{{.Values.namespace}}-es1"
 
 service:
   create: false
