@@ -1,7 +1,7 @@
 name: "interop-be-pn-consumers"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-pn-consumers-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-pn-consumers-{{.Values.namespace}}-es1"
 
 configmap:
   SMTP_ADDRESS: "smtp-mock.{{.Values.namespace}}.svc.cluster.local"
