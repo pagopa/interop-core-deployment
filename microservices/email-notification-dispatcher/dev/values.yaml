@@ -9,6 +9,7 @@ service:
 
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-email-notification-dispatcher"
+  TOPIC_STARTING_OFFSET: "latest"
   PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-notification-dispatcher-transactional-id"
 
 deployment:
