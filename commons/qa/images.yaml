@@ -182,6 +182,8 @@ images:
       tag: "2.17.0-RC1"
     pn-consumers:
       tag: "2.17.0-RC1"
+    private-certified-attributes-importer:
+      tag: "2.17.0-RC1"
     readmodel-checker:
       tag: "2.17.0-RC1"
     token-details-persister:
@@ -189,6 +191,4 @@ images:
     token-generation-readmodel-checker:
       tag: "2.17.0-RC1"
     in-app-notification-cleaner:
-      tag: "2.17.0-RC1"
-    private-certified-attributes-importer:
       tag: "2.17.0-RC1"
