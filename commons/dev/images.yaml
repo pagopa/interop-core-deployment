@@ -190,3 +190,5 @@ images:
       tag: "develop"
     in-app-notification-cleaner:
       tag: "develop"
+    private-certified-attributes-importer:
+      tag: "develop"
