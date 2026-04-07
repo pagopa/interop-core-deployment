@@ -1,7 +1,7 @@
 name: "interop-be-m2m-event-cleaner"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-m2m-event-cleaner-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-m2m-event-cleaner-{{.Values.namespace}}-es1"
 
 configmap:
   DELETE_OLDER_THAN_DAYS: "30"

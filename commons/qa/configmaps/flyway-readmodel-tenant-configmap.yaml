@@ -224,3 +224,7 @@ data:
   V1.9__Add_SelfcareInstitutionType_Tenant.sql: |-
     ALTER TABLE "${NAMESPACE}_tenant".tenant
       ADD COLUMN selfcare_institution_type VARCHAR;
+
+  V1.10__Grant_Access_JobPrivateCertifiedAttributesImporter_Tenant.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_private_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_private_certified_attributes_importer_user";

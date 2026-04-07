@@ -2,7 +2,7 @@ name: interop-be-email-sender
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-email-sender-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-email-sender-{{.Values.namespace}}-es1"
 
 service:
   create: false
@@ -10,7 +10,6 @@ service:
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-email-sender"
   TOPIC_STARTING_OFFSET: "latest"
-  AWS_SES_ENDPOINT: "http://ses-mock.{{.Values.namespace}}.svc.cluster.local:8005"
   SENDER_MAIL: "noreply@notifiche.{{.Values.namespace}}.interop.pagopa.it"
   SENDER_LABEL: "PDND Interop no-reply"
   RETRY_DELAY_IN_MILLIS: "1000"
