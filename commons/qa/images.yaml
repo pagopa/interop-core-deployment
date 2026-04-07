@@ -190,3 +190,5 @@ images:
       tag: "2.17.0-RC1"
     in-app-notification-cleaner:
       tag: "2.17.0-RC1"
+    private-certified-attributes-importer:
+      tag: "2.17.0-RC1"
