@@ -74,7 +74,6 @@ configmap:
   FRONTEND_BASE_URL: "https://uat.selfcare.pagopa.it"
   DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "48621601-1066-422d-aec8-65a19072cfb0"
 
-
 deployment:
   env:
     HOST: "0.0.0.0"
