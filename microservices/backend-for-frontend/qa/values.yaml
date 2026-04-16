@@ -72,6 +72,8 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   BFF_SWAGGER_UI_ENABLED: true
   FRONTEND_BASE_URL: "https://uat.selfcare.pagopa.it"
+  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "48621601-1066-422d-aec8-65a19072cfb0"
+
 
 deployment:
   env:
