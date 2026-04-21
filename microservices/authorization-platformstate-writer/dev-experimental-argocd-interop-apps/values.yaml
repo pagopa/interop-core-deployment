@@ -15,6 +15,7 @@ deployment:
   env:
     TOPIC_STARTING_OFFSET: "earliest"
     TOPIC_STARTING_OFFSET_V2: "earliest"
+    TOPIC_STARTING_OFFSET_V3: "earliest"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
