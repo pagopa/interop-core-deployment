@@ -288,4 +288,5 @@ data:
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user",
       "${NAMESPACE}_m2m_event_dispatcher_user",
-      "${NAMESPACE}_email_digest_dispatcher_user";
+      "${NAMESPACE}_email_digest_dispatcher_user",
+      "${NAMESPACE}_readonly_user";
