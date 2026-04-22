@@ -236,3 +236,4 @@ data:
 
   V1.9__Add_Column_daily_calls_per_consumer_Eservice_descriptor_attribute.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS daily_calls_per_consumer INTEGER;
+    
