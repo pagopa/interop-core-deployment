@@ -238,7 +238,7 @@ data:
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user";
 
-  V1.15__Grant_Access_M2M_Event_Dispatcher_Catalog.sql: |- 
+  V1.15__Grant_Access_M2M_Event_Dispatcher_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";
 
@@ -251,6 +251,21 @@ data:
   V1.17__Add_Column_InstanceLabel_EService.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS instance_label VARCHAR;
 
-  V1.18__Add_Column_daily_calls_per_consumer_Eservice_descriptor_attribute.sql:
-    |-
+  V1.18__Add_Column_daily_calls_per_consumer_Eservice_descriptor_attribute.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS daily_calls_per_consumer INTEGER;
+
+  V1.19__Add_Manual_Archiving_Column_and_Table.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS archiving_reason VARCHAR;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule (
+      eservice_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      descriptor_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice_descriptor (id) ON DELETE CASCADE,
+      scope VARCHAR NOT NULL,
+      archivable_on TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (eservice_id, descriptor_id),
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO "${NAMESPACE}_catalog_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO "${NAMESPACE}_catalog_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO readonly_user;
