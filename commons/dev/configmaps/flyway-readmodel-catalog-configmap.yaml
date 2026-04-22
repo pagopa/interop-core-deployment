@@ -269,4 +269,23 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO "${NAMESPACE}_catalog_process_user";    
-    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO readonly_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO 
+      "${NAMESPACE}_agreement_process_user",
+      "${NAMESPACE}_authorization_process_user",
+      "${NAMESPACE}_delegation_process_user",
+      "${NAMESPACE}_eservice_template_process_user",
+      "${NAMESPACE}_purpose_process_user",
+      "${NAMESPACE}_tenant_process_user",
+      "${NAMESPACE}_certified_email_sender_user",
+      "${NAMESPACE}_datalake_data_export_user",
+      "${NAMESPACE}_dtd_catalog_exporter_user",
+      "${NAMESPACE}_eservice_descriptors_archiver_user",
+      "${NAMESPACE}_notification_email_sender_user",
+      "${NAMESPACE}_token_generation_readmodel_checker_user",
+      "${NAMESPACE}_eservice_template_instances_updater_user",
+      "${NAMESPACE}_purpose_template_process_user",
+      "${NAMESPACE}_documents_generator_user",
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user",
+      "${NAMESPACE}_m2m_event_dispatcher_user",
+      "${NAMESPACE}_email_digest_dispatcher_user";
