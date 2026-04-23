@@ -14,6 +14,7 @@ configmap:
   PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
   ACCEPTED_AUDIENCES: "att.interop.pagopa.it/ui,att.interop.pagopa.it/m2m,att.interop.pagopa.it/internal"
   MAX_ESERVICES_PER_LINK_REQUEST: "25"
+  MAX_ESERVICE_TEMPLATES_PER_LINK_REQUEST: "25"
 
 deployment:
   flywayInitContainer:
