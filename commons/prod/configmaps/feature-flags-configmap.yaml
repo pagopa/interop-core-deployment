@@ -18,3 +18,4 @@ data:
   # Disabled as part of migration to the new document-builder feature, which replaces the process contract builder; this is a permanent change.
   FEATURE_FLAG_PURPOSES_CONTRACT_BUILDER: "false"
   FEATURE_FLAG_USE_SIGNED_DOCUMENT: "true"
+  FEATURE_FLAG_DELEGATION_CONSTRAINT_SKIP: "false"
