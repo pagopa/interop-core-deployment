@@ -254,3 +254,40 @@ data:
   V1.18__Add_Column_daily_calls_per_consumer_Eservice_descriptor_attribute.sql:
     |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS daily_calls_per_consumer INTEGER;
+
+  V1.19__Add_Manual_Archiving_Column_and_Table.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS archiving_reason VARCHAR;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule (
+      eservice_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      descriptor_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice_descriptor (id) ON DELETE CASCADE,
+      scope VARCHAR NOT NULL,
+      archivable_on TIMESTAMP WITH TIME ZONE NOT NULL,
+      started_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (eservice_id, descriptor_id),
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO "${NAMESPACE}_catalog_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO "${NAMESPACE}_catalog_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO 
+      "${NAMESPACE}_agreement_process_user",
+      "${NAMESPACE}_authorization_process_user",
+      "${NAMESPACE}_delegation_process_user",
+      "${NAMESPACE}_eservice_template_process_user",
+      "${NAMESPACE}_purpose_process_user",
+      "${NAMESPACE}_tenant_process_user",
+      "${NAMESPACE}_certified_email_sender_user",
+      "${NAMESPACE}_datalake_data_export_user",
+      "${NAMESPACE}_dtd_catalog_exporter_user",
+      "${NAMESPACE}_eservice_descriptors_archiver_user",
+      "${NAMESPACE}_notification_email_sender_user",
+      "${NAMESPACE}_token_generation_readmodel_checker_user",
+      "${NAMESPACE}_eservice_template_instances_updater_user",
+      "${NAMESPACE}_purpose_template_process_user",
+      "${NAMESPACE}_documents_generator_user",
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user",
+      "${NAMESPACE}_m2m_event_dispatcher_user",
+      "${NAMESPACE}_email_digest_dispatcher_user",
+      readonly_user;
