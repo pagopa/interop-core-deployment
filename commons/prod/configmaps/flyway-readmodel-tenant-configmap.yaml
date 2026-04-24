@@ -234,4 +234,4 @@ data:
   
   V1.12__Add_SelfcareInstitutionType_Tenant.sql: |-
     ALTER TABLE "${NAMESPACE}_tenant".tenant
-      ADD COLUMN selfcare_institution_type VARCHAR;
+      ADD COLUMN IF NOT EXISTS selfcare_institution_type VARCHAR;
