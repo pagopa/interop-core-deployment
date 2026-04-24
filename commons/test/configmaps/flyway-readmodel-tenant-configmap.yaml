@@ -229,7 +229,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_private_certified_attributes_importer_user"; 
   
   V1.11__Add_SelfcareInstitutionType_Tenant.sql: |-
-    ALTER TABLE "${NAMESPACE}_tenant".tenant
-      ADD COLUMN selfcare_institution_type VARCHAR;
+    ALTER TABLE IF EXISTS "${NAMESPACE}_tenant".tenant
+      ADD COLUMN IF NOT EXISTS selfcare_institution_type VARCHAR;
 
 
