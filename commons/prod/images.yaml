@@ -170,6 +170,8 @@ images:
       tag: "2.17.0"
     pn-consumers:
       tag: "2.17.0"
+    private-certified-attributes-importer:
+      tag: "2.17.0"
     readmodel-checker:
       tag: "2.17.0"
     token-details-persister:
