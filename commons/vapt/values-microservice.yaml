@@ -5,7 +5,7 @@ service:
   portName: http
 
 deployment:
-  replicas: 1
+  replicas: 0
   enableRolloutAnnotations: true
   strategy:
     type: "RollingUpdate"
