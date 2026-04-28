@@ -74,7 +74,6 @@ configmap:
   DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "18a1bf44-0afe-4ad8-859e-cca7adb7b1a9"
 
 deployment:
-  replicas: 2
   env:
     HOST: "0.0.0.0"
     PORT: "8088"
