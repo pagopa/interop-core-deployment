@@ -14,6 +14,7 @@ configmap:
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
   DELEGATION_DOCUMENTS_PATH: "delegation"
   DELEGATIONS_ALLOWED_ORIGINS: "IPA"
+  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "48621601-1066-422d-aec8-65a19072cfb0"
 
 deployment:
   flywayInitContainer:
