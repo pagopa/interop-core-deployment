@@ -20,6 +20,9 @@ configmap:
   GENERATED_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/ui"
   CLIENT_ASSERTION_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
   CLIENT_ASSERTION_JWT_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
+  DPOP_HTU_BASE: "https://auth.{{.Values.namespace}}.interop.pagopa.it/token.oauth2"
+  DPOP_DURATION_SECONDS: "60"
+  DPOP_IAT_TOLERANCE_SECONDS: "10"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,selfcare.{{.Values.namespace}}.interop.pagopa.it"
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
@@ -72,6 +75,7 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   BFF_SWAGGER_UI_ENABLED: true
   FRONTEND_BASE_URL: "https://uat.selfcare.pagopa.it"
+  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "48621601-1066-422d-aec8-65a19072cfb0"
 
 deployment:
   env:
@@ -104,6 +108,7 @@ deployment:
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
+    FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER: "common-feature-flags.FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER"
     FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
     FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
     FEATURE_FLAG_USE_SIGNED_DOCUMENT: "common-feature-flags.FEATURE_FLAG_USE_SIGNED_DOCUMENT"
