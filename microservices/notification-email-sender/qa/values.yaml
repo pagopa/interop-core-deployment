@@ -2,7 +2,7 @@ name: "interop-be-notification-email-sender"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-notification-email-sender-qa-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-notification-email-sender-{{.Values.namespace}}-es1"
 
 service:
   create: false
@@ -20,6 +20,7 @@ configmap:
   SMTP_SECURE: "false"
 
 deployment:
+  replicas: 0
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:

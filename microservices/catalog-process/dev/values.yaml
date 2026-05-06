@@ -6,13 +6,13 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-catalog-process-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-catalog-process-{{.Values.namespace}}-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_catalog"
   ESERVICE_DOCUMENTS_PATH: "eservices/docs"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PRODUCER_ALLOWED_ORIGINS: "IPA"
+  PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
@@ -74,7 +74,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
-    FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"

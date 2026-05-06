@@ -97,11 +97,13 @@ images:
     key-readmodel-writer-sql:
       tag: "develop"
     m2m-event-dispatcher:
-      tag: "2.10.0-RC3"
+      tag: "develop"
     m2m-event-manager:
-      tag: "2.10.0-RC3"
+      tag: "develop"
     m2m-gateway:
-      tag: "2.10.0-RC3"
+      tag: "develop"
+    m2m-gateway-v3:
+      tag: "develop"
     notification-config-process:
       tag: "develop"
     notification-config-readmodel-writer-sql:
@@ -124,8 +126,6 @@ images:
       tag: "develop"
     producer-keychain-readmodel-writer-sql:
       tag: "develop"
-    party-registry-proxy:
-      tag: "1.0.x-latest"
     purpose-outbound-writer:
       tag: "develop"
     purpose-readmodel-writer:
@@ -170,9 +170,13 @@ images:
       tag: "develop"
     dtd-catalog-exporter:
       tag: "develop"
+    email-digest-dispatcher:
+      tag: "develop"
     ipa-certified-attributes-importer:
       tag: "develop"
     ivass-certified-attributes-importer:
+      tag: "develop"
+    m2m-event-cleaner:
       tag: "develop"
     one-trust-notices:
       tag: "develop"
@@ -183,4 +187,8 @@ images:
     token-details-persister:
       tag: "1.0.x-latest"
     token-generation-readmodel-checker:
+      tag: "develop"
+    in-app-notification-cleaner:
+      tag: "develop"
+    private-certified-attributes-importer:
       tag: "develop"

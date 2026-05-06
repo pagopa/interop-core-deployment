@@ -28,6 +28,8 @@ local:
     RSA_KEYS_IDENTIFIERS: "17d3f3c0-5730-45a9-be8a-655e77bf3555"
     DEV_ENDPOINTS_ENABLED: "true"
     ENABLED_PROJECTIONS: "false"
+  awsAccountId: "755649575658"
+  env: "qa"
 
 autoscaling:
   keda:
@@ -39,5 +41,5 @@ autoscaling:
       metadata:
         timezone: Europe/Rome
         start: 0 8 * * 1-5
-        end: 0 20 * * 1-5
+        end: 59 23 * * 1-5
         desiredReplicas: "{{.Values.deployment.replicas}}" # must be a string

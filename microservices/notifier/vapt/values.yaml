@@ -14,7 +14,7 @@ service:
       protocol: TCP
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-iam-service-vapt-interop-be-notifier-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-iam-service-vapt-interop-be-notifier-es1"
 
 configmap:
   POSTGRES_DB: "persistence_management"
@@ -70,7 +70,7 @@ deployment:
     runAsUser: 1001
   env:
     REQUIRED_CONTACT_POINT_NR: "1"
-    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/565393043798/persistence-events.fifo"
+    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/persistence-events.fifo"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
