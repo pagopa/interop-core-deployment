@@ -2,13 +2,12 @@ name: interop-be-documents-signer
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-documents-signer-{{.Values.local.env}}-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-documents-signer-{{.Values.namespace}}-es1"
 
 service:
   create: false
 
 configmap:
-  SERVICE_NAME: "documents-signer"
   SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-documents-signer"
   KAFKA_GROUP_ID: "{{.Values.local.env}}-documents-signer"
   TOPIC_STARTING_OFFSET: "latest"

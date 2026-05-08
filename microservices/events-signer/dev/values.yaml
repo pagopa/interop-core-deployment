@@ -2,13 +2,12 @@ name: interop-be-events-signer
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-events-signer-{{.Values.local.env}}-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-events-signer-{{.Values.namespace}}-es1"
 
 service:
   create: false
 
 configmap:
-  SERVICE_NAME: "events-signer"
   KAFKA_GROUP_ID: "{{.Values.local.env}}-events-signer"
   AVERAGE_KAFKA_MESSAGE_SIZE_IN_BYTES: "5000"
   MESSAGES_TO_READ_PER_BATCH: "500"

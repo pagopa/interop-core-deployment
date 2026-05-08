@@ -97,11 +97,11 @@ images:
     key-readmodel-writer-sql:
       tag: "develop"
     m2m-event-dispatcher:
-      tag: "2.10.0-RC7"
+      tag: "develop"
     m2m-event-manager:
-      tag: "2.10.0-RC7"
+      tag: "develop"
     m2m-gateway:
-      tag: "2.10.0-RC7"
+      tag: "develop"
     m2m-gateway-v3:
       tag: "develop"
     notification-config-process:
@@ -177,7 +177,7 @@ images:
     ivass-certified-attributes-importer:
       tag: "develop"
     m2m-event-cleaner:
-      tag: "2.10.0-RC7"
+      tag: "develop"
     one-trust-notices:
       tag: "develop"
     pn-consumers:
@@ -189,4 +189,6 @@ images:
     token-generation-readmodel-checker:
       tag: "develop"
     in-app-notification-cleaner:
+      tag: "develop"
+    private-certified-attributes-importer:
       tag: "develop"

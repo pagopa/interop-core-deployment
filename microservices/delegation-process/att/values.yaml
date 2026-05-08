@@ -6,7 +6,7 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::533267098416:role/interop-be-delegation-process-att-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-delegation-process-{{.Values.namespace}}-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_delegation"
@@ -14,6 +14,7 @@ configmap:
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
   DELEGATION_DOCUMENTS_PATH: "delegation"
   DELEGATIONS_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
+  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "568359c2-18e8-4ce9-ace3-1f73cb0df1ff"
 
 deployment:
   flywayInitContainer:

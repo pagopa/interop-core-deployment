@@ -6,11 +6,11 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-attribute-registry-process-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-attribute-registry-process-{{.Values.namespace}}-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_attribute_registry"
-  PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
+  PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT,PDND_INFOCAMERE"
   ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/ui,uat.interop.pagopa.it/m2m,uat.interop.pagopa.it/internal"
 
 deployment:

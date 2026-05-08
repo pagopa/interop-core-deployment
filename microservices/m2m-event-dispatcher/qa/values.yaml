@@ -2,7 +2,7 @@ name: interop-be-m2m-event-dispatcher
 techStack: nodejs
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-m2m-event-dispatcher-qa-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-m2m-event-dispatcher-{{.Values.namespace}}-es1"
 
 service:
   create: false
@@ -39,6 +39,7 @@ deployment:
     DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
     TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
     ESERVICE_TEMPLATE_TOPIC: "common-kafka.ESERVICE_TEMPLATE_TOPIC"
+    PURPOSE_TEMPLATE_TOPIC: "common-kafka.PURPOSE_TEMPLATE_TOPIC"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RW"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
