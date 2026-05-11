@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Read the input
-INPUT=$(cat)
-
 # Extract the list of secrets ARNs from the input
-SECRETS_ARNS=$(echo "$INPUT" | jq -r '.secretsARNs' | jq -r '.[]')
+SECRETS_ARNS=$(jq -r '.secretsARNs | fromjson | .[]')
 
 # Initialize the output list
 SECRETS_NAMES="[]"
@@ -14,18 +11,18 @@ SECRETS_NAMES="[]"
 while read -r SECRET_ARN; do
   [ -z "$SECRET_ARN" ] && continue
 
-  # List the versions of the current secret
-  VERSIONS_JSON=$(aws secretsmanager list-secret-version-ids --secret-id "$SECRET_ARN")
-  VERSIONS_COUNT=$(echo "$VERSIONS_JSON" | jq '.Versions | length')
+  # Retrieve the details of the current secret  
+  SECRET_JSON=$(aws secretsmanager describe-secret --secret-id "$SECRET_ARN" --output json)
+  
+  # Get the name of the secret
+  SECRET_NAME=$(jq -r '.Name' <<< "$SECRET_JSON")
+  # Check if the secret has versions
+  HAS_VERSIONS=$(jq '(.VersionIdsToStages // {}) | length > 0 ' <<< "$SECRET_JSON")
 
-  if [ "$VERSIONS_COUNT" -gt 0 ]; then
-    # Get the name of the secret from the describe-secret command
-    SECRET_NAME=$(aws secretsmanager describe-secret --secret-id "$SECRET_ARN" | jq -r '.Name')
-
+  if [[ "$HAS_VERSIONS" == "true" ]]; then
     # Append the name of the secret to the output list
     SECRETS_NAMES=$(echo "$SECRETS_NAMES" | jq --arg name "$SECRET_NAME" '. += [$name]')
   fi
-
 done <<< "$SECRETS_ARNS"
 
 # Convert the output list as JSON string
