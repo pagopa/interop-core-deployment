@@ -83,7 +83,7 @@ images:
     events-signer:
       tag: "2.18.0-RC2"
     frontend:
-      tag: "2.2.0-RC2"
+      tag: "2.2.0-RC3"
     key-readmodel-writer:
       tag: "2.18.0-RC2"
     key-readmodel-writer-sql:
