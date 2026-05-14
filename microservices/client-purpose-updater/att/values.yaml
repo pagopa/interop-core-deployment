@@ -2,11 +2,11 @@ name: "interop-be-client-purpose-updater"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::533267098416:role/interop-be-client-purpose-updater-att-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-client-purpose-updater-{{.Values.namespace}}-es1"
 
 service:
   create: false
-  
+
 configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-client-purpose-updater"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-client-purpose-updater"

@@ -1,7 +1,7 @@
 name: "interop-be-token-generation-readmodel-checker"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-token-generation-readmodel-checker-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-token-generation-readmodel-checker-{{.Values.namespace}}-es1"
 
 configmap:
   AGREEMENTS_TO_SKIP: "27e4590b-8ecc-4135-85f9-22d48c088abc,82adebab-c419-4fd1-9dfe-856b15bad424"

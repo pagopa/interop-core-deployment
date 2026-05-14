@@ -2,7 +2,7 @@ name: "interop-be-datalake-interface-exporter"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-datalake-interface-exporter-qa-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-datalake-interface-exporter-{{.Values.namespace}}-es1"
 
 service:
   create: false

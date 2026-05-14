@@ -6,13 +6,15 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-delegation-process-prod-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-delegation-process-{{.Values.namespace}}-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_delegation"
   ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  DELEGATION_DOCUMENT_PATH: "delegation"
+  DELEGATION_DOCUMENTS_PATH: "delegation"
+  DELEGATIONS_ALLOWED_ORIGINS: "IPA"
+  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "18a1bf44-0afe-4ad8-859e-cca7adb7b1a9"
 
 deployment:
   flywayInitContainer:

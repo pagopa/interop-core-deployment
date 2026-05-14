@@ -241,3 +241,16 @@ data:
   V1.15__Grant_Access_M2M_Event_Dispatcher_Catalog.sql: |- 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";
+
+  V1.16__Grant_Access_EmailDigestDispatcher_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO
+    "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO
+     "${NAMESPACE}_email_digest_dispatcher_user";
+
+  V1.17__Add_Column_InstanceLabel_EService.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS instance_label VARCHAR;
+
+  V1.18__Add_Column_daily_calls_per_consumer_Eservice_descriptor_attribute.sql:
+    |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS daily_calls_per_consumer INTEGER;

@@ -9,7 +9,7 @@ service:
     protocol: "HTTP"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::533267098416:role/interop-be-api-gateway-att-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-api-gateway-{{.Values.namespace}}-es1"
 
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
@@ -26,7 +26,6 @@ deployment:
     HOST: "0.0.0.0"
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
-    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
     FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
   envFromFieldRef:
@@ -43,7 +42,6 @@ deployment:
     DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
     NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
-    PARTY_REGISTRY_PROXY_URL: "common-services-urls.PARTY_REGISTRY_PROXY_URL"
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
@@ -70,6 +68,7 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:

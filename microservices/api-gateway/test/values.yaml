@@ -9,7 +9,7 @@ service:
     protocol: "HTTP"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-api-gateway-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-api-gateway-{{.Values.namespace}}-es1"
 
 configmap:
   ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/m2m"
@@ -41,7 +41,6 @@ deployment:
     DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
     NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
-    PARTY_REGISTRY_PROXY_URL: "common-services-urls.PARTY_REGISTRY_PROXY_URL"
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"

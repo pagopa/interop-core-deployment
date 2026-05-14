@@ -196,3 +196,24 @@ data:
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".producer_key TO "${NAMESPACE}_m2m_event_dispatcher_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_key TO "${NAMESPACE}_m2m_event_manager_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".producer_key TO readonly_user;
+  
+  V1.1__Grant_Delete_Access_M2M_Event_Cleaner.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_m2m_event" to "${NAMESPACE}_m2m_event_cleaner_user";
+    GRANT SELECT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_m2m_event" TO "${NAMESPACE}_m2m_event_cleaner_user";
+
+  V1.2__Add_Tables_Purpose_Template.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_m2m_event".purpose_template (
+      id UUID NOT NULL,
+      event_type VARCHAR NOT NULL,
+      event_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+      resource_version INT NOT NULL,
+      purpose_template_id UUID NOT NULL,
+      creator_id UUID NOT NULL,
+      visibility VARCHAR NOT NULL,      
+      PRIMARY KEY (id)
+    );
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_m2m_event".purpose_template TO "${NAMESPACE}_m2m_event_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".purpose_template TO "${NAMESPACE}_m2m_event_manager_user";
+    GRANT SELECT, DELETE ON TABLE "${NAMESPACE}_m2m_event".purpose_template TO "${NAMESPACE}_m2m_event_cleaner_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_m2m_event".purpose_template TO readonly_user;

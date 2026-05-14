@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-m2m-events-db
+  namespace: prod
+data:
+  DB_HOST_RW: "interop-platform-data-prod.cluster-cgo3fcsduspu.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "interop-platform-data-prod.cluster-ro-cgo3fcsduspu.eu-south-1.rds.amazonaws.com"
+  DB_NAME: "m2m_events"
+  DB_PORT: "5432"
+  DB_USE_SSL: "true"
+  DB_SCHEMA: "prod_m2m_event"

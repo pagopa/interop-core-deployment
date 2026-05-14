@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-in-app-notification-db
+  namespace: qa
+data:
+  DB_HOST: "interop-platform-data-qa.cluster-cwgb5whmdqov.eu-south-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "in_app_notification"
+  DB_USE_SSL: "true"
+  DB_SCHEMA: "qa_notification"
