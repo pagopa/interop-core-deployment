@@ -41,15 +41,24 @@ jobs:
     steps:
       - name: Print Inputs
         id: print_inputs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_REF: ${{ github.ref }}
+          FORCE_RESTART: ${{ inputs.force_restart }}
+          RUN_K8S_WORKFLOW: ${{ inputs.run_k8s_workflow }}
+          RUN_TF_APPLY_MONITORING_WORKFLOW: ${{ inputs.run_tf_apply_monitoring_workflow }}
+          RUN_TF_APPLY_SECRETS_WORKFLOW: ${{ inputs.run_tf_apply_secrets_workflow }}
+          HELM_FORCE_UPGRADE_MICROSERVICES_CSV: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}
+          HELM_FORCE_UPGRADE_CRONJOBS_CSV: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}
         run: |
-          echo "- environment: \`${{ inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- ref: \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- force_restart: \`${{ inputs.force_restart }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- run_k8s_workflow: \`${{ inputs.run_k8s_workflow }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- run_tf_apply_monitoring_workflow: \`${{ inputs.run_tf_apply_monitoring_workflow }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- run_tf_apply_secrets_workflow: \`${{ inputs.run_tf_apply_secrets_workflow }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- HELM_FORCE_UPGRADE_MICROSERVICES_CSV: \`${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- HELM_FORCE_UPGRADE_CRONJOBS_CSV: \`${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- environment: \`$DEPLOY_ENVIRONMENT\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- ref: \`$DEPLOY_REF\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- force_restart: \`$FORCE_RESTART\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- run_k8s_workflow: \`$RUN_K8S_WORKFLOW\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- run_tf_apply_monitoring_workflow: \`$RUN_TF_APPLY_MONITORING_WORKFLOW\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- run_tf_apply_secrets_workflow: \`$RUN_TF_APPLY_SECRETS_WORKFLOW\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- HELM_FORCE_UPGRADE_MICROSERVICES_CSV: \`$HELM_FORCE_UPGRADE_MICROSERVICES_CSV\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- HELM_FORCE_UPGRADE_CRONJOBS_CSV: \`$HELM_FORCE_UPGRADE_CRONJOBS_CSV\`" >> "$GITHUB_STEP_SUMMARY"
 
   initChecks:
     runs-on: ubuntu-22.04
