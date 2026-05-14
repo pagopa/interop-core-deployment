@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-AWS_REGION=$(jq -r '.awsRegion')
+INPUT=$(cat)
 
-# Extract the list of secrets ARNs from the input
-SECRETS_ARNS=$(jq -r '.secretsARNs | fromjson | .[]')
+# Extract AWS region
+AWS_REGION=$(jq -r '.awsRegion' <<< "$INPUT")
+
+# Extract the list of secrets ARNs
+SECRETS_ARNS=$(jq -r '.secretsARNs | fromjson | .[]' <<< "$INPUT")
 
 # Initialize the output list
 SECRETS_NAMES="[]"
@@ -18,10 +21,10 @@ while read -r SECRET_ARN; do
   
   # Get the name of the secret
   SECRET_NAME=$(jq -r '.Name' <<< "$SECRET_JSON")
-  # Check if the secret has versions
-  HAS_VERSIONS=$(jq '((.VersionIdsToStages // {}) | to_entries | any(.value[]; . == "AWSCURRENT"))' <<< "$SECRET_JSON")
+  # Check if the secret has a current version
+  HAS_CURRENT_VERSION=$(jq '(.VersionIdsToStages // {}) | to_entries | any(.[]; (.value | index("AWSCURRENT")))' <<< "$SECRET_JSON")
   
-  if [[ "$HAS_VERSIONS" == "true" ]]; then
+  if [[ "$HAS_CURRENT_VERSION" == "true" ]]; then
     # Append the name of the secret to the output list
     SECRETS_NAMES=$(echo "$SECRETS_NAMES" | jq --arg name "$SECRET_NAME" '. += [$name]')
   fi
