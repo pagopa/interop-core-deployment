@@ -17,7 +17,8 @@ data "external" "filter_secrets_with_versions" {
   program = ["bash", "${path.module}/assets/scripts/filter_secrets_with_versions.sh"]
 
   query = {
-    secretsARNs = jsonencode([for key, value in data.aws_secretsmanager_secret.tagged_object : value.arn])
+    awsRegion   = var.aws_region,
+    secretsARNs = jsonencode([ for key, value in data.aws_secretsmanager_secret.tagged_object : value.arn ])
   }
 }
 
