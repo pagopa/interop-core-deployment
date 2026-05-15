@@ -10,6 +10,7 @@ data:
   # Disabled as part of migration to the new document-builder feature, which replaces the process contract builder; this is a permanent change.
   FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER: "false"
   FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "false"
+  FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER: "true"
   # Disabled as part of migration to the new document-builder feature, which replaces the process contract builder; this is a permanent change.
   FEATURE_FLAG_DELEGATIONS_CONTRACT_BUILDER: "false"
   FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS: "true"
