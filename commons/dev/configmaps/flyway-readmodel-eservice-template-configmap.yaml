@@ -157,10 +157,14 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_email_digest_dispatcher_user";    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_email_digest_dispatcher_user";
 
-  V1.8__Add_Column_AsyncExchange_EServiceTemplate.sql: |-
+  V1.8__Grant_Access_PurposeTemplateProcess_EserviceTemplate.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.9__Add_Column_AsyncExchange_EServiceTemplate.sql: |-
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template ADD COLUMN IF NOT EXISTS async_exchange BOOLEAN;
 
-  V1.9__Alter_Eservice_Template_Version_Interface_Add_Kind.sql: |-
+  V1.10__Alter_Eservice_Template_Version_Interface_Add_Kind.sql: |-
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
       DROP CONSTRAINT IF EXISTS eservice_template_version_interface_version_id_key;
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
@@ -172,7 +176,7 @@ data:
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
       ADD CONSTRAINT eservice_template_version_interface_version_id_kind_key UNIQUE (version_id, kind);
 
-  V1.10__Create_Eservice_Template_Version_Async_Exchange_Properties.sql: |-
+  V1.11__Create_Eservice_Template_Version_Async_Exchange_Properties.sql: |-
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties (
       eservice_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
@@ -189,6 +193,7 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties TO "${NAMESPACE}_eservice_template_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties TO readonly_user;
 
-  V1.11__Grant_Access_AsyncTokenGenerationRMChecker_EServiceTemplate.sql: |-
+  V1.12__Grant_Access_AsyncTokenGenerationRMChecker_EServiceTemplate.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_async_token_generation_readmodel_checker_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
+
