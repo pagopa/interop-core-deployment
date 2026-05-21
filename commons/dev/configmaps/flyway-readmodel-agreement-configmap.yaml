@@ -180,3 +180,7 @@ data:
     "${NAMESPACE}_email_digest_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO
      "${NAMESPACE}_email_digest_dispatcher_user";
+
+  V1.14__Grant_Access_AsyncTokenGenerationRMChecker_Agreement.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_agreement" to "${NAMESPACE}_async_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_agreement" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
