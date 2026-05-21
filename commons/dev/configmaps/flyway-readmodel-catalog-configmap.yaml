@@ -254,3 +254,10 @@ data:
   V1.18__Add_Column_daily_calls_per_consumer_Eservice_descriptor_attribute.sql:
     |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS daily_calls_per_consumer INTEGER;
+
+  V1.19__Add_Column_TenantKind_RiskAnalysis_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR;
+
+  V1.20__Grant_Access_RiskAnalysisProcessingJob_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_risk_analysis_processing_job_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_risk_analysis_processing_job_user";
