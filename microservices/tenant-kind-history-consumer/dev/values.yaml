@@ -41,5 +41,5 @@ deployment:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
   envFromSecrets:
-    TENANT_KIND_HISTORY_DB_USERNAME: "tenant-kind-history-db.username"
-    TENANT_KIND_HISTORY_DB_PASSWORD: "tenant-kind-history-db.password"
+    TENANT_KIND_HISTORY_DB_USERNAME: "platform-data-tenant-kind-history-consumer-user.username"
+    TENANT_KIND_HISTORY_DB_PASSWORD: "platform-data-tenant-kind-history-consumer-user.password"

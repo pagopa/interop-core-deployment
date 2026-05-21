@@ -87,8 +87,8 @@ deployment:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-catalog-process-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-process-user.password"
-    TENANT_KIND_HISTORY_DB_USERNAME: "tenant-kind-history-db.username"
-    TENANT_KIND_HISTORY_DB_PASSWORD: "tenant-kind-history-db.password"
+    TENANT_KIND_HISTORY_DB_USERNAME: "platform-data-catalog-process-user.username"
+    TENANT_KIND_HISTORY_DB_PASSWORD: "platform-data-catalog-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

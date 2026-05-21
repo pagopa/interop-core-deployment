@@ -4,9 +4,9 @@ metadata:
   name: common-tenant-kind-history-db
   namespace: dev
 data:
-  DB_HOST_RW: "PLACEHOLDER" # TODO: replace with actual DB host (RW)
-  DB_HOST_RO: "PLACEHOLDER" # TODO: replace with actual DB host (RO)
+  DB_HOST_RW: "interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com" # TODO: replace with actual DB host (RW)
+  DB_HOST_RO: "interop-platform-data-dev.cluster-ro-cevisn7oellx.eu-south-1.rds.amazonaws.com" # TODO: replace with actual DB host (RO)
   DB_PORT: "5432"
-  DB_NAME: "PLACEHOLDER" # TODO: replace with actual DB name
+  DB_NAME: "tenant_kind_history" # TODO: replace with actual DB name
   DB_USE_SSL: "true"
   DB_SCHEMA: "dev_tenant_kind_history"
