@@ -159,4 +159,6 @@ data:
     );
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose_template".eservice_template_version_purpose_template TO "${NAMESPACE}_purpose_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".eservice_template_version_purpose_template TO "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".eservice_template_version_purpose_template TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".eservice_template_version_purpose_template TO "${NAMESPACE}_documents_generator_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".eservice_template_version_purpose_template TO readonly_user;
