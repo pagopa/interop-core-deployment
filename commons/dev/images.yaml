@@ -198,5 +198,5 @@ images:
       tag: "develop"
     private-certified-attributes-importer:
       tag: "develop"
-    risk-analysis-processing-job:
+    risk-analysis-processing:
       tag: "develop"

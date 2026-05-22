@@ -1,7 +1,7 @@
-name: "interop-be-risk-analysis-processing-job"
+name: "interop-be-risk-analysis-processing"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-risk-analysis-processing-job-{{.Values.namespace}}-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-risk-analysis-processing-{{.Values.namespace}}-es1"
 
 configmap:
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
@@ -30,5 +30,5 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
   envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-risk-analysis-processing-job-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-risk-analysis-processing-job-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-risk-analysis-processing-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-risk-analysis-processing-user.password"
