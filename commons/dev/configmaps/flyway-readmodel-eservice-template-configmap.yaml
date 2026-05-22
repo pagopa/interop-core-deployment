@@ -197,6 +197,16 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_async_token_generation_readmodel_checker_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
 
-  V1.13__Grant_Access_RiskAnalysisProcessingJob_Template.sql: |-
+  V1.13__Grant_Access_Async_Exchange_Properties_EServiceTemplate.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_catalog_process_user";
+
+  V1.14__Grant_Access_Async_Exchange_Properties_EServiceTemplate_Additional_Users.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO
+      "${NAMESPACE}_purpose_template_process_user",
+      "${NAMESPACE}_eservice_template_instances_updater_user",
+      "${NAMESPACE}_datalake_data_export_user",
+      "${NAMESPACE}_email_digest_dispatcher_user";
+
+  V1.15__Grant_Access_RiskAnalysisProcessingJob_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_risk_analysis_processing_job_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_risk_analysis_processing_job_user";
