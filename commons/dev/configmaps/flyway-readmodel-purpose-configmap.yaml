@@ -197,3 +197,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_risk_analysis_processing_job_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_risk_analysis_processing_job_user";
   
+
+  V1.17__Grant_Access_AsyncTokenGenerationRMChecker_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_async_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
