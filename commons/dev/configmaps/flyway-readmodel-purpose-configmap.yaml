@@ -188,7 +188,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO
     "${NAMESPACE}_email_digest_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO
-     "${NAMESPACE}_email_digest_dispatcher_user";  
+     "${NAMESPACE}_email_digest_dispatcher_user";
 
 
   V1.17__Grant_Access_AsyncTokenGenerationRMChecker_Purpose.sql: |-
