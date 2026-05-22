@@ -292,7 +292,7 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
 
   V1.23__Grant_Access_Async_Exchange_Properties_Catalog.sql: |-
-    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_async_exchange_properties TO
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO
       "${NAMESPACE}_agreement_process_user",
       "${NAMESPACE}_authorization_process_user",
       "${NAMESPACE}_delegation_process_user",
