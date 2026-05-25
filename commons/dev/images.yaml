@@ -160,6 +160,8 @@ images:
       tag: "develop"
     tenant-readmodel-writer-sql:
       tag: "develop"
+    tenant-kind-history-consumer:
+      tag: "develop"
     tenant-outbound-writer:
       tag: "develop"
     token-details-persister-node:
@@ -195,4 +197,6 @@ images:
     in-app-notification-cleaner:
       tag: "develop"
     private-certified-attributes-importer:
+      tag: "develop"
+    risk-analysis-processing:
       tag: "develop"
