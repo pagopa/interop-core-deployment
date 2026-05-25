@@ -102,6 +102,8 @@ images:
       tag: "1.0.19"
     notifier-seeder:
       tag: "2.18.1-RC1"
+    producer-keychain-platformstate-writer:
+      tag: "placeholder"
     producer-key-readmodel-writer:
       tag: "2.18.1-RC1"
     producer-key-readmodel-writer-sql:
@@ -166,6 +168,8 @@ images:
   jobs:
     anac-certified-attributes-importer:
       tag: "2.18.1-RC1"
+    async-token-generation-readmodel-checker:
+      tag: "placeholder"
     datalake-data-export:
       tag: "2.18.1-RC1"
     dtd-catalog-exporter:

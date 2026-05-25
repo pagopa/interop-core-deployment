@@ -6,3 +6,5 @@ metadata:
 data:
   TOKEN_READMODEL_PLATFORM_STATES_TABLE_NAME: interop-platform-states-qa
   TOKEN_READMODEL_TOKEN_STATES_TABLE_NAME: interop-token-generation-states-qa
+  TOKEN_READMODEL_INTERACTIONS_TABLE_NAME: interop-async-exchanges-interactions-qa
+  PRODUCER_KEYCHAIN_PLATFORM_STATES_TABLE_NAME: interop-async-exchanges-producer-keychain-platform-states-qa
