@@ -1,6 +1,7 @@
 namespace: "dev-experimental-argocd-interop-apps"
 
 cronjob:
+  suspend: true
   image:
     repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
