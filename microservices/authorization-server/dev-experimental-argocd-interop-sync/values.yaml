@@ -29,7 +29,7 @@ configmap:
   ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
 
 deployment:
-  replicas: 1  
+  replicas: 0  
   env:
     REQUIRED_CONTACT_POINT_NR: "1"    
   envFromConfigmaps:

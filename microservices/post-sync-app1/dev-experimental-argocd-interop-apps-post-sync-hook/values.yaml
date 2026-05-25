@@ -8,13 +8,13 @@ service:
   create: false
 
 deployment:
-  args: ["echo 'hello there'; sleep 3000; exit 0;"]
+  args: [ "echo 'hello there'; sleep 3000; exit 0;" ]
   env:
     dbhash: "{{ .Values.locals.secrets.dbhash }}"
   envFromConfigmaps:
     AGREEMENT_TOPIC: "common-kafka-postsync-hook.AGREEMENT_TOPIC"
     AGREEMENT_OUTBOUND_TOPIC: "common-kafka-postsync-hook.AGREEMENT_OUTBOUND_TOPIC"
-    
+
 externalSecrets:
   data:
     - secretKey: FOO
@@ -26,26 +26,29 @@ externalSecrets:
       remoteRef:
         key: experimental-eso/foo/bar
         property: iki
-        version: "uuid/1417190e-06b2-4894-b340-262415498194"
+        version: "uuid/f8cbdd4b-5c96-424f-875f-03ac339fccec"
     - secretKey: IKI2
       remoteRef:
         key: experimental-eso/foo/bar
         property: iki
+        version: uuid/f8cbdd4b-5c96-424f-875f-03ac339fccec
     - secretKey: IKI3
       remoteRef:
         key: experimental-eso/foo/bar
         property: iki
-        version: "AWSCURRENT"
+        version: "uuid/f8cbdd4b-5c96-424f-875f-03ac339fccec"
     - secretKey: IKI4
       remoteRef:
         key: experimental-eso/foo/bar
         property: iki
-        version: "AWSPREVIOUS"
+        version: "uuid/f8cbdd4b-5c96-424f-875f-03ac339fccec"
     - secretKey: DATABASE
       remoteRef:
         key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
         property: database
+        version: uuid/terraform-20260212133048976200000002
     - secretKey: USERNAME
       remoteRef:
         key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
         property: username
+        version: uuid/terraform-20260212133048976200000002
