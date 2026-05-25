@@ -309,7 +309,7 @@ data:
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user",
       "${NAMESPACE}_m2m_event_dispatcher_user";
-      
+
   V1.24__Add_Column_TenantKind_RiskAnalysis_Catalog.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR;
 
