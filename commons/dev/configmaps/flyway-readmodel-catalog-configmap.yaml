@@ -314,5 +314,5 @@ data:
     ALTER TABLE "${NAMESPACE}_catalog".eservice_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR;
 
   V1.25__Grant_Access_RiskAnalysisProcessingJob_Catalog.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_risk_analysis_processing_job_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_risk_analysis_processing_job_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_risk_analysis_processing_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_risk_analysis_processing_user";
