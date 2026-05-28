@@ -68,3 +68,11 @@ data:
   V1.1__Grant_Access_AsyncTokenGenerationRMChecker_ProducerKeychain.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_producer_keychain" to "${NAMESPACE}_async_token_generation_readmodel_checker_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_producer_keychain" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
+
+  V1.2__Grant_Access_NotificationDispatchers_ProducerKeychain.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_producer_keychain" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_producer_keychain" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
