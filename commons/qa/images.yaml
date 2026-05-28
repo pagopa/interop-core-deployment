@@ -146,6 +146,8 @@ images:
       tag: "2.19.0-RC1"
     tenant-readmodel-writer-sql:
       tag: "2.19.0-RC1"
+    tenant-kind-history-consumer:
+      tag: "2.19.0-RC1"
     token-details-persister-node:
       tag: "2.19.0-RC1"
     in-app-notification-manager:
@@ -195,4 +197,6 @@ images:
     token-generation-readmodel-checker:
       tag: "2.19.0-RC1"
     in-app-notification-cleaner:
+      tag: "2.19.0-RC1"
+    risk-analysis-processing:
       tag: "2.19.0-RC1"
