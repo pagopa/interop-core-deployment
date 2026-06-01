@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-tenant-kind-history-db
+  namespace: qa
+data:
+  DB_HOST_RW: "interop-platform-data-qa.cluster-cwgb5whmdqov.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "interop-platform-data-qa.cluster-ro-cwgb5whmdqov.eu-south-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "tenant_kind_history"
+  DB_USE_SSL: "true"
+  DB_SCHEMA: "qa_tenant_kind_history"
