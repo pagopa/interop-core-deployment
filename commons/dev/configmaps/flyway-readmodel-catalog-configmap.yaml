@@ -355,3 +355,7 @@ data:
       "${NAMESPACE}_async_token_generation_readmodel_checker_user",
       "${NAMESPACE}_risk_analysis_processing_user",
       readonly_user;
+
+  V1.27__Grant_Access_EserviceDescriptorsScheduledArchiver_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_descriptors_scheduled_archiver_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_eservice_descriptors_scheduled_archiver_user";
