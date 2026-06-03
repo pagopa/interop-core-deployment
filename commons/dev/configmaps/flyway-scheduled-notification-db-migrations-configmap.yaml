@@ -8,6 +8,7 @@ data:
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_scheduled_notification";
 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_scheduled_notification" to
+      "${NAMESPACE}_scheduled_notification_scheduler_user",
       "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user",
       "${NAMESPACE}_email_scheduled_notification_dispatcher_user",
       "${NAMESPACE}_scheduled_notification_cleaner_user",
@@ -31,5 +32,6 @@ data:
 
     GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
     GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user";
+    GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_scheduled_notification_scheduler_user";
     GRANT SELECT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_scheduled_notification_cleaner_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "readonly_user";
