@@ -15,7 +15,8 @@ cronjob:
   schedule: "30 0 * * *"
   failedJobsHistoryLimit: 3
   successfulJobsHistoryLimit: 3
-  restartPolicy: OnFailure
+  restartPolicy: Never
+  concurrencyPolicy: Forbid
   automountServiceAccountToken: false
 
   envFromConfigmaps:
