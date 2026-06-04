@@ -200,3 +200,5 @@ images:
       tag: "develop"
     risk-analysis-processing:
       tag: "develop"
+    eservice-descriptors-scheduled-archiver:
+      tag: "develop"
