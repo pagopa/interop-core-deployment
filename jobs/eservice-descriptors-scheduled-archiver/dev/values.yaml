@@ -10,6 +10,8 @@ configmap:
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_SECONDS_DURATION: "1800"
   CATALOG_API_CONCURRENCY: "5"
+  DEFAULT_POLLING_RETRY_DELAY: "300"
+  DEFAULT_POLLING_MAX_RETRIES: "20"
 
 cronjob:
   schedule: "30 0 * * *"
