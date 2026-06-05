@@ -202,7 +202,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_risk_analysis_processing_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_risk_analysis_processing_user";
 
-  V1.20__Add_reviewer_workflow_data_model.sql: |-
+  V1.20__Add_reviewer_workflow_Purpose.sql: |-
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_review_mode VARCHAR;
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signing_state VARCHAR;
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signed_by UUID;
