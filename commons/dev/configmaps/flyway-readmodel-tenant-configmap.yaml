@@ -247,3 +247,25 @@ data:
   V1.7__Grant_Access_JobPrivateCertifiedAttributesImporter_Tenant.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" to "${NAMESPACE}_private_certified_attributes_importer_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_private_certified_attributes_importer_user";
+  
+  V1.8__AddTables_AttributiCertificatiDiscreti_Tenant.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant_remote_id (
+      tenant_id UUID NOT NULL REFERENCES "${NAMESPACE}_tenant".tenant (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      origin VARCHAR NOT NULL,
+      value VARCHAR NOT NULL,
+      assignment_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (tenant_id, origin),
+      FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant".tenant_certified_discrete_attribute (
+      attribute_id UUID NOT NULL,
+      tenant_id UUID NOT NULL REFERENCES "${NAMESPACE}_tenant".tenant (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      assignment_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+      revocation_timestamp TIMESTAMP WITH TIME ZONE,
+      certified_discrete_value INTEGER NOT NULL,
+      PRIMARY KEY (attribute_id, tenant_id),
+      FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
