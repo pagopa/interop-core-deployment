@@ -201,3 +201,30 @@ data:
   V1.19__Grant_Access_RiskAnalysisProcessingJob_Purpose.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_risk_analysis_processing_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_risk_analysis_processing_user";
+
+  V1.20__Add_reviewer_workflow_data_model.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_review_mode VARCHAR;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signing_state VARCHAR;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signed_by UUID;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_rejection_reason VARCHAR;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_sent_to_reviewer_at TIMESTAMP WITH TIME ZONE;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".risk_analysis_reviewer (
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      reviewer_id UUID NOT NULL,
+      PRIMARY KEY (purpose_id, reviewer_id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    CREATE INDEX IF NOT EXISTS idx_risk_analysis_reviewer_id ON "${NAMESPACE}_purpose".risk_analysis_reviewer (reviewer_id);
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO readonly_user;
+
+  V1.21__Grant_Access_risk_analysis_reviewer.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_email_notification_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_risk_analysis_processing_user";
