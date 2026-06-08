@@ -18,13 +18,11 @@ cronjob:
   schedule: "30 7 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
-  restartPolicy: OnFailure
+  restartPolicy: Never
+  backoffLimit: 0
   automountServiceAccountToken: false
   suspend: true
   envFromConfigmaps:
-    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     ATTRIBUTE_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
@@ -36,7 +34,5 @@ cronjob:
     FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
 
   envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-istat-certified-discrete-attributes-importer-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-istat-certified-discrete-attributes-importer-user.password"
