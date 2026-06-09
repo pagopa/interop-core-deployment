@@ -35,6 +35,7 @@ data:
     GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_scheduled_notification_scheduler_user";
     GRANT SELECT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_scheduled_notification_cleaner_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "readonly_user";
+
   V2__Add_skipped_at.sql: |-
     ALTER TABLE "${NAMESPACE}_scheduled_notification".scheduled_notification
       ADD COLUMN IF NOT EXISTS skipped_at TIMESTAMP WITH TIME ZONE;
