@@ -273,3 +273,14 @@ data:
       PRIMARY KEY (attribute_id, tenant_id),
       FOREIGN KEY (tenant_id, metadata_version) REFERENCES "${NAMESPACE}_tenant".tenant (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
     );
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO readonly_user;
+
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant".tenant_remote_id TO "${NAMESPACE}_tenant_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_remote_id TO "${NAMESPACE}_tenant_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_remote_id TO readonly_user;
+    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_istat_certified_discrete_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant" TO "${NAMESPACE}_istat_certified_discrete_attributes_importer_user";
