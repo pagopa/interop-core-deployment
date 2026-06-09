@@ -144,6 +144,8 @@ images:
       tag: "develop"
     redis:
       tag: "7.0.4"
+    scheduled-notification-scheduler:
+      tag: "develop"
     selfcare-client-users-updater:
       tag: "develop"
     selfcare-onboarding-consumer:
@@ -197,6 +199,12 @@ images:
     token-generation-readmodel-checker:
       tag: "develop"
     in-app-notification-cleaner:
+      tag: "develop"
+    email-scheduled-notification-dispatcher:
+      tag: "develop"
+    in-app-scheduled-notification-dispatcher:
+      tag: "develop"
+    scheduled-notification-cleaner:
       tag: "develop"
     private-certified-attributes-importer:
       tag: "develop"
