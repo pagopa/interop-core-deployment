@@ -295,9 +295,9 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_ipa_certified_attributes_importer_user";
   
   V1.8.3__Grant_access_to_all_process_on_new_tenant_certified_discrete_attribute_Tenant.sql: |-
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_agreement_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_catalog_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_attribute_registry_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_delegation_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_eservice_template_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_attribute_registry_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_delegation_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant".tenant_certified_discrete_attribute TO "${NAMESPACE}_purpose_process_user";
