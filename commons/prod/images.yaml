@@ -135,6 +135,8 @@ images:
     tenant-readmodel-writer:
       tag: "2.18.1"
     tenant-readmodel-writer-sql:
+      tag: "2.19.0"
+    tenant-kind-history-consumer:
       tag: "2.18.1"
     token-details-persister-node:
       tag: "2.18.1"
@@ -184,4 +186,6 @@ images:
       tag: "2.18.1"
     email-digest-dispatcher:
       tag: "2.18.1"
+    risk-analysis-processing:
+      tag: "2.19.0"
   
