@@ -1,7 +1,7 @@
-name: "interop-be-istat-certified-discrete-attributes-importer"
+name: "interop-be-istat-certified-attributes-importer"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-istat-certified-discrete-attributes-importer-{{.Values.namespace}}-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-istat-certified-attributes-importer-{{.Values.namespace}}-es1"
 
 configmap:
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
@@ -35,5 +35,5 @@ cronjob:
     FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
 
   envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-istat-certified-discrete-attributes-importer-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-istat-certified-discrete-attributes-importer-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-istat-certified-attributes-importer-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-istat-certified-attributes-importer-user.password"
