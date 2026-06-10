@@ -88,3 +88,7 @@ data:
   V1.13__Grant_Access_ScheduledNotificationDispatchers_Attribute.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+  
+  V1.14__Grant_Access_JobIstatCertifiedDiscreteAttributesImporter_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_istat_certified_discrete_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_istat_certified_discrete_attributes_importer_user";
