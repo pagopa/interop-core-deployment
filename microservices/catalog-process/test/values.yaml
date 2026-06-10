@@ -78,6 +78,12 @@ deployment:
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
     FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
+    FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS: "common-feature-flags.FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS"
+    TENANT_KIND_HISTORY_DB_HOST: "common-tenant-kind-history-db.DB_HOST_RO"
+    TENANT_KIND_HISTORY_DB_PORT: "common-tenant-kind-history-db.DB_PORT"
+    TENANT_KIND_HISTORY_DB_NAME: "common-tenant-kind-history-db.DB_NAME"
+    TENANT_KIND_HISTORY_DB_USE_SSL: "common-tenant-kind-history-db.DB_USE_SSL"
+    TENANT_KIND_HISTORY_DB_SCHEMA: "common-tenant-kind-history-db.DB_SCHEMA"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
@@ -85,6 +91,8 @@ deployment:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-catalog-process-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-process-user.password"
+    TENANT_KIND_HISTORY_DB_USERNAME: "platform-data-catalog-process-user.username"
+    TENANT_KIND_HISTORY_DB_PASSWORD: "platform-data-catalog-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
