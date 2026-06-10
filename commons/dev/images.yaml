@@ -180,6 +180,8 @@ images:
       tag: "develop"
     email-digest-dispatcher:
       tag: "develop"
+    istat-certified-discrete-attributes-importer:
+      tag: "develop"
     ipa-certified-attributes-importer:
       tag: "develop"
     ivass-certified-attributes-importer:
