@@ -146,6 +146,8 @@ images:
       tag: "2.19.0"
     tenant-readmodel-writer-sql:
       tag: "2.19.0"
+    tenant-kind-history-consumer:
+      tag: "2.19.0"
     token-details-persister-node:
       tag: "2.19.0"
     in-app-notification-manager:
@@ -197,4 +199,6 @@ images:
     check-selfcare-diff:
       tag: "2.19.0"
     email-digest-dispatcher:
+      tag: "2.19.0"
+    risk-analysis-processing:
       tag: "2.19.0"
