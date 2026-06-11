@@ -237,10 +237,10 @@ data:
   V1.9__Add_Column_daily_calls_per_consumer_Eservice_descriptor_attribute.sql: |-
     ALTER TABLE IF EXISTS "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS daily_calls_per_consumer INTEGER;
 
-  V1.12__Add_Column_AsyncExchange_EService.sql: |-
+  V1.10__Add_Column_AsyncExchange_EService.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS async_exchange BOOLEAN;
 
-  V1.13__Alter_Eservice_Descriptor_Interface_Add_Kind.sql: |-
+  V1.11__Alter_Eservice_Descriptor_Interface_Add_Kind.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_interface
       DROP CONSTRAINT IF EXISTS eservice_descriptor_interface_descriptor_id_key;
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_interface
@@ -252,7 +252,7 @@ data:
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_interface
       ADD CONSTRAINT eservice_descriptor_interface_descriptor_id_kind_key UNIQUE (descriptor_id, kind);
 
-  V1.14__Create_Eservice_Descriptor_Async_Exchange_Properties.sql: |-
+  V1.12__Create_Eservice_Descriptor_Async_Exchange_Properties.sql: |-
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_catalog".eservice_descriptor_async_exchange_properties (
       eservice_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
@@ -269,7 +269,7 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_async_exchange_properties TO "${NAMESPACE}_catalog_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_async_exchange_properties TO readonly_user;
 
-  V1.15__Grant_Access_Async_Exchange_Catalog.sql: |-
+  V1.13__Grant_Access_Async_Exchange_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO
       "${NAMESPACE}_async_token_generation_readmodel_checker_user",
