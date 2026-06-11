@@ -74,7 +74,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
-    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
     FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS: "common-feature-flags.FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS"
     TENANT_KIND_HISTORY_DB_HOST: "common-tenant-kind-history-db.DB_HOST_RO"
     TENANT_KIND_HISTORY_DB_PORT: "common-tenant-kind-history-db.DB_PORT"
