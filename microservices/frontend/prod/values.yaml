@@ -13,6 +13,7 @@ frontend:
   env.js:
     window.pagopa_env:
       STAGE: "PROD"
+      AUTHORIZATION_SERVER_TOKEN_CREATION_ASYNC_URL: "https://auth.interop.pagopa.it/token.oauth2.async"
       AUTHORIZATION_SERVER_TOKEN_CREATION_URL: "https://auth.interop.pagopa.it/token.oauth2"
       INTEROP_RESOURCES_BASE_URL: "https://interop-public-assets-prod.s3.eu-south-1.amazonaws.com"
       BACKEND_FOR_FRONTEND_URL: "https://selfcare.interop.pagopa.it/1.0/backend-for-frontend"
