@@ -198,7 +198,7 @@ data:
       "${NAMESPACE}_eservice_template_instances_updater_user",
       "${NAMESPACE}_datalake_data_export_user",
       "${NAMESPACE}_email_digest_dispatcher_user";
- 
-  V1.10__Grant_Access_RiskAnalysisProcessingJob_Template.sql: |-
+
+V1.10__Grant_Access_RiskAnalysisProcessingJob_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_risk_analysis_processing_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_risk_analysis_processing_user";
