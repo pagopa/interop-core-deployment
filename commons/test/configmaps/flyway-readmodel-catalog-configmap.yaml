@@ -236,6 +236,7 @@ data:
 
   V1.9__Add_Column_daily_calls_per_consumer_Eservice_descriptor_attribute.sql: |-
     ALTER TABLE IF EXISTS "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS daily_calls_per_consumer INTEGER;
+    
 
   V1.10__Add_Column_AsyncExchange_EService.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS async_exchange BOOLEAN;
