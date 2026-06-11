@@ -297,3 +297,11 @@ data:
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user",
       "${NAMESPACE}_m2m_event_dispatcher_user";
+
+  V1.14__Add_Column_TenantKind_RiskAnalysis_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR;
+
+  V1.15__Grant_Access_RiskAnalysisProcessingJob_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_risk_analysis_processing_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_risk_analysis_processing_user";
+
