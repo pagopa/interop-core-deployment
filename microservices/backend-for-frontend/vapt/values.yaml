@@ -20,6 +20,9 @@ configmap:
   GENERATED_JWT_AUDIENCE: "vapt.interop.pagopa.it/ui"
   CLIENT_ASSERTION_AUDIENCE: "auth.vapt.interop.pagopa.it/client-assertion"
   CLIENT_ASSERTION_JWT_AUDIENCE: "auth.vapt.interop.pagopa.it/client-assertion"
+  DPOP_HTU_BASE: "https://auth.dev.interop.pagopa.it/token.oauth2"
+  DPOP_DURATION_SECONDS: "60"
+  DPOP_IAT_TOLERANCE_SECONDS: "10"
   ACCEPTED_AUDIENCES: "vapt.interop.pagopa.it/ui,selfcare.vapt.interop.pagopa.it"
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_ISSUER: "vapt.interop.pagopa.it"
@@ -71,6 +74,7 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-vapt-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   FRONTEND_BASE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/ui/it"
+  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "TO-CHECK-ATTR-ID"
 
 deployment:
   env:
@@ -78,7 +82,6 @@ deployment:
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
-    FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -103,10 +106,10 @@ deployment:
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
+    TOKEN_GENERATION_READMODEL_TABLE_NAME_INTERACTIONS: "common-token-generation-read-model.TOKEN_READMODEL_INTERACTIONS_TABLE_NAME"
     FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
-    FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
-    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
-    FEATURE_FLAG_USE_SIGNED_DOCUMENT: "common-feature-flags.FEATURE_FLAG_USE_SIGNED_DOCUMENT"
+    FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER: "common-feature-flags.FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER"
+    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
   envFromSecrets:
     SAML_PUBLIC_KEY: "support-saml.SUPPORT_SAML_PUBLIC_KEY"
     SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
