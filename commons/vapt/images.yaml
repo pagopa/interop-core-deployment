@@ -192,9 +192,5 @@ images:
       tag: "develop"
     scheduled-notification-cleaner:
       tag: "develop"
-    private-certified-attributes-importer:
-      tag: "develop"
-    risk-analysis-processing:
-      tag: "develop"
     eservice-descriptors-scheduled-archiver:
       tag: "develop"
