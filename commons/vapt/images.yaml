@@ -64,8 +64,6 @@ images:
       tag: "develop"
     documents-signer:
       tag: "develop"
-    email-sender:
-      tag: "develop"
     eservice-descriptors-archiver:
       tag: "develop"
     eservice-template-instances-updater:
