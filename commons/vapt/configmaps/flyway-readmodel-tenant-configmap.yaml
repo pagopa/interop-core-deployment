@@ -307,3 +307,6 @@ data:
       "${NAMESPACE}_private_certified_attributes_importer_user",
       "${NAMESPACE}_email_scheduled_notification_dispatcher_user",
       "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+
+  V1.17__Add_SelfcareInstitutionType_Tenant.sql: |-
+    ALTER TABLE "${NAMESPACE}_tenant".tenant ADD COLUMN selfcare_institution_type VARCHAR;      
