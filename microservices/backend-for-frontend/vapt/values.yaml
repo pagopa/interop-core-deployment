@@ -74,7 +74,7 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-vapt-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
   FRONTEND_BASE_URL: "https://selfcare.{{.Values.namespace}}.interop.pagopa.it/ui/it"
-  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "TO-CHECK-ATTR-ID"
+  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "48621601-1066-422d-aec8-65a19072cfb0"
 
 deployment:
   env:
