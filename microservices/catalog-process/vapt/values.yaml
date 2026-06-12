@@ -16,7 +16,7 @@ configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
-  GRACE_PERIOD_ARCHIVING_ESERVICE: "10000"
+  GRACE_PERIOD_ARCHIVING_ESERVICE: "1"
 
 deployment:
   flywayInitContainer:
