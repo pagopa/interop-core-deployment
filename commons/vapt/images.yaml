@@ -79,7 +79,7 @@ images:
     events-signer:
       tag: "develop"
     frontend:
-      tag: "develop"
+      tag: "dev-latest"
     key-readmodel-writer:
       tag: "develop"
     key-readmodel-writer-sql:
