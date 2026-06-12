@@ -160,6 +160,8 @@ images:
   jobs:
     anac-certified-attributes-importer:
       tag: "develop"
+    async-token-generation-readmodel-checker:
+      tag: "develop"      
     datalake-data-export:
       tag: "develop"
     dtd-catalog-exporter:

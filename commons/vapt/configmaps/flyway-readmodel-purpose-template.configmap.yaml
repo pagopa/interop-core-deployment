@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-read-model-purpose-template
-  namespace: dev
+  namespace: vapt
 data:
   V1__Init_PurposeTemplate.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_purpose_template";

@@ -35,7 +35,7 @@ cronjob:
       FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   env:
-    BFF_URL: "https://selfcare.dev.interop.pagopa.it/0.0/backend-for-frontend"
+    BFF_URL: "https://selfcare.vapt.interop.pagopa.it/0.0/backend-for-frontend"
     NOTIFICATION_TYPE_BLOCKLIST: ""
     DELIVERY_BATCH_SIZE: "100"
     MAX_ATTEMPTS: "5"

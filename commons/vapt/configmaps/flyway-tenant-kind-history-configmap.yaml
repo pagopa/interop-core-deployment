@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: flyway-tenant-kind-history
-  namespace: dev
+  namespace: vapt
 data:
   V1__Init_Tenant_Kind_History.sql: |-
     CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_tenant_kind_history";
