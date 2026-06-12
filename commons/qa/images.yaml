@@ -83,7 +83,7 @@ images:
     events-signer:
       tag: "2.20.0-RC1"
     frontend:
-      tag: "2.3.0-RC2"
+      tag: "2.4.0-RC1"
     key-readmodel-writer:
       tag: "2.20.0-RC1"
     key-readmodel-writer-sql:
@@ -180,8 +180,6 @@ images:
       tag: "2.20.0-RC1"
     ipa-certified-attributes-importer:
       tag: "2.20.0-RC1"
-    istat-certified-attributes-importer:
-      tag: "2.20.0-RC1"
     ivass-certified-attributes-importer:
       tag: "2.20.0-RC1"
     m2m-event-cleaner:
@@ -201,4 +199,6 @@ images:
     in-app-notification-cleaner:
       tag: "2.20.0-RC1"
     risk-analysis-processing:
+      tag: "2.20.0-RC1"
+    eservice-descriptors-scheduled-archiver:
       tag: "2.20.0-RC1"
