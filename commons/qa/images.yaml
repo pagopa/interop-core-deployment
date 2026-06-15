@@ -54,8 +54,6 @@ images:
       tag: "2.19.0-RC5"
     compute-agreements-consumer:
       tag: "2.19.0-RC5"
-    datalake-interface-exporter:
-      tag: "2.19.0-RC5"
     delegation-items-archiver:
       tag: "2.19.0-RC5"
     delegation-outbound-writer:
