@@ -81,7 +81,7 @@ images:
     events-signer:
       tag: "2.20.0-RC1"
     frontend:
-      tag: "2.3.0-RC2"
+      tag: "2.4.0-RC1"
     key-readmodel-writer:
       tag: "2.20.0-RC1"
     key-readmodel-writer-sql:
@@ -126,6 +126,8 @@ images:
       tag: "2.20.0-RC1"
     redis:
       tag: "7.0.4"
+    scheduled-notification-scheduler:
+      tag: "2.20.0-RC1"
     selfcare-client-users-updater:
       tag: "2.20.0-RC1"
     selfcare-onboarding-consumer:
@@ -199,4 +201,12 @@ images:
     in-app-notification-cleaner:
       tag: "2.20.0-RC1"
     risk-analysis-processing:
+      tag: "2.20.0-RC1"      
+    email-scheduled-notification-dispatcher:
+      tag: "2.20.0-RC1"
+    in-app-scheduled-notification-dispatcher:
+      tag: "2.20.0-RC1"
+    scheduled-notification-cleaner:
+      tag: "2.20.0-RC1"
+    eservice-descriptors-scheduled-archiver:
       tag: "2.20.0-RC1"
