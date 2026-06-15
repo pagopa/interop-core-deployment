@@ -181,7 +181,7 @@ images:
     ipa-certified-attributes-importer:
       tag: "2.20.0-RC1"
     istat-certified-attributes-importer:
-      tag: "2.20.0-RC1"      
+      tag: "2.20.0-RC1"
     ivass-certified-attributes-importer:
       tag: "2.20.0-RC1"
     m2m-event-cleaner:
@@ -200,11 +200,11 @@ images:
       tag: "2.20.0-RC1"
     in-app-notification-cleaner:
       tag: "2.20.0-RC1"
+    risk-analysis-processing:
+      tag: "2.20.0-RC1"      
     email-scheduled-notification-dispatcher:
       tag: "2.20.0-RC1"
     in-app-scheduled-notification-dispatcher:
-      tag: "2.20.0-RC1"
-    risk-analysis-processing:
       tag: "2.20.0-RC1"
     scheduled-notification-cleaner:
       tag: "2.20.0-RC1"
