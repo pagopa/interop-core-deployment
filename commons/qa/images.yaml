@@ -200,11 +200,11 @@ images:
       tag: "2.20.0-RC1"
     in-app-notification-cleaner:
       tag: "2.20.0-RC1"
+    risk-analysis-processing:
+      tag: "2.20.0-RC1"      
     email-scheduled-notification-dispatcher:
       tag: "2.20.0-RC1"
     in-app-scheduled-notification-dispatcher:
-      tag: "2.20.0-RC1"
-    risk-analysis-processing:
       tag: "2.20.0-RC1"
     scheduled-notification-cleaner:
       tag: "2.20.0-RC1"
