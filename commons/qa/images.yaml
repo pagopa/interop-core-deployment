@@ -54,8 +54,6 @@ images:
       tag: "2.20.0-RC1"
     compute-agreements-consumer:
       tag: "2.20.0-RC1"
-    datalake-interface-exporter:
-      tag: "2.20.0-RC1"
     delegation-items-archiver:
       tag: "2.20.0-RC1"
     delegation-outbound-writer:
