@@ -126,6 +126,8 @@ images:
       tag: "2.20.0-RC1"
     redis:
       tag: "7.0.4"
+    scheduled-notification-scheduler:
+      tag: "2.20.0-RC1"
     selfcare-client-users-updater:
       tag: "2.20.0-RC1"
     selfcare-onboarding-consumer:
@@ -196,7 +198,13 @@ images:
       tag: "2.20.0-RC1"
     in-app-notification-cleaner:
       tag: "2.20.0-RC1"
+    email-scheduled-notification-dispatcher:
+      tag: "2.20.0-RC1"
+    in-app-scheduled-notification-dispatcher:
+      tag: "2.20.0-RC1"
     risk-analysis-processing:
+      tag: "2.20.0-RC1"
+    scheduled-notification-cleaner:
       tag: "2.20.0-RC1"
     eservice-descriptors-scheduled-archiver:
       tag: "2.20.0-RC1"
