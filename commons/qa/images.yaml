@@ -180,6 +180,8 @@ images:
       tag: "2.20.0-RC1"
     ipa-certified-attributes-importer:
       tag: "2.20.0-RC1"
+    istat-certified-attributes-importer:
+      tag: "2.20.0-RC1"      
     ivass-certified-attributes-importer:
       tag: "2.20.0-RC1"
     m2m-event-cleaner:

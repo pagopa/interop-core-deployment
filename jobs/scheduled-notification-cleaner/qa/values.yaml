@@ -5,6 +5,7 @@ cronjob:
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: OnFailure
+  suspend: true
 
   env:
     DELETE_OLDER_THAN_DAYS: "3"
