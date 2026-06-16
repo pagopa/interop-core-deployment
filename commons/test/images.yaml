@@ -115,7 +115,7 @@ images:
     purpose-platformstate-writer:
       tag: "2.19.0"
     purpose-process:
-      tag: "2.19.0"
+      tag: "2.19.0-RC6"
     purpose-outbound-writer:
       tag: "2.19.0"
     purpose-readmodel-writer:
