@@ -13,6 +13,7 @@ frontend:
   env.js:
     window.pagopa_env:
       STAGE: "DEV"
+      AUTHORIZATION_SERVER_TOKEN_CREATION_ASYNC_URL: "https://auth.vapt.interop.pagopa.it/token.oauth2.async"
       AUTHORIZATION_SERVER_TOKEN_CREATION_URL: "https://auth.vapt.interop.pagopa.it/token.oauth2"
       INTEROP_RESOURCES_BASE_URL: "https://interop-public-assets-vapt.s3.eu-south-1.amazonaws.com"
       BACKEND_FOR_FRONTEND_URL: "https://selfcare.vapt.interop.pagopa.it/1.0/backend-for-frontend"
@@ -31,15 +32,16 @@ frontend:
       ERROR_DATA_DURATION_TIME: "120000"
       AVATAR_BASEPATH: "https://uat.selfcare.pagopa.it"
       SELFCARE_PRODUCT_ID: "prod-interop-atst"
+      GRACE_PERIOD_ARCHIVING_ESERVICE: "1"
       fromConfigmaps:
         FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
         FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
         SELFCARE_BASE_URL: "common-selfcare.SELFCARE_BASE_URL"
         SELFCARE_LOGIN_URL: "common-selfcare.SELFCARE_LOGIN_URL"
         WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
-        FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
-        FEATURE_FLAG_USE_SIGNED_DOCUMENT: "common-feature-flags.FEATURE_FLAG_USE_SIGNED_DOCUMENT"
-        FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
+        FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER: "common-feature-flags.FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER"
+        FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
+
   nginx:
     default.conf: |-
       server {
