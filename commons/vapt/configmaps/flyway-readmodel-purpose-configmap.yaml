@@ -140,3 +140,79 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_delegation_items_archiver_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_pn_consumers_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_stamp TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+
+  V1.5__Add_Archiviazione_Documentale_signed_document_table.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".purpose_version_signed_document (
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      purpose_version_id UUID UNIQUE NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose_version (id) ON DELETE CASCADE,
+      id UUID NOT NULL,
+      content_type VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      signed_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id, purpose_version_id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO readonly_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_authorization_process_user"; 
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_datalake_data_export_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_pn_consumers_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".purpose_version_signed_document TO "${NAMESPACE}_token_generation_readmodel_checker_user";
+
+  V1.6__Grant_Access_NotificationDispatchers_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+
+  V1.7__Grant_Access_EmailDigestDispatcher_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_digest_dispatcher_user";
+
+  V1.8__Grant_Access_AsyncTokenGenerationRMChecker_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_async_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
+
+  V1.9__Add_Column_TenantKind_RiskAnalysisForm_Purpose.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_risk_analysis_form ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR;
+
+  V1.10__Grant_Access_RiskAnalysisProcessingJob_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_risk_analysis_processing_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_risk_analysis_processing_user";
+
+  V1.11__Add_reviewer_workflow_Purpose.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_review_mode VARCHAR;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signing_state VARCHAR;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signed_by UUID;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_rejection_reason VARCHAR;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_sent_to_reviewer_at TIMESTAMP WITH TIME ZONE;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose".risk_analysis_reviewer (
+      purpose_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose".purpose (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      reviewer_id UUID NOT NULL,
+      PRIMARY KEY (purpose_id, reviewer_id),
+      FOREIGN KEY (purpose_id, metadata_version) REFERENCES "${NAMESPACE}_purpose".purpose (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    CREATE INDEX IF NOT EXISTS idx_risk_analysis_reviewer_id ON "${NAMESPACE}_purpose".risk_analysis_reviewer (reviewer_id);
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_purpose_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO readonly_user;
+
+  V1.12__Grant_Access_risk_analysis_reviewer.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_authorization_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_email_notification_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_risk_analysis_processing_user";
+
+  V1.13__Grant_Access_ScheduledNotificationDispatchers_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";

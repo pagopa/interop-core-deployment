@@ -2,7 +2,7 @@ name: "interop-be-certified-email-sender"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-be-certified-email-sender-qa-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-certified-email-sender-{{.Values.namespace}}-es1"
 
 service:
   create: false
@@ -16,7 +16,7 @@ configmap:
   INTEROP_FE_BASE_URL: "selfcare.{{.Values.namespace}}.interop.pagopa.it"
 
 deployment:
-  replicas: 0
+  replicas: 1
   env:
     TOPIC_STARTING_OFFSET: "latest"
   envFromFieldRef:

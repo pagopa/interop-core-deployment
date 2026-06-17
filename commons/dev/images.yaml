@@ -97,11 +97,13 @@ images:
     key-readmodel-writer-sql:
       tag: "develop"
     m2m-event-dispatcher:
-      tag: "2.10.0-RC7"
+      tag: "develop"
     m2m-event-manager:
-      tag: "2.10.0-RC7"
+      tag: "develop"
     m2m-gateway:
-      tag: "2.10.0-RC7"
+      tag: "develop"
+    m2m-gateway-v3:
+      tag: "develop"
     notification-config-process:
       tag: "develop"
     notification-config-readmodel-writer-sql:
@@ -115,6 +117,8 @@ images:
     notifier:
       tag: "1.0.x-latest"
     notifier-seeder:
+      tag: "develop"
+    producer-keychain-platformstate-writer:
       tag: "develop"
     producer-keychain-readmodel-writer:
       tag: "develop"
@@ -140,6 +144,8 @@ images:
       tag: "develop"
     redis:
       tag: "7.0.4"
+    scheduled-notification-scheduler:
+      tag: "develop"
     selfcare-client-users-updater:
       tag: "develop"
     selfcare-onboarding-consumer:
@@ -156,6 +162,8 @@ images:
       tag: "develop"
     tenant-readmodel-writer-sql:
       tag: "develop"
+    tenant-kind-history-consumer:
+      tag: "develop"
     tenant-outbound-writer:
       tag: "develop"
     token-details-persister-node:
@@ -164,16 +172,22 @@ images:
   jobs:
     anac-certified-attributes-importer:
       tag: "develop"
+    async-token-generation-readmodel-checker:
+      tag: "develop"
     datalake-data-export:
       tag: "develop"
     dtd-catalog-exporter:
+      tag: "develop"
+    email-digest-dispatcher:
+      tag: "develop"
+    istat-certified-attributes-importer:
       tag: "develop"
     ipa-certified-attributes-importer:
       tag: "develop"
     ivass-certified-attributes-importer:
       tag: "develop"
     m2m-event-cleaner:
-      tag: "2.10.0-RC7"
+      tag: "develop"
     one-trust-notices:
       tag: "develop"
     pn-consumers:
@@ -185,4 +199,16 @@ images:
     token-generation-readmodel-checker:
       tag: "develop"
     in-app-notification-cleaner:
+      tag: "develop"
+    email-scheduled-notification-dispatcher:
+      tag: "develop"
+    in-app-scheduled-notification-dispatcher:
+      tag: "develop"
+    scheduled-notification-cleaner:
+      tag: "develop"
+    private-certified-attributes-importer:
+      tag: "develop"
+    risk-analysis-processing:
+      tag: "develop"
+    eservice-descriptors-scheduled-archiver:
       tag: "develop"

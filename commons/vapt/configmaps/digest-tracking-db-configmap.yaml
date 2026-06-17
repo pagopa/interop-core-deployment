@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-digest-tracking-db
+  namespace: vapt
+data:
+  DB_HOST_RW: "interop-platform-data-vapt.cluster-c1simiia6fq8.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "interop-platform-data-vapt.cluster-ro-c1simiia6fq8.eu-south-1.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "digest_tracking"
+  DB_USE_SSL: "true"
+  DB_SCHEMA: "vapt_digest_tracking"

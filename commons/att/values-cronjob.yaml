@@ -22,3 +22,5 @@ local:
     RSA_KEYS_IDENTIFIERS: "490baa58-8d24-4adf-bfb3-f19a9e505b9a"
     DEV_ENDPOINTS_ENABLED: "false"
     ENABLED_PROJECTIONS: "false"
+  awsAccountId: "533267098416"
+  env: "att"

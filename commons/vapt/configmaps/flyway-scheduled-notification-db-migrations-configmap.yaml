@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-scheduled-notification
+  namespace: vapt
+data:
+  V1__Init.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_scheduled_notification";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_scheduled_notification" to
+      "${NAMESPACE}_scheduled_notification_scheduler_user",
+      "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user",
+      "${NAMESPACE}_email_scheduled_notification_dispatcher_user",
+      "${NAMESPACE}_scheduled_notification_cleaner_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_scheduled_notification".scheduled_notification (
+      id UUID PRIMARY KEY,
+      channel VARCHAR NOT NULL,
+      event_type VARCHAR NOT NULL,
+      entity_id VARCHAR NOT NULL,
+      correlation_id UUID NOT NULL,
+      send_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      sent_at TIMESTAMP WITH TIME ZONE,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      last_error TEXT,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+      CONSTRAINT scheduled_notification_uq UNIQUE (channel, event_type, entity_id, send_at)
+    );
+
+    CREATE INDEX IF NOT EXISTS scheduled_notification_due_idx ON "${NAMESPACE}_scheduled_notification".scheduled_notification (channel, send_at) WHERE sent_at IS NULL;
+
+    GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+    GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user";
+    GRANT SELECT, INSERT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_scheduled_notification_scheduler_user";
+    GRANT SELECT, DELETE ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "${NAMESPACE}_scheduled_notification_cleaner_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_scheduled_notification" TO "readonly_user";
+
+  V2__Add_skipped_at.sql: |-
+    ALTER TABLE "${NAMESPACE}_scheduled_notification".scheduled_notification
+      ADD COLUMN IF NOT EXISTS skipped_at TIMESTAMP WITH TIME ZONE;
+
+    DROP INDEX IF EXISTS "${NAMESPACE}_scheduled_notification".scheduled_notification_due_idx;
+
+    CREATE INDEX IF NOT EXISTS scheduled_notification_due_idx ON "${NAMESPACE}_scheduled_notification".scheduled_notification (channel, send_at) WHERE sent_at IS NULL AND skipped_at IS NULL;

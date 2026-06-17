@@ -2,7 +2,7 @@ name: "interop-be-eservice-descriptors-archiver"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-eservice-descriptors-archiver-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-eservice-descriptors-archiver-{{.Values.namespace}}-es1"
 
 service:
   create: false
@@ -26,8 +26,6 @@ deployment:
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
-    READMODEL_DB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
@@ -45,6 +43,7 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:

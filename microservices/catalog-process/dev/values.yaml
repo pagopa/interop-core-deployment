@@ -6,16 +6,17 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-catalog-process-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-catalog-process-{{.Values.namespace}}-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_catalog"
   ESERVICE_DOCUMENTS_PATH: "eservices/docs"
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
+  PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT,PDND_INFOCAMERE"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
+  GRACE_PERIOD_ARCHIVING_ESERVICE: "1"
 
 deployment:
   flywayInitContainer:
@@ -74,7 +75,14 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
-    FEATURE_FLAG_ESERVICE_PERSONAL_DATA: "common-feature-flags.FEATURE_FLAG_ESERVICE_PERSONAL_DATA"
+    FEATURE_FLAG_ASYNC_EXCHANGE: "common-feature-flags.FEATURE_FLAG_ASYNC_EXCHANGE"
+    FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS: "common-feature-flags.FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS"
+    TENANT_KIND_HISTORY_DB_HOST: "common-tenant-kind-history-db.DB_HOST_RO"
+    TENANT_KIND_HISTORY_DB_PORT: "common-tenant-kind-history-db.DB_PORT"
+    TENANT_KIND_HISTORY_DB_NAME: "common-tenant-kind-history-db.DB_NAME"
+    TENANT_KIND_HISTORY_DB_USE_SSL: "common-tenant-kind-history-db.DB_USE_SSL"
+    TENANT_KIND_HISTORY_DB_SCHEMA: "common-tenant-kind-history-db.DB_SCHEMA"
+    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
@@ -82,6 +90,8 @@ deployment:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-catalog-process-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-process-user.password"
+    TENANT_KIND_HISTORY_DB_USERNAME: "platform-data-catalog-process-user.username"
+    TENANT_KIND_HISTORY_DB_PASSWORD: "platform-data-catalog-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

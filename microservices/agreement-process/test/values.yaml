@@ -2,7 +2,7 @@ name: "interop-be-agreement-process"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::895646477129:role/interop-be-agreement-process-test-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-agreement-process-{{.Values.namespace}}-es1"
 
 service:
   create: true
@@ -76,7 +76,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
-    FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_AGREEMENTS_CONTRACT_BUILDER"
   envFromSecrets:
     SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"

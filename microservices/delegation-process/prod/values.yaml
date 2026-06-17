@@ -6,7 +6,7 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-delegation-process-prod-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-delegation-process-{{.Values.namespace}}-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_delegation"
@@ -14,6 +14,7 @@ configmap:
   S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
   DELEGATION_DOCUMENTS_PATH: "delegation"
   DELEGATIONS_ALLOWED_ORIGINS: "IPA"
+  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "18a1bf44-0afe-4ad8-859e-cca7adb7b1a9"
 
 deployment:
   flywayInitContainer:
@@ -76,7 +77,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
-    FEATURE_FLAG_DELEGATIONS_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_DELEGATIONS_CONTRACT_BUILDER"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"

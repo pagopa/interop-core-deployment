@@ -2,7 +2,7 @@ name: "interop-be-in-app-notification-manager"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-in-app-notification-manager-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-in-app-notification-manager-{{.Values.namespace}}-es1"
 
 service:
   create: true
@@ -47,7 +47,6 @@ deployment:
     IN_APP_NOTIFICATION_DB_NAME: "common-in-app-notification-db.DB_NAME"
     IN_APP_NOTIFICATION_DB_USE_SSL: "common-in-app-notification-db.DB_USE_SSL"
     IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"
-    FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
   envFromSecrets:
     IN_APP_NOTIFICATION_DB_USERNAME: "platform-data-in-app-notification-manager-user.username"
     IN_APP_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-notification-manager-user.password"

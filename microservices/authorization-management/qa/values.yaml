@@ -2,7 +2,7 @@ name: "interop-be-authorization-management"
 techStack: "scala"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::755649575658:role/interop-iam-service-qa-interop-be-authorization-management-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-iam-service-qa-interop-be-authorization-management-es1"
 
 service:
   create: true
@@ -56,7 +56,7 @@ deployment:
     NAMESPACE: "metadata.namespace"
   env:
     REQUIRED_CONTACT_POINT_NR: 1
-    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/755649575658/persistence-events.fifo"
+    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/persistence-events.fifo"
   envFromConfigmaps:
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"

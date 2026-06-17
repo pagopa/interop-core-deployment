@@ -4,7 +4,7 @@ metadata:
   name: common-selfcare
   namespace: att
 data:
-  SELFCARE_BASE_URL : "https://selfcare.pagopa.it"
+  SELFCARE_BASE_URL: "https://selfcare.pagopa.it"
   SELFCARE_V2_URL: "https://api.selfcare.pagopa.it/external/v2"
   SELFCARE_KAFKA_BROKERS: "selc-p-eventhub-ns.servicebus.windows.net:9093"
   SELFCARE_LOGIN_URL: "https://selfcare.pagopa.it/auth/login"

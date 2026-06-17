@@ -1,7 +1,7 @@
 name: "interop-be-one-trust-notices"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-one-trust-notices-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-one-trust-notices-{{.Values.namespace}}-es1"
 
 configmap:
   LANGS: "it"

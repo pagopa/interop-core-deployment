@@ -1,7 +1,7 @@
 name: "interop-be-pn-consumers"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::565393043798:role/interop-be-pn-consumers-vapt-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-pn-consumers-{{.Values.namespace}}-es1"
 
 configmap:
   PN_ESERVICE_ID: "cfc8a94d-001a-4ab6-bb5c-2509b2a68af1"
@@ -20,8 +20,6 @@ cronjob:
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-    READMODEL_DB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
-    READMODEL_DB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
@@ -37,6 +35,7 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
     READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
   envFromSecrets:

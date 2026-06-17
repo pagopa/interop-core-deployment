@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-safe-storage
+  namespace: att
+data:
+  BASE_URL: "TBD"
+  DOC_TYPE: "INTEROP_LEGAL_FACTS"
+  DOC_STATUS: "SAVED"
+  LIVE_REQUESTS_DYNAMO_TABLE_NAME: "interop-safe-storage-signature-tracking-att"

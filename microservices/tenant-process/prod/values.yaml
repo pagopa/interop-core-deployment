@@ -6,12 +6,13 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::697818730278:role/interop-be-tenant-process-prod-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-tenant-process-{{.Values.namespace}}-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_tenant"
   ACCEPTED_AUDIENCES: "interop.pagopa.it/ui,interop.pagopa.it/m2m,interop.pagopa.it/internal"
   DELEGATIONS_ALLOWED_ORIGINS: "IPA"
+  DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "18a1bf44-0afe-4ad8-859e-cca7adb7b1a9"
 
 deployment:
   flywayInitContainer:

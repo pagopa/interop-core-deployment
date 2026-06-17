@@ -6,6 +6,19 @@ service:
 
 deployment:
   replicas: 1
+  enableRolloutAnnotations: true
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0%
+      maxSurge: 50%
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
   image:
     repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
     imagePullPolicy: Always
@@ -14,22 +27,11 @@ deployment:
   env:
     LOG_LEVEL: "info"
     NODE_ENV: "production"
-  resources:
-    requests:
-      cpu: "1000m"
-      memory: "2Gi"
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"
-  enableRolloutAnnotations: true
-  strategy:
-    type: "RollingUpdate"
-    rollingUpdate:
-      maxUnavailable: 0%
-      maxSurge: 50%
 
 local:
   interop_be_commons:
     DEV_ENDPOINTS_ENABLED: "false"
     RSA_KEYS_IDENTIFIERS: "65ce3bd3-88ed-40c1-9787-0a55e7f35332"
     ENABLED_PROJECTIONS: "false"
+  awsAccountId: "565393043798"
+  env: "vapt"

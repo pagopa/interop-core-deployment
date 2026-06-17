@@ -6,7 +6,7 @@ service:
   containerPort: 8088
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-purpose-process-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-purpose-process-{{.Values.namespace}}-es1"
 
 configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose"
@@ -42,7 +42,6 @@ deployment:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
-    FEATURE_FLAG_PURPOSES_CONTRACT_BUILDER: "common-feature-flags.FEATURE_FLAG_PURPOSES_CONTRACT_BUILDER"
     WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
@@ -71,7 +70,14 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
+    FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS: "common-feature-flags.FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS"
+    FEATURE_FLAG_NEW_OPERATORS: "common-feature-flags.FEATURE_FLAG_NEW_OPERATORS"
+    TENANT_KIND_HISTORY_DB_HOST: "common-tenant-kind-history-db.DB_HOST_RO"
+    TENANT_KIND_HISTORY_DB_PORT: "common-tenant-kind-history-db.DB_PORT"
+    TENANT_KIND_HISTORY_DB_NAME: "common-tenant-kind-history-db.DB_NAME"
+    TENANT_KIND_HISTORY_DB_USE_SSL: "common-tenant-kind-history-db.DB_USE_SSL"
+    TENANT_KIND_HISTORY_DB_SCHEMA: "common-tenant-kind-history-db.DB_SCHEMA"
+    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
@@ -79,6 +85,8 @@ deployment:
     READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
     READMODEL_SQL_DB_USERNAME: "platform-data-purpose-process-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-process-user.password"
+    TENANT_KIND_HISTORY_DB_USERNAME: "platform-data-purpose-process-user.username"
+    TENANT_KIND_HISTORY_DB_PASSWORD: "platform-data-purpose-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

@@ -1,7 +1,7 @@
 name: "interop-be-token-details-persister"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::533267098416:role/interop-iam-service-att-interop-be-token-details-persister-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-iam-service-att-interop-be-token-details-persister-es1"
 
 configmap:
   JWT_QUEUE_NAME: "generated-jwt"
@@ -17,9 +17,9 @@ cronjob:
   successfulJobsHistoryLimit: 0
   restartPolicy: OnFailure
   automountServiceAccountToken: false
-  command: ["bin/interop-be-token-details-persister"]
-  args: ["-Dconfig.override_with_env_vars=true"]
+  command: [ "bin/interop-be-token-details-persister" ]
+  args: [ "-Dconfig.override_with_env_vars=true" ]
   env:
-    JWT_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/533267098416/generated-jwt"
+    JWT_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/generated-jwt"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"

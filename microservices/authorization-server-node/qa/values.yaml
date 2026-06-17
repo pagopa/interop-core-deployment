@@ -15,9 +15,9 @@ service:
 configmap:
   AUDIT_FALLBACK_S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}"
   DPOP_CACHE_TABLE: "interop-dpop-cache-qa"
+  DPOP_HTU_BASE: "https://auth.qa.interop.pagopa.it/token.oauth2"
   DPOP_DURATION_SECONDS: "60"
   DPOP_IAT_TOLERANCE_SECONDS: "10"
-  DPOP_HTU: "https://auth.qa.interop.pagopa.it/token.oauth2"
   S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}-es1"
   GENERATED_INTEROP_TOKEN_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
   GENERATED_INTEROP_TOKEN_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
@@ -30,6 +30,7 @@ configmap:
   RATE_LIMITER_TIMEOUT_MILLIS: "300"
   PRODUCER_KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-authorization-process"
   CLIENT_ASSERTION_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
+  INTERACTION_TTL_EPSILON_SECONDS: "300"
 
 deployment:
   image:
@@ -46,9 +47,13 @@ deployment:
   envFromConfigmaps:
     FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
     FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS: "common-feature-flags.FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS"
+    FEATURE_FLAG_ASYNC_EXCHANGE: "common-feature-flags.FEATURE_FLAG_ASYNC_EXCHANGE"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     TOKEN_AUDITING_TOPIC: "common-kafka.TOKEN_AUDITING_TOPIC"
     TOKEN_GENERATION_READMODEL_TABLE_NAME_TOKEN_GENERATION: "common-token-generation-read-model.TOKEN_READMODEL_TOKEN_STATES_TABLE_NAME"
+    TOKEN_GENERATION_READMODEL_TABLE_NAME_INTERACTIONS: "common-token-generation-read-model.TOKEN_READMODEL_INTERACTIONS_TABLE_NAME"
+    TOKEN_GENERATION_READMODEL_TABLE_NAME_PLATFORM: "common-token-generation-read-model.TOKEN_READMODEL_PLATFORM_STATES_TABLE_NAME"
+    PRODUCER_KEYCHAIN_PLATFORM_STATES_TABLE_NAME: "common-token-generation-read-model.PRODUCER_KEYCHAIN_PLATFORM_STATES_TABLE_NAME"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"

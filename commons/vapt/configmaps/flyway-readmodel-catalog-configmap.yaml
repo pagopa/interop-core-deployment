@@ -206,3 +206,154 @@ data:
 
   V1.2__Add_Column_PersonalData_EService.sql: |-
     ALTER TABLE IF EXISTS "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS personal_data BOOLEAN;
+
+  V1.3__Grant_Access_PurposeTemplateProcess_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.4__Grant_Select_to_PublicCatalogUpdater.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice TO "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor TO "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_template_version_ref TO "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute TO "public_catalog_updater_user";
+
+  V1.5__Grant_Access_M2M_Event_Dispatcher_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";
+
+  V1.6__Grant_Access_DocumentsGenerator_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_documents_generator_user";
+
+  V1.7__Grant_Access_NotificationDispatchers_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+
+  V1.8__Grant_Access_EmailDigestDispatcher_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_email_digest_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_email_digest_dispatcher_user";
+
+  V1.9__Add_Column_InstanceLabel_EService.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS instance_label VARCHAR;
+
+  V1.10__Add_Column_daily_calls_per_consumer_Eservice_descriptor_attribute.sql:
+    |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS daily_calls_per_consumer INTEGER;
+
+  V1.11__Add_Column_AsyncExchange_EService.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS async_exchange BOOLEAN;
+
+  V1.12__Alter_Eservice_Descriptor_Interface_Add_Kind.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_interface
+      DROP CONSTRAINT IF EXISTS eservice_descriptor_interface_descriptor_id_key;
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_interface
+      ADD COLUMN IF NOT EXISTS kind VARCHAR;
+    UPDATE "${NAMESPACE}_catalog".eservice_descriptor_interface
+      SET kind = 'INTERFACE' WHERE kind IS NULL;
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_interface
+      ALTER COLUMN kind SET NOT NULL;
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_interface
+      ADD CONSTRAINT eservice_descriptor_interface_descriptor_id_kind_key UNIQUE (descriptor_id, kind);
+
+  V1.13__Create_Eservice_Descriptor_Async_Exchange_Properties.sql: |-
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_catalog".eservice_descriptor_async_exchange_properties (
+      eservice_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      descriptor_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice_descriptor (id) ON DELETE CASCADE,
+      response_time INTEGER NOT NULL,
+      resource_available_time INTEGER NOT NULL,
+      confirmation BOOLEAN NOT NULL,
+      bulk BOOLEAN NOT NULL,
+      max_result_set INTEGER NOT NULL,
+      PRIMARY KEY (descriptor_id),
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_async_exchange_properties TO "${NAMESPACE}_catalog_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_async_exchange_properties TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_async_exchange_properties TO readonly_user;
+
+  V1.14__Grant_Access_AsyncTokenGenerationRMChecker_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_async_token_generation_readmodel_checker_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
+
+  V1.15__Grant_Access_Async_Exchange_Properties_Catalog.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO
+      "${NAMESPACE}_agreement_process_user",
+      "${NAMESPACE}_authorization_process_user",
+      "${NAMESPACE}_delegation_process_user",
+      "${NAMESPACE}_purpose_process_user",
+      "${NAMESPACE}_tenant_process_user",
+      "${NAMESPACE}_purpose_template_process_user",
+      "${NAMESPACE}_certified_email_sender_user",
+      "${NAMESPACE}_dtd_catalog_exporter_user",
+      "${NAMESPACE}_eservice_descriptors_archiver_user",
+      "${NAMESPACE}_notification_email_sender_user",
+      "${NAMESPACE}_token_generation_readmodel_checker_user",
+      "${NAMESPACE}_eservice_template_instances_updater_user",
+      "${NAMESPACE}_documents_generator_user",
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user",
+      "${NAMESPACE}_m2m_event_dispatcher_user";
+
+  V1.16__Add_Column_TenantKind_RiskAnalysis_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR;
+
+  V1.17__Grant_Access_RiskAnalysisProcessingJob_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_risk_analysis_processing_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_risk_analysis_processing_user";
+
+  V1.18__Add_Manual_Archiving_Column_and_Table.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice ADD COLUMN IF NOT EXISTS archiving_reason VARCHAR;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule (
+      eservice_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      descriptor_id UUID NOT NULL REFERENCES "${NAMESPACE}_catalog".eservice_descriptor (id) ON DELETE CASCADE,
+      scope VARCHAR NOT NULL,
+      archivable_on TIMESTAMP WITH TIME ZONE NOT NULL, 
+      started_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (eservice_id, descriptor_id),
+      FOREIGN KEY (eservice_id, metadata_version) REFERENCES "${NAMESPACE}_catalog".eservice (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO "${NAMESPACE}_catalog_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO "${NAMESPACE}_catalog_process_user";    
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule TO 
+      "${NAMESPACE}_agreement_process_user",
+      "${NAMESPACE}_authorization_process_user",
+      "${NAMESPACE}_delegation_process_user",
+      "${NAMESPACE}_eservice_template_process_user",
+      "${NAMESPACE}_purpose_process_user",
+      "${NAMESPACE}_tenant_process_user",
+      "${NAMESPACE}_certified_email_sender_user",
+      "${NAMESPACE}_datalake_data_export_user",
+      "${NAMESPACE}_dtd_catalog_exporter_user",
+      "${NAMESPACE}_eservice_descriptors_archiver_user",
+      "${NAMESPACE}_notification_email_sender_user",
+      "${NAMESPACE}_token_generation_readmodel_checker_user",
+      "${NAMESPACE}_eservice_template_instances_updater_user",
+      "${NAMESPACE}_purpose_template_process_user",
+      "${NAMESPACE}_documents_generator_user",
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user",
+      "${NAMESPACE}_m2m_event_dispatcher_user",
+      "${NAMESPACE}_email_digest_dispatcher_user",
+      "${NAMESPACE}_async_token_generation_readmodel_checker_user",
+      "${NAMESPACE}_risk_analysis_processing_user",
+      readonly_user;
+
+  V1.19__Grant_Access_EserviceDescriptorsScheduledArchiver_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_descriptors_scheduled_archiver_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_eservice_descriptors_scheduled_archiver_user";
+
+  V1.20__Grant_Access_ScheduledNotificationDispatchers_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+  
+  V1.21__Add_Columns_AttributiCertificatiDiscreti_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS certified_discrete_threshold INTEGER;
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS certified_discrete_comparator VARCHAR; 

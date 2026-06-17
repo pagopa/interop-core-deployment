@@ -2,7 +2,7 @@ name: "interop-be-client-purpose-updater"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::505630707203:role/interop-be-client-purpose-updater-dev-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-client-purpose-updater-{{.Values.namespace}}-es1"
 
 service:
   create: false
