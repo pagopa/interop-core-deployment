@@ -4,7 +4,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-in-app-scheduled-notification-dispatcher-{{.Values.namespace}}-es1"
 
 cronjob:
-  schedule: "10 14 * * 1-5"
+  schedule: "10 12 * * 1-5"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: Never
@@ -12,7 +12,6 @@ cronjob:
   parallelism: 1
   activeDeadlineSeconds: 600
   backoffLimit: 0
-  timezone: "Europe/Rome"
 
   flywayInitContainer:
     create: true
