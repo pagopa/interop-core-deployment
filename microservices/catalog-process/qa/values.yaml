@@ -83,7 +83,7 @@ deployment:
     TENANT_KIND_HISTORY_DB_NAME: "common-tenant-kind-history-db.DB_NAME"
     TENANT_KIND_HISTORY_DB_USE_SSL: "common-tenant-kind-history-db.DB_USE_SSL"
     TENANT_KIND_HISTORY_DB_SCHEMA: "common-tenant-kind-history-db.DB_SCHEMA"
-    GRACE_PERIOD_ARCHIVING_ESERVICE_DAYS: "common-manual-archiving.GRACE_PERIOD_ARCHIVING_ESERVICE"
+    GRACE_PERIOD_ARCHIVING_ESERVICE_DAYS: "common-manual-archiving.GRACE_PERIOD_ARCHIVING_ESERVICE_DAYS"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
