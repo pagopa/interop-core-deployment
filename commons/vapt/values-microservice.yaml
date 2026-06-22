@@ -35,3 +35,15 @@ local:
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "565393043798"
   env: "vapt"
+
+
+autoscaling:
+  keda:
+    create: true
+    minReplicaCount: "{{.Values.deployment.replicas}}"
+    maxReplicaCount: "{{.Values.deployment.replicas}}"
+    triggers:
+      - type: cpu
+        metricType: Utilization
+        metadata:
+          value: "50"
