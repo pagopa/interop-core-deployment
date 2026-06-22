@@ -34,7 +34,7 @@ local:
 autoscaling:
   keda:
     create: true
-    minReplicaCount: 1 # this must be 0 when using 'cron' trigger for uptime cost optimization
+    minReplicaCount: 0 # this must be 0 when using 'cron' trigger for uptime cost optimization
     maxReplicaCount: "{{.Values.deployment.replicas}}" # must be a string
     triggers:
     - type: cron
