@@ -2,9 +2,14 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: interop-app-root
+  # usually where the Argo CD controller is running and listening, but can be any namespace where you want to deploy the application
+  # ArgoCD controller must be configured to watch this namespace, otherwise the application will not be deployed.
   namespace: dev-experimental-argocd-interop
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
+  # where the application's Kubernetes resources will be deployed.
   destination:
     server: https://kubernetes.default.svc
     namespace: dev-experimental-argocd
