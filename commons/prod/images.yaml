@@ -109,7 +109,7 @@ images:
     producer-keychain-readmodel-writer-sql:
       tag: "2.19.0"
     purpose-process:
-      tag: "2.19.0-RC6"
+      tag: "2.19.0"
     purpose-outbound-writer:
       tag: "2.19.0"
     purpose-platformstate-writer:
