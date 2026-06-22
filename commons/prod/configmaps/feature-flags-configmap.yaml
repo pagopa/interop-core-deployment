@@ -15,4 +15,4 @@ data:
   FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS: "true"
   # Disabled as part of migration to the new document-builder feature, which replaces the process contract builder; this is a permanent change.
   FEATURE_FLAG_DELEGATION_CONSTRAINT_SKIP: "false"
-  FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS: "false"
+  FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS: "true"
