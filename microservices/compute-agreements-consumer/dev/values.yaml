@@ -16,7 +16,6 @@ configmap:
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_SECONDS_DURATION: "3600"
 
-
 deployment:
   env:
     TOPIC_STARTING_OFFSET: "latest"
