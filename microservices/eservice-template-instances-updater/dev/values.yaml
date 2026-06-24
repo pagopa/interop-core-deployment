@@ -12,7 +12,7 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-eservice-template-instances-updater"
   ESERVICE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_DOCUMENTS_PATH: "eservices/docs"
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.INTERNAL_RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
