@@ -1,0 +1,115 @@
+name: "interop-be-notifier"
+techStack: "scala"
+
+service:
+  create: true
+  containerPort: 8088
+  additionalPorts:
+    - name: monitoring
+      containerPort: 9095
+      protocol: TCP
+      targetPort: monitoring
+    - name: management
+      containerPort: 8558
+      protocol: TCP
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-iam-service-dev-interop-be-notifier-es1"
+
+configmap:
+  POSTGRES_DB: "persistence_management"
+  POSTGRES_SCHEMA: "{{.Values.namespace}}_notifications"
+  CQRS_PROJECTION_COLLECTION_NAME: "organizations_events"
+  NOTIFICATION_DYNAMO_TABLE_NAME: "interop-notification-events"
+  NOTIFICATION_RESOURCES_DYNAMO_TABLE_NAME: "interop-notification-resources"
+  QUEUE_READER_THREAD_POOL_SIZE: "3"
+  NOTIFICATION_QUEUE_READER_THREAD_POOL_SIZE: "3"
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
+  KEY_NOTIFICATION_POSTGRES_TABLE_NAME: "key_notification"
+  PRODUCER_KEY_NOTIFICATION_POSTGRES_TABLE_NAME: "producer_keys_events"
+  NOTIFICATION_POSTGRES_SCHEMA_NAME: "{{.Values.namespace}}_notification_event"
+  EC_KEYS_IDENTIFIERS: ""
+  DEV_ENDPOINTS_ENABLED: "{{.Values.local.interop_be_commons.DEV_ENDPOINTS_ENABLED}}"
+  ENABLED_PROJECTIONS: "{{.Values.local.interop_be_commons.ENABLED_PROJECTIONS}}"
+  RSA_KEYS_IDENTIFIERS: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_DURATION_SECONDS: "3600"
+
+deployment:
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "common-db-migrations"
+    env:
+      FLYWAY_URL: "jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
+    envFromConfigmaps:
+      FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.POSTGRES_SCHEMA"
+      POSTGRES_DB: "{{.Values.name}}.POSTGRES_DB"
+      FLYWAY_SCHEMAS: "{{.Values.name}}.POSTGRES_SCHEMA"
+      POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
+      POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+    envFromSecrets:
+      FLYWAY_USER: "postgres.POSTGRES_USR"
+      FLYWAY_PASSWORD: "postgres.POSTGRES_PSW"
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+      requests:
+        cpu: "10m"
+        memory: "64Mi"
+  podTemplateMetadata:
+    labels:
+      actorSystemName: "{{.Values.name}}"
+  command: ["bin/interop-be-notifier"]
+  args: ["-Dconfig.override_with_env_vars=true"]
+  securityContext:
+    runAsUser: 1001
+  env:
+    REQUIRED_CONTACT_POINT_NR: "1"
+    PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/505630707203/persistence-events.fifo"
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
+    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
+    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
+    POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
+    POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+    NOTIFICATION_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
+    NOTIFICATION_DB_SERVER_NAME: "common-event-store.EVENTSTORE_DB_HOST"
+    NOTIFICATION_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
+    CQRS_PROJECTION_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    CQRS_PROJECTION_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    CQRS_PROJECTION_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+  envFromSecrets:
+    NOTIFICATION_DB_USER: "postgres.POSTGRES_USR"
+    NOTIFICATION_DB_PASSWORD: "postgres.POSTGRES_PSW"
+    POSTGRES_USR: "postgres.POSTGRES_USR"
+    POSTGRES_PSW: "postgres.POSTGRES_PSW"
+    CQRS_PROJECTION_DB_USER: "documentdb.PROJECTION_USR"
+    CQRS_PROJECTION_DB_PASSWORD: "documentdb.PROJECTION_PSW"
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: management
+    periodSeconds: 5
+    failureThreshold: 3
+  livenessProbe:
+    httpGet:
+      path: "/alive"
+      port: management
+    periodSeconds: 5
+    failureThreshold: 3
+    initialDelaySeconds: 30
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "2Gi"
+    requests:
+      cpu: "500m"
+      memory: "2Gi"

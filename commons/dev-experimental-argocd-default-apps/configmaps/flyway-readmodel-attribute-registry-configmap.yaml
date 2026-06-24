@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-attribute-registry
+  namespace: dev-experimental-argocd-default-apps
+data:
+  V1__Init_Attribute.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_attribute";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to
+      "${NAMESPACE}_attribute_registry_rmw_user",
+      "${NAMESPACE}_attribute_registry_process_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_attribute".attribute (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      code VARCHAR,
+      kind VARCHAR NOT NULL,
+      description VARCHAR NOT NULL,
+      origin VARCHAR,
+      name VARCHAR NOT NULL,
+      creation_time TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_attribute".attribute TO "${NAMESPACE}_attribute_registry_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO "${NAMESPACE}_attribute_registry_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO readonly_user;
+
+  V1.1__Permission_Process_Attribute.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_agreement_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_tenant_process_user";
+
+  V1.2__Grant_Usage_Schema_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_agreement_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_catalog_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_eservice_template_process_user";    
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_tenant_process_user";
+    
+  V1.3__Grant_Access_JobAnacUser_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_anac_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_anac_certified_attributes_importer_user";
+
+  V1.4__Grant_Access_DtdCatalogExporter_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_dtd_catalog_exporter_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_dtd_catalog_exporter_user";
+
+  V1.5__Grant_Access_JobIPACertifiedAttributesImporter_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_ipa_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_ipa_certified_attributes_importer_user";
+
+  V1.6__Grant_Access_JobIVASSCertifiedAttributesImporter_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_ivass_certified_attributes_importer_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_ivass_certified_attributes_importer_user";
+
+  V1.7__Grant_Access_PurposeTemplateProcess_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_purpose_template_process_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_purpose_template_process_user";
+
+  V1.8__Grant_Access_DocumentsGenerator_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "${NAMESPACE}_documents_generator_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO "${NAMESPACE}_documents_generator_user";
+
+  V1.9__Grant_Select_to_PublicCatalogUpdater.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" to "public_catalog_updater_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_attribute".attribute TO "public_catalog_updater_user";
+
+  V1.10__Grant_Access_NotificationDispatchers_Attribute.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_attribute" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_attribute" TO
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user";
