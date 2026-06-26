@@ -35,3 +35,16 @@ local:
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "565393043798"
   env: "vapt"
+
+
+autoscaling:
+  keda:
+    create: true
+    # this config is mainly used by the data preparation pipeline to scale down/up when required
+    minReplicaCount: "{{.Values.deployment.replicas}}"
+    maxReplicaCount: "{{.Values.deployment.replicas}}"
+    triggers:
+      - type: cpu
+        metricType: Utilization
+        metadata:
+          value: "50"
