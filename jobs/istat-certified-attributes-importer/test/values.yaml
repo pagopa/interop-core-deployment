@@ -1,3 +1,6 @@
+##########################################
+# WARNING: DEPLOY ONLY IN TEST ENVIRONMENT
+##########################################
 name: "interop-be-istat-certified-attributes-importer"
 
 serviceAccount:

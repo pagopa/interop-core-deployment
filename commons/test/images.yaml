@@ -53,9 +53,9 @@ images:
     client-readmodel-writer-sql:
       tag: "2.20.0"
     compute-agreements-consumer:
-      tag: "2.19.0"
+      tag: "2.20.0"
     datalake-interface-exporter:
-      tag: "2.19.0"
+      tag: "2.20.0"
     delegation-items-archiver:
       tag: "2.20.0"
     delegation-outbound-writer:
@@ -201,6 +201,8 @@ images:
     token-generation-readmodel-checker:
       tag: "2.20.0"
     in-app-notification-cleaner:
+      tag: "2.20.0"
+    check-selfcare-diff:
       tag: "2.20.0"
     risk-analysis-processing:
       tag: "2.20.0"
