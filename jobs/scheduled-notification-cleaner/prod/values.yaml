@@ -7,7 +7,7 @@ cronjob:
   restartPolicy: OnFailure
 
   env:
-    DELETE_OLDER_THAN_DAYS: "3"
+    DELETE_OLDER_THAN_DAYS: "30"
 
   envFromConfigmaps:
     SCHEDULED_NOTIFICATION_DB_HOST: "common-scheduled-notification-db.DB_HOST"
