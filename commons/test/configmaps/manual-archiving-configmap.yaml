@@ -4,4 +4,4 @@ metadata:
   name: common-manual-archiving
   namespace: test
 data:
-  GRACE_PERIOD_ARCHIVING_ESERVICE_DAYS: "1"
+  GRACE_PERIOD_ARCHIVING_ESERVICE_DAYS: "7"
