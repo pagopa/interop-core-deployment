@@ -8,11 +8,10 @@ data:
   FEATURE_FLAG_ADMIN_CLIENT: "true"
   FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "true"
   FEATURE_FLAG_ASYNC_EXCHANGE: "true"
-  # Disabled as part of migration to the new document-builder feature, which replaces the process contract builder; this is a permanent change.
   FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "false"
   FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER: "true"
-  # Disabled as part of migration to the new document-builder feature, which replaces the process contract builder; this is a permanent change.
   FEATURE_FLAG_IMPROVED_PRODUCER_VERIFICATION_CLAIMS: "true"
-  # Disabled as part of migration to the new document-builder feature, which replaces the process contract builder; this is a permanent change.
   FEATURE_FLAG_DELEGATION_CONSTRAINT_SKIP: "false"
   FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS: "true"
+  FEATURE_FLAG_NEW_OPERATORS: "true"
+  FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "false"
