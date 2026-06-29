@@ -1,0 +1,24 @@
+name: "interop-be-scheduled-notification-cleaner"
+
+cronjob:
+  schedule: "0 2 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  restartPolicy: OnFailure
+
+  env:
+    DELETE_OLDER_THAN_DAYS: "30"
+
+  envFromConfigmaps:
+    SCHEDULED_NOTIFICATION_DB_HOST: "common-scheduled-notification-db.DB_HOST"
+    SCHEDULED_NOTIFICATION_DB_NAME: "common-scheduled-notification-db.DB_NAME"
+    SCHEDULED_NOTIFICATION_DB_PORT: "common-scheduled-notification-db.DB_PORT"
+    SCHEDULED_NOTIFICATION_DB_SCHEMA: "common-scheduled-notification-db.DB_SCHEMA"
+    SCHEDULED_NOTIFICATION_DB_USE_SSL: "common-scheduled-notification-db.DB_USE_SSL"
+
+  envFromSecrets:
+    SCHEDULED_NOTIFICATION_DB_USERNAME: "platform-data-scheduled-notification-cleaner-user.username"
+    SCHEDULED_NOTIFICATION_DB_PASSWORD: "platform-data-scheduled-notification-cleaner-user.password"
+
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"
