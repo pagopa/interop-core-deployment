@@ -4,7 +4,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-in-app-scheduled-notification-dispatcher-{{.Values.namespace}}-es1"
 
 cronjob:
-  schedule: "10 12 * * 1-5"
+  schedule: "30 7 * * 1-5"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: Never
@@ -54,7 +54,7 @@ cronjob:
     IN_APP_NOTIFICATION_DB_PORT: "common-in-app-notification-db.DB_PORT"
     IN_APP_NOTIFICATION_DB_NAME: "common-in-app-notification-db.DB_NAME"
     IN_APP_NOTIFICATION_DB_USE_SSL: "common-in-app-notification-db.DB_USE_SSL"
-    IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"    
+    IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"
     SCHEDULED_NOTIFICATION_DB_HOST: "common-scheduled-notification-db.DB_HOST"
     SCHEDULED_NOTIFICATION_DB_PORT: "common-scheduled-notification-db.DB_PORT"
     SCHEDULED_NOTIFICATION_DB_NAME: "common-scheduled-notification-db.DB_NAME"
@@ -64,7 +64,7 @@ cronjob:
     READMODEL_SQL_DB_USERNAME: "platform-data-in-app-scheduled-notification-dispatcher-user.username"
     READMODEL_SQL_DB_PASSWORD: "platform-data-in-app-scheduled-notification-dispatcher-user.password"
     IN_APP_NOTIFICATION_DB_USERNAME: "platform-data-in-app-notification-dispatcher-user.username"
-    IN_APP_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-notification-dispatcher-user.password"    
+    IN_APP_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-notification-dispatcher-user.password"
     SCHEDULED_NOTIFICATION_DB_USERNAME: "platform-data-in-app-scheduled-notification-dispatcher-user.username"
     SCHEDULED_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-scheduled-notification-dispatcher-user.password"
   envFromFieldRef:
