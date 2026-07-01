@@ -1,0 +1,42 @@
+##########################################
+# WARNING: DEPLOY ONLY IN TEST ENVIRONMENT
+##########################################
+name: "interop-be-istat-certified-attributes-importer"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-istat-certified-attributes-importer-{{.Values.namespace}}-es1"
+
+configmap:
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SUBJECT: "uat.interop-m2m"
+  INTERNAL_JWT_ISSUER: "uat.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "uat.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "1800"
+  ISTAT_DOWNLOAD_URL: "https://demo.istat.it/data/posas/POSAS_2026_it_Comuni.zip"
+  CSV_CHUNK_SIZE: "500"
+  DEFAULT_POLLING_RETRY_DELAY: "1000"
+  DEFAULT_POLLING_MAX_RETRIES: "5"
+
+cronjob:
+  schedule: "30 8 * * *"
+  timezone: "Europe/Rome"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: Never
+  backoffLimit: 0
+  automountServiceAccountToken: false
+
+  envFromConfigmaps:
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    ATTRIBUTE_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
+
+  envFromSecrets:
+    READMODEL_SQL_DB_USERNAME: "platform-data-istat-certified-attributes-importer-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-istat-certified-attributes-importer-user.password"
