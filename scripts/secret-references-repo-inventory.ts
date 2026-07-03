@@ -1,16 +1,16 @@
 import * as fs from "fs";
 import * as path from "path";
-import { parseArgs } from "./lib/cli";
-import { toCsv } from "./lib/csv";
-import type { CliArgs, SecretReferenceRecord } from "./lib/types";
-import { dedupe, inventoryWorkload, walkWorkloads } from "./lib/workload";
+import { parseArgs } from "./lib/cli.js";
+import { toCsv } from "./lib/csv.js";
+import type { CliArgs, SecretReferenceRecord } from "./lib/types.js";
+import { dedupe, inventoryWorkload, walkWorkloads } from "./lib/workload.js";
 
 // Re-export public API so external consumers can import from a single entry point.
-export type { OutputFormat, ReferenceType, RecordContext, SecretReferenceRecord, SourceScope, WorkloadType } from "./lib/types";
-export { parseArgs, parseOutputFormat } from "./lib/cli";
-export { CSV_COLUMNS, csvEscape, toCsv } from "./lib/csv";
-export { collectSecretReferencesFromFile, parseSecretAddress, yamlPathToString } from "./lib/yaml-walker";
-export { dedupe, inventoryWorkload, walkWorkloads } from "./lib/workload";
+export type { OutputFormat, ReferenceType, RecordContext, SecretReferenceRecord, SourceScope, WorkloadType } from "./lib/types.js";
+export { parseArgs, parseOutputFormat } from "./lib/cli.js";
+export { CSV_COLUMNS, csvEscape, toCsv } from "./lib/csv.js";
+export { collectSecretReferencesFromFile, parseSecretAddress, yamlPathToString } from "./lib/yaml-walker.js";
+export { dedupe, inventoryWorkload, walkWorkloads } from "./lib/workload.js";
 
 /**
  * Write the selected output formats to disk.
@@ -77,7 +77,7 @@ function main(): void {
   written.forEach((file) => console.log(`Wrote ${path.relative(args.root, file)}`));
 }
 
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   try {
     main();
   } catch (error) {

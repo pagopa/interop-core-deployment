@@ -1,4 +1,4 @@
-import type { SecretReferenceRecord } from "./types";
+import type { SecretReferenceRecord } from './types.js';
 
 export const CSV_COLUMNS: Array<keyof SecretReferenceRecord> = [
   "environment",

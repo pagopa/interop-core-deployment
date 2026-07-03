@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { collectSecretReferencesFromFile } from "./yaml-walker";
-import type { RecordContext, SecretReferenceRecord, SourceScope, Workload, WorkloadType } from "./types";
+import { collectSecretReferencesFromFile } from "./yaml-walker.js";
+import type { RecordContext, SecretReferenceRecord, SourceScope, Workload, WorkloadType } from "./types.js";
 
 /**
  * Find workload values files for the exact environment directory requested.

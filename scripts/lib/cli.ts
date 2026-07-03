@@ -1,5 +1,5 @@
 import * as path from "path";
-import type { CliArgs, OutputFormat, PartialCliArgs } from "./types";
+import type { CliArgs, OutputFormat, PartialCliArgs } from "./types.js";
 
 const DEFAULT_OUTPUT_DIR = "secret-inventory";
 const OUTPUT_FORMATS: OutputFormat[] = ["csv", "json", "both"];

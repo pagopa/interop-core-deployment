@@ -1,36 +1,17 @@
 import * as fs from "fs";
-import type * as Yaml from "yaml";
-import type { RecordContext, SecretAddress, SecretReferenceRecord } from "./types";
+import * as Yaml from "yaml";
+import { LineCounter, parseDocument, isMap, isSeq, isScalar } from "yaml";
+import type { Node, YAMLMap } from "yaml";
+import type { RecordContext, SecretAddress, SecretReferenceRecord } from "./types.js";
 
-type YamlParser = typeof Yaml;
-type YamlNode = Yaml.Node | null | undefined;
-type YamlLineCounter = InstanceType<YamlParser["LineCounter"]>;
-type YamlMapNode = Yaml.YAMLMap<unknown, unknown>;
-
-let yamlParser: YamlParser | undefined;
-
-/**
- * Load the yaml dependency lazily so argument validation and help do not need node_modules.
- */
-export function loadYamlParser(): YamlParser {
-  if (yamlParser) {
-    return yamlParser;
-  }
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    yamlParser = require("yaml") as YamlParser;
-    return yamlParser;
-  } catch (_error) {
-    throw new Error('Missing dependency "yaml". Run "npm install" or "npm ci" before using this script.');
-  }
-}
+type YamlNode = Node | null | undefined;
+type YamlLineCounter = InstanceType<typeof LineCounter>;
+type YamlMapNode = YAMLMap<unknown, unknown>;
 
 /**
  * Parse one values file with yaml and collect supported Kubernetes Secret references.
  */
 export function collectSecretReferencesFromFile(file: string, ctx: RecordContext): SecretReferenceRecord[] {
-  const { LineCounter, parseDocument } = loadYamlParser();
   const content = fs.readFileSync(file, "utf8");
   const lineCounter = new LineCounter();
   const document = parseDocument(content, { lineCounter });
@@ -57,8 +38,6 @@ function walkYamlNode(
   lineCounter: YamlLineCounter,
   records: SecretReferenceRecord[],
 ): void {
-  const { isMap, isSeq } = loadYamlParser();
-
   if (isMap(node)) {
     node.items.forEach((pair) => {
       // key is like "envFromSecrets", "secretKeyRef", "secretRef", or "secret" and value is a map of properties
@@ -219,8 +198,6 @@ export function parseSecretAddress(secretAddress: string): SecretAddress {
  * Convert a scalar YAML node into a string.
  */
 function scalarValue(node: YamlNode): string {
-  const { isScalar } = loadYamlParser();
-
   if (!isScalar(node) || node.value === null || node.value === undefined) {
     return "";
   }
