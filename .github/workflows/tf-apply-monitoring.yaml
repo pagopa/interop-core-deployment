@@ -31,10 +31,12 @@ jobs:
 
       - name: Normalize environment
         id: norm_env
+        env:
+          INPUT_ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
 
-          GH_ENV="${{ inputs.environment }}"
+          GH_ENV="$INPUT_ENVIRONMENT"
           NORM_ENV="$(echo "$GH_ENV" | sed -e 's/-tf//')"
           echo "NORM_ENV=$NORM_ENV" >> $GITHUB_ENV
 
@@ -58,19 +60,23 @@ jobs:
 
       - name: Create microservices JSON
         working-directory: terraform/k8s-monitoring/
+        env:
+          MICROSERVICES: ${{ needs.workflow_setup.outputs.microservices }}
         run: |
           set -euo pipefail
 
           mkdir assets
-          echo '${{ needs.workflow_setup.outputs.microservices }}' | jq -c 'sort' > assets/microservices-list.json
+          echo "$MICROSERVICES" | jq -c 'sort' > assets/microservices-list.json
           cat assets/microservices-list.json
 
       - name: Create cronjobs JSON
         working-directory: terraform/k8s-monitoring/
+        env:
+          CRONJOBS: ${{ needs.workflow_setup.outputs.cronjobs }}
         run: |
           set -euo pipefail
 
-          echo '${{ needs.workflow_setup.outputs.cronjobs }}' | jq -c 'sort' > assets/cronjobs-list.json
+          echo "$CRONJOBS" | jq -c 'sort' > assets/cronjobs-list.json
           cat assets/cronjobs-list.json
 
       - name: Configure AWS Credentials
@@ -94,10 +100,12 @@ jobs:
 
       - name: Normalize environment
         id: norm_env
+        env:
+          INPUT_ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
 
-          GH_ENV="${{ inputs.environment }}"
+          GH_ENV="$INPUT_ENVIRONMENT"
           NORM_ENV="$(echo "$GH_ENV" | sed -e 's/-tf//')"
           echo "NORM_ENV=$NORM_ENV" >> $GITHUB_ENV
 
