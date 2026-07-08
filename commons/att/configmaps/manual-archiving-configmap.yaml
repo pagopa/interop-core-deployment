@@ -2,6 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: common-manual-archiving
-  namespace: prod
+  namespace: att
 data:
   GRACE_PERIOD_ARCHIVING_ESERVICE_DAYS: "90"
