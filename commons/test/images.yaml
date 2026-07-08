@@ -67,7 +67,7 @@ images:
     delegation-readmodel-writer-sql:
       tag: "2.20.1"
     documents-generator:
-      tag: "2.20.0"
+      tag: "2.20.1"
     documents-signer:
       tag: "2.20.1"
     eservice-descriptors-archiver:
