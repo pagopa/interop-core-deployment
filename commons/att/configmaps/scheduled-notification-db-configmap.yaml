@@ -2,10 +2,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: common-scheduled-notification-db
-  namespace: prod
+  namespace: att
 data:
-  DB_HOST: "interop-platform-data-prod.cluster-cgo3fcsduspu.eu-south-1.rds.amazonaws.com"
+  DB_HOST: "interop-platform-data-att.cluster-c5mm6mwy4v3q.eu-south-1.rds.amazonaws.com"
   DB_PORT: "5432"
   DB_NAME: "scheduled_notification"
   DB_USE_SSL: "true"
-  DB_SCHEMA: "prod_scheduled_notification"
+  DB_SCHEMA: "att_scheduled_notification"
