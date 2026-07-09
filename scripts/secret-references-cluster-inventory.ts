@@ -33,8 +33,37 @@ interface InventoryOutputRecord {
   usageList: string;
 }
 
-const SECRET_CENTRIC_COLUMNS = ['secretName', 'secretNamespace', 'keyCount', 'keys', 'isUnused', 'usageCount', 'usageList'];
-const WORKLOAD_CENTRIC_COLUMNS = ['workloadType', 'workloadName', 'workloadNamespace', 'containerName', 'containerType', 'referenceType', 'secretName', 'secretKey'];
+const SECRET_CENTRIC_COLUMNS = [
+  'secretName',
+  'secretNamespace',
+  'keyCount',
+  'keys',
+  'annotationKeys',
+  'hasAwsSecretsManagerSecretId',
+  'hasAwsSecretsManagerVersionId',
+  'hasUpdatedAt',
+  'hasAnyManagedAnnotation',
+  'hasNoManagedAnnotations',
+  'managedAnnotationStatus',
+  'isUnused',
+  'usageCount',
+  'usageList',
+  'referencedWithoutManagedAnnotations',
+];
+const WORKLOAD_CENTRIC_COLUMNS = [
+  'workloadType',
+  'workloadName',
+  'workloadNamespace',
+  'containerName',
+  'containerType',
+  'referenceType',
+  'secretName',
+  'secretKey',
+  'secretManagedAnnotationStatus',
+  'secretHasAwsSecretsManagerSecretId',
+  'secretHasNoManagedAnnotations',
+  'referencedSecretWithoutManagedAnnotations',
+];
 
 /**
  * Main execution
@@ -70,11 +99,17 @@ async function main(): Promise<void> {
     // Build inventory
     const inventory = buildSecretInventory(secretsMap, references);
     const unusedCount = inventory.filter((r) => r.isUnused).length;
+    const withAwsSecretIdCount = inventory.filter((r) => r.hasAwsSecretsManagerSecretId).length;
+    const withoutManagedAnnotationsCount = inventory.filter((r) => r.hasNoManagedAnnotations).length;
+    const referencedWithoutManagedAnnotations = inventory.filter((r) => r.referencedWithoutManagedAnnotations);
     console.log(`Secret inventory built: ${inventory.length} secrets, ${unusedCount} unused.`);
+    console.log(`Secrets with ${'infra.interop.pagopa.it/aws-secretsmanager-secret-id'}: ${withAwsSecretIdCount}.`);
+    console.log(`Secrets without managed annotations: ${withoutManagedAnnotationsCount}.`);
+    console.log(`Referenced secrets without managed annotations: ${referencedWithoutManagedAnnotations.length}.`);
 
     // Format for outputs
     const secretCentricRecords = formatInventoryForOutput(inventory, args.namespace);
-    const workloadCentricRecords = formatInventoryWorkloadCentric(references, args.namespace);
+    const workloadCentricRecords = formatInventoryWorkloadCentric(references, args.namespace, inventory);
 
     // Create output directory
     const outputDir = args.outputDir || 'secret-inventory';

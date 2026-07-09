@@ -2,13 +2,17 @@
  * Kubernetes Secret inventory management and unused detection
  */
 
-import type { K8sSecretReference, SecretInventoryRecord } from './k8s-types.js';
+import type { K8sSecretInfo, K8sSecretReference, SecretInventoryRecord, SecretManagedAnnotationStatus } from './k8s-types.js';
+
+export const AWS_SECRETSMANAGER_SECRET_ID_ANNOTATION = 'infra.interop.pagopa.it/aws-secretsmanager-secret-id';
+export const AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION = 'infra.interop.pagopa.it/aws-secretsmanager-version-id';
+export const UPDATED_AT_ANNOTATION = 'infra.interop.pagopa.it/updated-at';
 
 /**
  * Build secret inventory from references and secret names
  */
 export function buildSecretInventory(
-  secretsMap: Map<string, string[]>,
+  secretsMap: Map<string, K8sSecretInfo>,
   references: K8sSecretReference[]
 ): SecretInventoryRecord[] {
   const inventory: SecretInventoryRecord[] = [];
@@ -20,7 +24,7 @@ export function buildSecretInventory(
   });
 
   // Create inventory records
-  secretsMap.forEach((keys, secretName) => {
+  secretsMap.forEach((secretInfo, secretName) => {
     const referencedBy: string[] = [];
 
     // Find all references to this secret
@@ -33,16 +37,65 @@ export function buildSecretInventory(
       }
     });
 
+    const annotationClassification = classifySecretAnnotations(secretInfo.annotations);
+
     inventory.push({
       secretName,
       secretNamespace: 'current', // placeholder, actual namespace tracked separately
-      keys,
+      keys: secretInfo.keys,
+      annotations: secretInfo.annotations,
       referencedBy,
       isUnused: referencedBy.length === 0,
+      ...annotationClassification,
+      referencedWithoutManagedAnnotations: referencedBy.length > 0 && annotationClassification.hasNoManagedAnnotations,
     });
   });
 
   return inventory;
+}
+
+/**
+ * Classify a Secret by ExternalSecrets/SecretsManager-related annotations.
+ */
+export function classifySecretAnnotations(annotations: Record<string, string>): {
+  hasAwsSecretsManagerSecretId: boolean;
+  hasAwsSecretsManagerVersionId: boolean;
+  hasUpdatedAt: boolean;
+  hasAnyManagedAnnotation: boolean;
+  hasNoManagedAnnotations: boolean;
+  managedAnnotationStatus: SecretManagedAnnotationStatus;
+} {
+  const hasAwsSecretsManagerSecretId = hasAnnotation(annotations, AWS_SECRETSMANAGER_SECRET_ID_ANNOTATION);
+  const hasAwsSecretsManagerVersionId = hasAnnotation(annotations, AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION);
+  const hasUpdatedAt = hasAnnotation(annotations, UPDATED_AT_ANNOTATION);
+  const hasAnyManagedAnnotation = hasAwsSecretsManagerSecretId || hasAwsSecretsManagerVersionId || hasUpdatedAt;
+  const hasNoManagedAnnotations = !hasAnyManagedAnnotation;
+
+  return {
+    hasAwsSecretsManagerSecretId,
+    hasAwsSecretsManagerVersionId,
+    hasUpdatedAt,
+    hasAnyManagedAnnotation,
+    hasNoManagedAnnotations,
+    managedAnnotationStatus: getManagedAnnotationStatus(hasAwsSecretsManagerSecretId, hasNoManagedAnnotations),
+  };
+}
+
+function hasAnnotation(annotations: Record<string, string>, annotation: string): boolean {
+  return Object.prototype.hasOwnProperty.call(annotations, annotation);
+}
+
+function getManagedAnnotationStatus(
+  hasAwsSecretsManagerSecretId: boolean,
+  hasNoManagedAnnotations: boolean
+): SecretManagedAnnotationStatus {
+  if (hasAwsSecretsManagerSecretId) {
+    return 'aws-secretsmanager-secret-id';
+  }
+  if (hasNoManagedAnnotations) {
+    return 'no-managed-annotations';
+  }
+  return 'partial-managed-annotations';
 }
 
 /**
@@ -74,9 +127,17 @@ export interface SecretCentricOutputRecord {
   secretNamespace: string;
   keyCount: number;
   keys: string;
+  annotationKeys: string;
+  hasAwsSecretsManagerSecretId: boolean;
+  hasAwsSecretsManagerVersionId: boolean;
+  hasUpdatedAt: boolean;
+  hasAnyManagedAnnotation: boolean;
+  hasNoManagedAnnotations: boolean;
+  managedAnnotationStatus: SecretManagedAnnotationStatus;
   isUnused: boolean;
   usageCount: number;
   usageList: string;
+  referencedWithoutManagedAnnotations: boolean;
 }
 
 export function formatInventoryForOutput(
@@ -88,9 +149,17 @@ export function formatInventoryForOutput(
     secretNamespace: namespace,
     keyCount: record.keys.length,
     keys: record.keys.join(';'),
+    annotationKeys: Object.keys(record.annotations).sort().join(';'),
+    hasAwsSecretsManagerSecretId: record.hasAwsSecretsManagerSecretId,
+    hasAwsSecretsManagerVersionId: record.hasAwsSecretsManagerVersionId,
+    hasUpdatedAt: record.hasUpdatedAt,
+    hasAnyManagedAnnotation: record.hasAnyManagedAnnotation,
+    hasNoManagedAnnotations: record.hasNoManagedAnnotations,
+    managedAnnotationStatus: record.managedAnnotationStatus,
     isUnused: record.isUnused,
     usageCount: record.referencedBy.length,
-    usageList: record.referencedBy.join(' | '),
+    usageList: record.referencedBy.join('\n'),
+    referencedWithoutManagedAnnotations: record.referencedWithoutManagedAnnotations,
   }));
 }
 
@@ -107,13 +176,32 @@ export interface WorkloadCentricOutputRecord {
   referenceType: string;
   secretName: string;
   secretKey: string;
+  secretManagedAnnotationStatus: SecretManagedAnnotationStatus | 'secret-not-found';
+  secretHasAwsSecretsManagerSecretId: boolean;
+  secretHasNoManagedAnnotations: boolean;
+  referencedSecretWithoutManagedAnnotations: boolean;
 }
 
 export function formatInventoryWorkloadCentric(
   references: K8sSecretReference[],
-  namespace: string
+  namespace: string,
+  inventory: SecretInventoryRecord[] = []
 ): WorkloadCentricOutputRecord[] {
+  const inventoryBySecretName = new Map(inventory.map((record) => [record.secretName, record]));
+
   return references.map((ref) => ({
+    ...formatWorkloadReference(ref, namespace, inventoryBySecretName.get(ref.secretName)),
+  }));
+}
+
+function formatWorkloadReference(
+  ref: K8sSecretReference,
+  namespace: string,
+  secretInventory?: SecretInventoryRecord
+): WorkloadCentricOutputRecord {
+  const secretHasNoManagedAnnotations = secretInventory?.hasNoManagedAnnotations ?? false;
+
+  return {
     workloadType: ref.workloadType,
     workloadName: ref.workloadName,
     workloadNamespace: namespace,
@@ -122,5 +210,9 @@ export function formatInventoryWorkloadCentric(
     referenceType: ref.referenceType,
     secretName: ref.secretName,
     secretKey: ref.secretKey || '',
-  }));
+    secretManagedAnnotationStatus: secretInventory?.managedAnnotationStatus ?? 'secret-not-found',
+    secretHasAwsSecretsManagerSecretId: secretInventory?.hasAwsSecretsManagerSecretId ?? false,
+    secretHasNoManagedAnnotations,
+    referencedSecretWithoutManagedAnnotations: Boolean(secretInventory) && secretHasNoManagedAnnotations,
+  };
 }

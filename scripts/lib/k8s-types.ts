@@ -22,9 +22,27 @@ export interface SecretInventoryRecord {
   secretName: string;
   secretNamespace: string;
   keys: string[]; // all keys in the Secret
+  annotations: Record<string, string>; // all annotations in the Secret
   referencedBy: string[]; // list of "workloadType/workloadName:containerName" that reference it
   isUnused: boolean;
+  hasAwsSecretsManagerSecretId: boolean; // true if the Secret has the "aws-secretsmanager-secret-id" annotation
+  hasAwsSecretsManagerVersionId: boolean; // true if the Secret has the "aws-secretsmanager-version-id" annotation
+  hasUpdatedAt: boolean; // true if the Secret has the "updated-at" annotation
+  hasAnyManagedAnnotation: boolean; // true if the Secret has any of the managed annotations (aws-secretsmanager-secret-id, aws-secretsmanager-version-id, updated-at)
+  hasNoManagedAnnotations: boolean; // true if the Secret has none of the managed annotations (aws-secretsmanager-secret-id, aws-secretsmanager-version-id, updated-at)
+  managedAnnotationStatus: SecretManagedAnnotationStatus; // 'aws-secretsmanager-secret-id' | 'partial-managed-annotations' | 'no-managed-annotations'
+  referencedWithoutManagedAnnotations: boolean; // true if the Secret is referenced by a workload but has no managed annotations
 }
+
+export interface K8sSecretInfo {
+  keys: string[];
+  annotations: Record<string, string>;
+}
+
+export type SecretManagedAnnotationStatus =
+  | 'aws-secretsmanager-secret-id'
+  | 'partial-managed-annotations'
+  | 'no-managed-annotations';
 
 export interface K8sCliArgs {
   cluster: string;

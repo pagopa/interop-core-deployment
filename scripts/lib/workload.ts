@@ -1,10 +1,12 @@
 import * as fs from "fs";
 import * as path from "path";
+import { parse as parseYaml } from "yaml";
 import { collectSecretReferencesFromFile } from "./yaml-walker.js";
 import type { RecordContext, SecretReferenceRecord, SourceScope, Workload, WorkloadType } from "./types.js";
 
 /**
  * Find workload values files for the exact environment directory requested.
+ * Extracts deployment name from values.yaml "name:" key for accurate workload identification.
  */
 export function walkWorkloads(root: string, env: string, workloadType: WorkloadType): Workload[] {
   const baseDir = path.join(root, workloadType === "microservice" ? "microservices" : "jobs");
@@ -21,11 +23,23 @@ export function walkWorkloads(root: string, env: string, workloadType: WorkloadT
         return null;
       }
 
+      // Extract deployment name from values.yaml "name:" key
+      let deploymentName = entry.name;
+      try {
+        const valuesContent = fs.readFileSync(valuesFile, 'utf-8');
+        const valuesData = parseYaml(valuesContent) as Record<string, any>;
+        if (valuesData.name && typeof valuesData.name === 'string') {
+          deploymentName = valuesData.name;
+        }
+      } catch (err) {
+        console.warn(`Warning: Could not parse ${valuesFile}, using directory name as component`);
+      }
+
       const commonFileName = workloadType === "microservice" ? "values-microservice.yaml" : "values-cronjob.yaml";
       const commonFile = path.join(root, "commons", env, commonFileName);
 
       return {
-        component: entry.name,
+        component: deploymentName,
         workloadType,
         valueFiles: [commonFile, valuesFile].filter((file) => fs.existsSync(file)),
       };
