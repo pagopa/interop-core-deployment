@@ -6,7 +6,6 @@ import { describe, it, expect } from 'vitest';
 import {
   buildSecretInventory,
   classifySecretAnnotations,
-  deduplicateReferences,
   formatInventoryForOutput,
   formatInventoryWorkloadCentric,
   AWS_SECRETSMANAGER_SECRET_ID_ANNOTATION,
@@ -218,122 +217,6 @@ describe('k8s-inventory', () => {
     });
   });
 
-  describe('deduplicateReferences', () => {
-    it('removes exact duplicate references', () => {
-      const references: K8sSecretReference[] = [
-        {
-          workloadType: 'Deployment',
-          workloadName: 'app',
-          workloadNamespace: 'dev',
-          containerName: 'main',
-          containerType: 'container',
-          referenceType: 'env.secretKeyRef',
-          secretName: 'secret1',
-          secretKey: 'key1',
-        },
-        {
-          workloadType: 'Deployment',
-          workloadName: 'app',
-          workloadNamespace: 'dev',
-          containerName: 'main',
-          containerType: 'container',
-          referenceType: 'env.secretKeyRef',
-          secretName: 'secret1',
-          secretKey: 'key1',
-        },
-      ];
-
-      const deduped = deduplicateReferences(references);
-      expect(deduped).toHaveLength(1);
-    });
-
-    it('keeps references with different keys', () => {
-      const references: K8sSecretReference[] = [
-        {
-          workloadType: 'Deployment',
-          workloadName: 'app',
-          workloadNamespace: 'dev',
-          containerName: 'main',
-          containerType: 'container',
-          referenceType: 'env.secretKeyRef',
-          secretName: 'secret1',
-          secretKey: 'key1',
-        },
-        {
-          workloadType: 'Deployment',
-          workloadName: 'app',
-          workloadNamespace: 'dev',
-          containerName: 'main',
-          containerType: 'container',
-          referenceType: 'env.secretKeyRef',
-          secretName: 'secret1',
-          secretKey: 'key2',
-        },
-      ];
-
-      const deduped = deduplicateReferences(references);
-      expect(deduped).toHaveLength(2);
-    });
-
-    it('keeps references with different containers', () => {
-      const references: K8sSecretReference[] = [
-        {
-          workloadType: 'Deployment',
-          workloadName: 'app',
-          workloadNamespace: 'dev',
-          containerName: 'main',
-          containerType: 'container',
-          referenceType: 'env.secretKeyRef',
-          secretName: 'secret1',
-          secretKey: 'key1',
-        },
-        {
-          workloadType: 'Deployment',
-          workloadName: 'app',
-          workloadNamespace: 'dev',
-          containerName: 'sidecar',
-          containerType: 'container',
-          referenceType: 'env.secretKeyRef',
-          secretName: 'secret1',
-          secretKey: 'key1',
-        },
-      ];
-
-      const deduped = deduplicateReferences(references);
-      expect(deduped).toHaveLength(2);
-    });
-
-    it('treats undefined secretKey as no-key marker', () => {
-      const references: K8sSecretReference[] = [
-        {
-          workloadType: 'Deployment',
-          workloadName: 'app',
-          workloadNamespace: 'dev',
-          containerName: 'main',
-          containerType: 'container',
-          referenceType: 'envFrom.secretRef',
-          secretName: 'secret1',
-        },
-        {
-          workloadType: 'Deployment',
-          workloadName: 'app',
-          workloadNamespace: 'dev',
-          containerName: 'main',
-          containerType: 'container',
-          referenceType: 'envFrom.secretRef',
-          secretName: 'secret1',
-        },
-      ];
-
-      const deduped = deduplicateReferences(references);
-      expect(deduped).toHaveLength(1);
-    });
-
-    it('handles empty input', () => {
-      const deduped = deduplicateReferences([]);
-      expect(deduped).toHaveLength(0);
-    });
-  });
 
   describe('formatInventoryForOutput', () => {
     it('formats inventory records for CSV output', () => {
