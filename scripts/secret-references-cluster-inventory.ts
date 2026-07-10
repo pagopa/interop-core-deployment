@@ -16,7 +16,6 @@ import { initializeK8sClient, verifyClusterAccess, fetchSecretsInventory } from 
 import { extractSecretReferencesFromCluster } from './lib/k8s-secret-extractor.js';
 import {
   buildSecretInventory,
-  deduplicateReferences,
   formatInventoryForOutput,
   formatInventoryWorkloadCentric,
 } from './lib/k8s-inventory.js';
@@ -89,12 +88,8 @@ async function main(): Promise<void> {
 
     // Extract secret references from workloads
     console.log('Extracting secret references from workloads...');
-    const rawReferences = await extractSecretReferencesFromCluster(client);
-    console.log(`Found ${rawReferences.length} secret references (before dedup).`);
-
-    // Deduplicate
-    const references = deduplicateReferences(rawReferences);
-    console.log(`Found ${references.length} unique secret references.`);
+    const references = await extractSecretReferencesFromCluster(client);
+    console.log(`Found ${references.length} secret references.`);
 
     // Build inventory
     const inventory = buildSecretInventory(secretsMap, references);

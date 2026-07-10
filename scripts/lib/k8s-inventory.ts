@@ -99,27 +99,6 @@ function getManagedAnnotationStatus(
 }
 
 /**
- * Deduplicate secret references by composite key (workload + container + secret + key)
- */
-export function deduplicateReferences(references: K8sSecretReference[]): K8sSecretReference[] {
-  const seen = new Set<string>();
-  const deduped: K8sSecretReference[] = [];
-
-  references.forEach((ref) => {
-    // For envFrom.secretRef, key is undefined, so we use a marker
-    const key = ref.secretKey || '__no-key__';
-    const composite = `${ref.workloadType}/${ref.workloadName}/${ref.containerName}/${ref.secretName}/${key}/${ref.referenceType}`;
-
-    if (!seen.has(composite)) {
-      seen.add(composite);
-      deduped.push(ref);
-    }
-  });
-
-  return deduped;
-}
-
-/**
  * Format inventory for output - secret-centric view (mirrors the repo inventory format)
  */
 export interface SecretCentricOutputRecord {
