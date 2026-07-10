@@ -693,18 +693,18 @@ export function statsComparisonToCSV(report: StatsComparisonReport): string {
   lines.push('');
 
   lines.push(`section,metric,value`);
-  lines.push(csvRow(['secretCentric', 'totalSecretsStatic', report.summary.secretCentric.totalSecretsStatic]));
-  lines.push(csvRow(['secretCentric', 'totalSecretsDynamic', report.summary.secretCentric.totalSecretsDynamic]));
+  lines.push(csvRow(['secretCentric', 'totalSecretsRepo', report.summary.secretCentric.totalSecretsStatic]));
+  lines.push(csvRow(['secretCentric', 'totalSecretsCluster', report.summary.secretCentric.totalSecretsDynamic]));
   lines.push(csvRow(['secretCentric', 'totalUniqueSecrets', report.summary.secretCentric.totalUniqueSecrets]));
-  lines.push(csvRow(['secretCentric', 'secretsOnlyInStatic', report.summary.secretCentric.secretsOnlyInStatic]));
-  lines.push(csvRow(['secretCentric', 'secretsOnlyInDynamic', report.summary.secretCentric.secretsOnlyInDynamic]));
+  lines.push(csvRow(['secretCentric', 'secretsOnlyInRepo', report.summary.secretCentric.secretsOnlyInStatic]));
+  lines.push(csvRow(['secretCentric', 'secretsOnlyInCluster', report.summary.secretCentric.secretsOnlyInDynamic]));
   lines.push(csvRow(['secretCentric', 'secretsWithDifferentUsage', report.summary.secretCentric.secretsWithDifferentUsage]));
   lines.push(csvRow(['secretCentric', 'discrepancyPercentage', report.summary.secretCentric.discrepancyPercentage]));
-  lines.push(csvRow(['workloadCentric', 'totalWorkloadsStatic', report.summary.workloadCentric.totalWorkloadsStatic]));
-  lines.push(csvRow(['workloadCentric', 'totalWorkloadsDynamic', report.summary.workloadCentric.totalWorkloadsDynamic]));
+  lines.push(csvRow(['workloadCentric', 'totalWorkloadsRepo', report.summary.workloadCentric.totalWorkloadsStatic]));
+  lines.push(csvRow(['workloadCentric', 'totalWorkloadsCluster', report.summary.workloadCentric.totalWorkloadsDynamic]));
   lines.push(csvRow(['workloadCentric', 'totalUniqueWorkloads', report.summary.workloadCentric.totalUniqueWorkloads]));
-  lines.push(csvRow(['workloadCentric', 'workloadsOnlyInStatic', report.summary.workloadCentric.workloadsOnlyInStatic]));
-  lines.push(csvRow(['workloadCentric', 'workloadsOnlyInDynamic', report.summary.workloadCentric.workloadsOnlyInDynamic]));
+  lines.push(csvRow(['workloadCentric', 'workloadsOnlyInRepo', report.summary.workloadCentric.workloadsOnlyInStatic]));
+  lines.push(csvRow(['workloadCentric', 'workloadsOnlyInCluster', report.summary.workloadCentric.workloadsOnlyInDynamic]));
   lines.push(csvRow(['workloadCentric', 'workloadsWithDifferentReferences', report.summary.workloadCentric.workloadsWithDifferentReferences]));
 
   return lines.join('\n');
