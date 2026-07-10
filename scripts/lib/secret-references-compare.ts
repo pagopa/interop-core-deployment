@@ -34,7 +34,25 @@ function extractContainerNameFromYamlPath(containerPath: string): string {
   if (containerPath.includes('ephemeralContainers')) return 'ephemeralContainer';
   if (containerPath.includes('volumes')) return 'pod-volume';
 
-  // Default to main container
+  // Default to main container — caller should replace this with the workload name
+  return 'container';
+}
+
+/**
+ * Extract container type from YAML path for proper containerType matching with K8s.
+ * K8s distinguishes: container, initContainer, ephemeralContainer.
+ *
+ * Examples:
+ *   "deployment.envFromSecrets"                 → "container"
+ *   "deployment.flywayInitContainer.envFromSecrets" → "initContainer"
+ *   "deployment.initContainers[0].env"          → "initContainer"
+ *   "deployment.ephemeralContainers[0].env"     → "ephemeralContainer"
+ */
+function extractContainerTypeFromYamlPath(containerPath: string): string {
+  if (!containerPath) return 'container';
+  if (containerPath.includes('flywayInitContainer')) return 'initContainer';
+  if (containerPath.includes('initContainers')) return 'initContainer';
+  if (containerPath.includes('ephemeralContainers')) return 'ephemeralContainer';
   return 'container';
 }
 
@@ -128,17 +146,24 @@ export function aggregateRepoDataToSecretCentric(rawRecords: SecretReferenceReco
  * Extracts actual container names from YAML paths (including flywayInitContainer)
  */
 export function aggregateRepoDataToWorkloadCentric(rawRecords: SecretReferenceRecord[]): any[] {
-  // For repo data, we don't have container types, so we map them generically
-  return rawRecords.map((record) => ({
-    workloadType: normalizeRepoWorkloadType(record.workloadType),
-    workloadName: record.component,
-    workloadNamespace: record.environment,
-    containerName: extractContainerNameFromYamlPath(record.containerPath),
-    containerType: 'container', // Repo data doesn't distinguish container types beyond name
-    referenceType: record.referenceType,
-    secretName: record.secretName,
-    secretKey: record.secretKey || null,
-  }));
+  return rawRecords.map((record) => {
+    const rawContainerName = extractContainerNameFromYamlPath(record.containerPath);
+    // For the main container, Helm names the container after the workload (record.component).
+    // extractContainerNameFromYamlPath returns the sentinel "container" in that case.
+    const containerName = rawContainerName === 'container' ? record.component : rawContainerName;
+    const containerType = extractContainerTypeFromYamlPath(record.containerPath);
+
+    return {
+      workloadType: normalizeRepoWorkloadType(record.workloadType),
+      workloadName: record.component,
+      workloadNamespace: record.environment,
+      containerName,
+      containerType,
+      referenceType: record.referenceType,
+      secretName: record.secretName,
+      secretKey: record.secretKey || null,
+    };
+  });
 }
 
 interface SecretCentricComparison {
