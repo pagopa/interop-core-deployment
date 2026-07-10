@@ -347,3 +347,7 @@ data:
   V1.19__Add_Columns_AttributiCertificatiDiscreti_Catalog.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS certified_discrete_threshold INTEGER;
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS certified_discrete_comparator VARCHAR; 
+
+  V1.20__Add_Columns_ServerUrlsDescriptions_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor  ADD COLUMN IF NOT EXISTS server_urls_descriptions VARCHAR ARRAY NOT NULL DEFAULT '{}';
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor ALTER COLUMN server_urls_descriptions DROP DEFAULT;
