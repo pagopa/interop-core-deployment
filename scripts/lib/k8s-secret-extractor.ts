@@ -62,10 +62,16 @@ export async function extractSecretReferencesFromCluster(
     console.error(`Failed to fetch DaemonSets: ${err}`);
   }
 
-  // Fetch from Jobs
+  // Fetch from Jobs (standalone only — skip Jobs spawned by a CronJob,
+  // which are covered by the CronJob inventory and carry a numeric timestamp suffix)
   try {
     const jobs = await client.batchApi.listNamespacedJob({ namespace: client.namespace });
     jobs.items.forEach((job: any) => {
+      const isOwnedByCronJob = (job.metadata?.ownerReferences ?? []).some(
+        (ref: any) => ref.kind === 'CronJob'
+      );
+      if (isOwnedByCronJob) return;
+
       const refs = extractFromPodSpecInternal(
         job.metadata?.name || 'unknown',
         'Job',
