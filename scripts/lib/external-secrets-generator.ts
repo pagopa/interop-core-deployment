@@ -217,6 +217,9 @@ export function generateExternalSecretsData(
 
 /**
  * Build full ContainerExternalSecretsConfig from generated data
+ * Note: secretStoreRef and targetSecret are NOT included - they're defined in commons templates
+ * Generator only provides: create flag and data array
+ * Commons templates provide: secretStoreRef for store reference and targetSecret metadata
  */
 export function buildContainerConfig(
   externalSecretsData: ExternalSecretsData[],
@@ -225,15 +228,6 @@ export function buildContainerConfig(
 ): ContainerExternalSecretsConfig {
   return {
     create: true,
-    secretStoreRef: {
-      name: defaultSecretStoreRef,
-      kind: 'ClusterSecretStore',
-    },
-    targetSecret: {
-      name: targetSecretName,
-      creationPolicy: 'Owner',
-      deletionPolicy: 'Retain',
-    },
     data: externalSecretsData,
   };
 }

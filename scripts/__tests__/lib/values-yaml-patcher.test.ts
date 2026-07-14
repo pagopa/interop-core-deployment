@@ -10,6 +10,7 @@ import {
   removeEnvFromSecretsReferences,
   applyExternalSecretsToWorkload,
   listEnvFromSecretsReferences,
+  initializeCommonsExternalSecrets,
 } from '../../lib/values-yaml-patcher.js';
 import type { ContainerExternalSecretsConfig } from '../../lib/external-secrets-types.js';
 
@@ -271,6 +272,85 @@ describe('values-yaml-patcher', () => {
         false
       );
 
+      expect(result.success).toBe(false);
+      expect(result.error).toBeDefined();
+    });
+  });
+
+  describe('initializeCommonsExternalSecrets', () => {
+    it('should add externalSecrets section to empty commons file', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false);
+      expect(result.success).toBe(true);
+
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.externalSecrets).toBeDefined();
+      expect(updated.externalSecrets.container).toBeDefined();
+      expect(updated.externalSecrets.container.secretStoreRef).toBeDefined();
+      expect(updated.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.container.secretStoreRef.kind).toBe('SecretStore');
+      expect(updated.externalSecrets.initContainer).toBeDefined();
+      expect(updated.externalSecrets.initContainer.secretStoreRef).toBeDefined();
+    });
+
+    it('should preserve existing externalSecrets structure', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+externalSecrets:
+  container:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false);
+      expect(result.success).toBe(true);
+
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
+    });
+
+    it('should add missing secretStoreRef to existing sections', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+externalSecrets:
+  container: {}
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false);
+      expect(result.success).toBe(true);
+
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.externalSecrets.container.secretStoreRef).toBeDefined();
+      expect(updated.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
+    });
+
+    it('should handle dry-run mode without writing', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, true);
+      expect(result.success).toBe(true);
+
+      // File should remain unchanged
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.externalSecrets).toBeUndefined();
+    });
+
+    it('should return error for non-existent file', () => {
+      const result = initializeCommonsExternalSecrets(path.join(tempDir, 'nonexistent.yaml'), false);
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
     });

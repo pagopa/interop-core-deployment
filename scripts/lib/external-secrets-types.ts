@@ -26,11 +26,11 @@ export interface ExternalSecretsData {
 
 export interface ContainerExternalSecretsConfig {
   create: boolean;
-  secretStoreRef: {
+  secretStoreRef?: {
     name: string;
     kind: 'SecretStore' | 'ClusterSecretStore';
   };
-  targetSecret: {
+  targetSecret?: {
     name: string;
     creationPolicy: string;
     deletionPolicy: string;

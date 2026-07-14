@@ -10,6 +10,8 @@
     "secret-references-repo-inventory": "npm run build:secret-references && node dist/scripts/secret-references-repo-inventory.js",
     "secret-references-cluster-inventory": "npm run build:secret-references && node dist/scripts/secret-references-cluster-inventory.js",
     "secret-references-compare": "npm run build:secret-references && node dist/scripts/secret-references-compare.js",
+    "secret-references-external-secrets-generator": "npm run build:secret-references && node dist/scripts/secret-references-external-secrets-generator.js",
+    "secret-references-external-secrets-validator": "npm run build:secret-references && node dist/scripts/secret-references-external-secrets-validator.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -233,6 +233,32 @@ async function main(): Promise<void> {
     console.log(`   Generated ${generated.length} ExternalSecrets configurations`);
     console.log(`   Skipped ${skipped.length} secret references\n`);
 
+    // Initialize externalSecrets in commons values files
+    console.log('🔧 Initializing commons externalSecrets section...');
+    const { initializeCommonsExternalSecrets } = await import('./lib/values-yaml-patcher.js');
+    const commonsEnvPath = path.join(rootDir, 'commons', config.env);
+    
+    if (config.scope === 'microservice' || config.scope === 'both') {
+      const microserviceCommonsPath = path.join(commonsEnvPath, 'values-microservice.yaml');
+      const result = initializeCommonsExternalSecrets(microserviceCommonsPath, config.dryRun);
+      if (result.success) {
+        console.log(`   ✅ Initialized microservice commons`);
+      } else {
+        console.log(`   ⚠️  Could not initialize microservice commons: ${result.error}`);
+      }
+    }
+
+    if (config.scope === 'cronjob' || config.scope === 'both') {
+      const cronjobCommonsPath = path.join(commonsEnvPath, 'values-cronjob.yaml');
+      const result = initializeCommonsExternalSecrets(cronjobCommonsPath, config.dryRun);
+      if (result.success) {
+        console.log(`   ✅ Initialized cronjob commons`);
+      } else {
+        console.log(`   ⚠️  Could not initialize cronjob commons: ${result.error}`);
+      }
+    }
+    console.log('');
+
     // Apply configurations to values files
     console.log('💾 Applying configurations to values.yaml files...');
     const results = [];

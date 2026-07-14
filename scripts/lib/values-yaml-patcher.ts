@@ -197,6 +197,93 @@ export function applyExternalSecretsToWorkload(
 }
 
 /**
+ * Initialize externalSecrets section in commons values.yaml with default secretStoreRef
+ * This adds the shared secretStoreRef definition that microservices/cronjobs will inherit
+ */
+export function initializeCommonsExternalSecrets(commonsValuesPath: string, dryRun: boolean = false): { success: boolean; error?: string } {
+  try {
+    if (!fs.existsSync(commonsValuesPath)) {
+      return { success: false, error: `Commons file not found: ${commonsValuesPath}` };
+    }
+
+    const content = fs.readFileSync(commonsValuesPath, 'utf-8');
+    const doc = parseDocument(content);
+
+    // Define default secretStoreRef
+    const defaultExternalSecrets = {
+      container: {
+        secretStoreRef: {
+          name: 'app-secret-store',
+          kind: 'SecretStore',
+        },
+      },
+      initContainer: {
+        secretStoreRef: {
+          name: 'app-secret-store',
+          kind: 'SecretStore',
+        },
+      },
+    };
+
+    // Check if externalSecrets already exists
+    const existingExternalSecrets = doc.getIn(['externalSecrets']) as any;
+
+    // Build the complete externalSecrets structure
+    let externalSecretsStructure = {
+      container: {
+        secretStoreRef: {
+          name: 'app-secret-store',
+          kind: 'SecretStore',
+        },
+      },
+      initContainer: {
+        secretStoreRef: {
+          name: 'app-secret-store',
+          kind: 'SecretStore',
+        },
+      },
+    };
+
+    if (existingExternalSecrets && typeof existingExternalSecrets === 'object') {
+      // Merge existing structure with defaults
+      // Preserve existing content in container/initContainer if it exists
+      if (existingExternalSecrets.container) {
+        externalSecretsStructure.container = {
+          ...existingExternalSecrets.container,
+          secretStoreRef: existingExternalSecrets.container.secretStoreRef || {
+            name: 'app-secret-store',
+            kind: 'SecretStore',
+          },
+        };
+      }
+      if (existingExternalSecrets.initContainer) {
+        externalSecretsStructure.initContainer = {
+          ...existingExternalSecrets.initContainer,
+          secretStoreRef: existingExternalSecrets.initContainer.secretStoreRef || {
+            name: 'app-secret-store',
+            kind: 'SecretStore',
+          },
+        };
+      }
+    }
+
+    // Set the complete structure back to the document
+    doc.setIn(['externalSecrets'], externalSecretsStructure);
+
+    if (!dryRun) {
+      fs.writeFileSync(commonsValuesPath, doc.toString({ lineWidth: 0 }));
+    }
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+/**
  * Create a backup of values.yaml before modification
  */
 export function createBackup(valuesPath: string): string {

@@ -239,9 +239,9 @@ describe('external-secrets-generator', () => {
       const config = buildContainerConfig(data, 'my-secret', 'aws-secretsmanager');
 
       expect(config.create).toBe(true);
-      expect(config.secretStoreRef.name).toBe('aws-secretsmanager');
-      expect(config.secretStoreRef.kind).toBe('ClusterSecretStore');
-      expect(config.targetSecret.name).toBe('my-secret');
+      // secretStoreRef and targetSecret are NOT included - inherited from commons
+      expect(config.secretStoreRef).toBeUndefined();
+      expect(config.targetSecret).toBeUndefined();
       expect(config.data).toEqual(data);
     });
   });
