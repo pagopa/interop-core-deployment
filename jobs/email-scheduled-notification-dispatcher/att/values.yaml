@@ -1,10 +1,14 @@
-name: interop-be-in-app-scheduled-notification-dispatcher
+name: interop-be-email-scheduled-notification-dispatcher
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-in-app-scheduled-notification-dispatcher-{{.Values.namespace}}-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-email-scheduled-notification-dispatcher-{{.Values.namespace}}-es1"
+
+configmap:
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-email-scheduled-notification-dispatcher"
+  TOPIC_STARTING_OFFSET: "latest"
 
 cronjob:
-  schedule: "30 7 * * *"
+  schedule: "30 0 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: Never
@@ -31,6 +35,7 @@ cronjob:
       FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   env:
+    BFF_URL: "https://selfcare.att.interop.pagopa.it/1.0/backend-for-frontend"
     NOTIFICATION_TYPE_BLOCKLIST: ""
     DELIVERY_BATCH_SIZE: "100"
     MAX_ATTEMPTS: "5"
@@ -38,6 +43,8 @@ cronjob:
     SCHEDULED_NOTIFICATION_STALENESS_THRESHOLD_HOURS: "24"
 
   envFromConfigmaps:
+    EMAIL_DISPATCH_TOPIC: "common-kafka.EMAIL_DISPATCH_TOPIC"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
     READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
     READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
     READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
@@ -50,22 +57,17 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_NOTIFICATION_CONFIG: "common-read-model-sql.DB_SCHEMA_NOTIFICATION_CONFIG"
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    IN_APP_NOTIFICATION_DB_HOST: "common-in-app-notification-db.DB_HOST"
-    IN_APP_NOTIFICATION_DB_PORT: "common-in-app-notification-db.DB_PORT"
-    IN_APP_NOTIFICATION_DB_NAME: "common-in-app-notification-db.DB_NAME"
-    IN_APP_NOTIFICATION_DB_USE_SSL: "common-in-app-notification-db.DB_USE_SSL"
-    IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"    
     SCHEDULED_NOTIFICATION_DB_HOST: "common-scheduled-notification-db.DB_HOST"
     SCHEDULED_NOTIFICATION_DB_PORT: "common-scheduled-notification-db.DB_PORT"
     SCHEDULED_NOTIFICATION_DB_NAME: "common-scheduled-notification-db.DB_NAME"
     SCHEDULED_NOTIFICATION_DB_USE_SSL: "common-scheduled-notification-db.DB_USE_SSL"
     SCHEDULED_NOTIFICATION_DB_SCHEMA: "common-scheduled-notification-db.DB_SCHEMA"
   envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-in-app-scheduled-notification-dispatcher-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-in-app-scheduled-notification-dispatcher-user.password"
-    IN_APP_NOTIFICATION_DB_USERNAME: "platform-data-in-app-notification-dispatcher-user.username"
-    IN_APP_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-notification-dispatcher-user.password"    
-    SCHEDULED_NOTIFICATION_DB_USERNAME: "platform-data-in-app-scheduled-notification-dispatcher-user.username"
-    SCHEDULED_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-scheduled-notification-dispatcher-user.password"
+    SCHEDULED_NOTIFICATION_DB_USERNAME: "platform-data-email-scheduled-notification-dispatcher-user.username"
+    SCHEDULED_NOTIFICATION_DB_PASSWORD: "platform-data-email-scheduled-notification-dispatcher-user.password"
+    READMODEL_SQL_DB_USERNAME: "platform-data-email-scheduled-notification-dispatcher-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-email-scheduled-notification-dispatcher-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"
+    PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
