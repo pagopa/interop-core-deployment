@@ -13,11 +13,43 @@ permissions:
   contents: read
 
 jobs:
+  actionlint:
+    name: GitHub Actions Workflow Lint
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+
+      - name: Install actionlint
+        run: |
+          set -euo pipefail
+          ACTIONLINT_VERSION="1.7.8"
+          curl -sSLo actionlint.tar.gz "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          tar -xzf actionlint.tar.gz
+          chmod +x actionlint
+          sudo mv actionlint /usr/local/bin/actionlint
+
+      - name: Run actionlint
+        run: |
+          set -euo pipefail
+          actionlint -color
+
   lint:
+    needs: [ actionlint ]
     secrets: inherit
     uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
     with:
       environment: ${{ inputs.environment }}
+
+  common_values_validation:
+    needs: [ actionlint ]
+    if: ${{ vars.ENABLE_COMMON_VALUES_VALIDATION == 'true' }}
+    secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main
+    with:
+      environment: ${{ inputs.environment }}
+      infra_commons_tag: ${{ vars.INFRA_COMMONS_TAG }}
+      strict_kube_linter_checks: true
   
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
