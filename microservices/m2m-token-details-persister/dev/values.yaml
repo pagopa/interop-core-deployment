@@ -23,5 +23,5 @@ deployment:
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
-    TOKEN_AUDITING_TOPIC: "common-kafka.M2M_TOKEN_AUDITING_TOPIC"
+    TOKEN_AUDITING_TOPIC: "common-kafka.API_TOKEN_AUDITING_TOPIC"
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
