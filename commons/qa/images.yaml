@@ -81,7 +81,7 @@ images:
     events-signer:
       tag: "2.21.0-RC2"
     frontend:
-      tag: "2.5.0-RC2"
+      tag: "2.5.0-RC3"
     key-readmodel-writer:
       tag: "2.21.0-RC2"
     key-readmodel-writer-sql:
@@ -201,7 +201,7 @@ images:
     in-app-notification-cleaner:
       tag: "2.21.0-RC2"
     risk-analysis-processing:
-      tag: "2.21.0-RC2"      
+      tag: "2.21.0-RC2"
     email-scheduled-notification-dispatcher:
       tag: "2.21.0-RC2"
     in-app-scheduled-notification-dispatcher:
