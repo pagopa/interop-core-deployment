@@ -13,7 +13,6 @@ service:
     protocol: "HTTP"
 
 configmap:
-  AUDIT_FALLBACK_S3_BUCKET: "interop-generated-jwt-details-fallback-{{.Values.namespace}}"
   DPOP_CACHE_TABLE: "interop-dpop-cache-qa"
   DPOP_HTU_BASE: "https://auth.qa.interop.pagopa.it/token.oauth2"
   DPOP_DURATION_SECONDS: "60"
