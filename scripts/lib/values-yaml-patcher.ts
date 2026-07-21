@@ -7,6 +7,51 @@ import { parse as parseYaml, stringify as stringifyYaml, parseDocument, isMap } 
 import type { ContainerExternalSecretsConfig, ValuesMergeResult } from './external-secrets-types.js';
 
 /**
+ * Determine the anchor point key where externalSecrets should be inserted before
+ * For microservices: "deployment"
+ * For cronjobs: "cronjob"
+ */
+function getAnchorPoint(content: string): string | null {
+  if (content.includes('\ndeployment:')) {
+    return 'deployment';
+  }
+  if (content.includes('\ncronjob:')) {
+    return 'cronjob';
+  }
+  return null;
+}
+
+/**
+ * Rebuild YAML document with externalSecrets inserted before anchor point
+ * Preserves all formatting and handles proper spacing
+ */
+function insertExternalSecretsBeforeAnchor(
+  originalContent: string,
+  externalSecretsYaml: string,
+  anchorPoint: string
+): string {
+  // Find the position of the anchor point
+  const anchorPattern = `\n${anchorPoint}:`;
+  const anchorIndex = originalContent.indexOf(anchorPattern);
+
+  if (anchorIndex === -1) {
+    // Anchor point not found, append at end
+    return originalContent + '\n' + externalSecretsYaml;
+  }
+
+  // Insert externalSecrets before the anchor point with proper spacing
+  const beforeAnchor = originalContent.substring(0, anchorIndex);
+  const afterAnchor = originalContent.substring(anchorIndex);
+
+  // Ensure beforeAnchor ends without trailing newlines (they'll be added back)
+  const beforeTrimmed = beforeAnchor.trimEnd();
+
+  // Build the new content with proper spacing
+  // Format: ...previous content + empty line + externalSecrets + empty line + deployment/cronjob...
+  return beforeTrimmed + '\n\n' + externalSecretsYaml.trim() + '\n\n' + afterAnchor.substring(1); // substring(1) removes the leading \n
+}
+
+/**
  * Read and parse a values.yaml file as a plain JS object
  */
 export function readValuesFile(filePath: string): any {
@@ -118,8 +163,8 @@ export function removeEnvFromSecretsReferences(values: any): boolean {
 
 /**
  * Apply ExternalSecrets configuration to a workload's values.yaml.
- * Uses parseDocument to preserve original formatting (quotes, comments, etc.)
- * and only patches the externalSecrets section via doc.setIn().
+ * Inserts externalSecrets before 'deployment' (microservices) or 'cronjob' (jobs)
+ * with blank lines before and after.
  */
 export function applyExternalSecretsToWorkload(
   valuesPath: string,
@@ -129,11 +174,10 @@ export function applyExternalSecretsToWorkload(
   dryRun: boolean = false
 ): ValuesMergeResult {
   try {
-    // Parse as Document to preserve original formatting (double-quoted strings, etc.)
     const originalContent = fs.readFileSync(valuesPath, 'utf-8');
-    const doc = parseDocument(originalContent);
+    let doc = parseDocument(originalContent);
 
-    // Build the externalSecrets plain-object value using existing deepMerge logic
+    // Build the externalSecrets structure
     const existingValues = parseYaml(originalContent) || {};
     const externalSecretsValue: any = existingValues.externalSecrets || {};
 
@@ -153,27 +197,52 @@ export function applyExternalSecretsToWorkload(
       initContainerMerged = true;
     }
 
+    let modifiedContent = originalContent;
+
     if (containerMerged || initContainerMerged) {
-      // Set only the externalSecrets key in the Document; all other keys retain original formatting
-      doc.setIn(['externalSecrets'], externalSecretsValue);
+      // Remove existing externalSecrets section if present
+      const externalSecretsPattern = /\nexternalSecrets:[\s\S]*?(?=\n(?:deployment|cronjob|$))/;
+      const withoutExisting = modifiedContent.replace(externalSecretsPattern, '');
+
+      // Generate YAML for externalSecrets
+      const externalSecretsYaml = stringifyYaml({ externalSecrets: externalSecretsValue }, {
+        indentSeq: false,
+        lineWidth: 0,
+      }).trim();
+
+      // Find anchor point and insert
+      const anchorPoint = getAnchorPoint(withoutExisting);
+      if (anchorPoint) {
+        modifiedContent = insertExternalSecretsBeforeAnchor(withoutExisting, externalSecretsYaml, anchorPoint);
+      } else {
+        // No anchor point found, append at end
+        modifiedContent = withoutExisting + '\n' + externalSecretsYaml;
+      }
+
+      // Reparse the modified content
+      doc = parseDocument(modifiedContent);
     }
 
     if (removeOldRefs) {
-      // Remove root-level envFromSecrets (array form)
+      // Remove root-level envFromSecrets
       if (doc.has('envFromSecrets')) {
         doc.delete('envFromSecrets');
         oldRefsRemoved = true;
       }
-      // Remove deployment.envFromSecrets (map form used in real values.yaml)
+      // Remove deployment.envFromSecrets or cronjob.envFromSecrets
       const deploymentNode = doc.getIn(['deployment'], true);
       if (deploymentNode && isMap(deploymentNode) && deploymentNode.has('envFromSecrets')) {
         deploymentNode.delete('envFromSecrets');
         oldRefsRemoved = true;
       }
+      const cronjobNode = doc.getIn(['cronjob'], true);
+      if (cronjobNode && isMap(cronjobNode) && cronjobNode.has('envFromSecrets')) {
+        cronjobNode.delete('envFromSecrets');
+        oldRefsRemoved = true;
+      }
     }
 
     if (!dryRun) {
-      // doc.toString() reproduces the file with all original formatting preserved
       fs.writeFileSync(valuesPath, doc.toString({ lineWidth: 0 }));
     }
 

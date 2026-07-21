@@ -275,6 +275,72 @@ describe('values-yaml-patcher', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBeDefined();
     });
+
+    it('should insert externalSecrets before deployment key', () => {
+      const valuesWithDeployment = {
+        name: 'test-app',
+        serviceAccount: { name: 'test-sa' },
+        deployment: {
+          replicas: 3,
+          image: 'test:latest',
+        },
+      };
+      writeValuesFile(testValuesFile, valuesWithDeployment);
+
+      const result = applyExternalSecretsToWorkload(
+        testValuesFile,
+        mockExternalSecretsConfig,
+        undefined,
+        false,
+        false
+      );
+
+      expect(result.success).toBe(true);
+
+      const fileContent = fs.readFileSync(testValuesFile, 'utf-8');
+      const externalSecretsIndex = fileContent.indexOf('externalSecrets:');
+      const deploymentIndex = fileContent.indexOf('deployment:');
+
+      expect(externalSecretsIndex).toBeGreaterThan(-1);
+      expect(deploymentIndex).toBeGreaterThan(-1);
+      expect(externalSecretsIndex).toBeLessThan(deploymentIndex);
+
+      // Verify spacing (blank line before and after)
+      const beforeES = fileContent.substring(externalSecretsIndex - 3, externalSecretsIndex);
+      const afterES = fileContent.substring(fileContent.indexOf(':', externalSecretsIndex) + 1, fileContent.indexOf('deployment:'));
+      expect(beforeES.includes('\n\n')).toBe(true);
+      expect(afterES.includes('\n\n')).toBe(true);
+    });
+
+    it('should insert externalSecrets before cronjob key', () => {
+      const valuesWithCronjob = {
+        name: 'test-job',
+        serviceAccount: { name: 'test-sa' },
+        cronjob: {
+          schedule: '0 0 * * *',
+          restartPolicy: 'OnFailure',
+        },
+      };
+      writeValuesFile(testValuesFile, valuesWithCronjob);
+
+      const result = applyExternalSecretsToWorkload(
+        testValuesFile,
+        mockExternalSecretsConfig,
+        undefined,
+        false,
+        false
+      );
+
+      expect(result.success).toBe(true);
+
+      const fileContent = fs.readFileSync(testValuesFile, 'utf-8');
+      const externalSecretsIndex = fileContent.indexOf('externalSecrets:');
+      const cronjobIndex = fileContent.indexOf('cronjob:');
+
+      expect(externalSecretsIndex).toBeGreaterThan(-1);
+      expect(cronjobIndex).toBeGreaterThan(-1);
+      expect(externalSecretsIndex).toBeLessThan(cronjobIndex);
+    });
   });
 
   describe('initializeCommonsExternalSecrets', () => {
