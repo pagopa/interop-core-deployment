@@ -86,6 +86,8 @@ images:
       tag: "2.21.0-RC4"
     key-readmodel-writer-sql:
       tag: "2.21.0-RC4"
+    m2m-audit-signer:
+      tag: "TBD"
     m2m-event-dispatcher:
       tag: "2.21.0-RC4"
     m2m-event-manager:
@@ -94,6 +96,8 @@ images:
       tag: "2.21.0-RC4"
     m2m-gateway-v3:
       tag: "2.21.0-RC4"
+    m2m-token-details-persister:
+      tag: "TBD"
     notification-email-sender:
       tag: "2.21.0-RC4"
     notifier:
