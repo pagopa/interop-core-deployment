@@ -20,19 +20,37 @@ jobs:
       - name: Checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
 
-      - name: Install actionlint
-        run: |
-          set -euo pipefail
-          ACTIONLINT_VERSION="1.7.8"
-          curl -sSLo actionlint.tar.gz "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
-          tar -xzf actionlint.tar.gz
-          chmod +x actionlint
-          sudo mv actionlint /usr/local/bin/actionlint
+      #- name: Install actionlint
+      #  run: |
+      #    set -euo pipefail
+      #    ACTIONLINT_VERSION="1.7.8"
+      #    curl -sSLo actionlint.tar.gz "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+      #    tar -xzf actionlint.tar.gz
+      #    chmod +x actionlint
+      #    sudo mv actionlint /usr/local/bin/actionlint
+#
+      #- name: Run actionlint
+      #  run: |
+      #    set -euo pipefail
+      #    actionlint -color
+      - name: actionlint
+        id: actionlint
+        uses: raven-actions/actionlint@v2
+        with:
+          fail-on-error: false  
+          flags: "-color SC2086"
 
-      - name: Run actionlint
+      - name: actionlint Summary
+        if: ${{ steps.actionlint.outputs.exit-code != 0 }}
         run: |
-          set -euo pipefail
-          actionlint -color
+          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
+          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
+          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
+          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
+          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
+          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
+          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
+          exit ${{ steps.actionlint.outputs.exit-code }}
 
   repo_structure_validation:
     name: Repo Structure Validation
