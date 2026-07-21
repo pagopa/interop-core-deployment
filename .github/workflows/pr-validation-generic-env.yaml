@@ -20,19 +20,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
 
-      #- name: Install actionlint
-      #  run: |
-      #    set -euo pipefail
-      #    ACTIONLINT_VERSION="1.7.8"
-      #    curl -sSLo actionlint.tar.gz "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
-      #    tar -xzf actionlint.tar.gz
-      #    chmod +x actionlint
-      #    sudo mv actionlint /usr/local/bin/actionlint
-#
-      #- name: Run actionlint
-      #  run: |
-      #    set -euo pipefail
-      #    actionlint -color
       - name: actionlint
         id: actionlint
         uses: raven-actions/actionlint@v2
@@ -54,7 +41,7 @@ jobs:
   repo_structure_validation:
     name: Repo Structure Validation
     runs-on: ubuntu-22.04
-    if: ${{ vars.ENABLE_REPO_STRUCTURE_VALIDATION == 'true' }}
+    # if: ${{ vars.ENABLE_REPO_STRUCTURE_VALIDATION == 'true' }}
     needs: [ actionlint ]
     steps:
       - name: Checkout
