@@ -156,9 +156,8 @@ if [[ ! -d commons || ! -d microservices || ! -d jobs ]]; then
   report_issue "." "Struttura repo non valida: richieste cartelle commons/, microservices/, jobs/"
 fi
 
-mapfile -t commons_envs < <(find commons -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
-
-if [[ ${#commons_envs[@]} -eq 0 ]]; then
+commons_env_count=$(find commons -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
+if [ "$commons_env_count" -eq 0 ]; then
   report_issue "commons" "Nessun ambiente trovato in commons/"
 fi
 
@@ -201,10 +200,7 @@ validate_workload_group() {
     return
   fi
 
-  mapfile -t workloads < <(find "$group_dir" -mindepth 1 -maxdepth 1 -type d | sort)
-
-  local workload_dir
-  for workload_dir in "${workloads[@]}"; do
+  for workload_dir in $(find "$group_dir" -mindepth 1 -maxdepth 1 -type d | sort); do
     env_dir="$workload_dir/$TARGET_ENV"
 
     # For each workload, missing target env directory is a non-blocking warning.
