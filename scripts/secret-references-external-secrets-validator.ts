@@ -163,15 +163,34 @@ function deriveContainerType(record: RepoRecord): ContainerType {
   return lower.includes('initcontainer') ? 'initContainer' : 'container';
 }
 
-/** Group repo records by (workloadName, containerType) */
+/** Group repo records by (workloadName, containerType)
+ *
+ * Returns map with TWO separate fields:
+ * - envVarsBySecret: For coverage check (envVar vs generated secretKey)
+ * - secretKeysBySecret: For coherence check (remote secretKey vs cluster keys)
+ */
 function groupRepoRecords(
   records: RepoRecord[],
   scope: ValidatorArgs['scope']
-): Map<string, { workloadType: string; workloadName: string; containerType: ContainerType; sourceFile: string; secretKeys: Map<string, Set<string>> }> {
-  const map = new Map<string, ReturnType<typeof groupRepoRecords> extends Map<string, infer V> ? V : never>();
+): Map<string, {
+  workloadType: string;
+  workloadName: string;
+  containerType: ContainerType;
+  sourceFile: string;
+  envVarsBySecret: Map<string, Set<string>>;        // For coverage check
+  secretKeysBySecret: Map<string, Set<string>>;     // For coherence check
+}> {
+  const map = new Map<string, {
+    workloadType: string;
+    workloadName: string;
+    containerType: ContainerType;
+    sourceFile: string;
+    envVarsBySecret: Map<string, Set<string>>;
+    secretKeysBySecret: Map<string, Set<string>>;
+  }>();
 
   for (const record of records) {
-    if (!record.secretKey) continue; // envFromSecrets with no resolved key – skip
+    if (!record.envVar) continue; // envFromSecrets with no env var or secret key – skip
     if (scope !== 'both' && record.workloadType !== scope) continue;
 
     const containerType = deriveContainerType(record);
@@ -183,15 +202,24 @@ function groupRepoRecords(
         workloadName: record.component,
         containerType,
         sourceFile: record.sourceFile,
-        secretKeys: new Map(),
+        envVarsBySecret: new Map(),        // envVar for coverage check
+        secretKeysBySecret: new Map(),     // remote secretKey for coherence check
       });
     }
 
     const group = map.get(groupKey)!;
-    if (!group.secretKeys.has(record.secretName)) {
-      group.secretKeys.set(record.secretName, new Set());
+
+    // Accumulate envVar for coverage check (envVar vs generated secretKey)
+    if (!group.envVarsBySecret.has(record.secretName)) {
+      group.envVarsBySecret.set(record.secretName, new Set());
     }
-    group.secretKeys.get(record.secretName)!.add(record.secretKey);
+    group.envVarsBySecret.get(record.secretName)!.add(record.envVar);
+
+    // Accumulate secretKey (remote key) for coherence check (remote key vs cluster keys)
+    if (!group.secretKeysBySecret.has(record.secretName)) {
+      group.secretKeysBySecret.set(record.secretName, new Set());
+    }
+    group.secretKeysBySecret.get(record.secretName)!.add(record.secretKey);
   }
 
   return map;
@@ -265,22 +293,23 @@ function checkKeyCoverage(
   workloadType: string,
   workloadName: string,
   containerType: ContainerType,
-  expectedSecretKeys: Map<string, Set<string>>, // secretName → secretKeys
+  expectedEnvVars: Map<string, Set<string>>,  // secretName → envVars (for coverage check)
   actualDataKeys: Set<string>
 ): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
 
-  for (const [secretName, keys] of expectedSecretKeys) {
-    for (const key of keys) {
-      if (!actualDataKeys.has(key)) {
+  // Coverage check: verify each envVar appears as secretKey in generated externalSecrets
+  for (const [secretName, envVars] of expectedEnvVars) {
+    for (const envVar of envVars) {
+      if (!actualDataKeys.has(envVar)) {
         issues.push({
           workloadType,
           workloadName,
           containerType,
           checkType: 'key-coverage',
           severity: 'error',
-          message: `Secret key "${key}" from K8s secret "${secretName}" is not covered in externalSecrets.${containerType}.data`,
-          details: `Expected secretKey "${key}" to appear in ExternalSecret data entries`,
+          message: `Environment variable "${envVar}" from K8s secret "${secretName}" is not covered in externalSecrets.${containerType}.data`,
+          details: `Expected secretKey "${envVar}" to appear in ExternalSecret data entries`,
         });
       }
     }
@@ -293,12 +322,13 @@ function checkClusterCoherence(
   workloadType: string,
   workloadName: string,
   containerType: ContainerType,
-  expectedSecretKeys: Map<string, Set<string>>, // secretName → secretKeys
+  expectedRemoteKeys: Map<string, Set<string>>, // secretName → remote secretKeys (from repo)
   clusterSecretsMap: Map<string, Set<string>>   // secretName → available keys in cluster
 ): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
 
-  for (const [secretName, keys] of expectedSecretKeys) {
+  // Coherence check: verify each remote secretKey (from repo) exists in cluster secret
+  for (const [secretName, remoteKeys] of expectedRemoteKeys) {
     const clusterKeys = clusterSecretsMap.get(secretName);
 
     if (!clusterKeys) {
@@ -314,15 +344,16 @@ function checkClusterCoherence(
       continue;
     }
 
-    for (const key of keys) {
-      if (!clusterKeys.has(key)) {
+    // Verify each remote key from repo exists in cluster secret
+    for (const remoteKey of remoteKeys) {
+      if (!clusterKeys.has(remoteKey)) {
         issues.push({
           workloadType,
           workloadName,
           containerType,
           checkType: 'cluster-coherence',
           severity: 'warning',
-          message: `Key "${key}" from repo reference to secret "${secretName}" is not in cluster secret keys`,
+          message: `Key "${remoteKey}" from repo reference to secret "${secretName}" is not in cluster secret keys`,
           details: `Cluster secret "${secretName}" has keys: ${Array.from(clusterKeys).join(', ')}`,
         });
       }
@@ -498,7 +529,7 @@ async function main(): Promise<void> {
   const checkedWorkloads = new Set<string>();
 
   for (const [groupKey, group] of repoGroups) {
-    const { workloadType, workloadName, containerType, secretKeys } = group;
+    const { workloadType, workloadName, containerType, envVarsBySecret, secretKeysBySecret } = group;
     checkedWorkloads.add(`${workloadType}/${workloadName}/${containerType}`);
     const gen = generatedMap.get(groupKey);
 
@@ -513,7 +544,7 @@ async function main(): Promise<void> {
       workloadStatus = inSkipped ? 'WARNING' : 'ERROR';
       workloadMessage = inSkipped
         ? `Workload was not migrated (in skipped list)`
-        : `Workload has ${[...secretKeys.values()].reduce((s, ks) => s + ks.size, 0)} repo secret references but no ExternalSecret was generated`;
+        : `Workload has ${[...envVarsBySecret.values()].reduce((s, ks) => s + ks.size, 0)} repo secret references but no ExternalSecret was generated`;
       allIssues.push({
         workloadType,
         workloadName,
@@ -544,8 +575,9 @@ async function main(): Promise<void> {
       : getDataSecretKeys(gen.externalSecretsConfig);
 
     // ── Check 2: key coverage ──────────────────────────────────────────────
+    // Verify each envVar appears as secretKey in generated externalSecrets
     totalChecks++;
-    const coverageIssues = checkKeyCoverage(workloadType, workloadName, containerType, secretKeys, actualKeys);
+    const coverageIssues = checkKeyCoverage(workloadType, workloadName, containerType, envVarsBySecret, actualKeys);
     allIssues.push(...coverageIssues);
     if (coverageIssues.length > 0) {
       workloadStatus = 'ERROR';
@@ -553,8 +585,9 @@ async function main(): Promise<void> {
     }
 
     // ── Check 3: cluster coherence ─────────────────────────────────────────
+    // Verify each remote secretKey (from repo) exists in cluster secret
     totalChecks++;
-    const coherenceIssues = checkClusterCoherence(workloadType, workloadName, containerType, secretKeys, clusterSecretsMap);
+    const coherenceIssues = checkClusterCoherence(workloadType, workloadName, containerType, secretKeysBySecret, clusterSecretsMap);
     allIssues.push(...coherenceIssues);
     if (coherenceIssues.length > 0) {
       workloadStatus = 'ERROR';
