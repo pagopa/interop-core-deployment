@@ -21,11 +21,12 @@ interface WorkloadSecretGroup {
   workloadName: string;
   workloadPath: string;
   containerType: 'container' | 'initContainer';
-  secrets: Map<string, Set<string>>; // secretName -> Set<secretKey>
+  secrets: Map<string, Map<string, string>>; // secretName -> (envVar -> secretKey)
 }
 
 /**
  * Group repo inventory records by (workload, containerType, secretName)
+ * Preserves mapping between envVar (env variable name) and secretKey (remote property)
  * Supports both individual secret keys and envFromSecrets references
  */
 export function groupRepoInventoryByWorkload(
@@ -42,10 +43,6 @@ export function groupRepoInventoryByWorkload(
     referenceTypeCounts.set(typeKey, (referenceTypeCounts.get(typeKey) || 0) + 1);
 
     if (record.referenceType === 'envFromSecrets') {
-      // For envFromSecrets, the entire Secret is imported as env vars
-      // In ExternalSecrets, we need to create a data entry for each key in the Secret
-      // Since we don't know which keys exist at parse time, we'll use a wildcard approach
-      // by storing an empty secretKey to mean "all keys from this secret"
       envFromSecretsCount++;
     } else {
       secretRefCount++;
@@ -73,13 +70,15 @@ export function groupRepoInventoryByWorkload(
     }
 
     if (!group.secrets.has(record.secretName)) {
-      group.secrets.set(record.secretName, new Set());
+      group.secrets.set(record.secretName, new Map());
     }
     
-    // For envFromSecrets, store empty string to mean "all keys"
-    // For individual refs, store the specific key
-    const keyToStore = record.referenceType === 'envFromSecrets' ? '__ALL__' : (record.secretKey || '');
-    group.secrets.get(record.secretName)!.add(keyToStore);
+    // Store mapping: envVar -> secretKey
+    // For envFromSecrets, the envVar name becomes the secretKey in ExternalSecrets
+    const envVarName = record.envVar || record.secretKey || '';
+    const remoteSecretKey = record.secretKey || '';
+    
+    group.secrets.get(record.secretName)!.set(envVarName, remoteSecretKey);
   }
 
   if (envFromSecretsCount > 0 || secretRefCount > 0) {
@@ -132,7 +131,7 @@ export function buildRemoteRef(
 
 /**
  * Generate ExternalSecretsData entries for a workload's secrets
- * Handles both individual secret keys and envFromSecrets (all keys)
+ * Uses envVar as secretKey and secretKey as remoteRef.property
  */
 export function generateExternalSecretsData(
   group: WorkloadSecretGroup,
@@ -142,72 +141,43 @@ export function generateExternalSecretsData(
   const data: ExternalSecretsData[] = [];
   const skipped: SkippedSecret[] = [];
 
-  for (const [secretName, secretKeys] of group.secrets) {
-    for (const secretKey of secretKeys) {
-      // Handle envFromSecrets (all keys) vs individual references
-      const keysToProcess = secretKey === '__ALL__' ? ['__ALL__'] : [secretKey];
+  for (const [secretName, envVarMap] of group.secrets) {
+    // Verify the secret has the AWS annotation
+    const secretInfo = clusterSecrets.get(secretName);
+    if (!secretInfo) {
+      skipped.push({
+        workloadType: group.workloadType,
+        workloadName: group.workloadName,
+        secretName,
+        reason: 'secret-not-found',
+        details: `Secret '${secretName}' not found in cluster inventory`,
+      });
+      continue;
+    }
 
-      for (const keyToProcess of keysToProcess) {
-        if (!keyToProcess || (keyToProcess !== '__ALL__' && keyToProcess === '')) {
-          // Skip truly empty references
-          continue;
-        }
+    if (!secretInfo.hasAwsSecretsManagerSecretId) {
+      skipped.push({
+        workloadType: group.workloadType,
+        workloadName: group.workloadName,
+        secretName,
+        reason: 'no-aws-annotation',
+        details: `Secret '${secretName}' does not have AWS Secrets Manager annotation`,
+      });
+      continue;
+    }
 
-        if (keyToProcess === '__ALL__') {
-          // For envFromSecrets, create entries for all keys in the secret
-          const secretInfo = clusterSecrets.get(secretName);
-          if (!secretInfo) {
-            skipped.push({
-              workloadType: group.workloadType,
-              workloadName: group.workloadName,
-              secretName,
-              reason: 'secret-not-found',
-              details: `Secret '${secretName}' not found in cluster inventory`,
-            });
-            continue;
-          }
+    // For each env variable -> remote secret key mapping
+    for (const [envVar, secretKey] of envVarMap) {
+      if (!envVar || !secretKey) {
+        continue;
+      }
 
-          // Verify the secret has the AWS annotation
-          if (!secretInfo.hasAwsSecretsManagerSecretId) {
-            skipped.push({
-              workloadType: group.workloadType,
-              workloadName: group.workloadName,
-              secretName,
-              reason: 'no-aws-annotation',
-              details: `Secret '${secretName}' does not have AWS Secrets Manager annotation (envFromSecrets reference)`,
-            });
-            continue;
-          }
-
-          // Generate one data entry per actual key in the secret
-          for (const actualKey of secretInfo.keys) {
-            const remoteRef = buildRemoteRef(secretName, actualKey, clusterSecrets);
-            if (remoteRef) {
-              data.push({
-                secretKey: actualKey,
-                remoteRef,
-              });
-            }
-          }
-        } else {
-          // Individual secret key reference
-          const remoteRef = buildRemoteRef(secretName, keyToProcess, clusterSecrets);
-          if (!remoteRef) {
-            skipped.push({
-              workloadType: group.workloadType,
-              workloadName: group.workloadName,
-              secretName,
-              reason: 'no-aws-annotation',
-              details: `Secret '${secretName}' does not have AWS Secrets Manager annotation`,
-            });
-            continue;
-          }
-
-          data.push({
-            secretKey: keyToProcess,
-            remoteRef,
-          });
-        }
+      const remoteRef = buildRemoteRef(secretName, secretKey, clusterSecrets);
+      if (remoteRef) {
+        data.push({
+          secretKey: envVar,  // Use env variable name as the secretKey
+          remoteRef,          // remoteRef.property is the remote secret key
+        });
       }
     }
   }

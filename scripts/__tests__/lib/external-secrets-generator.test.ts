@@ -118,7 +118,11 @@ describe('external-secrets-generator', () => {
 
       expect(emailGroup).toBeDefined();
       expect(emailGroup!.secrets.has('rds-secret')).toBe(true);
-      expect(emailGroup!.secrets.get('rds-secret')).toEqual(new Set(['password', 'username']));
+      const rdsSecretMap = emailGroup!.secrets.get('rds-secret');
+      expect(rdsSecretMap).toBeDefined();
+      // Should have mapping: envVar -> secretKey
+      expect(rdsSecretMap!.get('DIGEST_TRACKING_DB_PASSWORD')).toBe('password');
+      expect(rdsSecretMap!.get('DIGEST_TRACKING_DB_USERNAME')).toBe('username');
     });
 
     it('should skip envFromSecrets references', () => {
@@ -190,9 +194,14 @@ describe('external-secrets-generator', () => {
       const { data, skipped } = generateExternalSecretsData(emailGroup!, clusterSecretsMap, 'aws-secretsmanager');
 
       expect(data).toHaveLength(2);
-      expect(data[0].secretKey).toBe('password');
+      // secretKey should be the envVar name (original variable name)
+      expect(data[0].secretKey).toBe('DIGEST_TRACKING_DB_PASSWORD');
+      // remoteRef.property should be the remote secret key
       expect(data[0].remoteRef.property).toBe('password');
-      expect(data[1].secretKey).toBe('username');
+      
+      expect(data[1].secretKey).toBe('DIGEST_TRACKING_DB_USERNAME');
+      expect(data[1].remoteRef.property).toBe('username');
+      
       expect(skipped).toHaveLength(0);
     });
 
