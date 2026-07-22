@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-event-store
+  namespace: dev-experimental-argocd-default-apps
+data:
+  EVENTSTORE_DB_HOST: "#interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com"
+  EVENTSTORE_DB_NAME: persistence_management
+  EVENTSTORE_DB_PORT: '5432'
