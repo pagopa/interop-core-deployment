@@ -9,6 +9,9 @@ LEGACY_EXCEPTIONS_FILE=""
 
 error_count=0
 warning_count=0
+warnings=()
+issues=()
+
 
 usage() {
   cat <<'EOF'
@@ -105,6 +108,7 @@ report_issue() {
   fi
 
   echo "::${level} file=${file_path}::${message}"
+  issues+=("$file_path: $message")
 }
 
 report_warning() {
@@ -112,6 +116,8 @@ report_warning() {
   local message="$2"
   warning_count=$((warning_count + 1))
   echo "::warning file=${file_path}::${message}"
+  # also save this warning in a warning variable to be printed in the summary at the end of the script
+  warnings+=("$file_path: $message")
 }
 
 declare -a legacy_exceptions
@@ -133,34 +139,30 @@ is_legacy_exception() {
 validate_yaml() {
   local file_path="$1"
 
-  if command -v ruby >/dev/null 2>&1; then
-    if ! ruby -e 'require "yaml"; YAML.parse(File.read(ARGV[0]))' "$file_path" >/dev/null 2>&1; then
-      report_issue "$file_path" "YAML malformato"
-    fi
+  if ! command -v yq >/dev/null 2>&1; then
+    report_issue "$file_path" "Parser YAML non disponibile (installare yq)"
     return
   fi
 
-  if command -v yq >/dev/null 2>&1; then
-    if ! yq eval '.' "$file_path" >/dev/null 2>&1; then
-      report_issue "$file_path" "YAML malformato"
-    fi
-    return
+  if ! yq eval '.' "$file_path" >/dev/null 2>&1; then
+    report_issue "$file_path" "YAML malformato"
   fi
-
-  report_issue "$file_path" "Parser YAML non disponibile (installare ruby o yq)"
 }
 
 cd "$REPO_ROOT"
 
+# Check 1: Validate the presence of required directories (commons / microservices / jobs).
 if [[ ! -d commons || ! -d microservices || ! -d jobs ]]; then
   report_issue "." "Struttura repo non valida: richieste cartelle commons/, microservices/, jobs/"
 fi
 
+# Check 2: commons_env_count is the number of environment directories found in commons/. If none are found, report an issue.
 commons_env_count=$(find commons -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
 if [ "$commons_env_count" -eq 0 ]; then
   report_issue "commons" "Nessun ambiente trovato in commons/"
 fi
 
+# These files should be present in commons/<target_env> directory. (TO VERIFY: If this is not the case, we can remove this check.)
 required_commons_files=(
   "values-microservice.yaml"
   "values-cronjob.yaml"
@@ -168,11 +170,12 @@ required_commons_files=(
   "Chart.yaml"
 )
 
-# Validate mandatory files for the selected commons target env.
+# Check 3: Validate the presence of the commons/<target_env> directory.
 env_dir="commons/$TARGET_ENV"
 if [[ ! -d "$env_dir" ]]; then
   report_issue "$env_dir" "Cartella ambiente commons mancante"
 else
+  # Check 4: Validate mandatory files for the selected commons target env.
   for required_file in "${required_commons_files[@]}"; do
     required_path="$env_dir/$required_file"
     if [[ ! -f "$required_path" ]]; then
@@ -181,9 +184,11 @@ else
       fi
       continue
     fi
+    # Check 5: Validate that the mandatory files are not empty.
     validate_yaml "$required_path"
   done
 
+  # Check 6: Configmaps directory is mandatory for commons/<target_env> and must not be empty. (TO VERIFY: If this is not the case, we can remove this check.)
   if [[ ! -d "$env_dir/configmaps" ]]; then
     configmaps_path="$env_dir/configmaps"
     if ! is_legacy_exception "$configmaps_path"; then
@@ -205,7 +210,7 @@ validate_workload_group() {
 
     # For each workload, missing target env directory is a non-blocking warning.
     if [[ ! -d "$env_dir" ]]; then
-      report_warning "$env_dir" "Directory ambiente mancante per workload"
+      report_warning "$env_dir" "Directory ambiente mancante per workload $workload_dir"
       continue
     fi
 
@@ -221,17 +226,19 @@ validate_workload_group() {
       continue
     fi
 
+    # Validate that the values.yaml file is a valid YAML file.
     validate_yaml "$values_path"
   done
 }
 
+# Check 7: Validate the presence of required workload directories (microservices / jobs) and their target env subdirectories.
 validate_workload_group "microservices"
 validate_workload_group "jobs"
 
 summary_msg="Repo structure validation completed. errors=$error_count warnings=$warning_count target_env=$TARGET_ENV"
 echo "$summary_msg"
 
-if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+  if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
   {
     echo "### Repo Structure Validation"
     echo
@@ -239,6 +246,21 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
     echo "- errors: $error_count"
     echo "- warnings: $warning_count"
     echo "- warning_only: $WARNING_ONLY"
+    echo "\n"
+    # Print the list of issues if any
+    if [[ ${#issues[@]} -gt 0 ]]; then
+      echo "#### Issues:"
+      for issue in "${issues[@]}"; do
+        echo "- $issue"
+      done
+    fi
+    # Print the list of warnings if any
+    if [[ ${#warnings[@]} -gt 0 ]]; then
+      echo "#### Warnings:"
+      for warning in "${warnings[@]}"; do
+        echo "- $warning"
+      done
+    fi
   } >> "$GITHUB_STEP_SUMMARY"
 fi
 
