@@ -76,7 +76,7 @@ jobs:
 
   common_values_validation:
     needs: [ actionlint ]
-    if: ${{ vars.ENABLE_COMMON_VALUES_VALIDATION == 'true' }}
+    # condition disabled temporarily if: ${{ vars.ENABLE_COMMON_VALUES_VALIDATION == 'true' }}
     secrets: inherit
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main
     with:
@@ -87,7 +87,7 @@ jobs:
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
-    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
+    # condition disabled temporarily if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     needs: [ lint ]
     environment: ${{ inputs.environment }}
     outputs:
@@ -124,7 +124,7 @@ jobs:
   delete_runner:
     name: "[${{ inputs.environment }}] Delete Self-Hosted Runner"
     needs: [ diff ]
-    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
+    # condition disabled temporarily if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     strategy:
