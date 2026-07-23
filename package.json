@@ -1,0 +1,40 @@
+{
+  "name": "interop-core-deployment",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Interop Core Deployment - ArgoCD and Kubernetes manifests",
+  "main": "index.js",
+  "scripts": {
+    "list-external-secrets": "node list-external-secrets.js",
+    "build:secret-references": "tsc -p tsconfig.json",
+    "secret-references-repo-inventory": "npm run build:secret-references && node dist/scripts/secret-references-repo-inventory.js",
+    "secret-references-cluster-inventory": "npm run build:secret-references && node dist/scripts/secret-references-cluster-inventory.js",
+    "secret-references-compare": "npm run build:secret-references && node dist/scripts/secret-references-compare.js",
+    "secret-references-external-secrets-generator": "npm run build:secret-references && node dist/scripts/secret-references-external-secrets-generator.js",
+    "secret-references-external-secrets-validator": "npm run build:secret-references && node dist/scripts/secret-references-external-secrets-validator.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "argocd",
+    "kubernetes",
+    "external-secrets",
+    "kustomize",
+    "helm"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.758.0",
+    "@kubernetes/client-node": "^1.4.0",
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.6"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
