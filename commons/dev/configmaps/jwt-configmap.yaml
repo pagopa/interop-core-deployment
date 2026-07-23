@@ -6,4 +6,5 @@ metadata:
 data:
   WELL_KNOWN_URLS: https://dev.interop.pagopa.it/.well-known/jwks.json
   SELFCARE_WELL_KNOWN_URLS: "https://uat.selfcare.pagopa.it/.well-known/jwks.json"
-  BFF_WELL_KNOWN_URLS: "https://dev.interop.pagopa.it/.well-known/jwks.json,https://uat.selfcare.pagopa.it/.well-known/jwks.json"
+  BFF_WELL_KNOWN_URLS: "https://dev.interop.pagopa.it/.well-known/jwks.json,https://uat.selfcare.pagopa.it/.well-known/jwks.json,https://interop-private-well-known-dev.s3.eu-south-1.amazonaws.com/.well-known/bff-jwks.json"
+  INTERNAL_WELL_KNOWN_URLS: "https://interop-private-well-known-dev.s3.eu-south-1.amazonaws.com/.well-known/internal-jwks.json,https://interop-private-well-known-dev.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
