@@ -19,7 +19,6 @@ jobs:
   repo_structure_validation:
     name: Repo Structure Validation
     runs-on: ubuntu-22.04
-    # if: ${{ vars.ENABLE_REPO_STRUCTURE_VALIDATION == 'true' }} # todo rimuovere
     steps:
       - name: Checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
@@ -45,7 +44,7 @@ jobs:
 
   lint:
     needs: [ repo_structure_validation ]
-    if: ${{ always() && (vars.ENABLE_REPO_STRUCTURE_VALIDATION != 'true' || needs.repo_structure_validation.result == 'success') }}
+    if: ${{ always() && (needs.repo_structure_validation.result == 'success') }}
     secrets: inherit
     uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
     with:
@@ -54,7 +53,7 @@ jobs:
   common_values_validation:
     # condition disabled temporarily if: ${{ vars.ENABLE_COMMON_VALUES_VALIDATION == 'true' }}
     secrets: inherit
-    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
     with:
       environment: ${{ inputs.environment }}
       infra_commons_tag: "main"
