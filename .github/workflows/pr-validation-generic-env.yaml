@@ -81,7 +81,7 @@ jobs:
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main
     with:
       environment: ${{ inputs.environment }}
-      infra_commons_tag: ${{ vars.INFRA_COMMONS_TAG }}
+      infra_commons_tag: "main"
       strict_kube_linter_checks: true
   
   create_runner:
