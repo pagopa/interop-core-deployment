@@ -1,196 +1,204 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "develop"
+      tag: "2.21.0"
     agreement-process:
-      tag: "develop"
+      tag: "2.21.0"
     agreement-platformstate-writer:
-      tag: "develop"
+      tag: "2.21.0"
     agreement-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     agreement-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     attribute-registry-process:
-      tag: "develop"
+      tag: "2.21.0"
     attribute-registry-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     attribute-registry-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     api-gateway:
-      tag: "develop"
+      tag: "2.21.0"
     audit-signer:
-      tag: "develop"
+      tag: "2.21.0"
     authorization-process:
-      tag: "develop"
+      tag: "2.21.0"
     backend-for-frontend:
-      tag: "develop"
+      tag: "2.21.0"
     catalog-outbound-writer:
-      tag: "develop"
+      tag: "2.21.0"
     catalog-process:
-      tag: "develop"
+      tag: "2.21.0"
     authorization-platformstate-writer:
-      tag: "develop"
+      tag: "2.21.0"
     authorization-server-node:
-      tag: "develop"
+      tag: "2.21.0"
     catalog-platformstate-writer:
-      tag: "develop"
+      tag: "2.21.0"
     catalog-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     catalog-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     certified-email-sender:
-      tag: "develop"
+      tag: "2.21.0"
     client-purpose-updater:
-      tag: "develop"
+      tag: "2.21.0"
     client-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     client-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     compute-agreements-consumer:
-      tag: "develop"
+      tag: "2.21.0"
     datalake-interface-exporter:
-      tag: "develop"
+      tag: "2.21.0"
     delegation-items-archiver:
-      tag: "develop"
+      tag: "2.21.0"
     delegation-outbound-writer:
-      tag: "develop"
+      tag: "2.21.0"
     delegation-process:
-      tag: "develop"
+      tag: "2.21.0"
     delegation-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     delegation-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     documents-generator:
-      tag: "develop"
+      tag: "2.21.0"
     documents-signer:
-      tag: "develop"
+      tag: "2.21.0"
+    email-sender:
+      tag: "2.21.0"
     eservice-descriptors-archiver:
-      tag: "develop"
+      tag: "2.21.0"
     eservice-template-instances-updater:
-      tag: "develop"
+      tag: "2.21.0"
     eservice-template-process:
-      tag: "develop"
+      tag: "2.21.0"
     eservice-template-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     eservice-template-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     events-signer:
-      tag: "develop"
+      tag: "2.21.0"
     frontend:
-      tag: "dev-latest"
+      tag: "2.5.0"
     key-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     key-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     m2m-event-dispatcher:
-      tag: "develop"
+      tag: "2.21.0"
     m2m-event-manager:
-      tag: "develop"
+      tag: "2.21.0"
     m2m-gateway:
-      tag: "develop"
+      tag: "2.21.0"
     m2m-gateway-v3:
-      tag: "develop"
+      tag: "2.21.0"
     notification-email-sender:
-      tag: "develop"
+      tag: "2.21.0"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "develop"
-    producer-key-readmodel-writer:
-      tag: "develop"
-    producer-key-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     producer-keychain-platformstate-writer:
-      tag: "develop"
+      tag: "2.21.0"
+    producer-key-readmodel-writer:
+      tag: "2.21.0"
+    producer-key-readmodel-writer-sql:
+      tag: "2.21.0"
     producer-keychain-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     producer-keychain-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     purpose-process:
-      tag: "develop"
+      tag: "2.21.0"
     purpose-outbound-writer:
-      tag: "develop"
+      tag: "2.21.0"
     purpose-platformstate-writer:
-      tag: "develop"
+      tag: "2.21.0"
     purpose-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     purpose-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     purpose-template-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     purpose-template-process:
-      tag: "develop"
+      tag: "2.21.0"
+    scheduled-notification-scheduler:
+      tag: "2.21.0"
     selfcare-client-users-updater:
-      tag: "develop"
+      tag: "2.21.0"
     redis:
       tag: "7.0.4"
-    scheduled-notification-scheduler:
-      tag: "develop"      
     selfcare-onboarding-consumer:
-      tag: "develop"
+      tag: "2.21.0"
     signed-objects-persister:
-      tag: "develop"
+      tag: "2.21.0"
     tenant-outbound-writer:
-      tag: "develop"
+      tag: "2.21.0"
     tenant-process:
-      tag: "develop"
+      tag: "2.21.0"
     tenant-readmodel-writer:
-      tag: "develop"
+      tag: "2.21.0"
     tenant-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
+    tenant-kind-history-consumer:
+      tag: "2.21.0"
     token-details-persister-node:
-      tag: "develop"
+      tag: "2.21.0"
     in-app-notification-manager:
-      tag: "develop"
+      tag: "2.21.0"
     in-app-notification-dispatcher:
-      tag: "develop"
+      tag: "2.21.0"
     email-notification-dispatcher:
-      tag: "develop"
+      tag: "2.21.0"
     notification-config-process:
-      tag: "develop"
+      tag: "2.21.0"
     notification-config-readmodel-writer-sql:
-      tag: "develop"
+      tag: "2.21.0"
     notification-user-lifecycle-consumer:
-      tag: "develop"
+      tag: "2.21.0"
     notification-tenant-lifecycle-consumer:
-      tag: "develop"
+      tag: "2.21.0"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "develop"
+      tag: "2.21.0"
     async-token-generation-readmodel-checker:
-      tag: "develop"      
+      tag: "2.21.0"
     datalake-data-export:
-      tag: "develop"
+      tag: "2.21.0"
     dtd-catalog-exporter:
-      tag: "develop"
+      tag: "2.21.0"
     ipa-certified-attributes-importer:
-      tag: "develop"
+      tag: "2.21.0"
     ivass-certified-attributes-importer:
-      tag: "develop"
+      tag: "2.21.0"
     one-trust-notices:
-      tag: "develop"
+      tag: "2.21.0"
     m2m-event-cleaner:
-      tag: "develop"
+      tag: "2.21.0"
     pn-consumers:
-      tag: "develop"
+      tag: "2.21.0"
+    private-certified-attributes-importer:
+      tag: "2.21.0"
     readmodel-checker:
-      tag: "develop"
+      tag: "2.21.0"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "develop"
+      tag: "2.21.0"
     in-app-notification-cleaner:
-      tag: "develop"
+      tag: "2.21.0"
     check-selfcare-diff:
-      tag: "develop"
+      tag: "2.21.0"
     email-digest-dispatcher:
-      tag: "develop"
+      tag: "2.21.0"
+    risk-analysis-processing:
+      tag: "2.21.0"
     email-scheduled-notification-dispatcher:
-      tag: "develop"
+      tag: "2.21.0"
     in-app-scheduled-notification-dispatcher:
-      tag: "develop"
+      tag: "2.21.0"
     scheduled-notification-cleaner:
-      tag: "develop"
+      tag: "2.21.0"
     eservice-descriptors-scheduled-archiver:
-      tag: "develop"
+      tag: "2.21.0"

@@ -101,7 +101,7 @@ data:
   V1.1__Grant_Access_PurposeProcess_And_Add_Tables_DocumentArchiving_Purpose_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose_template" to "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_purpose_process_user";
-    
+
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_purpose_template".purpose_template_risk_analysis_form_document (
       id UUID,
       purpose_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_purpose_template".purpose_template (id) ON DELETE CASCADE,
