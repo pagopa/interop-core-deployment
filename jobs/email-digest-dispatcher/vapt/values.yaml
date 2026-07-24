@@ -16,6 +16,8 @@ cronjob:
   restartPolicy: OnFailure
 
   flywayInitContainer:
+    executeFlywayRepair: true
+    executeFlywayMigrate: false
     create: true
     migrationsConfigmap: "flyway-digest-tracking"
     env:

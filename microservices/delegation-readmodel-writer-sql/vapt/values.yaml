@@ -13,6 +13,8 @@ configmap:
 
 deployment:
   flywayInitContainer:
+    executeFlywayRepair: true
+    executeFlywayMigrate: false
     create: true
     migrationsConfigmap: "flyway-read-model-delegation"
     env:

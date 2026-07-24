@@ -14,6 +14,8 @@ cronjob:
   backoffLimit: 0
 
   flywayInitContainer:
+    executeFlywayRepair: true
+    executeFlywayMigrate: false
     create: true
     migrationsConfigmap: "flyway-scheduled-notification"
     env:
