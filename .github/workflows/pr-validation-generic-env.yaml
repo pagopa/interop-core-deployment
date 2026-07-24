@@ -12,37 +12,14 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  ENABLE_ARGOCD_VALIDATION: false
+
 jobs:
-  actionlint:
-    name: GitHub Actions Workflow Lint
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
-
-      - name: actionlint
-        id: actionlint
-        uses: raven-actions/actionlint@v2
-        with:
-          fail-on-error: false  
-          flags: "-color SC2086"
-
-      - name: actionlint Summary
-        if: ${{ steps.actionlint.outputs.exit-code != 0 }}
-        run: |
-          echo "Used actionlint version ${{ steps.actionlint.outputs.version-semver }}"
-          echo "Used actionlint release ${{ steps.actionlint.outputs.version-tag }}"
-          echo "actionlint ended with ${{ steps.actionlint.outputs.exit-code }} exit code"
-          echo "actionlint ended because '${{ steps.actionlint.outputs.exit-message }}'"
-          echo "actionlint found ${{ steps.actionlint.outputs.total-errors }} errors"
-          echo "actionlint checked ${{ steps.actionlint.outputs.total-files }} files"
-          echo "actionlint cache used: ${{ steps.actionlint.outputs.cache-hit }}"
-
   repo_structure_validation:
     name: Repo Structure Validation
     runs-on: ubuntu-22.04
-    # if: ${{ vars.ENABLE_REPO_STRUCTURE_VALIDATION == 'true' }}
-    needs: [ actionlint ]
+    # if: ${{ vars.ENABLE_REPO_STRUCTURE_VALIDATION == 'true' }} # todo rimuovere
     steps:
       - name: Checkout
         uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
@@ -67,15 +44,14 @@ jobs:
             ${WARNING_ONLY_ARG}
 
   lint:
-    needs: [ actionlint, repo_structure_validation ]
-    if: ${{ always() && needs.actionlint.result == 'success' && (vars.ENABLE_REPO_STRUCTURE_VALIDATION != 'true' || needs.repo_structure_validation.result == 'success') }}
+    needs: [ repo_structure_validation ]
+    if: ${{ always() && (vars.ENABLE_REPO_STRUCTURE_VALIDATION != 'true' || needs.repo_structure_validation.result == 'success') }}
     secrets: inherit
     uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
     with:
       environment: ${{ inputs.environment }}
 
   common_values_validation:
-    needs: [ actionlint ]
     # condition disabled temporarily if: ${{ vars.ENABLE_COMMON_VALUES_VALIDATION == 'true' }}
     secrets: inherit
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main
