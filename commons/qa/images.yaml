@@ -81,7 +81,7 @@ images:
     events-signer:
       tag: "2.22.0-RC1"
     frontend:
-      tag: "TBD"
+      tag: "2.6.0-RC1"
     key-readmodel-writer:
       tag: "2.22.0-RC1"
     key-readmodel-writer-sql:
