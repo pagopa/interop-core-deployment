@@ -186,7 +186,11 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" to "${NAMESPACE}_risk_analysis_processing_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_risk_analysis_processing_user";
 
-  V1.11__Add_reviewer_workflow_Purpose.sql: |-
+  V1.11__Grant_Access_ScheduledNotificationDispatchers_Purpose.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+
+  V1.12__Add_reviewer_workflow_Purpose.sql: |-
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_review_mode VARCHAR;
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signing_state VARCHAR;
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signed_by UUID;
@@ -205,14 +209,12 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO readonly_user;
 
-  V1.12__Grant_Access_risk_analysis_reviewer.sql: |-
+  V1.13__Grant_Access_risk_analysis_reviewer.sql: |-
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_authorization_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_delegation_items_archiver_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_email_notification_dispatcher_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_in_app_notification_dispatcher_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_email_digest_dispatcher_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_risk_analysis_processing_user";
-
-  V1.13__Grant_Access_ScheduledNotificationDispatchers_Purpose.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer TO "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";

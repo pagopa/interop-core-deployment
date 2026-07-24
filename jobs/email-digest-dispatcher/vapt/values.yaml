@@ -9,7 +9,7 @@ configmap:
   PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-digest-dispatcher-transactional-id"
 
 cronjob:
-  schedule: "0 0 * * 0"
+  schedule: "0 7 * * 1-5"
   suspend: true
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
@@ -35,8 +35,8 @@ cronjob:
   env:
     BFF_URL: "https://selfcare.vapt.interop.pagopa.it/1.0/backend-for-frontend"
     DIGEST_FREQUENCY_HOURS: "24"
-    PRIORITY_PRODUCER_IDS: "" 
-    
+    PRIORITY_PRODUCER_IDS: ""
+
   envFromConfigmaps:
     EMAIL_DISPATCH_TOPIC: "common-kafka.EMAIL_DISPATCH_TOPIC"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"

@@ -155,14 +155,10 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_email_digest_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_email_digest_dispatcher_user";
 
-  V1.6__Grant_Access_PurposeTemplateProcess_EserviceTemplate.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_purpose_template_process_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_purpose_template_process_user";
-
-  V1.7__Add_Column_AsyncExchange_EServiceTemplate.sql: |-
+  V1.6__Add_Column_AsyncExchange_EServiceTemplate.sql: |-
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template ADD COLUMN IF NOT EXISTS async_exchange BOOLEAN;
 
-  V1.8__Alter_Eservice_Template_Version_Interface_Add_Kind.sql: |-
+  V1.7__Alter_Eservice_Template_Version_Interface_Add_Kind.sql: |-
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
       DROP CONSTRAINT IF EXISTS eservice_template_version_interface_version_id_key;
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
@@ -174,7 +170,7 @@ data:
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
       ADD CONSTRAINT eservice_template_version_interface_version_id_kind_key UNIQUE (version_id, kind);
 
-  V1.9__Create_Eservice_Template_Version_Async_Exchange_Properties.sql: |-
+  V1.8__Create_Eservice_Template_Version_Async_Exchange_Properties.sql: |-
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties (
       eservice_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
@@ -191,24 +187,22 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties TO "${NAMESPACE}_eservice_template_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties TO readonly_user;
 
-  V1.10__Grant_Access_AsyncTokenGenerationRMChecker_EServiceTemplate.sql: |-
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_async_token_generation_readmodel_checker_user";
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_async_token_generation_readmodel_checker_user";
-
-  V1.11__Grant_Access_Async_Exchange_Properties_EServiceTemplate.sql: |-
-    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_catalog_process_user";
-
-  V1.12__Grant_Access_Async_Exchange_Properties_EServiceTemplate_Additional_Users.sql: |-
+  V1.9__Grant_Access_Async_Exchange_EServiceTemplate.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO
+      "${NAMESPACE}_async_token_generation_readmodel_checker_user",
+      "${NAMESPACE}_purpose_template_process_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO
+      "${NAMESPACE}_async_token_generation_readmodel_checker_user",
+      "${NAMESPACE}_catalog_process_user",
       "${NAMESPACE}_purpose_template_process_user",
       "${NAMESPACE}_eservice_template_instances_updater_user",
       "${NAMESPACE}_datalake_data_export_user",
       "${NAMESPACE}_email_digest_dispatcher_user";
 
-  V1.13__Grant_Access_RiskAnalysisProcessingJob_Template.sql: |-
+  V1.10__Grant_Access_RiskAnalysisProcessingJob_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_risk_analysis_processing_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_risk_analysis_processing_user";
-  
-  V1.14__Add_Columns_AttributiCertificatiDiscreti_EServiceTemplate.sql: |-
+
+  V1.11__Add_Columns_AttributiCertificatiDiscreti_EServiceTemplate.sql: |-
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_attribute ADD COLUMN IF NOT EXISTS certified_discrete_threshold INTEGER;
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_attribute ADD COLUMN IF NOT EXISTS certified_discrete_comparator VARCHAR;
