@@ -14,12 +14,6 @@ Integrazione realizzata:
 
 1. Nuovo job riusabile `common_values_validation` che richiama:
    - `pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main`
-2. Nuovo job `actionlint` per validare sintassi e semantica GitHub Actions su `.github/workflows/*.yaml`. Job transitorio, da rimuovere quando la pipeline sara' stabile. Consente di:
-   - Trovare errori di sintassi YAML nei workflow.
-   - Trovare campi GitHub Actions non validi o usati nel posto sbagliato.
-   - Verificare riferimenti a job, needs, outputs, expression e context.
-   - Segnalare problemi comuni su shell script negli step run.
-   - Ridurre i failure “tardi” in PR, perché blocca subito config errate.
 2. Feature flag di controllo esecuzione:
    - `ENABLE_COMMON_VALUES_VALIDATION == 'true'`
 3. Input passati al workflow comune:
@@ -31,7 +25,7 @@ Integrazione realizzata:
    - `create_runner` resta condizionato da `ENABLE_KUBE_DIFF == 'true'`
    - `create_runner` dipende solo da `lint` locale (nessuna dipendenza dal job comune)
 5. Ordine di esecuzione aggiornato:
-   - `actionlint` -> `lint` locale -> percorso `kube diff` (se flag attivo)
+   - `repo_structure_validation` -> `lint` locale -> percorso `kube diff` (se flag attivo)
    - `common_values_validation` (se flag attivo) eseguito in parallelo, indipendente dal percorso diff
 
 ## Analisi sovrapposizioni (common vs locale)
@@ -46,7 +40,6 @@ La valutazione delle sovrapposizioni e' stata effettuata sulla base di VAL-001 e
 | Kube-linter su renderizzati microservices | Si (`diff_microservices`) | Si (`microservices_validation`) | Sovrapposto |
 | Kube-linter su renderizzati cronjobs | Si (`diff_cronjobs`) | Si (`cronjobs_validation`) | Sovrapposto |
 | Kubectl diff verso cluster | Si (`diff_microservices` / `diff_cronjobs`) | No | Solo locale |
-| Validazione workflow GitHub Actions | No (prima di VAL-002) | No | Nuovo (VAL-002: `actionlint`) |
 
 Implicazione pratica:
 
@@ -78,8 +71,6 @@ Eseguiti localmente:
    - presente `uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main`
 2. Verifica feature flag:
    - presente `if: ${{ vars.ENABLE_COMMON_VALUES_VALIDATION == 'true' }}`
-3. Wiring `actionlint` in pipeline:
-   - job `actionlint` aggiunto e messo come prerequisito del job `lint`
 
 
 ## Test plan operativo
@@ -116,4 +107,3 @@ Eseguiti localmente:
 ## Note
 
 - Questa attivita' copre l'integrazione del workflow comune, non i gap ArgoCD strutturali (`ApplicationSet`, `generator path`, `valueFiles`) classificati in VAL-001 come `missing`.
-- Il job `actionlint` e' considerato temporaneo in fase di stabilizzazione iniziale; a regime dovra' essere rimosso dalla pipeline.

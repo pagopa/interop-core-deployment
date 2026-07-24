@@ -115,7 +115,7 @@ Esempio di motivazione (template suggerito in PR):
 
 Nel workflow `pr-validation-generic-env.yaml`:
 
-1. nuovo job `repo_structure_validation` (dopo `actionlint`);
+1. nuovo job `repo_structure_validation`;
 2. `lint` dipende da `repo_structure_validation`;
 3. in caso di failure strutturale (blocking mode), il flusso si interrompe prima dei check Helm/diff;
 4. in warning-only, il job annota warning ma non blocca.
