@@ -126,7 +126,7 @@ report_info() {
   local file_path="$1"
   local message="$2"
   info_count=$((info_count + 1))
-  echo "::info file=${file_path}::${message}"
+  echo "::notice file=${file_path}::${message}"
   # Also store this info to print it in the summary at the end of the script.
   infos+=("$file_path: $message")
 }
