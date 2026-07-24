@@ -12,7 +12,7 @@ configmap:
   SQS_MAX_NUMBER_OF_MSGS: "5"
   SQS_LONG_POLL_WAIT_TIME_SECONDS: "20"
   SQS_VISIBILITY_TIMEOUT_SECONDS: "20"
-  S3_BUCKET: "interop-generated-m2m-jwt-details-{{.Values.local.env}}-es1"
+  S3_BUCKET: "interop-generated-m2m-jwt-details-{{.Values.namespace}}-es1"
   SQS_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/interop-m2m-jwt-details-new-s3-object-{{.Values.namespace}}"
   SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-m2m-audit-signer"
 
