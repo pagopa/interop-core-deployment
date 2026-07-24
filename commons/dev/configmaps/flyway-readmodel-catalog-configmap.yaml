@@ -371,3 +371,8 @@ data:
   V1.30__Add_Columns_ServerUrlsDescriptions_Catalog.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor  ADD COLUMN IF NOT EXISTS server_urls_descriptions VARCHAR ARRAY NOT NULL DEFAULT '{}';
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor ALTER COLUMN server_urls_descriptions DROP DEFAULT;
+
+  V1.31__Add_Grace_Period_Column_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule ADD grace_period_days integer NULL;
+    UPDATE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule set grace_period_days=90 where grace_period_days is null;
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule ALTER COLUMN grace_period_days SET NOT NULL;
