@@ -5,6 +5,10 @@ service:
   portName: http
 
 deployment:
+  securityContext:
+    runAsUser: 1001
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
   enableRolloutAnnotations: true
   replicas: 1
   image:
