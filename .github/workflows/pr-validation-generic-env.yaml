@@ -51,7 +51,6 @@ jobs:
       environment: ${{ inputs.environment }}
 
   common_values_validation:
-    # condition disabled temporarily if: ${{ vars.ENABLE_COMMON_VALUES_VALIDATION == 'true' }}
     secrets: inherit
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
     with:
