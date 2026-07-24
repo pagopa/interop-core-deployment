@@ -7,8 +7,10 @@ TARGET_ENV=""
 WARNING_ONLY="false"
 LEGACY_EXCEPTIONS_FILE=""
 
-error_count=0
+info_count=0
 warning_count=0
+error_count=0
+infos=()
 warnings=()
 issues=()
 
@@ -116,8 +118,17 @@ report_warning() {
   local message="$2"
   warning_count=$((warning_count + 1))
   echo "::warning file=${file_path}::${message}"
-  # also save this warning in a warning variable to be printed in the summary at the end of the script
+  # Also store this warning to print it in the summary at the end of the script.
   warnings+=("$file_path: $message")
+}
+
+report_info() {
+  local file_path="$1"
+  local message="$2"
+  info_count=$((info_count + 1))
+  echo "::info file=${file_path}::${message}"
+  # Also store this info to print it in the summary at the end of the script.
+  infos+=("$file_path: $message")
 }
 
 declare -a legacy_exceptions
@@ -140,12 +151,12 @@ validate_yaml() {
   local file_path="$1"
 
   if ! command -v yq >/dev/null 2>&1; then
-    report_issue "$file_path" "Parser YAML non disponibile (installare yq)"
+    report_issue "$file_path" "YAML parser not available (install yq)"
     return
   fi
 
   if ! yq eval '.' "$file_path" >/dev/null 2>&1; then
-    report_issue "$file_path" "YAML malformato"
+    report_issue "$file_path" "Malformed YAML"
   fi
 }
 
@@ -153,13 +164,13 @@ cd "$REPO_ROOT"
 
 # Check 1: Validate the presence of required directories (commons / microservices / jobs).
 if [[ ! -d commons || ! -d microservices || ! -d jobs ]]; then
-  report_issue "." "Struttura repo non valida: richieste cartelle commons/, microservices/, jobs/"
+  report_issue "." "Invalid repository structure: required directories are commons/, microservices/, jobs/"
 fi
 
 # Check 2: commons_env_count is the number of environment directories found in commons/. If none are found, report an issue.
 commons_env_count=$(find commons -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
 if [ "$commons_env_count" -eq 0 ]; then
-  report_issue "commons" "Nessun ambiente trovato in commons/"
+  report_issue "commons" "No environments found in commons/"
 fi
 
 # These files should be present in commons/<target_env> directory. (TO VERIFY: If this is not the case, we can remove this check.)
@@ -173,14 +184,14 @@ required_commons_files=(
 # Check 3: Validate the presence of the commons/<target_env> directory.
 env_dir="commons/$TARGET_ENV"
 if [[ ! -d "$env_dir" ]]; then
-  report_issue "$env_dir" "Cartella ambiente commons mancante"
+  report_issue "$env_dir" "Missing commons environment directory"
 else
   # Check 4: Validate mandatory files for the selected commons target env.
   for required_file in "${required_commons_files[@]}"; do
     required_path="$env_dir/$required_file"
     if [[ ! -f "$required_path" ]]; then
       if ! is_legacy_exception "$required_path"; then
-        report_issue "$required_path" "File obbligatorio mancante"
+        report_issue "$required_path" "Missing required file"
       fi
       continue
     fi
@@ -192,7 +203,7 @@ else
   if [[ ! -d "$env_dir/configmaps" ]]; then
     configmaps_path="$env_dir/configmaps"
     if ! is_legacy_exception "$configmaps_path"; then
-      report_issue "$configmaps_path" "Directory obbligatoria mancante"
+      report_issue "$configmaps_path" "Missing required directory"
     fi
   fi
 fi
@@ -201,28 +212,28 @@ validate_workload_group() {
   local group_dir="$1"
 
   if [[ ! -d "$group_dir" ]]; then
-    report_issue "$group_dir" "Directory workload mancante"
+    report_issue "$group_dir" "Missing workload directory"
     return
   fi
 
   for workload_dir in $(find "$group_dir" -mindepth 1 -maxdepth 1 -type d | sort); do
     env_dir="$workload_dir/$TARGET_ENV"
 
-    # For each workload, missing target env directory is a non-blocking warning.
+    # For each workload, missing target env directory is a non-blocking info.
     if [[ ! -d "$env_dir" ]]; then
-      report_warning "$env_dir" "Directory ambiente mancante per workload $workload_dir"
+      report_info "$env_dir" "Missing environment directory for workload $workload_dir"
       continue
     fi
 
     # values.yaml is mandatory and must not be empty.
     values_path="$env_dir/values.yaml"
     if [[ ! -f "$values_path" ]]; then
-      report_issue "$values_path" "File obbligatorio mancante"
+      report_issue "$values_path" "Missing required file"
       continue
     fi
 
     if [[ ! -s "$values_path" ]]; then
-      report_issue "$values_path" "File values.yaml vuoto"
+      report_issue "$values_path" "Empty values.yaml file"
       continue
     fi
 
@@ -235,6 +246,9 @@ validate_workload_group() {
 validate_workload_group "microservices"
 validate_workload_group "jobs"
 
+# todo argocd 
+
+
 summary_msg="Repo structure validation completed. errors=$error_count warnings=$warning_count target_env=$TARGET_ENV"
 echo "$summary_msg"
 
@@ -246,7 +260,8 @@ echo "$summary_msg"
     echo "- errors: $error_count"
     echo "- warnings: $warning_count"
     echo "- warning_only: $WARNING_ONLY"
-    echo "\n"
+    echo ""
+
     # Print the list of issues if any
     if [[ ${#issues[@]} -gt 0 ]]; then
       echo "#### Issues:"
@@ -259,6 +274,13 @@ echo "$summary_msg"
       echo "#### Warnings:"
       for warning in "${warnings[@]}"; do
         echo "- $warning"
+      done
+    fi
+    # Print the list of info if any
+    if [[ ${#infos[@]} -gt 0 ]]; then
+      echo "#### Info:"
+      for info in "${infos[@]}"; do
+        echo "- $info"
       done
     fi
   } >> "$GITHUB_STEP_SUMMARY"
