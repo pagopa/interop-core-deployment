@@ -12,17 +12,58 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  ENABLE_ARGOCD_VALIDATION: false
+
 jobs:
+  repo_structure_validation:
+    name: Repo Structure Validation
+    runs-on: ubuntu-22.04
+    # if: ${{ vars.ENABLE_REPO_STRUCTURE_VALIDATION == 'true' }} # todo rimuovere
+    steps:
+      - name: Checkout
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29
+
+      - name: Run repository structure checks
+        env:
+          REPO_STRUCTURE_VALIDATION_WARNING_ONLY: ${{ vars.REPO_STRUCTURE_VALIDATION_WARNING_ONLY }}
+          ENABLE_ARGO_TEMPLATE_VALIDATION: ${{ vars.ENABLE_ARGO_TEMPLATE_VALIDATION }}
+        run: |
+          set -euo pipefail
+
+          WARNING_ONLY_ARG=""
+          if [[ "${REPO_STRUCTURE_VALIDATION_WARNING_ONLY:-false}" == "true" ]]; then
+            WARNING_ONLY_ARG="--warning-only"
+          fi
+
+          echo "Argo template checks flag status: ENABLE_ARGO_TEMPLATE_VALIDATION=${ENABLE_ARGO_TEMPLATE_VALIDATION:-false}"
+          bash scripts/validation/validate-repo-structure.sh \
+            --repo-root "${GITHUB_WORKSPACE}" \
+            --target-env "${{ inputs.environment }}" \
+            --legacy-exceptions-file docs/repo-structure-validation-exceptions.txt \
+            ${WARNING_ONLY_ARG}
+
   lint:
+    needs: [ repo_structure_validation ]
+    if: ${{ always() && (vars.ENABLE_REPO_STRUCTURE_VALIDATION != 'true' || needs.repo_structure_validation.result == 'success') }}
     secrets: inherit
     uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
     with:
       environment: ${{ inputs.environment }}
+
+  common_values_validation:
+    # condition disabled temporarily if: ${{ vars.ENABLE_COMMON_VALUES_VALIDATION == 'true' }}
+    secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@main
+    with:
+      environment: ${{ inputs.environment }}
+      infra_commons_tag: "main"
+      strict_kube_linter_checks: true
   
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
-    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
+    # condition disabled temporarily if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     needs: [ lint ]
     environment: ${{ inputs.environment }}
     outputs:
@@ -59,7 +100,7 @@ jobs:
   delete_runner:
     name: "[${{ inputs.environment }}] Delete Self-Hosted Runner"
     needs: [ diff ]
-    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
+    # condition disabled temporarily if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     strategy:
