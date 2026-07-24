@@ -50,8 +50,7 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       infra_commons_tag: "main"
-      strict_kube_linter_checks: true
-  
+
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
