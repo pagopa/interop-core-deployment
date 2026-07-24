@@ -51,6 +51,7 @@ jobs:
       environment: ${{ inputs.environment }}
       infra_commons_tag: "main"
 
+      
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
