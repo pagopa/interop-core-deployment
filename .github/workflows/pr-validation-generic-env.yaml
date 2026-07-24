@@ -42,15 +42,9 @@ jobs:
             --legacy-exceptions-file docs/repo-structure-validation-exceptions.txt \
             ${WARNING_ONLY_ARG}
 
-  lint:
+  common_values_validation:
     needs: [ repo_structure_validation ]
     if: ${{ always() && (needs.repo_structure_validation.result == 'success') }}
-    secrets: inherit
-    uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
-    with:
-      environment: ${{ inputs.environment }}
-
-  common_values_validation:
     secrets: inherit
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
     with:
@@ -62,7 +56,7 @@ jobs:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
     # condition disabled temporarily if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
-    needs: [ lint ]
+    needs: [ common_values_validation ]
     environment: ${{ inputs.environment }}
     outputs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
