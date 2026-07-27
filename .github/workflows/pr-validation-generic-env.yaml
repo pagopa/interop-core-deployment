@@ -12,18 +12,13 @@ permissions:
   id-token: write
   contents: read
 
-env:
-  ENABLE_ARGOCD_VALIDATION: false
-
 jobs:
-  
   common_values_validation:
     secrets: inherit
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
     with:
       environment: ${{ inputs.environment }}
       infra_commons_tag: "feature/pin-10584-validation-pipeline"
-
 
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
