@@ -22,7 +22,7 @@ cronjob:
   restartPolicy: Never
   backoffLimit: 0
   automountServiceAccountToken: false
-  suspend: true
+
   envFromConfigmaps:
     TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
     ATTRIBUTE_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
