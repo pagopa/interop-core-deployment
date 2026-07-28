@@ -170,6 +170,8 @@ images:
       tag: "2.21.0"
     ipa-certified-attributes-importer:
       tag: "2.21.0"
+    istat-certified-attributes-importer:
+      tag: "2.21.0"
     ivass-certified-attributes-importer:
       tag: "2.21.0"
     one-trust-notices:
