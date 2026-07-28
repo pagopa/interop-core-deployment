@@ -166,6 +166,11 @@ data:
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
       DROP CONSTRAINT IF EXISTS eservice_template_version_interface_version_id_key;
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
+      ADD COLUMN IF NOT EXISTS kind VARCHAR;
+    UPDATE "${NAMESPACE}_eservice_template".eservice_template_version_interface
+      SET kind = 'INTERFACE' WHERE kind IS NULL;
+    ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
+      ALTER COLUMN kind SET NOT NULL;
     ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface
       ADD CONSTRAINT eservice_template_version_interface_version_id_kind_key UNIQUE (version_id, kind);
 
@@ -173,6 +178,16 @@ data:
     CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties (
       eservice_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id) ON DELETE CASCADE,
       metadata_version INTEGER NOT NULL,
+      version_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template_version (id) ON DELETE CASCADE,
+      response_time INTEGER NOT NULL,
+      resource_available_time INTEGER NOT NULL,
+      confirmation BOOLEAN NOT NULL,
+      bulk BOOLEAN NOT NULL,
+      max_result_set INTEGER NOT NULL,
+      PRIMARY KEY (version_id),
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties TO "${NAMESPACE}_eservice_template_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties TO "${NAMESPACE}_eservice_template_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_async_exchange_properties TO readonly_user;
 
