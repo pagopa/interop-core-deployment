@@ -16,7 +16,6 @@ configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
-  GRACE_PERIOD_ARCHIVING_ESERVICE_DAYS: "1"
 
 deployment:
   flywayInitContainer:
@@ -40,6 +39,7 @@ deployment:
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -53,6 +53,8 @@ deployment:
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
+    READMODEL_DB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
@@ -74,15 +76,17 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+    FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
     FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE: "common-feature-flags.FEATURE_FLAG_AGREEMENT_APPROVAL_POLICY_UPDATE"
     FEATURE_FLAG_ASYNC_EXCHANGE: "common-feature-flags.FEATURE_FLAG_ASYNC_EXCHANGE"
     FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS: "common-feature-flags.FEATURE_FLAG_TENANT_KIND_IN_RISK_ANALYSIS"
+    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
     TENANT_KIND_HISTORY_DB_HOST: "common-tenant-kind-history-db.DB_HOST_RO"
     TENANT_KIND_HISTORY_DB_PORT: "common-tenant-kind-history-db.DB_PORT"
     TENANT_KIND_HISTORY_DB_NAME: "common-tenant-kind-history-db.DB_NAME"
     TENANT_KIND_HISTORY_DB_USE_SSL: "common-tenant-kind-history-db.DB_USE_SSL"
     TENANT_KIND_HISTORY_DB_SCHEMA: "common-tenant-kind-history-db.DB_SCHEMA"
-    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
+    GRACE_PERIOD_ARCHIVING_ESERVICE_DAYS: "common-manual-archiving.GRACE_PERIOD_ARCHIVING_ESERVICE_DAYS"
   envFromSecrets:
     EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
     EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"

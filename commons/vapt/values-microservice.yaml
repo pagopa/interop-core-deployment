@@ -36,7 +36,6 @@ local:
   awsAccountId: "565393043798"
   env: "vapt"
 
-
 autoscaling:
   keda:
     create: true

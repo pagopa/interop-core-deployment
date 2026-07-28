@@ -1,7 +1,7 @@
 name: "interop-be-scheduled-notification-cleaner"
 
 cronjob:
-  schedule: "0 3 * * *"
+  schedule: "0 2 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: OnFailure
