@@ -23,4 +23,5 @@ data:
   PURPOSE_TEMPLATE_TOPIC: "event-store.vapt_purpose_template.events"
   TENANT_OUTBOUND_TOPIC: "outbound.vapt_tenant.events"
   TENANT_TOPIC: "event-store.vapt_tenant.events"
-  TOKEN_AUDITING_TOPIC: "vapt_authorization-server.generated-jwt"
+  CONSUMER_TOKEN_AUDITING_TOPIC: "vapt_authorization-server.generated-jwt"
+  API_TOKEN_AUDITING_TOPIC: "vapt_authorization-server.generated-m2m-jwt"
