@@ -84,6 +84,8 @@ images:
       tag: "2.21.0"
     key-readmodel-writer-sql:
       tag: "2.21.0"
+    m2m-audit-signer:
+      tag: "TBD-BE"
     m2m-event-dispatcher:
       tag: "2.21.0"
     m2m-event-manager:
@@ -92,6 +94,8 @@ images:
       tag: "2.21.0"
     m2m-gateway-v3:
       tag: "2.21.0"
+    m2m-token-details-persister:
+      tag: "TBD-BE"
     notification-email-sender:
       tag: "2.21.0"
     notifier:
