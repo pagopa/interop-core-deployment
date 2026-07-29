@@ -94,6 +94,8 @@ images:
       tag: "2.22.0"
     m2m-gateway-v3:
       tag: "2.22.0"
+    m2m-token-details-persister:
+      tag: "2.22.0"
     notification-email-sender:
       tag: "2.22.0"
     notifier:
