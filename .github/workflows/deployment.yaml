@@ -119,7 +119,7 @@ jobs:
     steps:
       - name: Start GitHub Runner
         id: start_runner
-        uses: pagopa/interop-github-runner-aws-create-action@main
+        uses: pagopa/interop-github-runner-aws-create-action@b1af978f506c221986d052d4c846e6fb534c46b6 # main
         with:
           aws_region: ${{ secrets.AWS_REGION }}
           iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
@@ -177,7 +177,7 @@ jobs:
     steps:
       - name: Stop Github Runner
         id: stop_runner
-        uses: pagopa/interop-github-runner-aws-cleanup-action@main
+        uses: pagopa/interop-github-runner-aws-cleanup-action@61b18d1d3ee01be84fee72e2fa5836fc68f0a16e # main
         with:
           aws_region: ${{ secrets.AWS_REGION }}
           iam_role_arn: ${{ secrets.ECS_IAM_ROLE_ARN }}
