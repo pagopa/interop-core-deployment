@@ -1,216 +1,216 @@
 images:
   microservices:
     agreement-outbound-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     agreement-platformstate-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     agreement-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     agreement-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     agreement-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     api-gateway:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     attribute-registry-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     attribute-registry-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     attribute-registry-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     audit-signer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     authorization-management:
       tag: "1.0.18"
     authorization-platformstate-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     authorization-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     authorization-server:
       tag: "1.0.15"
     authorization-server-node:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     authorization-updater:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     backend-for-frontend:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     catalog-outbound-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     catalog-platformstate-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     catalog-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     catalog-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     catalog-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     certified-email-sender:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     client-purpose-updater:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     client-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     client-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     compute-agreements-consumer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     datalake-interface-exporter:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     delegation-items-archiver:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     delegation-outbound-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     delegation-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     delegation-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     delegation-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     documents-generator:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     documents-signer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     eservice-descriptors-archiver:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     eservice-template-instances-updater:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     eservice-template-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     eservice-template-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     eservice-template-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     events-signer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     frontend:
-      tag: "TBD-FE"
+      tag: "2.6.0"
     key-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     key-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     m2m-event-dispatcher:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     m2m-event-manager:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     m2m-gateway:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     m2m-gateway-v3:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     notification-email-sender:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     notifier:
       tag: "1.0.19"
     notifier-seeder:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     producer-keychain-platformstate-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     producer-key-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     producer-key-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     producer-keychain-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     producer-keychain-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     purpose-platformstate-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     purpose-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     purpose-outbound-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     purpose-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     purpose-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     purpose-template-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     purpose-template-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     redis:
       tag: "7.0.4"
     scheduled-notification-scheduler:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     selfcare-client-users-updater:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     selfcare-onboarding-consumer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     ses-mock:
       tag: "20"
     signed-objects-persister:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     smtp-mock:
       tag: "1.10.4"
     tenant-outbound-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     tenant-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     tenant-readmodel-writer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     tenant-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     tenant-kind-history-consumer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     token-details-persister-node:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     in-app-notification-manager:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     in-app-notification-dispatcher:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     email-notification-dispatcher:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     notification-config-process:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     notification-config-readmodel-writer-sql:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     notification-user-lifecycle-consumer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     notification-tenant-lifecycle-consumer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     email-sender:
-      tag: "TBD-BE"
+      tag: "2.22.0"
 
   jobs:
     anac-certified-attributes-importer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     async-token-generation-readmodel-checker:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     datalake-data-export:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     dtd-catalog-exporter:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     email-digest-dispatcher:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     ipa-certified-attributes-importer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     istat-certified-attributes-importer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     ivass-certified-attributes-importer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     m2m-event-cleaner:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     one-trust-notices:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     pn-consumers:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     private-certified-attributes-importer:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     readmodel-checker:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     token-details-persister:
       tag: "1.0.32"
     token-generation-readmodel-checker:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     in-app-notification-cleaner:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     check-selfcare-diff:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     risk-analysis-processing:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     email-scheduled-notification-dispatcher:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     in-app-scheduled-notification-dispatcher:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     scheduled-notification-cleaner:
-      tag: "TBD-BE"
+      tag: "2.22.0"
     eservice-descriptors-scheduled-archiver:
-      tag: "TBD-BE"
+      tag: "2.22.0"
