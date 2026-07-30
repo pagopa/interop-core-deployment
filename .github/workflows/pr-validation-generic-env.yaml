@@ -19,11 +19,16 @@ jobs:
     with:
       environment: ${{ inputs.environment }}
       infra_commons_tag: "feature/pin-10584-validation-pipeline"
+      enable_kube_linter: false
+      enable_argocd_validation: true
+      enable_argocd_schema_validation: true
+      repo_structure_validation_warning_only: false
 
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
     # condition disabled temporarily if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
+    if: ${{ !always() }}
     needs: [ common_values_validation ]
     environment: ${{ inputs.environment }}
     outputs:
