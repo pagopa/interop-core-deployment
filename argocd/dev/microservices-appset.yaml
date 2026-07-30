@@ -27,7 +27,7 @@ spec:
   template:
     metadata:
       name: '{{.ms.path.basename}}'
-      namespace: { ? { .namespace } }
+      namespace: '{{.namespace}}'
       labels:
         appset: interop-microservices-appset
         app.kubernetes.io/part-of: interop-dev-appset-microservices
@@ -37,7 +37,7 @@ spec:
       project: '{{.project}}'
       destination:
         server: https://kubernetes.default.svc
-        namespace: { ? { .namespace } }
+        namespace: '{{.namespace}}'
       source:
         repoURL: https://github.com/pagopa/interop-core-deployment.git
         targetRevision: feature/argocd
