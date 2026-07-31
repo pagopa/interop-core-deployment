@@ -32,7 +32,7 @@ spec:
         appset: interop-microservices-appset
         app.kubernetes.io/part-of: interop-dev-appset-microservices
         env: '{{.env}}'
-      service: '{{.ms.path.basename}}'
+        service: '{{.ms.path.basename}}'
     spec:
       project: '{{.project}}'
       destination:
