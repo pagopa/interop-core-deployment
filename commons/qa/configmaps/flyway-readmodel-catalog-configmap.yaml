@@ -347,3 +347,29 @@ data:
   V1.19__Add_Columns_AttributiCertificatiDiscreti_Catalog.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS certified_discrete_threshold INTEGER;
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS certified_discrete_comparator VARCHAR; 
+
+  # this migration must be ignored in others environments
+  V1.20__Add_Columns_ServerUrlsDescriptions_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor  ADD COLUMN IF NOT EXISTS server_urls_descriptions VARCHAR ARRAY NOT NULL DEFAULT '{}';
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor ALTER COLUMN server_urls_descriptions DROP DEFAULT;
+
+  # this migration must be ignored in others environments
+  V1.20.1__Drop_Columns_ServerUrlsDescriptions_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor DROP COLUMN IF EXISTS server_urls_descriptions;
+
+  # this migration must be ignored in others environments
+  V1.20.2__Add_Columns_ServerUrlsDescriptions_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor  ADD COLUMN IF NOT EXISTS server_urls_descriptions VARCHAR ARRAY NOT NULL DEFAULT '{}';
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor ALTER COLUMN server_urls_descriptions DROP DEFAULT;
+
+  # this migration must be ignored in others environments
+  V1.20.3__Add_Columns_ServerUrlsDescriptions_Nullable_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor DROP COLUMN IF EXISTS server_urls_descriptions;
+
+  V1.20.4__Add_Columns_ServerUrlsDescriptions_Nullable_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor ADD COLUMN IF NOT EXISTS server_urls_descriptions VARCHAR ARRAY;
+
+  V1.21__Add_Grace_Period_Column_Catalog.sql: |-
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule ADD grace_period_days integer NULL;
+    UPDATE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule set grace_period_days=90 where grace_period_days is null;
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_schedule ALTER COLUMN grace_period_days SET NOT NULL;
