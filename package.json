@@ -5,7 +5,7 @@
   "description": "Interop Core Deployment - ArgoCD and Kubernetes manifests",
   "main": "index.js",
   "scripts": {
-    "list-external-secrets": "node list-external-secrets.js",
+    "list-external-secrets": "npm run build:secret-references && node dist/scripts/list-external-secrets.js",
     "build:secret-references": "tsc -p tsconfig.json",
     "secret-references-repo-inventory": "npm run build:secret-references && node dist/scripts/secret-references-repo-inventory.js",
     "secret-references-cluster-inventory": "npm run build:secret-references && node dist/scripts/secret-references-cluster-inventory.js",
