@@ -4,7 +4,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-in-app-scheduled-notification-dispatcher-{{.Values.namespace}}-es1"
 
 cronjob:
-  schedule: "30 7 * * 1-5"
+  schedule: "30 7 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 1
   restartPolicy: Never
