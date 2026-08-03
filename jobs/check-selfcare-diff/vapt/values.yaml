@@ -1,7 +1,7 @@
 name: "interop-be-check-selfcare-diff"
 
 cronjob:
-  schedule: "0 2 * * *"  # Daily at 2 AM UTC
+  schedule: "0 2 * * *" # Daily at 2 AM UTC
   suspend: true
   failedJobsHistoryLimit: 2
   successfulJobsHistoryLimit: 1
