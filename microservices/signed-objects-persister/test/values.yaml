@@ -14,6 +14,7 @@ configmap:
   S3_BUCKET_SIGNED_DOCUMENTS: "interop-signed-application-documents-v2-{{.Values.local.env}}-es1"
   S3_BUCKET_EVENTS: "interop-signed-domain-events-v2-{{.Values.local.env}}-es1"
   S3_BUCKET_AUDIT: "interop-signed-jwt-audit-v2-{{.Values.local.env}}-es1"
+  S3_BUCKET_M2M_AUDIT: "interop-signed-m2m-jwt-audit-v2-{{.Values.local.env}}-es1"
   SQS_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/interop-safe-storage-completed-tasks-{{.Values.namespace}}"
   SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-signed-objects-persister"
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
