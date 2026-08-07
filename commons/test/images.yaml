@@ -53,7 +53,7 @@ images:
     client-readmodel-writer-sql:
       tag: "2.22.0"
     compute-agreements-consumer:
-      tag: "2.21.0"
+      tag: "2.22.0"
     datalake-interface-exporter:
       tag: "2.22.0"
     delegation-items-archiver:
@@ -205,7 +205,7 @@ images:
     token-generation-readmodel-checker:
       tag: "2.22.0"
     in-app-notification-cleaner:
-      tag: "2.21.0"
+      tag: "2.22.0"
     check-selfcare-diff:
       tag: "2.22.0"
     risk-analysis-processing:
