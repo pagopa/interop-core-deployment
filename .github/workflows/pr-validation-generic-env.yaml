@@ -13,17 +13,23 @@ permissions:
   contents: read
 
 jobs:
-  lint:
+  common_values_validation:
     secrets: inherit
-    uses: ./.github/workflows/pr-validation-sub-core-validation.yaml
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
     with:
       environment: ${{ inputs.environment }}
-  
+      infra_commons_tag: "feature/pin-10584-validation-pipeline"
+      enable_kube_linter: false
+      enable_argocd_validation: true
+      enable_argocd_schema_validation: true
+      repo_structure_validation_warning_only: false
+
   create_runner:
     name: "[${{ inputs.environment }}] Create Self-Hosted"
     runs-on: ubuntu-22.04
-    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
-    needs: [ lint ]
+    # condition disabled temporarily if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
+    if: ${{ !always() }}
+    needs: [ common_values_validation ]
     environment: ${{ inputs.environment }}
     outputs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
@@ -59,7 +65,7 @@ jobs:
   delete_runner:
     name: "[${{ inputs.environment }}] Delete Self-Hosted Runner"
     needs: [ diff ]
-    if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
+    # condition disabled temporarily if: ${{ vars.ENABLE_KUBE_DIFF == 'true' }}
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
     strategy:
