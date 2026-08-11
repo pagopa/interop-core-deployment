@@ -3,8 +3,9 @@
  *
  * Validates the output of secret-references-external-secrets-generator by verifying:
  *
- * 1. YAML PRESENCE      – externalSecrets.container / initContainer section exists in every
- *                          target values.yaml that was reported as migrated
+ * 1. YAML PRESENCE      – expected externalSecrets sections exist in every target values.yaml:
+ *                          - microservice: externalSecrets.app / externalSecrets.flywayInitContainer
+ *                          - cronjob: externalSecrets.container / externalSecrets.initContainer
  * 2. KEY COVERAGE       – every (secretName, secretKey) pair from the original repo inventory
  *                          appears as a secretKey in the generated ExternalSecret data
  * 3. CLUSTER COHERENCE  – every secretKey referenced in the repo inventory is actually present
@@ -32,6 +33,7 @@ import type { GeneratedExternalSecret, MigrationReport, SkippedSecret } from './
 // ---------------------------------------------------------------------------
 
 type ContainerType = 'container' | 'initContainer';
+type WorkloadType = 'microservice' | 'cronjob';
 type CheckType =
   | 'yaml-presence'
   | 'key-coverage'
@@ -228,10 +230,40 @@ function groupRepoRecords(
 /** Read values.yaml and extract the externalSecrets section */
 function readExternalSecretsFromFile(
   filePath: string
-): { container?: any; initContainer?: any } | null {
+): Record<string, any> | null {
   if (!fs.existsSync(filePath)) return null;
   const values = parseYaml(fs.readFileSync(filePath, 'utf-8')) as any;
   return values?.externalSecrets ?? null;
+}
+
+function getExternalSecretsSectionNames(workloadType: string, containerType: ContainerType): string[] {
+  const isMicroservice = workloadType === 'microservice';
+
+  if (containerType === 'container') {
+    return isMicroservice ? ['app', 'container'] : ['container', 'app'];
+  }
+
+  return isMicroservice ? ['flywayInitContainer', 'initContainer'] : ['initContainer', 'flywayInitContainer'];
+}
+
+function getPreferredExternalSecretsSectionName(workloadType: string, containerType: ContainerType): string {
+  return getExternalSecretsSectionNames(workloadType, containerType)[0];
+}
+
+function resolveExternalSecretsSection(
+  externalSecrets: Record<string, any> | null,
+  workloadType: string,
+  containerType: ContainerType
+): any | null {
+  if (!externalSecrets) return null;
+
+  for (const key of getExternalSecretsSectionNames(workloadType, containerType)) {
+    if (externalSecrets[key]) {
+      return externalSecrets[key];
+    }
+  }
+
+  return null;
 }
 
 /** Get all secretKeys from an ExternalSecrets config data array */
@@ -263,7 +295,8 @@ function checkYamlPresence(
     };
   }
 
-  const section = gen.containerType === 'container' ? externalSecrets.container : externalSecrets.initContainer;
+  const section = resolveExternalSecretsSection(externalSecrets, gen.workloadType, gen.containerType);
+  const preferredSectionName = getPreferredExternalSecretsSectionName(gen.workloadType, gen.containerType);
   if (!section) {
     return {
       workloadType: gen.workloadType,
@@ -271,7 +304,7 @@ function checkYamlPresence(
       containerType: gen.containerType,
       checkType: 'yaml-presence',
       severity: 'error',
-      message: `externalSecrets.${gen.containerType} section is missing in ${gen.workloadPath}`,
+      message: `externalSecrets.${preferredSectionName} section is missing in ${gen.workloadPath}`,
     };
   }
 
@@ -282,7 +315,7 @@ function checkYamlPresence(
       containerType: gen.containerType,
       checkType: 'yaml-presence',
       severity: 'error',
-      message: `externalSecrets.${gen.containerType}.data is empty in ${gen.workloadPath}`,
+      message: `externalSecrets.${preferredSectionName}.data is empty in ${gen.workloadPath}`,
     };
   }
 
@@ -293,6 +326,7 @@ function checkKeyCoverage(
   workloadType: string,
   workloadName: string,
   containerType: ContainerType,
+  sectionName: string,
   expectedEnvVars: Map<string, Set<string>>,  // secretName → envVars (for coverage check)
   actualDataKeys: Set<string>
 ): ValidationIssue[] {
@@ -308,7 +342,7 @@ function checkKeyCoverage(
           containerType,
           checkType: 'key-coverage',
           severity: 'error',
-          message: `Environment variable "${envVar}" from K8s secret "${secretName}" is not covered in externalSecrets.${containerType}.data`,
+          message: `Environment variable "${envVar}" from K8s secret "${secretName}" is not covered in externalSecrets.${sectionName}.data`,
           details: `Expected secretKey "${envVar}" to appear in ExternalSecret data entries`,
         });
       }
@@ -569,15 +603,16 @@ async function main(): Promise<void> {
     // Get actual keys from values.yaml on disk (authoritative source)
     const absPath = path.join(args.rootDir, gen.workloadPath);
     const externalSecrets = readExternalSecretsFromFile(absPath);
-    const actualSection = externalSecrets?.[gen.containerType];
+    const actualSection = resolveExternalSecretsSection(externalSecrets, gen.workloadType, gen.containerType);
     const actualKeys = actualSection?.data
       ? new Set<string>(actualSection.data.map((d: any) => String(d.secretKey)))
       : getDataSecretKeys(gen.externalSecretsConfig);
+    const preferredSectionName = getPreferredExternalSecretsSectionName(gen.workloadType, gen.containerType);
 
     // ── Check 2: key coverage ──────────────────────────────────────────────
     // Verify each envVar appears as secretKey in generated externalSecrets
     totalChecks++;
-    const coverageIssues = checkKeyCoverage(workloadType, workloadName, containerType, envVarsBySecret, actualKeys);
+    const coverageIssues = checkKeyCoverage(workloadType, workloadName, containerType, preferredSectionName, envVarsBySecret, actualKeys);
     allIssues.push(...coverageIssues);
     if (coverageIssues.length > 0) {
       workloadStatus = 'ERROR';

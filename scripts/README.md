@@ -217,7 +217,7 @@ list-external-secrets  ──►  patches versions in values.yaml
 
 ### list-external-secrets
 
-Scans all `values.yaml` files, compares the version configured in `externalSecrets.container/initContainer.data[].remoteRef.version` with the live version on AWS SM, and automatically updates any that are outdated.
+Scans all `values.yaml` files, compares the version configured in `externalSecrets.app/flywayInitContainer.data[].remoteRef.version` (microservices) or `externalSecrets.container/initContainer.data[].remoteRef.version` (cronjobs) with the live version on AWS SM, and automatically updates any that are outdated.
 
 ```bash
 npm run list-external-secrets -- \
@@ -275,7 +275,7 @@ external-secrets-analysis/                          # output from list-external-
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | `No workload values found` | Environment does not exist or name is wrong | Check directories under `microservices/` and `jobs/` |
-| `Total secrets found: 0` | `externalSecrets` missing or unexpected YAML structure | Verify `values.yaml` files use `externalSecrets.container.data` |
+| `Total secrets found: 0` | `externalSecrets` missing or unexpected YAML structure | Verify `values.yaml` files use `externalSecrets.app.data` (microservices) or `externalSecrets.container.data` (cronjobs) |
 | AWS `UnrecognizedClientException` | Invalid or expired credentials | Run `aws sts get-caller-identity` to verify |
 | K8s `Unauthorized` | Kubeconfig not configured for the target cluster | `kubectl config use-context <context>` |
 | `Parser YAML non disponibile` | `yq` not installed | `brew install yq` on macOS |

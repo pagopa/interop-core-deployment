@@ -68,7 +68,8 @@ Both `container.data` and `initContainer.data` are processed.
 ## What the script does
 
 1. **Finds** all `values.yaml` files under `microservices/<workload>/<env>/` and `jobs/<workload>/<env>/`
-2. **Extracts** every entry in `externalSecrets.container.data[]` and `externalSecrets.initContainer.data[]`
+2. **Extracts** every entry in `externalSecrets.app.data[]` and `externalSecrets.flywayInitContainer.data[]` for microservices
+  and `externalSecrets.container.data[]` / `externalSecrets.initContainer.data[]` for cronjobs
 3. **Checks** that the configured version is not an AWS label (`AWSCURRENT` / `AWSPREVIOUS`) — those are reported as **misconfigured**
 4. **Queries** AWS Secrets Manager to retrieve the current version of each secret
 5. **Compares** the configured version with the live one

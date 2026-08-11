@@ -202,7 +202,7 @@ describe('values-yaml-patcher', () => {
       expect(result.initContainerMerged).toBe(false);
 
       const updated = readValuesFile(testValuesFile);
-      expect(updated.externalSecrets.container).toBeDefined();
+      expect(updated.externalSecrets.app).toBeDefined();
     });
 
     it('should apply both container and initContainer configs', () => {
@@ -219,8 +219,8 @@ describe('values-yaml-patcher', () => {
       expect(result.initContainerMerged).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
-      expect(updated.externalSecrets.container).toBeDefined();
-      expect(updated.externalSecrets.initContainer).toBeDefined();
+      expect(updated.externalSecrets.app).toBeDefined();
+      expect(updated.externalSecrets.flywayInitContainer).toBeDefined();
     });
 
     it('should remove old refs if requested', () => {
@@ -243,7 +243,7 @@ describe('values-yaml-patcher', () => {
 
       const updated = readValuesFile(testValuesFile);
       expect(updated.envFromSecrets).toBeUndefined();
-      expect(updated.externalSecrets.container).toBeDefined();
+      expect(updated.externalSecrets.app).toBeDefined();
     });
 
     it('should not modify file in dry-run mode', () => {
@@ -356,12 +356,12 @@ local:
 
       const updated = readValuesFile(testValuesFile);
       expect(updated.externalSecrets).toBeDefined();
-      expect(updated.externalSecrets.container).toBeDefined();
-      expect(updated.externalSecrets.container.secretStoreRef).toBeDefined();
-      expect(updated.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
-      expect(updated.externalSecrets.container.secretStoreRef.kind).toBe('SecretStore');
-      expect(updated.externalSecrets.initContainer).toBeDefined();
-      expect(updated.externalSecrets.initContainer.secretStoreRef).toBeDefined();
+      expect(updated.externalSecrets.app).toBeDefined();
+      expect(updated.externalSecrets.app.secretStoreRef).toBeDefined();
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.app.secretStoreRef.kind).toBe('SecretStore');
+      expect(updated.externalSecrets.flywayInitContainer).toBeDefined();
+      expect(updated.externalSecrets.flywayInitContainer.secretStoreRef).toBeDefined();
     });
 
     it('should preserve existing externalSecrets structure', () => {
@@ -369,7 +369,7 @@ local:
 local:
   env: "dev"
 externalSecrets:
-  container:
+  app:
     secretStoreRef:
       name: app-secret-store
       kind: SecretStore
@@ -380,7 +380,7 @@ externalSecrets:
       expect(result.success).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
-      expect(updated.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
     });
 
     it('should add missing secretStoreRef to existing sections', () => {
@@ -388,7 +388,7 @@ externalSecrets:
 local:
   env: "dev"
 externalSecrets:
-  container: {}
+  app: {}
 `;
       fs.writeFileSync(testValuesFile, commonsContent);
 
@@ -396,8 +396,8 @@ externalSecrets:
       expect(result.success).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
-      expect(updated.externalSecrets.container.secretStoreRef).toBeDefined();
-      expect(updated.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.app.secretStoreRef).toBeDefined();
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
     });
 
     it('should handle dry-run mode without writing', () => {

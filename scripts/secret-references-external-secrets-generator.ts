@@ -301,7 +301,8 @@ async function main(): Promise<void> {
           containerConfig,
           initContainerConfig,
           !config.keepOldRefs, // keepOldRefs=true means do NOT remove; removeOldRefs is the inverse
-          config.dryRun
+          config.dryRun,
+          externalSecret.workloadType
         );
 
         if (result.success) {

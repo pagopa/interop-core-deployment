@@ -6,6 +6,40 @@ import * as fs from 'fs';
 import { parse as parseYaml, stringify as stringifyYaml, parseDocument, isMap } from 'yaml';
 import type { ContainerExternalSecretsConfig, ValuesMergeResult } from './external-secrets-types.js';
 
+type WorkloadType = 'microservice' | 'cronjob';
+type ContainerType = 'container' | 'initContainer';
+
+function getSectionKey(workloadType: WorkloadType, containerType: ContainerType): 'app' | 'flywayInitContainer' | 'container' | 'initContainer' {
+  if (workloadType === 'microservice') {
+    return containerType === 'container' ? 'app' : 'flywayInitContainer';
+  }
+  return containerType;
+}
+
+function inferWorkloadTypeFromPath(valuesPath: string): WorkloadType {
+  const normalized = valuesPath.replace(/\\/g, '/');
+  if (normalized.includes('/jobs/')) return 'cronjob';
+  return 'microservice';
+}
+
+function normalizeExternalSecretsForWorkload(externalSecrets: any, workloadType: WorkloadType): any {
+  const normalized = externalSecrets || {};
+
+  // For microservices, migrate legacy keys to new chart keys if needed.
+  if (workloadType === 'microservice') {
+    if (normalized.container && !normalized.app) {
+      normalized.app = deepMerge({}, normalized.container);
+    }
+    if (normalized.initContainer && !normalized.flywayInitContainer) {
+      normalized.flywayInitContainer = deepMerge({}, normalized.initContainer);
+    }
+    delete normalized.container;
+    delete normalized.initContainer;
+  }
+
+  return normalized;
+}
+
 /**
  * Determine the anchor point key where externalSecrets should be inserted before
  * For microservices: "deployment"
@@ -171,7 +205,8 @@ export function applyExternalSecretsToWorkload(
   containerConfig: ContainerExternalSecretsConfig | undefined,
   initContainerConfig: ContainerExternalSecretsConfig | undefined,
   removeOldRefs: boolean,
-  dryRun: boolean = false
+  dryRun: boolean = false,
+  workloadType?: WorkloadType
 ): ValuesMergeResult {
   try {
     const originalContent = fs.readFileSync(valuesPath, 'utf-8');
@@ -179,21 +214,27 @@ export function applyExternalSecretsToWorkload(
 
     // Build the externalSecrets structure
     const existingValues = parseYaml(originalContent) || {};
-    const externalSecretsValue: any = existingValues.externalSecrets || {};
+    const resolvedWorkloadType = workloadType || inferWorkloadTypeFromPath(valuesPath);
+    const externalSecretsValue: any = normalizeExternalSecretsForWorkload(
+      existingValues.externalSecrets,
+      resolvedWorkloadType
+    );
 
     let containerMerged = false;
     let initContainerMerged = false;
     let oldRefsRemoved = false;
 
     if (containerConfig) {
-      if (!externalSecretsValue.container) externalSecretsValue.container = {};
-      externalSecretsValue.container = deepMerge(externalSecretsValue.container, containerConfig);
+      const key = getSectionKey(resolvedWorkloadType, 'container');
+      if (!externalSecretsValue[key]) externalSecretsValue[key] = {};
+      externalSecretsValue[key] = deepMerge(externalSecretsValue[key], containerConfig);
       containerMerged = true;
     }
 
     if (initContainerConfig) {
-      if (!externalSecretsValue.initContainer) externalSecretsValue.initContainer = {};
-      externalSecretsValue.initContainer = deepMerge(externalSecretsValue.initContainer, initContainerConfig);
+      const key = getSectionKey(resolvedWorkloadType, 'initContainer');
+      if (!externalSecretsValue[key]) externalSecretsValue[key] = {};
+      externalSecretsValue[key] = deepMerge(externalSecretsValue[key], initContainerConfig);
       initContainerMerged = true;
     }
 
@@ -278,34 +319,22 @@ export function initializeCommonsExternalSecrets(commonsValuesPath: string, dryR
     const content = fs.readFileSync(commonsValuesPath, 'utf-8');
     const doc = parseDocument(content);
 
-    // Define default secretStoreRef
-    const defaultExternalSecrets = {
-      container: {
-        secretStoreRef: {
-          name: 'app-secret-store',
-          kind: 'SecretStore',
-        },
-      },
-      initContainer: {
-        secretStoreRef: {
-          name: 'app-secret-store',
-          kind: 'SecretStore',
-        },
-      },
-    };
+    const workloadType = commonsValuesPath.includes('values-cronjob.yaml') ? 'cronjob' : 'microservice';
+    const appKey = getSectionKey(workloadType, 'container');
+    const flywayKey = getSectionKey(workloadType, 'initContainer');
 
     // Check if externalSecrets already exists
     const existingExternalSecrets = doc.getIn(['externalSecrets']) as any;
 
     // Build the complete externalSecrets structure
-    let externalSecretsStructure = {
-      container: {
+    let externalSecretsStructure: any = {
+      [appKey]: {
         secretStoreRef: {
           name: 'app-secret-store',
           kind: 'SecretStore',
         },
       },
-      initContainer: {
+      [flywayKey]: {
         secretStoreRef: {
           name: 'app-secret-store',
           kind: 'SecretStore',
@@ -313,22 +342,25 @@ export function initializeCommonsExternalSecrets(commonsValuesPath: string, dryR
       },
     };
 
-    if (existingExternalSecrets && typeof existingExternalSecrets === 'object') {
+    // Normalize legacy keys before merging defaults.
+    const normalizedExisting = normalizeExternalSecretsForWorkload(existingExternalSecrets, workloadType);
+
+    if (normalizedExisting && typeof normalizedExisting === 'object') {
       // Merge existing structure with defaults
       // Preserve existing content in container/initContainer if it exists
-      if (existingExternalSecrets.container) {
-        externalSecretsStructure.container = {
-          ...existingExternalSecrets.container,
-          secretStoreRef: existingExternalSecrets.container.secretStoreRef || {
+      if (normalizedExisting[appKey]) {
+        externalSecretsStructure[appKey] = {
+          ...normalizedExisting[appKey],
+          secretStoreRef: normalizedExisting[appKey].secretStoreRef || {
             name: 'app-secret-store',
             kind: 'SecretStore',
           },
         };
       }
-      if (existingExternalSecrets.initContainer) {
-        externalSecretsStructure.initContainer = {
-          ...existingExternalSecrets.initContainer,
-          secretStoreRef: existingExternalSecrets.initContainer.secretStoreRef || {
+      if (normalizedExisting[flywayKey]) {
+        externalSecretsStructure[flywayKey] = {
+          ...normalizedExisting[flywayKey],
+          secretStoreRef: normalizedExisting[flywayKey].secretStoreRef || {
             name: 'app-secret-store',
             kind: 'SecretStore',
           },

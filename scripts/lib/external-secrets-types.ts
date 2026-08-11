@@ -39,6 +39,8 @@ export interface ContainerExternalSecretsConfig {
 }
 
 export interface ExternalSecretsConfigFull {
+  app?: ContainerExternalSecretsConfig;
+  flywayInitContainer?: ContainerExternalSecretsConfig;
   container?: ContainerExternalSecretsConfig;
   initContainer?: ContainerExternalSecretsConfig;
 }

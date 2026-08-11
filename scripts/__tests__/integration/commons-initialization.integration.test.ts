@@ -51,8 +51,9 @@ local:
       // Verify microservice commons was updated
       const updatedMicroservice = readValuesFile(microserviceCommonsPath);
       expect(updatedMicroservice.externalSecrets).toBeDefined();
-      expect(updatedMicroservice.externalSecrets.container.secretStoreRef).toBeDefined();
-      expect(updatedMicroservice.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
+      expect(updatedMicroservice.externalSecrets.app.secretStoreRef).toBeDefined();
+      expect(updatedMicroservice.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updatedMicroservice.externalSecrets.flywayInitContainer.secretStoreRef).toBeDefined();
     });
   });
 
@@ -112,7 +113,7 @@ local:
       const updatedCronjob = readValuesFile(cronjobCommonsPath);
 
       expect(updatedMicroservice.externalSecrets).toBeDefined();
-      expect(updatedMicroservice.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
+      expect(updatedMicroservice.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
 
       expect(updatedCronjob.externalSecrets).toBeDefined();
       expect(updatedCronjob.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
@@ -137,14 +138,14 @@ local:
       const updatedCommons = readValuesFile(microserviceCommonsPath);
 
       // Verify commons has secretStoreRef
-      expect(updatedCommons.externalSecrets.container.secretStoreRef).toBeDefined();
-      expect(updatedCommons.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
+      expect(updatedCommons.externalSecrets.app.secretStoreRef).toBeDefined();
+      expect(updatedCommons.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
 
       // When Helm merges these files, the workload values (with create, targetSecret, data)
       // would be merged with commons values (with secretStoreRef)
       // Result: complete externalSecrets config with both data definition and store reference
       const mergedConfig = {
-        ...updatedCommons.externalSecrets.container,
+        ...updatedCommons.externalSecrets.app,
         create: true, // from workload
         targetSecret: { name: 'my-secret' }, // from workload
         data: [{ secretKey: 'key1', remoteRef: { key: 'my-secret' } }], // from workload
