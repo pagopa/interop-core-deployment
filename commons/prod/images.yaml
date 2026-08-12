@@ -79,7 +79,7 @@ images:
     events-signer:
       tag: "2.21.0"
     frontend:
-      tag: "2.5.1"
+      tag: "2.6.0"
     key-readmodel-writer:
       tag: "2.21.0"
     key-readmodel-writer-sql:
