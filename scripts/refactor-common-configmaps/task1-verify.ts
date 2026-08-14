@@ -376,8 +376,8 @@ function main(): void {
   });
 
   ensureDir(args.outputDir);
-  const csvPath = path.join(args.outputDir, `task1-inventory-${args.env}.csv`);
-  const jsonPath = path.join(args.outputDir, `task1-inventory-${args.env}.json`);
+  const csvPath = path.join(args.outputDir, `task-1-inventory-${args.env}.csv`);
+  const jsonPath = path.join(args.outputDir, `task-1-inventory-${args.env}.json`);
 
   fs.writeFileSync(csvPath, `${toCsv(rows)}\n`, "utf8");
   fs.writeFileSync(jsonPath, `${JSON.stringify(rows, null, 2)}\n`, "utf8");
