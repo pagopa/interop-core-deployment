@@ -14,6 +14,7 @@
     "secret-references-external-secrets-validator": "npm run build:secret-references && node dist/scripts/secret-references-external-secrets-validator.js",
     "refactor-common-configmaps:task1-verify": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task1-verify.js",
     "refactor-common-configmaps:task2-classify": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task2-classify.js",
+    "refactor-common-configmaps:task3-build-mapping": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task3-build-mapping.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
