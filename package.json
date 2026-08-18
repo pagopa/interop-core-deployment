@@ -17,6 +17,7 @@
     "refactor-common-configmaps:task3-build-mapping": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task3-build-mapping.js",
     "refactor-common-configmaps:task4-build-baseline": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task4-build-baseline.js",
     "refactor-common-configmaps:task4-check-equivalence": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task4-check-equivalence.js",
+    "refactor-common-configmaps:task5-build-common-values": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task5-build-common-values.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },

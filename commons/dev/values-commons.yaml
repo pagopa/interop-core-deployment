@@ -1,0 +1,103 @@
+commons:
+  eventStore:
+    eventstoreDbHost: interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com
+    eventstoreDbName: persistence_management
+    eventstoreDbPort: "5432"
+  featureFlags:
+    featureFlagAsyncExchange: "true"
+    featureFlagAttributeCertifiedDiscrete: "true"
+    featureFlagClientAssertionStrictClaimsValidation: "true"
+    featureFlagSql: "true"
+    featureFlagTenantKindInRiskAnalysis: "true"
+  inAppNotificationDb:
+    dbHost: interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com
+    dbName: in_app_notification
+    dbPort: "5432"
+    dbSchema: dev_notification
+    dbUseSsl: "true"
+  jwt:
+    wellKnownUrls: https://dev.interop.pagopa.it/.well-known/jwks.json
+  kafka:
+    agreementTopic: event-store.dev_agreement.events
+    applicationAuditTopic: dev_application.audit
+    attributeTopic: event-store.dev_attribute_registry.events
+    authorizationTopic: event-store.dev_authorization.events
+    catalogTopic: event-store.dev_catalog.events
+    delegationTopic: event-store.dev_delegation.events
+    emailDispatchTopic: dev_email-dispatch.emails
+    eserviceTemplateTopic: event-store.dev_eservice_template.events
+    kafkaBrokers: b-1.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,b-3.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098,b-2.interopplatformevents.2doelu.c2.kafka.eu-south-1.amazonaws.com:9098
+    purposeTemplateTopic: event-store.dev_purpose_template.events
+    purposeTopic: event-store.dev_purpose.events
+    tenantTopic: event-store.dev_tenant.events
+  m2mEventsDb:
+    dbHostRw: interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com
+    dbName: m2m_events
+    dbPort: "5432"
+    dbSchema: dev_m2m_event
+    dbUseSsl: "true"
+  readModel:
+    readmodelDbHost: interop-read-model-dev.cluster-cevisn7oellx.eu-south-1.docdb.amazonaws.com
+    readmodelDbName: read-model
+    readmodelDbPort: "27017"
+    readmodelReadPreference: secondaryPreferred
+    readmodelReplicaSet: rs0
+  readModelSql:
+    dbHostRo: interop-platform-data-dev.cluster-ro-cevisn7oellx.eu-south-1.rds.amazonaws.com
+    dbHostRw: interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com
+    dbName: read_model
+    dbPort: "5432"
+    dbSchemaAgreement: dev_agreement
+    dbSchemaAttribute: dev_attribute
+    dbSchemaCatalog: dev_catalog
+    dbSchemaClient: dev_client
+    dbSchemaClientJwkKey: dev_client_jwk_key
+    dbSchemaDelegation: dev_delegation
+    dbSchemaEserviceTemplate: dev_eservice_template
+    dbSchemaNotificationConfig: dev_notification_config
+    dbSchemaProducerJwkKey: dev_producer_jwk_key
+    dbSchemaProducerKeychain: dev_producer_keychain
+    dbSchemaPurpose: dev_purpose
+    dbSchemaPurposeTemplate: dev_purpose_template
+    dbSchemaTenant: dev_tenant
+    dbUseSsl: "true"
+  redis:
+    redisHost: redis.dev.svc.cluster.local
+    redisPort: "6379"
+  safeStorage:
+    baseUrl: http://vpce-049ec22ee1c33cfb8-4ovv8wmb.vpce-svc-075ebde4859d4c631.eu-south-1.vpce.amazonaws.com:8080
+    docStatus: SAVED
+    docType: INTEROP_LEGAL_FACTS
+    liveRequestsDynamoTableName: interop-safe-storage-signature-tracking-dev
+  scheduledNotificationDb:
+    dbHost: interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com
+    dbName: scheduled_notification
+    dbPort: "5432"
+    dbSchema: dev_scheduled_notification
+    dbUseSsl: "true"
+  selfcare:
+    selfcareKafkaBrokers: selc-u-eventhub-ns.servicebus.windows.net:9093
+    selfcareUsersTopic: sc-users
+    selfcareV2Url: https://api.uat.selfcare.pagopa.it/external/v2
+  servicesUrls:
+    agreementProcessUrl: http://interop-be-agreement-process.dev.svc.cluster.local:8088
+    attributeRegistryProcessUrl: http://interop-be-attribute-registry-process.dev.svc.cluster.local:8088
+    authorizationManagementUrl: http://interop-be-authorization-management.dev.svc.cluster.local:8088/authorization-management/0.0
+    authorizationProcessUrl: http://interop-be-authorization-process.dev.svc.cluster.local:8088
+    catalogProcessUrl: http://interop-be-catalog-process.dev.svc.cluster.local:8088
+    delegationProcessUrl: http://interop-be-delegation-process.dev.svc.cluster.local:8088
+    eserviceTemplateProcessUrl: http://interop-be-eservice-template-process.dev.svc.cluster.local:8088
+    eventManagerUrl: http://interop-be-m2m-event-manager.dev.svc.cluster.local:8088
+    notificationConfigProcessUrl: http://interop-be-notification-config-process.dev.svc.cluster.local:8088
+    notifierUrl: http://interop-be-notifier.dev.svc.cluster.local:8088/notifier/0.0
+    purposeProcessUrl: http://interop-be-purpose-process.dev.svc.cluster.local:8088
+    purposeTemplateProcessUrl: http://interop-be-purpose-template-process.dev.svc.cluster.local:8088
+    tenantProcessUrl: http://interop-be-tenant-process.dev.svc.cluster.local:8088
+  sqs:
+    applicationAuditFallbackSqsUrl: https://sqs.eu-south-1.amazonaws.com/505630707203/interop-analytics-application-audit-fallback-dev
+  tenantKindHistoryDb:
+    dbHostRo: interop-platform-data-dev.cluster-ro-cevisn7oellx.eu-south-1.rds.amazonaws.com
+    dbName: tenant_kind_history
+    dbPort: "5432"
+    dbSchema: dev_tenant_kind_history
+    dbUseSsl: "true"
