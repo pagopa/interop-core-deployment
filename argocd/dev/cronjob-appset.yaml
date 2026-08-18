@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: interop-dev-cronjobs
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: interop-appset-dev-cronjobs
+    argocd.argoproj.io/instance: interop-dev-appset
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: feature/argocd
+              files:
+                - path: commons/dev/images.yaml
+          - git:
+              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: feature/argocd
+              pathParamPrefix: cj
+              directories:
+                - path: jobs/*/dev
+  template:
+    metadata:
+      name: '{{.cj.path.basename}}'
+      namespace: argocd
+      labels:
+        appset: "interop-dev-cronjobs"
+        app.kubernetes.io/part-of: interop-appset-dev-cronjobs
+    spec:
+      project: "interop-core-deployment-dev"
+      sources:
+        - repoURL: git@github.com:pagopa/interop-core-deployment.git
+          path: "."
+          targetRevision: feature/argocd
+          ref: values
+        - repoURL: https://pagopa.github.io/interop-eks-cronjob-chart
+          chart: interop-eks-cronjob-chart
+          targetRevision: 1.16.0
+          helm:
+            releaseName: '{{index .cj.path.segments 1}}'
+            valueFiles:
+              - $values/commons/dev/values-commons.yaml
+              - $values/commons/dev/values-cronjob.yaml
+              - $values/jobs/{{index .cj.path.segments 1}}/dev/values.yaml
+              - $values/commons/dev/images.yaml
+            values: |
+              {{- $images := .images | default dict -}}
+              {{- $cjmap := $images.jobs | default dict -}}
+              {{- $cj := (index $cjmap (index .cj.path.segments 1)) | default dict -}}
+              cronjob:
+                image:
+                  tag: {{ get $cj "tag" | default "" }}
+                  digest: {{ get $cj "digest" | default "" }}
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "dev"
+      ignoreDifferences:
+        - group: ""
+          kind: Secret
+          jsonPointers:
+            - /data
+      syncPolicy:
+        automated: {}
+        syncOptions:
+          - CreateNamespace=false
+          - RespectIgnoreDifferences=true

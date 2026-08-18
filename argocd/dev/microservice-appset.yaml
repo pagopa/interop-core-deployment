@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: interop-dev-microservices
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: interop-appset-dev-microservices
+    argocd.argoproj.io/instance: interop-dev-appset
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: feature/argocd
+              files:
+                - path: commons/dev/images.yaml
+          - git:
+              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: feature/argocd
+              pathParamPrefix: ms
+              directories:
+                - path: microservices/*/dev
+  template:
+    metadata:
+      name: '{{index .ms.path.segments 1}}'
+      namespace: argocd
+      labels:
+        appset: interop-dev-microservices
+        app.kubernetes.io/part-of: interop-appset-dev-microservices
+    spec:
+      project: "interop-core-deployment-dev"
+      sources:
+        - repoURL: git@github.com:pagopa/interop-core-deployment.git
+          path: "."
+          targetRevision: feature/argocd
+          ref: values
+        - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
+          chart: interop-eks-microservice-chart
+          targetRevision: 1.46.0
+          helm:
+            releaseName: '{{index .ms.path.segments 1}}'
+            valueFiles:
+              - $values/commons/dev/values-commons.yaml
+              - $values/commons/dev/values-microservice.yaml
+              - $values/microservices/{{index .ms.path.segments 1}}/dev/values.yaml
+              - $values/commons/dev/images.yaml
+            values: |
+              {{- $images := .images | default dict -}}
+              {{- $msmap := $images.microservices | default dict -}}
+              {{- $ms := (index $msmap (index .ms.path.segments 1)) | default dict -}}
+              deployment:
+                image:
+                  tag: {{ get $ms "tag" | default "" }}
+                  digest: {{ get $ms "digest" | default "" }}
+        
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: dev
+      ignoreDifferences:
+        - group: ""
+          kind: Secret
+          jsonPointers:
+            - /data
+      syncPolicy:
+        automated: {}
+        syncOptions:
+          - CreateNamespace=false
+          - RespectIgnoreDifferences=true
