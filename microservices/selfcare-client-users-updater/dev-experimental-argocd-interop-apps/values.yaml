@@ -1,0 +1,53 @@
+name: "interop-be-selfcare-client-users-updater"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-selfcare-client-users-updater-dev-es1"
+
+service:
+  create: false
+
+configmap:
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_SECONDS_DURATION: "3600"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTEROP_PRODUCT: "prod-interop"
+  KAFKA_CLIENT_ID: "interop-{{.Values.namespace}}"
+  KAFKA_GROUP_ID: "interop-users-{{.Values.namespace}}"
+
+deployment:
+  env:
+    TOPIC_STARTING_OFFSET: earliest
+  envFromConfigmaps:
+    AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+    KAFKA_BROKERS: "common-selfcare.SELFCARE_KAFKA_BROKERS"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
+    READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
+    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
+    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_NOTIFICATION_CONFIG: "common-read-model-sql.DB_SCHEMA_NOTIFICATION_CONFIG"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    SELFCARE_TOPIC: "common-selfcare.SELFCARE_USERS_TOPIC"
+  envFromSecrets:
+    KAFKA_BROKER_CONNECTION_STRING: "selfcare-v2.SELFCARE_USERS_BROKER_CONNECTION_STRING"
+    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
+    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
+    READMODEL_SQL_DB_USERNAME: "platform-data-selfcare-client-users-updater-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-selfcare-client-users-updater-user.password"

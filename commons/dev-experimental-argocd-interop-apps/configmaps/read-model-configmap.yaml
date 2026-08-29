@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-read-model
+  namespace: dev-experimental-argocd-interop-apps
+data:
+  READMODEL_DB_HOST: "#interop-read-model-dev.cluster-cevisn7oellx.eu-south-1.docdb.amazonaws.com"
+  READMODEL_DB_NAME: "read-model"
+  READMODEL_DB_PORT: "27017"
+  READMODEL_REPLICA_SET: "rs0"
+  READMODEL_READ_PREFERENCE: "secondaryPreferred"
+    
