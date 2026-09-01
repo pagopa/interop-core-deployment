@@ -44,7 +44,9 @@ spec:
               #- $values/commons/dev/values-commons.yaml
               - $values/commons/dev/values-microservice.yaml
               - $values/microservices/{{index .ms.path.segments 2}}/dev/values.yaml
+              - $values/commons/dev/migrations/flyway*.yaml
               - $values/commons/dev/images.yaml
+            ignoreMissingValueFiles: true
             values: |
               {{- $images := .images | default dict -}}
               {{- $msmap := (index $images "microservices") | default dict -}}

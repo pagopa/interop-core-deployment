@@ -44,7 +44,9 @@ spec:
               #- $values/commons/dev/values-commons.yaml
               - $values/commons/dev/values-cronjob.yaml
               - $values/jobs/{{index .cj.path.segments 2}}/dev/values.yaml
+              - $values/commons/dev/migrations/flyway*.yaml
               - $values/commons/dev/images.yaml
+            ignoreMissingValueFiles: true
             values: |
               {{- $images := .images | default dict -}}
               {{- $jobsmap := (index $images "jobs") | default dict -}}
