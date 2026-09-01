@@ -26,8 +26,8 @@ deployment:
 local:
   interop_be_commons:
     RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"
-    INTERNAL_RSA_KEYS_IDENTIFIERS: "DefinedAfterApply"
-    BFF_RSA_KEYS_IDENTIFIERS: "DefinedAfterApply"
+    INTERNAL_RSA_KEYS_IDENTIFIERS: "3039d3b6-9efb-4591-b327-25130b6347ab"
+    BFF_RSA_KEYS_IDENTIFIERS: "3d60be9a-00d1-4286-9af8-6e5cb63d0edb"
     DEV_ENDPOINTS_ENABLED: "true"
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "505630707203"
