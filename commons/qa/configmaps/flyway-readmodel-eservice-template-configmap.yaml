@@ -202,3 +202,7 @@ data:
   V1.10__Grant_Access_RiskAnalysisProcessingJob_Template.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_risk_analysis_processing_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_risk_analysis_processing_user";
+  
+  V1.11__Add_Columns_AttributiCertificatiDiscreti_EServiceTemplate.sql: |-
+    ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_attribute ADD COLUMN IF NOT EXISTS certified_discrete_threshold INTEGER;
+    ALTER TABLE "${NAMESPACE}_eservice_template".eservice_template_version_attribute ADD COLUMN IF NOT EXISTS certified_discrete_comparator VARCHAR;

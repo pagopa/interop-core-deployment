@@ -1,0 +1,45 @@
+name: interop-be-tenant-kind-history-consumer
+techStack: nodejs
+
+serviceAccount:
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-tenant-kind-history-consumer-{{.Values.namespace}}-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-tenant-kind-history-consumer"
+  TOPIC_STARTING_OFFSET: "earliest"
+
+deployment:
+  flywayInitContainer:
+    create: true
+    migrationsConfigmap: "flyway-tenant-kind-history"
+    env:
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
+      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+    envFromConfigmaps:
+      FLYWAY_SCHEMAS: "common-tenant-kind-history-db.DB_SCHEMA"
+      POSTGRES_DB: "common-tenant-kind-history-db.DB_NAME"
+      POSTGRES_HOST: "common-tenant-kind-history-db.DB_HOST_RW"
+      POSTGRES_PORT: "common-tenant-kind-history-db.DB_PORT"
+    envFromSecrets:
+      FLYWAY_USER: "platform-data-flyway-user.username"
+      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
+
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
+    TENANT_KIND_HISTORY_DB_HOST: "common-tenant-kind-history-db.DB_HOST_RW"
+    TENANT_KIND_HISTORY_DB_PORT: "common-tenant-kind-history-db.DB_PORT"
+    TENANT_KIND_HISTORY_DB_NAME: "common-tenant-kind-history-db.DB_NAME"
+    TENANT_KIND_HISTORY_DB_USE_SSL: "common-tenant-kind-history-db.DB_USE_SSL"
+    TENANT_KIND_HISTORY_DB_SCHEMA: "common-tenant-kind-history-db.DB_SCHEMA"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+    KAFKA_CLIENT_ID: "metadata.name"
+  envFromSecrets:
+    TENANT_KIND_HISTORY_DB_USERNAME: "platform-data-tenant-kind-history-consumer-user.username"
+    TENANT_KIND_HISTORY_DB_PASSWORD: "platform-data-tenant-kind-history-consumer-user.password"

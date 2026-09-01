@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-tenant-kind-history
+  namespace: test
+data:
+  V1__Init_Tenant_Kind_History.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_tenant_kind_history";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_tenant_kind_history" to
+      "${NAMESPACE}_tenant_kind_history_consumer_user",
+      "${NAMESPACE}_catalog_process_user",
+      "${NAMESPACE}_purpose_process_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_tenant_kind_history".tenant_kind_history (
+      tenant_id UUID NOT NULL,
+      metadata_version INTEGER NOT NULL,
+      kind VARCHAR NOT NULL,
+      modified_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (tenant_id, metadata_version)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_tenant_kind_history".tenant_kind_history TO "${NAMESPACE}_tenant_kind_history_consumer_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant_kind_history".tenant_kind_history TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant_kind_history".tenant_kind_history TO "${NAMESPACE}_purpose_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_tenant_kind_history".tenant_kind_history TO readonly_user;

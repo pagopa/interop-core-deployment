@@ -37,8 +37,9 @@ jobs:
           ref: ${{ vars.INFRA_COMMONS_TAG }}
       - name: Helm Chart Linting
         id: helm_lint
-        env: 
+        env:
           CHART_TYPE: ${{ matrix.chartType }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
 
@@ -55,7 +56,7 @@ jobs:
 
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmLint-main.sh --debug --environment ${{ inputs.environment }} --output console $OPTIONS -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
+          $SCRIPTS_FOLDER/helmLint-main.sh --debug --environment "$ENVIRONMENT" --output console $OPTIONS -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml
 
   templating_setup:
     name: Setup steps
@@ -97,14 +98,15 @@ jobs:
           ref: ${{ vars.INFRA_COMMONS_TAG }}
       - name: Helm Template Microservice
         id: helm_template_ms
-        env: 
+        env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --disable-templating-lookup --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --disable-templating-lookup --debug --environment "$ENVIRONMENT" --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console
       
   template_cronjobs:
     name: ${{ matrix.cronjob }}
@@ -129,11 +131,12 @@ jobs:
           ref: ${{ vars.INFRA_COMMONS_TAG }}
       - name: Helm Chart Template
         id: helm_template
-        env: 
+        env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment "$ENVIRONMENT" --job $CRONJOB_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console

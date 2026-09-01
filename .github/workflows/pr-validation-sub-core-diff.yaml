@@ -77,37 +77,40 @@ jobs:
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
       - name: Helm Chart Template
         id: helm_template
-        env: 
+        env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --disable-templating-lookup --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --disable-templating-lookup --debug --environment "$ENVIRONMENT" --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console
 
       - name: Microservice Kube-Linter
         id: microservice_kube_lineter
-        env: 
+        env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --disable-templating-lookup --debug --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console | kube-linter lint -
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --disable-templating-lookup --debug --skip-dep --environment "$ENVIRONMENT" --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console | kube-linter lint -
 
       - name: Kubectl Diff
         id: kubectl_diff
-        env: 
+        env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
 
           set +e
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/kubectlDiff-svc-single-standalone.sh --skip-dep --environment "$ENVIRONMENT" --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console
 
           DIFF_EXIT_CODE=$?
           set -e
@@ -117,8 +120,8 @@ jobs:
           elif [[ $DIFF_EXIT_CODE == 1 ]]; then
             echo "Diff Output: Diff has been found for ${MICROSERVICE_NAME}"
             
-            touch ${{ inputs.environment }}_microservices_${MICROSERVICE_NAME}_diff.txt
-            echo $MICROSERVICE_NAME >> ${{ inputs.environment }}_microservices_${MICROSERVICE_NAME}_diff.txt
+            touch "${ENVIRONMENT}_microservices_${MICROSERVICE_NAME}_diff.txt"
+            echo "$MICROSERVICE_NAME" >> "${ENVIRONMENT}_microservices_${MICROSERVICE_NAME}_diff.txt"
             echo "diff=true" >> $GITHUB_OUTPUT
           else
             echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"
@@ -159,37 +162,40 @@ jobs:
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
       - name: Helm Chart Template
         id: helm_template
-        env: 
+        env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment "$ENVIRONMENT" --job $CRONJOB_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console
           
       - name: Cronjob Kube-Linter
         id: cronjob_kube_lineter
-        env: 
+        env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console | kube-linter lint -
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --skip-dep --environment "$ENVIRONMENT" --job $CRONJOB_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console | kube-linter lint -
 
       - name: Kubectl Diff
         id: kubectl_diff
-        env: 
+        env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
 
           export PROJECT_DIR=$(pwd)
 
           set +e
-          $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/kubectlDiff-cron-single-standalone.sh --skip-dep --environment "$ENVIRONMENT" --job $CRONJOB_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console
           DIFF_EXIT_CODE=$?
           set -e
           
@@ -198,8 +204,8 @@ jobs:
           elif [[ $DIFF_EXIT_CODE == 1 ]]; then
             echo "Diff Output: Diff has been found for ${CRONJOB_NAME}"
             
-            touch ${{ inputs.environment }}_cronjobs_${CRONJOB_NAME}_diff.txt
-            echo $CRONJOB_NAME >> ${{ inputs.environment }}_cronjobs_${CRONJOB_NAME}_diff.txt
+            touch "${ENVIRONMENT}_cronjobs_${CRONJOB_NAME}_diff.txt"
+            echo "$CRONJOB_NAME" >> "${ENVIRONMENT}_cronjobs_${CRONJOB_NAME}_diff.txt"
             echo "diff=true" >> $GITHUB_OUTPUT
           else
             echo "::error title=Diff Error::Error occurred during diff, exit code $DIFF_EXIT_CODE"

@@ -8,7 +8,6 @@ service:
   create: false
 
 configmap:
-  SERVICE_NAME: "audit-signer"
   SQS_MAX_NUMBER_OF_MSGS: "5"
   SQS_LONG_POLL_WAIT_TIME_SECONDS: "20"
   SQS_VISIBILITY_TIMEOUT_SECONDS: "20"

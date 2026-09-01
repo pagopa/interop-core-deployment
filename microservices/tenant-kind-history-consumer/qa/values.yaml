@@ -28,6 +28,7 @@ deployment:
     envFromSecrets:
       FLYWAY_USER: "platform-data-flyway-user.username"
       FLYWAY_PASSWORD: "platform-data-flyway-user.password"
+  replicas: 0
 
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"

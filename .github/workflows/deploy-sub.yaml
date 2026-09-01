@@ -101,24 +101,26 @@ jobs:
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
       - name: Microservice Helm Template
         id: microservice_helm_template
-        env: 
+        env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug --environment "$ENVIRONMENT" --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console
       - name: Diff
         id: diff
-        env: 
+        env:
           MICROSERVICE_NAME: ${{ matrix.microservice }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
 
           export PROJECT_DIR=$(pwd)
 
           set +e
-          $SCRIPTS_FOLDER/helmDiff-svc-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
+          $SCRIPTS_FOLDER/helmDiff-svc-single-standalone.sh --skip-dep --environment "$ENVIRONMENT" --microservice $MICROSERVICE_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml
           DIFF_EXIT_CODE=$?
           set -e
           
@@ -136,17 +138,19 @@ jobs:
           TIMEOUT_SECONDS: ${{ inputs.timeout_seconds }}
           FORCE_ROLLOUT: ${{ inputs.force_restart }}
           ENABLE_FORCE_UPGRADE: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV == '*' || contains(vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV, matrix.microservice) }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          HELM_FORCE_UPGRADE_MICROSERVICES_CSV: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}
         run: |
           set -euo pipefail
           
-          echo "matrix.microservice: ${{ matrix.microservice }}"
-          echo "vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV: ${{ vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV }}"
+          echo "matrix.microservice: $MICROSERVICE_NAME"
+          echo "vars.HELM_FORCE_UPGRADE_MICROSERVICES_CSV: $HELM_FORCE_UPGRADE_MICROSERVICES_CSV"
           echo "ENABLE_FORCE_UPGRADE: $ENABLE_FORCE_UPGRADE"
 
           TIMEOUT="${TIMEOUT_SECONDS}s"
 
           export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug -e ${{ inputs.environment }} -m $MICROSERVICE_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output "$(pwd)/template.yaml"
+          $SCRIPTS_FOLDER/helmTemplate-svc-single.sh --debug -e "$ENVIRONMENT" -m $MICROSERVICE_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output "$(pwd)/template.yaml"
 
           K8S_NAMESPACE=$(cat "$(pwd)/template.yaml" | yq 'select(.kind == "Deployment") | .metadata.namespace')
           MICROSERVICE_FULLNAME=$(cat "$(pwd)/template.yaml" | yq 'select(.kind == "Deployment") | .metadata.name')
@@ -214,24 +218,26 @@ jobs:
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
       - name: Cronjob Helm Template
         id: cronjob_helm_template
-        env: 
+        env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
           
           export PROJECT_DIR=$(pwd)
-          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output console   
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug --environment "$ENVIRONMENT" --job $CRONJOB_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output console
       - name: Diff
         id: diff
-        env: 
+        env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
+          ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
 
           export PROJECT_DIR=$(pwd)
 
           set +e
-          $SCRIPTS_FOLDER/helmDiff-cron-single-standalone.sh --skip-dep --environment ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml
+          $SCRIPTS_FOLDER/helmDiff-cron-single-standalone.sh --skip-dep --environment "$ENVIRONMENT" --job $CRONJOB_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml
           
           DIFF_EXIT_CODE=$?
           set -e
@@ -248,16 +254,18 @@ jobs:
         env:
           CRONJOB_NAME: ${{ matrix.cronjob }}
           ENABLE_FORCE_UPGRADE: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV == '*' || contains(vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV, matrix.cronjob) }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          HELM_FORCE_UPGRADE_CRONJOBS_CSV: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}
         run: |
           set -euo pipefail
 
-          echo "matrix.cronjob: ${{ matrix.cronjob }}"
-          echo "vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}"
+          echo "matrix.cronjob: $CRONJOB_NAME"
+          echo "vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV: $HELM_FORCE_UPGRADE_CRONJOBS_CSV"
           echo "ENABLE_FORCE_UPGRADE: $ENABLE_FORCE_UPGRADE"
 
           export PROJECT_DIR=$(pwd)
 
-          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug -e ${{ inputs.environment }} --job $CRONJOB_NAME -i $PROJECT_DIR/commons/${{ inputs.environment }}/images.yaml --output "$(pwd)/template.yaml"
+          $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug -e "$ENVIRONMENT" --job $CRONJOB_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output "$(pwd)/template.yaml"
           
           K8S_NAMESPACE=$(cat "$(pwd)/template.yaml" | yq 'select(.kind == "CronJob") | .metadata.namespace')
           CRONJOB_FULLNAME=$(cat "$(pwd)/template.yaml" | yq 'select(.kind == "CronJob") | .metadata.name')
