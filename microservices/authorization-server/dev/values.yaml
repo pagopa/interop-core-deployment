@@ -52,7 +52,7 @@ deployment:
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
-    WELL_KNOWN_URLS: "common-jwt.AUTHSRV_WELL_KNOWN_URLS"
+    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
     NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
