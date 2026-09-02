@@ -398,8 +398,8 @@ data:
     );
 
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_request TO "${NAMESPACE}_catalog_rmw_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_request TO "${NAMESPACE}_catalog_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_request TO 
+      "${NAMESPACE}_catalog_process_user",
       "${NAMESPACE}_agreement_process_user",
       "${NAMESPACE}_authorization_process_user",
       "${NAMESPACE}_delegation_process_user",
