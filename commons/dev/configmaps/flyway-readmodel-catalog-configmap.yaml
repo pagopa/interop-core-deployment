@@ -166,7 +166,7 @@ data:
     );   
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO "${NAMESPACE}_catalog_process_user";    
-    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO readonly_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_risk_analysis_answer TO readonly_user; 
 
   V1.1__Permission_Process_Catalog.sql: |-
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_agreement_process_user";
@@ -182,7 +182,7 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_delegation_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_eservice_template_process_user";    
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_purpose_process_user";    
-    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_tenant_process_user";
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_tenant_process_user";    
 
   V1.3__Grant_Access_CertifiedEmailSender_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_certified_email_sender_user";
@@ -238,7 +238,7 @@ data:
       "${NAMESPACE}_email_notification_dispatcher_user",
       "${NAMESPACE}_in_app_notification_dispatcher_user";
 
-  V1.15__Grant_Access_M2M_Event_Dispatcher_Catalog.sql: |-
+  V1.15__Grant_Access_M2M_Event_Dispatcher_Catalog.sql: |- 
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";    
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_m2m_event_dispatcher_user";
 
@@ -363,10 +363,10 @@ data:
   V1.28__Grant_Access_ScheduledNotificationDispatchers_Catalog.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
-
+  
   V1.29__Add_Columns_AttributiCertificatiDiscreti_Catalog.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS certified_discrete_threshold INTEGER;
-    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS certified_discrete_comparator VARCHAR;
+    ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor_attribute ADD COLUMN IF NOT EXISTS certified_discrete_comparator VARCHAR; 
 
   V1.30__Add_Columns_ServerUrlsDescriptions_Catalog.sql: |-
     ALTER TABLE "${NAMESPACE}_catalog".eservice_descriptor  ADD COLUMN IF NOT EXISTS server_urls_descriptions VARCHAR ARRAY NOT NULL DEFAULT '{}';
@@ -399,4 +399,26 @@ data:
 
     GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_request TO "${NAMESPACE}_catalog_rmw_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_request TO "${NAMESPACE}_catalog_process_user";
-    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_request TO readonly_user;
+    GRANT SELECT ON TABLE "${NAMESPACE}_catalog".eservice_descriptor_archiving_request TO 
+      "${NAMESPACE}_agreement_process_user",
+      "${NAMESPACE}_authorization_process_user",
+      "${NAMESPACE}_delegation_process_user",
+      "${NAMESPACE}_eservice_template_process_user",
+      "${NAMESPACE}_purpose_process_user",
+      "${NAMESPACE}_tenant_process_user",
+      "${NAMESPACE}_certified_email_sender_user",
+      "${NAMESPACE}_datalake_data_export_user",
+      "${NAMESPACE}_dtd_catalog_exporter_user",
+      "${NAMESPACE}_eservice_descriptors_archiver_user",
+      "${NAMESPACE}_notification_email_sender_user",
+      "${NAMESPACE}_token_generation_readmodel_checker_user",
+      "${NAMESPACE}_eservice_template_instances_updater_user",
+      "${NAMESPACE}_purpose_template_process_user",
+      "${NAMESPACE}_documents_generator_user",
+      "${NAMESPACE}_email_notification_dispatcher_user",
+      "${NAMESPACE}_in_app_notification_dispatcher_user",
+      "${NAMESPACE}_m2m_event_dispatcher_user",
+      "${NAMESPACE}_email_digest_dispatcher_user",
+      "${NAMESPACE}_async_token_generation_readmodel_checker_user",
+      "${NAMESPACE}_risk_analysis_processing_user",
+      readonly_user;
