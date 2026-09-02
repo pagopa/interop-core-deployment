@@ -19,7 +19,7 @@ cronjob:
 
 local:
   interop_be_commons:
-    RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"
+    AUTHSRV_RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"
     INTERNAL_RSA_KEYS_IDENTIFIERS: "3039d3b6-9efb-4591-b327-25130b6347ab"
   awsAccountId: "505630707203"
   env: "dev"
