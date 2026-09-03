@@ -425,3 +425,7 @@ data:
       "${NAMESPACE}_email_scheduled_notification_dispatcher_user",
       "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user",
       readonly_user;
+
+  V1.34__Create_Eservice_Descriptor_Archiving_Request_Grant_Catalog.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_catalog" to "${NAMESPACE}_delegation_items_archiver_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_delegation_items_archiver_user";
