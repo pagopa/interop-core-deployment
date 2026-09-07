@@ -34,7 +34,6 @@ local:
     BFF: "https://interop-private-well-known-dev.s3.eu-south-1.amazonaws.com/.well-known/bff-jwks.json"
     INTERNAL: "https://interop-private-well-known-dev.s3.eu-south-1.amazonaws.com/.well-known/internal-jwks.json"
     MAINTENANCE: "https://interop-private-well-known-dev.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
-
   awsAccountId: "505630707203"
   env: "dev"
 
