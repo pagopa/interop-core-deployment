@@ -83,6 +83,10 @@ deployment:
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
+    WELL_KNOWN_URLS: >-
+      {{.Values.local.well_known_url.AUTHSRV}},
+      {{.Values.local.well_known_url.BFF}},
+      {{.Values.local.well_known_url.SELFCARE}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
