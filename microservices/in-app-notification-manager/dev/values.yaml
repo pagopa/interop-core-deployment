@@ -33,6 +33,7 @@ deployment:
     HOST: "0.0.0.0"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     WELL_KNOWN_URLS: >-
+      {{.Values.local.well_known_url.AUTHSRV}},
       {{.Values.local.well_known_url.BFF}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
