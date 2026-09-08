@@ -7,7 +7,7 @@ configmap:
   SFTP_PORT: "22"
   SFTP_PATH: "qa"
   SFTP_FILENAME_PREFIX: "qa"
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.INTERNAL_RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_SUBJECT: "qa.interop-m2m"
   INTERNAL_JWT_ISSUER: "qa.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "qa.interop.pagopa.it/internal"

@@ -10,7 +10,7 @@ service:
 configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-tenant-lifecycle-consumer"
   TOPIC_STARTING_OFFSET: "earliest"
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.INTERNAL_RSA_KEYS_IDENTIFIERS}}"
   INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
