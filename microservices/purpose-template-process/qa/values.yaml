@@ -39,13 +39,17 @@ deployment:
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    WELL_KNOWN_URLS: >-
+      {{.Values.local.well_known_url.AUTHSRV}},
+      {{.Values.local.well_known_url.BFF}},
+      {{.Values.local.well_known_url.INTERNAL}},
+      {{.Values.local.well_known_url.MAINTENANCE}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
-    WELL_KNOWN_URLS: "common-jwt.INTERNAL_WELL_KNOWN_URLS"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
     EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
