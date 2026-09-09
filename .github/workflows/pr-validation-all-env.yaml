@@ -103,6 +103,23 @@ jobs:
           echo "infra_commons_tag_vapt = $INFRA_COMMONS_TAG_VAPT"
           echo "infra_commons_tag_att = $INFRA_COMMONS_TAG_ATT"
           echo "infra_commons_tag_prod = $INFRA_COMMONS_TAG_PROD"
+  
+
+  validation_action_dev:
+    name: "Validation - Dev (action)"
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Run common deployment validation action
+        uses: pagopa/interop-infra-commons/.github/actions/common-deployment-values-validation@feature/pin-10584-validation-pipeline
+        with:
+          environment: dev
+          infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_dev }}
+          enable_kube_linter: true
+          strict_kube_linter_checks: false
+          enable_argocd_validation: true
+          enable_argocd_schema_validation: true
+          repo_structure_validation_warning_only: false
+
 
   validation_dev_with_action:
     name: "Validation - Dev (with action)"
