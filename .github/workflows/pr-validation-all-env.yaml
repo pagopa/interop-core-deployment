@@ -108,6 +108,7 @@ jobs:
   validation_action_dev:
     name: "Validation - Dev (action)"
     runs-on: ubuntu-22.04
+    needs: [print_inputs, extract-infra-commons-tag]
     steps:
       - name: Run common deployment validation action
         uses: pagopa/interop-infra-commons/.github/actions/common-deployment-values-validation@feature/pin-10584-validation-pipeline
