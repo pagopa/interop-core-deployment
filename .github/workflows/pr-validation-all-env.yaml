@@ -51,7 +51,7 @@ jobs:
           INFRA_COMMONS_TAG: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
         run: echo "infra_commons_tag = $INFRA_COMMONS_TAG"
 
-  common_values_validation:
+  validation:
     name: "Validation - ${{ matrix.environment }}"
     needs: [print_inputs, extract-infra-commons-tag]
     strategy:
