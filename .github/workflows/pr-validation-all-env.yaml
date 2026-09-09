@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       resolved_infra_commons_tag: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
+      resolved_infra_commons_tag_dev: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_dev }}
     steps:
       - name: Checkout caller repository
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
@@ -41,34 +42,39 @@ jobs:
             exit 1
           fi
           fullref=$(yq e '.jobs.validation.uses' .github/workflows/pr-validation-all-env.yaml)
+          fullref_dev=$(yq e '.jobs.validation_dev.uses' .github/workflows/pr-validation-all-env.yaml)
           tag=${fullref#*@}
+          tag_dev=${fullref_dev#*@}
           echo "fullref=$fullref"
+          echo "fullref_dev=$fullref_dev"
           echo "tag=$tag"
+          echo "tag_dev=$tag_dev"
           final_tag="$tag"
+          final_tag_dev="$tag_dev"
           echo "infra_commons_tag=$final_tag" >> $GITHUB_OUTPUT
+          echo "infra_commons_tag_dev=$final_tag_dev" >> $GITHUB_OUTPUT
       - name: Show extracted tag
         env:
           INFRA_COMMONS_TAG: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
-        run: echo "infra_commons_tag = $INFRA_COMMONS_TAG"
+          INFRA_COMMONS_TAG_DEV: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_dev }}
+        run: |
+          echo "infra_commons_tag = $INFRA_COMMONS_TAG"
+          echo "infra_commons_tag_dev = $INFRA_COMMONS_TAG_DEV"
 
   validation_dev:
     name: "Validation - Dev"
     needs: [print_inputs, extract-infra-commons-tag]
-    runs-on: ubuntu-22.04
-    env:
-      ENVIRONMENT: dev
-    steps:
-      - name: Validate Deployment Values for Dev
-        uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
-        with:
-          environment: ${{ env.ENVIRONMENT }}
-          infra_commons_tag: "feature/pin-10584-validation-pipeline"
-          enable_kube_linter: true
-          strict_kube_linter_checks: false
-          enable_argocd_validation: true
-          enable_argocd_schema_validation: true
-          repo_structure_validation_warning_only: false
-    
+    secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
+    with:
+      environment: dev
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_dev }}
+      enable_kube_linter: true
+      strict_kube_linter_checks: false
+      enable_argocd_validation: true
+      enable_argocd_schema_validation: true
+      repo_structure_validation_warning_only: false
+
   validation:
     name: "Validation - ${{ matrix.environment }}"
     needs: [print_inputs, extract-infra-commons-tag]
