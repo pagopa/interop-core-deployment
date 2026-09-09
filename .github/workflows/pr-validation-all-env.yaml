@@ -105,7 +105,7 @@ jobs:
           echo "infra_commons_tag_prod = $INFRA_COMMONS_TAG_PROD"
 
   validation_dev_with_action:
-    name: "Validation - Dev"
+    name: "Validation - Dev (with action)"
     needs: [print_inputs, extract-infra-commons-tag]  
     secrets: inherit
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation-with-action.yaml@feature/pin-10584-validation-pipeline
