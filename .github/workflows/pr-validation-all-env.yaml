@@ -23,8 +23,12 @@ jobs:
   extract-infra-commons-tag:
     runs-on: ubuntu-22.04
     outputs:
-      resolved_infra_commons_tag: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
       resolved_infra_commons_tag_dev: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_dev }}
+      resolved_infra_commons_tag_test: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_test }}
+      resolved_infra_commons_tag_qa: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_qa }}
+      resolved_infra_commons_tag_vapt: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_vapt }}
+      resolved_infra_commons_tag_att: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_att }}
+      resolved_infra_commons_tag_prod: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_prod }}
     steps:
       - name: Checkout caller repository
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
@@ -41,25 +45,64 @@ jobs:
             echo "File not found"
             exit 1
           fi
-          fullref=$(yq e '.jobs.validation.uses' .github/workflows/pr-validation-all-env.yaml)
+          
           fullref_dev=$(yq e '.jobs.validation_dev.uses' .github/workflows/pr-validation-all-env.yaml)
-          tag=${fullref#*@}
+          fullref_test=$(yq e '.jobs.validation_test.uses' .github/workflows/pr-validation-all-env.yaml)
+          fullref_qa=$(yq e '.jobs.validation_qa.uses' .github/workflows/pr-validation-all-env.yaml)
+          fullref_vapt=$(yq e '.jobs.validation_vapt.uses' .github/workflows/pr-validation-all-env.yaml)
+          fullref_att=$(yq e '.jobs.validation_att.uses' .github/workflows/pr-validation-all-env.yaml)
+          fullref_prod=$(yq e '.jobs.validation_prod.uses' .github/workflows/pr-validation-all-env.yaml)
+
           tag_dev=${fullref_dev#*@}
-          echo "fullref=$fullref"
+          tag_test=${fullref_test#*@}
+          tag_qa=${fullref_qa#*@}
+          tag_vapt=${fullref_vapt#*@}
+          tag_att=${fullref_att#*@}
+          tag_prod=${fullref_prod#*@}
+
           echo "fullref_dev=$fullref_dev"
-          echo "tag=$tag"
+          echo "fullref_test=$fullref_test"
+          echo "fullref_qa=$fullref_qa"
+          echo "fullref_vapt=$fullref_vapt"
+          echo "fullref_att=$fullref_att"
+          echo "fullref_prod=$fullref_prod"
+
           echo "tag_dev=$tag_dev"
-          final_tag="$tag"
+          echo "tag_test=$tag_test"
+          echo "tag_qa=$tag_qa"
+          echo "tag_vapt=$tag_vapt"
+          echo "tag_att=$tag_att"
+          echo "tag_prod=$tag_prod"
+
           final_tag_dev="$tag_dev"
-          echo "infra_commons_tag=$final_tag" >> $GITHUB_OUTPUT
+          final_tag_test="$tag_test"
+          final_tag_qa="$tag_qa"
+          final_tag_vapt="$tag_vapt"
+          final_tag_att="$tag_att"
+          final_tag_prod="$tag_prod"
+
           echo "infra_commons_tag_dev=$final_tag_dev" >> $GITHUB_OUTPUT
+          echo "infra_commons_tag_test=$final_tag_test" >> $GITHUB_OUTPUT
+          echo "infra_commons_tag_qa=$final_tag_qa" >> $GITHUB_OUTPUT
+          echo "infra_commons_tag_vapt=$final_tag_vapt" >> $GITHUB_OUTPUT
+          echo "infra_commons_tag_att=$final_tag_att" >> $GITHUB_OUTPUT
+          echo "infra_commons_tag_prod=$final_tag_prod" >> $GITHUB_OUTPUT
+
       - name: Show extracted tag
         env:
-          INFRA_COMMONS_TAG: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
           INFRA_COMMONS_TAG_DEV: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_dev }}
+          INFRA_COMMONS_TAG_TEST: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_test }}
+          INFRA_COMMONS_TAG_QA: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_qa }}
+          INFRA_COMMONS_TAG_VAPT: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_vapt }}
+          INFRA_COMMONS_TAG_ATT: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_att }}
+          INFRA_COMMONS_TAG_PROD: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag_prod }}
         run: |
-          echo "infra_commons_tag = $INFRA_COMMONS_TAG"
           echo "infra_commons_tag_dev = $INFRA_COMMONS_TAG_DEV"
+          echo "infra_commons_tag_test = $INFRA_COMMONS_TAG_TEST"
+          echo "infra_commons_tag_qa = $INFRA_COMMONS_TAG_QA"
+          echo "infra_commons_tag_vapt = $INFRA_COMMONS_TAG_VAPT"
+          echo "infra_commons_tag_att = $INFRA_COMMONS_TAG_ATT"
+          echo "infra_commons_tag_prod = $INFRA_COMMONS_TAG_PROD"
 
   validation_dev:
     name: "Validation - Dev"
@@ -74,19 +117,71 @@ jobs:
       enable_argocd_validation: true
       enable_argocd_schema_validation: true
       repo_structure_validation_warning_only: false
-
-  validation:
-    name: "Validation - ${{ matrix.environment }}"
+  
+  validation_test:
+    name: "Validation - Test"
     needs: [print_inputs, extract-infra-commons-tag]
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: [test, qa, vapt, att, prod]
     secrets: inherit
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
     with:
-      environment: ${{ matrix.environment }}
-      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+      environment: test
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_test }}
+      enable_kube_linter: true
+      strict_kube_linter_checks: false
+      enable_argocd_validation: true
+      enable_argocd_schema_validation: true
+      repo_structure_validation_warning_only: false
+  
+  validation_qa:
+    name: "Validation - QA"
+    needs: [print_inputs, extract-infra-commons-tag]
+    secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
+    with:
+      environment: qa
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_qa }}
+      enable_kube_linter: true
+      strict_kube_linter_checks: false
+      enable_argocd_validation: true
+      enable_argocd_schema_validation: true
+      repo_structure_validation_warning_only: false
+  
+  validation_vapt:
+    name: "Validation - VAPT"
+    needs: [print_inputs, extract-infra-commons-tag]
+    secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
+    with:
+      environment: vapt
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_vapt }}
+      enable_kube_linter: true
+      strict_kube_linter_checks: false
+      enable_argocd_validation: true
+      enable_argocd_schema_validation: true
+      repo_structure_validation_warning_only: false
+  
+  validation_att:
+    name: "Validation - ATT"
+    needs: [print_inputs, extract-infra-commons-tag]
+    secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
+    with:
+      environment: att
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_att }}
+      enable_kube_linter: true
+      strict_kube_linter_checks: false
+      enable_argocd_validation: true
+      enable_argocd_schema_validation: true
+      repo_structure_validation_warning_only: false
+  
+  validation_prod:
+    name: "Validation - PROD"
+    needs: [print_inputs, extract-infra-commons-tag]
+    secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
+    with:
+      environment: prod
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_prod }}
       enable_kube_linter: true
       strict_kube_linter_checks: false
       enable_argocd_validation: true
