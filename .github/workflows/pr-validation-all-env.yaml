@@ -51,13 +51,31 @@ jobs:
           INFRA_COMMONS_TAG: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
         run: echo "infra_commons_tag = $INFRA_COMMONS_TAG"
 
+  validation_dev:
+    name: "Validation - Dev"
+    needs: [print_inputs, extract-infra-commons-tag]
+    runs-on: ubuntu-22.04
+    env:
+      ENVIRONMENT: dev
+    steps:
+      - name: Validate Deployment Values for Dev
+        uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
+        with:
+          environment: ${{ env.ENVIRONMENT }}
+          infra_commons_tag: "feature/pin-10584-validation-pipeline"
+          enable_kube_linter: true
+          strict_kube_linter_checks: false
+          enable_argocd_validation: true
+          enable_argocd_schema_validation: true
+          repo_structure_validation_warning_only: false
+    
   validation:
     name: "Validation - ${{ matrix.environment }}"
     needs: [print_inputs, extract-infra-commons-tag]
     strategy:
       fail-fast: false
       matrix:
-        environment: [dev, test, qa, vapt, att, prod]
+        environment: [test, qa, vapt, att, prod]
     secrets: inherit
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
     with:
