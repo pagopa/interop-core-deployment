@@ -48,10 +48,10 @@ jobs:
           
           fullref_dev=$(yq e '.jobs.validation_dev.steps[0].uses' .github/workflows/pr-validation-all-env.yaml)
           fullref_test=$(yq e '.jobs.validation_test.steps[0].uses' .github/workflows/pr-validation-all-env.yaml)
-          fullref_qa=$(yq e '.jobs.validation_qa.uses' .github/workflows/pr-validation-all-env.yaml)
-          fullref_vapt=$(yq e '.jobs.validation_vapt.uses' .github/workflows/pr-validation-all-env.yaml)
-          fullref_att=$(yq e '.jobs.validation_att.uses' .github/workflows/pr-validation-all-env.yaml)
-          fullref_prod=$(yq e '.jobs.validation_prod.uses' .github/workflows/pr-validation-all-env.yaml)
+          fullref_qa=$(yq e '.jobs.validation_qa.steps[0].uses' .github/workflows/pr-validation-all-env.yaml)
+          fullref_vapt=$(yq e '.jobs.validation_vapt.steps[0].uses' .github/workflows/pr-validation-all-env.yaml)
+          fullref_att=$(yq e '.jobs.validation_att.steps[0].uses' .github/workflows/pr-validation-all-env.yaml)
+          fullref_prod=$(yq e '.jobs.validation_prod.steps[0].uses' .github/workflows/pr-validation-all-env.yaml)
 
           tag_dev=${fullref_dev#*@}
           tag_test=${fullref_test#*@}
