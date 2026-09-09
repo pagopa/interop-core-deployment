@@ -63,7 +63,8 @@ jobs:
     with:
       environment: ${{ matrix.environment }}
       infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
-      enable_kube_linter: false
+      enable_kube_linter: true
+      strict_kube_linter_checks: false
       enable_argocd_validation: true
       enable_argocd_schema_validation: true
       repo_structure_validation_warning_only: false
