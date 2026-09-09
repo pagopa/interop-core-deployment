@@ -104,9 +104,23 @@ jobs:
           echo "infra_commons_tag_att = $INFRA_COMMONS_TAG_ATT"
           echo "infra_commons_tag_prod = $INFRA_COMMONS_TAG_PROD"
 
+  validation_dev_with_action:
+    name: "Validation - Dev"
+    needs: [print_inputs, extract-infra-commons-tag]  
+    secrets: inherit
+    uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation-with-action.yaml@feature/pin-10584-validation-pipeline
+    with:
+      environment: dev
+      infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_dev }}
+      enable_kube_linter: true
+      strict_kube_linter_checks: false
+      enable_argocd_validation: true
+      enable_argocd_schema_validation: true
+      repo_structure_validation_warning_only: false
+
   validation_dev:
     name: "Validation - Dev"
-    needs: [print_inputs, extract-infra-commons-tag]
+    needs: [print_inputs, extract-infra-commons-tag]  
     secrets: inherit
     uses: pagopa/interop-infra-commons/.github/workflows/common-deployment-values-validation.yaml@feature/pin-10584-validation-pipeline
     with:
