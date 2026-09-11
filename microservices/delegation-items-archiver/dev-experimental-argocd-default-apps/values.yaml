@@ -1,0 +1,63 @@
+name: "interop-be-delegation-items-archiver"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-delegation-items-archiver-dev-es1"
+
+service:
+  create: false
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-delegation-items-archiver"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-delegation-items-archiver"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "60"
+
+deployment:
+  env:
+    PORT: "8088"
+    HOST: "0.0.0.0"
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
+    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
+    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
+    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
+    READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
+    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_NOTIFICATION_CONFIG: "common-read-model-sql.DB_SCHEMA_NOTIFICATION_CONFIG"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
+  envFromSecrets:
+    READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
+    READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"
+    READMODEL_SQL_DB_USERNAME: "platform-data-delegation-items-archiver-user.username"
+    READMODEL_SQL_DB_PASSWORD: "platform-data-delegation-items-archiver-user.password"
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "1"
+      memory: "1Gi"
