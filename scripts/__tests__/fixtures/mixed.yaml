@@ -1,0 +1,17 @@
+envFromSecrets:
+  API_KEY: api-credentials.api-key
+containers:
+  - name: my-container
+    env:
+      - name: DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: db-secret
+            key: password
+    envFrom:
+      - secretRef:
+          name: common-secrets
+volumes:
+  - name: certs
+    secret:
+      secretName: cert-secret
