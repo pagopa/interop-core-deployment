@@ -74,7 +74,7 @@ deployment:
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
-    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
+    WELL_KNOWN_URLS: "common-jwt.INTERNAL_WELL_KNOWN_URLS"
     CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
     AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
     NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
