@@ -14,7 +14,7 @@ export TF_VAR_argocd_workload_kind="Deployment"
 
 terraform init \
 -backend-config="./env/${ENV}/backend.tfvars" \
--backend-config="key=${ENV}-es1/interop-core-deployment/argocd-applications/${TF_VAR_argocd_workload_name}/monitoring.tfstate"
+-backend-config="key=${ENV}-es1/interop-core-deployment/argocd-applications/monitoring/${TF_VAR_argocd_workload_name}.tfstate"
 
 terraform plan -var-file="./env/${ENV}/terraform.tfvars"
 ```
