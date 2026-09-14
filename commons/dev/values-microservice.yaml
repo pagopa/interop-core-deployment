@@ -37,7 +37,7 @@ argocd:
   monitoringRepositoryRef: "main"
   monitoringServiceAccountName: "argocd-terraform-apply-workload-monitoring"
   monitoringStateBucket: "terraform-backend-{{.Values.local.awsAccountId}}"
-  monitoringStateBucketKey: "{{.Values.namespace}}-es1/interop-core-deployment/argocd-applications/{{.Values.name}}/monitoring.tfstate"
+  monitoringStateBucketKey: "{{.Values.namespace}}-es1/interop-core-deployment/argocd-applications/monitoring/{{.Values.name}}.tfstate"
 
 autoscaling:
   keda:
