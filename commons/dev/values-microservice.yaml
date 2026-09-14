@@ -31,6 +31,14 @@ local:
   awsAccountId: "505630707203"
   env: "dev"
 
+argocd:
+  enableMonitoring: true
+  monitoringRepository: "git::https://github.com/pagopa/interop-core-deployment"
+  monitoringRepositoryRef: "main"
+  monitoringServiceAccountName: "argocd-terraform-apply-workload-monitoring"
+  monitoringStateBucket: "terraform-backend-{{.Values.local.awsAccountId}}"
+  monitoringStateBucketKey: "{{.Values.namespace}}-es1/interop-core-deployment/argocd-applications/{{.Values.name}}/monitoring.tfstate"
+
 autoscaling:
   keda:
     create: true
