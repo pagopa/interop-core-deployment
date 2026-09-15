@@ -38,6 +38,7 @@ argocd:
     projectRepositoryRef: "main"
     serviceAccountName: "argocd-terraform-apply-workload-monitoring"
     tfEnv: "{{ .Values.local.env }}"
+    tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
 
 autoscaling:
   keda:
