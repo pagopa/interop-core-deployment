@@ -37,6 +37,15 @@ local:
   awsAccountId: "505630707203"
   env: "dev"
 
+argocd:
+  appMonitoring:
+    enable: true
+    projectRepositoryURL: "git::https://github.com/pagopa/interop-core-deployment"
+    projectRepositoryRef: "main"
+    serviceAccountName: "argocd-terraform-apply-workload-monitoring"
+    tfEnv: "{{ .Values.local.env }}"
+    tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
+
 autoscaling:
   keda:
     create: true
