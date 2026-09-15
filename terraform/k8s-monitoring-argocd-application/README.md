@@ -8,13 +8,14 @@ Suppose you want to simulate the PostSync Job for the <code>interop-be-m2m-gatew
 Run the following commands:<br>
 
 ```
-export ENV="dev"
+export TF_ENV="dev"
+export TF_STATE_BUCKET_KEY_PREFIX="dev-es1"
 export TF_VAR_argocd_workload_name="interop-be-m2m-gateway-v3"
 export TF_VAR_argocd_workload_kind="Deployment"
 
 terraform init \
--backend-config="./env/${ENV}/backend.tfvars" \
--backend-config="key=${ENV}-es1/interop-core-deployment/argocd-applications/monitoring/${TF_VAR_argocd_workload_name}.tfstate"
+-backend-config="./env/${TF_ENV}/backend.tfvars" \
+-backend-config="key=${TF_STATE_BUCKET_KEY_PREFIX}/interop-core-deployment/argocd-applications/monitoring/${TF_VAR_argocd_workload_name}.tfstate"
 
-terraform plan -var-file="./env/${ENV}/terraform.tfvars"
+terraform plan -var-file="./env/${TF_ENV}/terraform.tfvars"
 ```
