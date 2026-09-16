@@ -239,5 +239,5 @@ data:
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signed_at TIMESTAMP WITH TIME ZONE;
     ALTER TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer ADD COLUMN IF NOT EXISTS sent_to_reviewer_at TIMESTAMP WITH TIME ZONE;
 
-  V1.24__Rename_Review_Mode.sql: |-
+  V1.24__Rename_Review_Mode_to_Risk_Analysis_Review_Mode.sql: |-
     ALTER TABLE "${NAMESPACE}_purpose".purpose RENAME COLUMN review_mode TO risk_analysis_review_mode;
