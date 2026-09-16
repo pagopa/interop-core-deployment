@@ -36,7 +36,7 @@ argocd:
     enable: true
     projectRepositoryURL: "git::https://github.com/pagopa/interop-core-deployment"
     projectRepositoryRef: "main"
-    jobNamespace: "argocd-monitoring"
+    jobNamespace: "argocd-app-monitoring"
     serviceAccountName: "argocd-terraform-apply-workload-monitoring"
     tfEnv: "{{ .Values.local.env }}"
     tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
