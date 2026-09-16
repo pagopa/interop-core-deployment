@@ -3,6 +3,7 @@ techStack: "nodejs"
 
 serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-agreement-outbound-writer-{{.Values.namespace}}-es1"
+  thiskeydoesntexist: true
 
 service:
   create: false
@@ -12,7 +13,6 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-agreement-outbound-writer"
 
 deployment:
-  thiskeydoesntexist: "hello"
   env:
     TOPIC_STARTING_OFFSET: "earliest"
   envFromFieldRef:
