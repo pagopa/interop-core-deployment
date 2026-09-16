@@ -8,9 +8,9 @@ Suppose you want to simulate the PostSync Job for the <code>interop-be-m2m-gatew
 Run the following commands:<br>
 
 ```
-export TF_ENV="dev"
-export TF_STATE_BUCKET_KEY_PREFIX="dev-es1"
-export TF_VAR_argocd_workload_name="interop-be-m2m-gateway-v3"
+export TF_ENV="dev" \
+export TF_STATE_BUCKET_KEY_PREFIX="dev-es1" \
+export TF_VAR_argocd_workload_name="interop-be-m2m-gateway-v3" \
 export TF_VAR_argocd_workload_kind="Deployment"
 
 terraform init \

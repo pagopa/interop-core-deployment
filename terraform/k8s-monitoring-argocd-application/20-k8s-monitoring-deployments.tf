@@ -1,7 +1,7 @@
 module "k8s_deployment_monitoring" {
   count = var.argocd_workload_kind == "Deployment" ? 1 : 0
 
-  source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-workload-monitoring?ref=v1.9.0"
+  source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-workload-monitoring?ref=v1.46.2"
 
   eks_cluster_name  = var.eks_cluster_name
   k8s_namespace     = var.env
