@@ -35,6 +35,7 @@ jobs:
       microservices: ${{ steps.set-outputs.outputs.microservices }}
       cronjobs: ${{ steps.set-outputs.outputs.cronjobs }}
       deploy_mode: ${{ steps.set-outputs.outputs.deploy_mode }}
+      cronjob_deploy_mode: ${{ steps.set-outputs.outputs.cronjob_deploy_mode }}
     steps:
       - name: Checkout
         id: checkout
@@ -60,6 +61,21 @@ jobs:
 
           echo "deploy_mode=$DEPLOY_MODE" >> "$GITHUB_OUTPUT"
           echo "INFO - Selected microservices deploy mode for '$TARGET_ENVIRONMENT': $DEPLOY_MODE"
+
+          CRONJOB_COMMON_VALUES_FILE="commons/$TARGET_ENVIRONMENT/values-cronjob.yaml"
+          CRONJOB_DEPLOY_MODE=$(yq -r '.deployMode // "HELM_UPGRADE"' "$CRONJOB_COMMON_VALUES_FILE")
+
+          case "$CRONJOB_DEPLOY_MODE" in
+            HELM_UPGRADE|KUBECTL_APPLY)
+              ;;
+            *)
+              echo "::error file=$CRONJOB_COMMON_VALUES_FILE::Unsupported deployMode '$CRONJOB_DEPLOY_MODE'. Allowed values: HELM_UPGRADE, KUBECTL_APPLY."
+              exit 1
+              ;;
+          esac
+
+          echo "cronjob_deploy_mode=$CRONJOB_DEPLOY_MODE" >> "$GITHUB_OUTPUT"
+          echo "INFO - Selected cronjobs deploy mode for '$TARGET_ENVIRONMENT': $CRONJOB_DEPLOY_MODE"
   
 
   deploy_common_configmaps:
@@ -303,26 +319,55 @@ jobs:
           ENABLE_FORCE_UPGRADE: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV == '*' || contains(vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV, matrix.cronjob) }}
           ENVIRONMENT: ${{ inputs.environment }}
           HELM_FORCE_UPGRADE_CRONJOBS_CSV: ${{ vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV }}
+          DEPLOY_MODE: ${{ needs.workflow_setup.outputs.cronjob_deploy_mode }}
         run: |
           set -euo pipefail
 
           echo "matrix.cronjob: $CRONJOB_NAME"
           echo "vars.HELM_FORCE_UPGRADE_CRONJOBS_CSV: $HELM_FORCE_UPGRADE_CRONJOBS_CSV"
           echo "ENABLE_FORCE_UPGRADE: $ENABLE_FORCE_UPGRADE"
+          echo "INFO - Deploy mode: $DEPLOY_MODE"
 
           export PROJECT_DIR=$(pwd)
 
           $SCRIPTS_FOLDER/helmTemplate-cron-single.sh --debug -e "$ENVIRONMENT" --job $CRONJOB_NAME -i $PROJECT_DIR/commons/"$ENVIRONMENT"/images.yaml --output "$(pwd)/template.yaml"
+
+          if [[ ! -s "$PROJECT_DIR/template.yaml" ]]; then
+            echo "::error::Rendered manifest '$PROJECT_DIR/template.yaml' is missing or empty."
+            exit 1
+          fi
+
+          K8S_NAMESPACE=$(cat "$PROJECT_DIR/template.yaml" | yq 'select(.kind == "CronJob") | .metadata.namespace')
+          CRONJOB_FULLNAME=$(cat "$PROJECT_DIR/template.yaml" | yq 'select(.kind == "CronJob") | .metadata.name')
           
-          K8S_NAMESPACE=$(cat "$(pwd)/template.yaml" | yq 'select(.kind == "CronJob") | .metadata.namespace')
-          CRONJOB_FULLNAME=$(cat "$(pwd)/template.yaml" | yq 'select(.kind == "CronJob") | .metadata.name')
+          if [[ -z "$K8S_NAMESPACE" || -z "$CRONJOB_FULLNAME" ]]; then
+            echo "::error::Unable to resolve CronJob name or namespace from '$PROJECT_DIR/template.yaml'."
+            exit 1
+          fi
   
           echo "INFO - Apply changes for $CRONJOB_FULLNAME."
 
-          HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
-          if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
-            echo "Force upgrade requested for $CRONJOB_FULLNAME"
-            HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
-          fi
+          case "$DEPLOY_MODE" in
+            HELM_UPGRADE)
+              HELM_UPGRADE_OPTIONS="--debug --skip-dep --output console"
+              if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
+                echo "INFO - Force upgrade requested for $CRONJOB_FULLNAME"
+                HELM_UPGRADE_OPTIONS=$HELM_UPGRADE_OPTIONS" --force"
+              fi
 
-          $SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh $HELM_UPGRADE_OPTIONS --environment $K8S_NAMESPACE -j $CRONJOB_NAME -i $PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml
+              echo "INFO - Deploying $CRONJOB_FULLNAME with Helm upgrade."
+              "$SCRIPTS_FOLDER/helmUpgrade-cron-single-standalone.sh" $HELM_UPGRADE_OPTIONS --environment "$K8S_NAMESPACE" -j "$CRONJOB_NAME" -i "$PROJECT_DIR/commons/$K8S_NAMESPACE/images.yaml"
+              ;;
+            KUBECTL_APPLY)
+              if [[ "$ENABLE_FORCE_UPGRADE" == "true" ]]; then
+                echo "::notice::HELM_FORCE_UPGRADE_CRONJOBS_CSV is ignored in KUBECTL_APPLY mode for $CRONJOB_FULLNAME."
+              fi
+
+              echo "INFO - Deploying $CRONJOB_FULLNAME by applying the rendered Helm manifest."
+              kubectl apply --namespace "$K8S_NAMESPACE" --filename "$PROJECT_DIR/template.yaml"
+              ;;
+            *)
+              echo "::error::Unsupported deploy mode '$DEPLOY_MODE'."
+              exit 1
+              ;;
+          esac
