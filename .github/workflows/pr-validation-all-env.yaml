@@ -111,7 +111,7 @@ jobs:
     steps:
       - name: Run common deployment validation
         # this should be pinned to main branch of interop-infra-commons, but for now we are using the feature branch to test the new validation pipeline
-        uses: pagopa/interop-infra-commons/.github/actions/common-deployment-values-validation@feature/pin-10584-validation-pipeline
+        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@feature/pin-10584-validation-pipeline
         with:
           environment: dev
           infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_dev }}
@@ -129,7 +129,7 @@ jobs:
     steps:
       - name: Run common deployment validation
         # this should be pinned to main branch of interop-infra-commons, but for now we are using the feature branch to test the new validation pipeline
-        uses: pagopa/interop-infra-commons/.github/actions/common-deployment-values-validation@feature/pin-10584-validation-pipeline
+        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@feature/pin-10584-validation-pipeline
         with:
           environment: test
           infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_test }}
@@ -146,7 +146,7 @@ jobs:
     steps:
       - name: Run common deployment validation
         # this should be pinned to main branch of interop-infra-commons, but for now we are using the feature branch to test the new validation pipeline
-        uses: pagopa/interop-infra-commons/.github/actions/common-deployment-values-validation@feature/pin-10584-validation-pipeline
+        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@feature/pin-10584-validation-pipeline
         with:
           environment: qa
           infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_qa }}
@@ -163,7 +163,7 @@ jobs:
     steps:
       - name: Run common deployment validation
         # this should be pinned to main branch of interop-infra-commons, but for now we are using the feature branch to test the new validation pipeline
-        uses: pagopa/interop-infra-commons/.github/actions/common-deployment-values-validation@feature/pin-10584-validation-pipeline
+        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@feature/pin-10584-validation-pipeline
         with:
           environment: vapt
           infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_vapt }}
@@ -180,7 +180,7 @@ jobs:
     steps:
       - name: Run common deployment validation
         # this should be pinned to main branch of interop-infra-commons, but for now we are using the feature branch to test the new validation pipeline
-        uses: pagopa/interop-infra-commons/.github/actions/common-deployment-values-validation@feature/pin-10584-validation-pipeline
+        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@feature/pin-10584-validation-pipeline
         with:
           environment: att
           infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_att }}
@@ -197,7 +197,7 @@ jobs:
     steps:
       - name: Run common deployment validation
         # this should be pinned to main branch of interop-infra-commons, but for now we are using the feature branch to test the new validation pipeline
-        uses: pagopa/interop-infra-commons/.github/actions/common-deployment-values-validation@feature/pin-10584-validation-pipeline
+        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@feature/pin-10584-validation-pipeline
         with:
           environment: prod
           infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_prod }}
