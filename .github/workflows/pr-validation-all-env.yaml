@@ -47,7 +47,7 @@ jobs:
   validation_all_env:
     name: "Validation - ${{ matrix.environment }}"
     runs-on: ubuntu-22.04
-    needs: [print_inputs, extract-infra-commons-tag]
+    needs: [extract-infra-commons-tag]
     strategy:
       fail-fast: false
       matrix:
