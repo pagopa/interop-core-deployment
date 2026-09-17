@@ -39,13 +39,14 @@ deployment:
     PORT: "8088"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
+    WELL_KNOWN_URLS: >-
+      {{.Values.local.well_known_url.AUTHSRV}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
-    WELL_KNOWN_URLS: "common-jwt.AUTHSRV_WELL_KNOWN_URLS"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
     AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
