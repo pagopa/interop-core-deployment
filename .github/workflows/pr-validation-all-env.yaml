@@ -104,97 +104,32 @@ jobs:
           echo "infra_commons_tag_att = $INFRA_COMMONS_TAG_ATT"
           echo "infra_commons_tag_prod = $INFRA_COMMONS_TAG_PROD"
       
-  validation_dev:
-    name: "Validation - DEV"
+  validation_all_env:
+    name: "Validation - ${{ matrix.environment }}"
     runs-on: ubuntu-22.04
     needs: [print_inputs, extract-infra-commons-tag]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: dev
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_dev }}
+          - environment: test
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_test }}
+          - environment: qa
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_qa }}
+          - environment: vapt
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_vapt }}
+          - environment: att
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_att }}
+          - environment: prod
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_prod }}
     steps:
       - name: Run common deployment validation
         uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
         with:
-          environment: dev
-          infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_dev }}
-          enable_kube_linter: true
-          strict_kube_linter_checks: false
-          enable_argocd_validation: true
-          enable_argocd_schema_validation: true
-          repo_structure_validation_warning_only: false
-
-  
-  validation_test:
-    name: "Validation - TEST"
-    runs-on: ubuntu-22.04
-    needs: [print_inputs, extract-infra-commons-tag]
-    steps:
-      - name: Run common deployment validation
-        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
-        with:
-          environment: test
-          infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_test }}
-          enable_kube_linter: true
-          strict_kube_linter_checks: false
-          enable_argocd_validation: true
-          enable_argocd_schema_validation: true
-          repo_structure_validation_warning_only: false
-
-  validation_qa:
-    name: "Validation - QA"
-    runs-on: ubuntu-22.04
-    needs: [print_inputs, extract-infra-commons-tag]
-    steps:
-      - name: Run common deployment validation
-        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
-        with:
-          environment: qa
-          infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_qa }}
-          enable_kube_linter: true
-          strict_kube_linter_checks: false
-          enable_argocd_validation: true
-          enable_argocd_schema_validation: true
-          repo_structure_validation_warning_only: false
-
-  validation_vapt:
-    name: "Validation - VAPT"
-    runs-on: ubuntu-22.04
-    needs: [print_inputs, extract-infra-commons-tag]
-    steps:
-      - name: Run common deployment validation
-        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
-        with:
-          environment: vapt
-          infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_vapt }}
-          enable_kube_linter: true
-          strict_kube_linter_checks: false
-          enable_argocd_validation: true
-          enable_argocd_schema_validation: true
-          repo_structure_validation_warning_only: false
-
-  validation_att:
-    name: "Validation - ATT"
-    runs-on: ubuntu-22.04
-    needs: [print_inputs, extract-infra-commons-tag]
-    steps:
-      - name: Run common deployment validation
-        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
-        with:
-          environment: att
-          infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_att }}
-          enable_kube_linter: true
-          strict_kube_linter_checks: false
-          enable_argocd_validation: true
-          enable_argocd_schema_validation: true
-          repo_structure_validation_warning_only: false
-  
-  validation_prod:
-    name: "Validation - PROD"
-    runs-on: ubuntu-22.04
-    needs: [print_inputs, extract-infra-commons-tag]
-    steps:
-      - name: Run common deployment validation
-        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
-        with:
-          environment: prod
-          infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag_prod }}
+          environment: ${{ matrix.environment }}
+          infra_commons_tag: ${{ matrix.infra_commons_tag }}
           enable_kube_linter: true
           strict_kube_linter_checks: false
           enable_argocd_validation: true
