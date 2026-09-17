@@ -232,3 +232,12 @@ data:
   V1.22__Grant_Access_ScheduledNotificationDispatchers_Purpose.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+
+  V1.23__Update_reviewer_workflow.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS review_mode VARCHAR;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_rejected_by UUID;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signed_at TIMESTAMP WITH TIME ZONE;
+    ALTER TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer ADD COLUMN IF NOT EXISTS sent_to_reviewer_at TIMESTAMP WITH TIME ZONE;
+
+  V1.24__Rename_Review_Mode_to_Risk_Analysis_Review_Mode.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose RENAME COLUMN review_mode TO risk_analysis_review_mode;
