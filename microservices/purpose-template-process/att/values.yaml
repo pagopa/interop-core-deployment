@@ -43,7 +43,7 @@ deployment:
       {{.Values.local.well_known_url.AUTHSRV}},
       {{.Values.local.well_known_url.BFF}},
       {{.Values.local.well_known_url.INTERNAL}},
-      {{.Values.local.well_known_url.MAINTENANCE}}Expand comment
+      {{.Values.local.well_known_url.MAINTENANCE}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
