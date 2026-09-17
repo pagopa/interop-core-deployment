@@ -33,6 +33,12 @@ local:
     DEV_ENDPOINTS_ENABLED: "false"
     RSA_KEYS_IDENTIFIERS: "65ce3bd3-88ed-40c1-9787-0a55e7f35332"
     ENABLED_PROJECTIONS: "false"
+  well_known_url:
+    AUTHSRV: "https://vapt.interop.pagopa.it/.well-known/jwks.json"
+    SELFCARE: "https://uat.selfcare.pagopa.it/.well-known/jwks.json"
+    BFF: "https://interop-private-well-known-vapt.s3.eu-south-1.amazonaws.com/.well-known/bff-jwks.json"
+    INTERNAL: "https://interop-private-well-known-vapt.s3.eu-south-1.amazonaws.com/.well-known/internal-jwks.json"
+    MAINTENANCE: "https://interop-private-well-known-vapt.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
   awsAccountId: "565393043798"
   env: "vapt"
 
