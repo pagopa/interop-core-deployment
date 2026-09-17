@@ -9,17 +9,6 @@ permissions:
   contents: read
 
 jobs:
-
-  print_inputs:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Print Inputs
-        id: print_inputs
-        env:
-          INPUT_GITHUB_REF: ${{ github.ref }}
-        run: |
-          echo "- Github ref: \`$INPUT_GITHUB_REF\`" >> "$GITHUB_STEP_SUMMARY"
-
   extract-infra-commons-tag:
     runs-on: ubuntu-22.04
     outputs:
