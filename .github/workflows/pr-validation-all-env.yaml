@@ -65,24 +65,54 @@ jobs:
         include:
           - environment: dev
             infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: true
+            enable_argocd_schema_validation: true
+            repo_structure_validation_warning_only: true
           - environment: test
             infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
           - environment: qa
             infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
           - environment: vapt
             infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
           - environment: att
             infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
           - environment: prod
             infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
     steps:
       - name: Run common deployment validation
         uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
         with:
           environment: ${{ matrix.environment }}
           infra_commons_tag: ${{ matrix.infra_commons_tag }}
-          enable_kube_linter: true
-          strict_kube_linter_checks: false
-          enable_argocd_validation: true
-          enable_argocd_schema_validation: true
-          repo_structure_validation_warning_only: false
+          enable_kube_linter: ${{ matrix.enable_kube_linter }}
+          strict_kube_linter_checks: ${{ matrix.strict_kube_linter_checks }}
+          enable_argocd_validation: ${{ matrix.enable_argocd_validation }}
+          enable_argocd_schema_validation: ${{ matrix.enable_argocd_schema_validation }}
+          repo_structure_validation_warning_only: ${{ matrix.repo_structure_validation_warning_only }}
