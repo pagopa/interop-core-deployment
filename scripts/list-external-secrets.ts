@@ -13,6 +13,7 @@ import { parseDocument } from "yaml";
 import { parse as parseYaml } from "yaml";
 import { createAwsClient, fetchLatestSecretVersion } from "./lib/aws-secrets-manager.js";
 import type { AwsSecretVersion } from "./lib/aws-secrets-manager.js";
+import { getExternalSecretsSectionName } from "./lib/external-secrets-sections.js";
 import { walkWorkloads } from "./lib/workload.js";
 import type { WorkloadType } from "./lib/types.js";
 
@@ -101,19 +102,6 @@ Options:
 // ---------------------------------------------------------------------------
 
 type ContainerType = "container" | "initContainer";
-type ExternalSecretsSectionName = "container" | "initContainer" | "app" | "flywayInitContainer";
-
-function getSectionCandidates(workloadType: WorkloadType, containerType: ContainerType): ExternalSecretsSectionName[] {
-  if (workloadType === "microservice") {
-    return containerType === "container"
-      ? ["app", "container"]
-      : ["flywayInitContainer", "initContainer"];
-  }
-
-  return containerType === "container"
-    ? ["container", "app"]
-    : ["initContainer", "flywayInitContainer"];
-}
 
 function resolveSectionData(
   externalSecrets: Record<string, RawContainerConfig> | undefined,
@@ -122,14 +110,9 @@ function resolveSectionData(
 ): RawExternalSecretRef[] {
   if (!externalSecrets) return [];
 
-  for (const sectionName of getSectionCandidates(workloadType, containerType)) {
-    const refs = externalSecrets[sectionName]?.data;
-    if (Array.isArray(refs) && refs.length > 0) {
-      return refs;
-    }
-  }
-
-  return [];
+  const sectionName = getExternalSecretsSectionName(workloadType, containerType);
+  const refs = externalSecrets[sectionName]?.data;
+  return Array.isArray(refs) ? refs : [];
 }
 
 interface RawExternalSecretRef {
@@ -324,31 +307,28 @@ function patchValuesFile(file: string, entries: ExternalSecretEntry[]): void {
   const workloadType: WorkloadType = file.replace(/\\/g, "/").includes("/jobs/") ? "cronjob" : "microservice";
 
   for (const containerType of ["container", "initContainer"] as const) {
-    const sectionNames = getSectionCandidates(workloadType, containerType);
+    const sectionName = getExternalSecretsSectionName(workloadType, containerType);
+    const data = doc.getIn(["externalSecrets", sectionName, "data"]) as { items: unknown[] } | undefined;
+    if (!data?.items) continue;
 
-    for (const sectionName of sectionNames) {
-      const data = doc.getIn(["externalSecrets", sectionName, "data"]) as { items: unknown[] } | undefined;
-      if (!data?.items) continue;
+    for (const item of data.items as YamlItem[]) {
+      const secretKey = item.get("secretKey") as string | undefined;
+      const key = item.getIn(["remoteRef", "key"]) as string | undefined;
+      const property = item.getIn(["remoteRef", "property"]) as string | undefined;
 
-      for (const item of data.items as YamlItem[]) {
-        const secretKey = item.get("secretKey") as string | undefined;
-        const key = item.getIn(["remoteRef", "key"]) as string | undefined;
-        const property = item.getIn(["remoteRef", "property"]) as string | undefined;
+      const match = entries.find(
+        (e) =>
+          !e.hasError &&
+          e.latestVersion &&
+          e.containerType === containerType &&
+          e.secretKey === secretKey &&
+          e.key === key &&
+          e.property === property
+      );
 
-        const match = entries.find(
-          (e) =>
-            !e.hasError &&
-            e.latestVersion &&
-            e.containerType === containerType &&
-            e.secretKey === secretKey &&
-            e.key === key &&
-            e.property === property
-        );
-
-        if (match?.latestVersion) {
-          item.setIn(["remoteRef", "version"], `uuid/${match.latestVersion}`);
-          changed = true;
-        }
+      if (match?.latestVersion) {
+        item.setIn(["remoteRef", "version"], `uuid/${match.latestVersion}`);
+        changed = true;
       }
     }
   }

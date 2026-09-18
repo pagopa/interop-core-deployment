@@ -82,8 +82,8 @@ local:
       // Verify cronjob commons was updated
       const updatedCronjob = readValuesFile(cronjobCommonsPath);
       expect(updatedCronjob.externalSecrets).toBeDefined();
-      expect(updatedCronjob.externalSecrets.container.secretStoreRef).toBeDefined();
-      expect(updatedCronjob.externalSecrets.initContainer.secretStoreRef).toBeDefined();
+      expect(updatedCronjob.externalSecrets.app.secretStoreRef).toBeDefined();
+      expect(updatedCronjob.externalSecrets.flywayInitContainer.secretStoreRef).toBeDefined();
     });
   });
 
@@ -116,7 +116,7 @@ local:
       expect(updatedMicroservice.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
 
       expect(updatedCronjob.externalSecrets).toBeDefined();
-      expect(updatedCronjob.externalSecrets.container.secretStoreRef.name).toBe('app-secret-store');
+      expect(updatedCronjob.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
     });
   });
 

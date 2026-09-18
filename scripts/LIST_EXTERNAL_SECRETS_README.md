@@ -45,7 +45,7 @@ The script looks for `values.yaml` files with this structure:
 
 ```yaml
 externalSecrets:
-  container:
+  app:
     create: true
     data:
       - secretKey: MY_ENV_VAR
@@ -53,7 +53,7 @@ externalSecrets:
           key: app/backend/my-secret
           property: my-property
           version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
-  initContainer:
+  flywayInitContainer:
     create: true
     data:
       - secretKey: FLYWAY_USER
@@ -63,13 +63,12 @@ externalSecrets:
           version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
 ```
 
-Both `container.data` and `initContainer.data` are processed.
+For both microservices and cronjobs, `app.data` and `flywayInitContainer.data` are processed.
 
 ## What the script does
 
 1. **Finds** all `values.yaml` files under `microservices/<workload>/<env>/` and `jobs/<workload>/<env>/`
-2. **Extracts** every entry in `externalSecrets.app.data[]` and `externalSecrets.flywayInitContainer.data[]` for microservices
-  and `externalSecrets.container.data[]` / `externalSecrets.initContainer.data[]` for cronjobs
+2. **Extracts** every entry in `externalSecrets.app.data[]` and `externalSecrets.flywayInitContainer.data[]`
 3. **Checks** that the configured version is not an AWS label (`AWSCURRENT` / `AWSPREVIOUS`) — those are reported as **misconfigured**
 4. **Queries** AWS Secrets Manager to retrieve the current version of each secret
 5. **Compares** the configured version with the live one

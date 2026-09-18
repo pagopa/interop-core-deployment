@@ -81,15 +81,15 @@ describe('values-yaml-patcher', () => {
       mergeExternalSecretsContainer(values, mockExternalSecretsConfig);
 
       expect(values.externalSecrets).toBeDefined();
-      expect(values.externalSecrets.container).toBeDefined();
-      expect(values.externalSecrets.container.create).toBe(true);
-      expect(values.externalSecrets.container.data).toHaveLength(1);
+      expect(values.externalSecrets.app).toBeDefined();
+      expect(values.externalSecrets.app.create).toBe(true);
+      expect(values.externalSecrets.app.data).toHaveLength(1);
     });
 
     it('should preserve existing externalSecrets fields', () => {
       const values = {
         externalSecrets: {
-          container: {
+          app: {
             create: false,
           },
         },
@@ -97,8 +97,11 @@ describe('values-yaml-patcher', () => {
 
       mergeExternalSecretsContainer(values, mockExternalSecretsConfig);
 
-      expect(values.externalSecrets.container.create).toBe(true);
-      expect(values.externalSecrets.container.data).toHaveLength(1);
+      expect(values.externalSecrets.app.create).toBe(true);
+      expect(values.externalSecrets.app.data).toHaveLength(1);
+
+      mergeExternalSecretsContainer(values, mockExternalSecretsConfig, 'cronjob');
+      expect(values.externalSecrets.app.data).toHaveLength(1);
     });
   });
 
@@ -108,8 +111,11 @@ describe('values-yaml-patcher', () => {
       mergeExternalSecretsInitContainer(values, mockExternalSecretsConfig);
 
       expect(values.externalSecrets).toBeDefined();
-      expect(values.externalSecrets.initContainer).toBeDefined();
-      expect(values.externalSecrets.initContainer.create).toBe(true);
+      expect(values.externalSecrets.flywayInitContainer).toBeDefined();
+      expect(values.externalSecrets.flywayInitContainer.create).toBe(true);
+
+      mergeExternalSecretsInitContainer(values, mockExternalSecretsConfig, 'cronjob');
+      expect(values.externalSecrets.flywayInitContainer.create).toBe(true);
     });
   });
 
@@ -221,6 +227,33 @@ describe('values-yaml-patcher', () => {
       const updated = readValuesFile(testValuesFile);
       expect(updated.externalSecrets.app).toBeDefined();
       expect(updated.externalSecrets.flywayInitContainer).toBeDefined();
+    });
+
+    it('should migrate legacy cronjob sections to the shared chart sections', () => {
+      writeValuesFile(testValuesFile, {
+        name: 'test-job',
+        externalSecrets: {
+          container: { create: false },
+          initContainer: { create: false },
+        },
+        cronjob: { schedule: '0 0 * * *' },
+      });
+
+      const result = applyExternalSecretsToWorkload(
+        testValuesFile,
+        mockExternalSecretsConfig,
+        mockExternalSecretsConfig,
+        false,
+        false,
+        'cronjob'
+      );
+
+      expect(result.success).toBe(true);
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.externalSecrets.app.data).toHaveLength(1);
+      expect(updated.externalSecrets.flywayInitContainer.data).toHaveLength(1);
+      expect(updated.externalSecrets.container).toBeUndefined();
+      expect(updated.externalSecrets.initContainer).toBeUndefined();
     });
 
     it('should remove old refs if requested', () => {

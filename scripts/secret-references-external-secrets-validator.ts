@@ -5,7 +5,7 @@
  *
  * 1. YAML PRESENCE      – expected externalSecrets sections exist in every target values.yaml:
  *                          - microservice: externalSecrets.app / externalSecrets.flywayInitContainer
- *                          - cronjob: externalSecrets.container / externalSecrets.initContainer
+ *                          - cronjob: externalSecrets.app / externalSecrets.flywayInitContainer
  * 2. KEY COVERAGE       – every (secretName, secretKey) pair from the original repo inventory
  *                          appears as a secretKey in the generated ExternalSecret data
  * 3. CLUSTER COHERENCE  – every secretKey referenced in the repo inventory is actually present
@@ -27,12 +27,13 @@ import * as path from 'path';
 import { parse as parseYaml } from 'yaml';
 import { csvEscape } from './lib/csv.js';
 import type { GeneratedExternalSecret, MigrationReport, SkippedSecret } from './lib/external-secrets-types.js';
+import { getExternalSecretsSectionName } from './lib/external-secrets-sections.js';
+import type { ContainerType } from './lib/external-secrets-sections.js';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type ContainerType = 'container' | 'initContainer';
 type WorkloadType = 'microservice' | 'cronjob';
 type CheckType =
   | 'yaml-presence'
@@ -236,18 +237,8 @@ function readExternalSecretsFromFile(
   return values?.externalSecrets ?? null;
 }
 
-function getExternalSecretsSectionNames(workloadType: string, containerType: ContainerType): string[] {
-  const isMicroservice = workloadType === 'microservice';
-
-  if (containerType === 'container') {
-    return isMicroservice ? ['app', 'container'] : ['container', 'app'];
-  }
-
-  return isMicroservice ? ['flywayInitContainer', 'initContainer'] : ['initContainer', 'flywayInitContainer'];
-}
-
 function getPreferredExternalSecretsSectionName(workloadType: string, containerType: ContainerType): string {
-  return getExternalSecretsSectionNames(workloadType, containerType)[0];
+  return getExternalSecretsSectionName(workloadType as WorkloadType, containerType);
 }
 
 function resolveExternalSecretsSection(
@@ -256,14 +247,8 @@ function resolveExternalSecretsSection(
   containerType: ContainerType
 ): any | null {
   if (!externalSecrets) return null;
-
-  for (const key of getExternalSecretsSectionNames(workloadType, containerType)) {
-    if (externalSecrets[key]) {
-      return externalSecrets[key];
-    }
-  }
-
-  return null;
+  const key = getExternalSecretsSectionName(workloadType as WorkloadType, containerType);
+  return externalSecrets[key] ?? null;
 }
 
 /** Get all secretKeys from an ExternalSecrets config data array */
