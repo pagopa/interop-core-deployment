@@ -40,7 +40,7 @@ local:
 argocd:
   appMonitoring:
     enable: true
-    projectRepositoryURL: "git::https://github.com/pagopa/interop-core-deployment"
+    projectRepositoryURL: "https://github.com/pagopa/interop-core-deployment"
     projectRepositoryRef: "main"
     jobNamespace: "argocd-app-monitoring"
     serviceAccountName: "argocd-terraform-apply-workload-monitoring"
