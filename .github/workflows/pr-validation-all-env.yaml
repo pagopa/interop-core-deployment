@@ -96,7 +96,7 @@ jobs:
             repo_structure_validation_warning_only: true
     steps:
       - name: Run common deployment validation
-        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@feature/pin-10584-validation-pipeline-refactoring
+        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
         with:
           environment: ${{ matrix.environment }}
           infra_commons_tag: ${{ matrix.infra_commons_tag }}
