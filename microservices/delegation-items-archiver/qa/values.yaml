@@ -28,6 +28,7 @@ deployment:
     DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
     READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"

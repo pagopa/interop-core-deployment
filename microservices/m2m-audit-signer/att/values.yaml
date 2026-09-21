@@ -17,6 +17,7 @@ configmap:
   SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-m2m-audit-signer"
 
 deployment:
+  replicas: 0
   image:
     repositoryName: "interop-be-audit-signer"
   envFromConfigmaps:
