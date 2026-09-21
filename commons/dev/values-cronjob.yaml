@@ -22,3 +22,13 @@ local:
     RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"
   awsAccountId: "505630707203"
   env: "dev"
+
+argocd:
+  appMonitoring:
+    enable: true
+    projectRepositoryURL: "https://github.com/pagopa/interop-core-deployment"
+    projectRepositoryRef: "main"
+    jobNamespace: "argocd-app-monitoring"
+    serviceAccountName: "argocd-terraform-apply-workload-monitoring"
+    tfEnv: "{{ .Values.local.env }}"
+    tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
