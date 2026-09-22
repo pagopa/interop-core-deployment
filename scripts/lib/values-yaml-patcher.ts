@@ -266,9 +266,19 @@ export function applyExternalSecretsToWorkload(
         deploymentNode.delete('envFromSecrets');
         oldRefsRemoved = true;
       }
+      const deploymentFlywayNode = doc.getIn(['deployment', 'flywayInitContainer'], true);
+      if (deploymentFlywayNode && isMap(deploymentFlywayNode) && deploymentFlywayNode.has('envFromSecrets')) {
+        deploymentFlywayNode.delete('envFromSecrets');
+        oldRefsRemoved = true;
+      }
       const cronjobNode = doc.getIn(['cronjob'], true);
       if (cronjobNode && isMap(cronjobNode) && cronjobNode.has('envFromSecrets')) {
         cronjobNode.delete('envFromSecrets');
+        oldRefsRemoved = true;
+      }
+      const cronjobFlywayNode = doc.getIn(['cronjob', 'flywayInitContainer'], true);
+      if (cronjobFlywayNode && isMap(cronjobFlywayNode) && cronjobFlywayNode.has('envFromSecrets')) {
+        cronjobFlywayNode.delete('envFromSecrets');
         oldRefsRemoved = true;
       }
     }
