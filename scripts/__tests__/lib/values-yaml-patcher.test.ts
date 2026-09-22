@@ -279,6 +279,37 @@ describe('values-yaml-patcher', () => {
       expect(updated.externalSecrets.app).toBeDefined();
     });
 
+    it('should remove Flyway initContainer refs if requested', () => {
+      writeValuesFile(testValuesFile, {
+        name: 'test-app',
+        deployment: {
+          flywayInitContainer: {
+            create: true,
+            envFromSecrets: {
+              FLYWAY_USER: 'event-store.POSTGRES_USR',
+              FLYWAY_PASSWORD: 'event-store.POSTGRES_PSW',
+            },
+          },
+        },
+      });
+
+      const result = applyExternalSecretsToWorkload(
+        testValuesFile,
+        undefined,
+        mockExternalSecretsConfig,
+        true,
+        false,
+        'microservice'
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.oldRefsRemoved).toBe(true);
+
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.deployment.flywayInitContainer.envFromSecrets).toBeUndefined();
+      expect(updated.externalSecrets.flywayInitContainer).toBeDefined();
+    });
+
     it('should not modify file in dry-run mode', () => {
       const originalContent = fs.readFileSync(testValuesFile, 'utf-8');
 
