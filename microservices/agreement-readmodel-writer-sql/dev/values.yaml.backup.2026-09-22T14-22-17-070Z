@@ -49,6 +49,9 @@ deployment:
       POSTGRES_HOST: "common-read-model-sql.DB_HOST_RW"
       POSTGRES_PORT: "common-read-model-sql.DB_PORT"
       POSTGRES_DB: "common-read-model-sql.DB_NAME"
+    envFromSecrets:
+      FLYWAY_USER: "platform-data-flyway-user.username"
+      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
