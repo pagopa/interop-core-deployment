@@ -95,7 +95,7 @@ jobs:
             enable_argocd_schema_validation: false
             repo_structure_validation_warning_only: true
     steps:
-      - name: Run common deployment validation
+      - name: Run deployment repo validation
         uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
         with:
           environment: ${{ matrix.environment }}
