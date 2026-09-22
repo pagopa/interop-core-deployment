@@ -11,6 +11,30 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-agreement-readmodel-writer-sql"
   TOPIC_STARTING_OFFSET: "earliest"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: username
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: password
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_agreement_rmw_user
+          property: username
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_agreement_rmw_user
+          property: password
+
 deployment:
   flywayInitContainer:
     create: true
@@ -49,9 +73,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-  envFromSecrets:   
-    READMODEL_SQL_DB_USERNAME: "platform-data-agreement-rmw-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-agreement-rmw-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
