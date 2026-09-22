@@ -30,7 +30,10 @@ deployment:
 
 local:
   interop_be_commons:
-    RSA_KEYS_IDENTIFIERS: "9432c16b-7aae-49df-b9c4-ea61b556652b"
+    AUTHSRV_KEY_IDENTIFIER: "NotYetGenerated"
+    INTERNAL_KEY_IDENTIFIER: "NotYetGenerated"
+    BFF_KEY_IDENTIFIER: "NotYetGenerated"
+    INTEGRITY_REST_KEY_IDENTIFIER: "NotYetGenerated"
     DEV_ENDPOINTS_ENABLED: "false"
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "697818730278"
