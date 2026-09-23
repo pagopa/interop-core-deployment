@@ -35,6 +35,23 @@ npm run build:secret-references
 | `secret-references-external-secrets-validator` | `scripts/secret-references-external-secrets-validator.ts` | Validate the generated migration |
 | `list-external-secrets` | `scripts/list-external-secrets.ts` | Check and update AWS SM versions in `externalSecrets` |
 
+### Required parameters
+
+| npm script | Required parameters | Notes |
+|---|---|---|
+| `secret-references-repo-inventory` | `--env` | Reads the matching environment directories from the repository |
+| `secret-references-cluster-inventory` | `--cluster`, `--namespace` | Both values are required even when `kubectl` already has a current context |
+| `secret-references-compare` | `--env`, `--cluster` | Uses `--env` as the namespace for the cluster inventory step |
+| `secret-references-external-secrets-generator` | `--env`, `--cluster`, `--namespace` | Requires live cluster access to read Secret annotations |
+| `secret-references-external-secrets-validator` | `--env` | Reads the generated report and inventories; custom paths are optional |
+| `list-external-secrets` | `--env` | Requires AWS credentials, but not a Kubernetes cluster parameter |
+
+`--cluster` must be a kubeconfig context name or ARN known to the local kubeconfig. A convenient shell variable is:
+
+```bash
+current_cluster="$(kubectl config current-context)"
+```
+
 ---
 
 ## Workflow 1 — ExternalSecrets migration
@@ -91,6 +108,10 @@ npm run secret-references-cluster-inventory -- \
   [--output-dir secret-inventory]
 ```
 
+**Required:** `--cluster` and `--namespace`.
+
+The script does not implicitly use the active context: pass it explicitly, for example with `--cluster "$current_cluster"`.
+
 **Output:** `secret-inventory/secret-inventory-cluster-secrets-<namespace>.csv|json`
 
 **Example:**
@@ -114,6 +135,8 @@ npm run secret-references-compare -- \
   --cluster <context-or-arn> \
   [--output-dir secret-inventory]
 ```
+
+**Required:** `--env` and `--cluster`. The comparison script uses `--env` as the Kubernetes namespace when it invokes the cluster inventory.
 
 **Output:**
 ```
@@ -150,6 +173,9 @@ npm run secret-references-external-secrets-generator -- \
 
 | Option | Default | Description |
 |---|---|---|
+| `--env` | required | Repository environment to process |
+| `--cluster` | required | Kubeconfig context name or ARN used to query Kubernetes |
+| `--namespace` | required | Kubernetes namespace containing workloads and Secrets |
 | `--scope` | `both` | Restrict to microservices, cronjobs, or both |
 | `--keep-old-refs` | `false` | Keep existing K8s Secret references |
 | `--validate-helm` | `true` | Validate Helm charts after modification |
