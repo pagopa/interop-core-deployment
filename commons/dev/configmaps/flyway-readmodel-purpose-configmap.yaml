@@ -241,3 +241,6 @@ data:
 
   V1.24__Rename_Review_Mode_to_Risk_Analysis_Review_Mode.sql: |-
     ALTER TABLE "${NAMESPACE}_purpose".purpose RENAME COLUMN review_mode TO risk_analysis_review_mode;
+
+  V1.25__Add_reviewer_workflow_rejected_at.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_rejected_at TIMESTAMP WITH TIME ZONE;

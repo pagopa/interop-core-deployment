@@ -25,7 +25,10 @@ deployment:
 
 local:
   interop_be_commons:
-    RSA_KEYS_IDENTIFIERS: "aca0625c-e107-42ae-944a-158422af5d92"
+    AUTHSRV_KEY_IDENTIFIER: "aca0625c-e107-42ae-944a-158422af5d92"
+    INTERNAL_KEY_IDENTIFIER: "3039d3b6-9efb-4591-b327-25130b6347ab"
+    BFF_KEY_IDENTIFIER: "3d60be9a-00d1-4286-9af8-6e5cb63d0edb"
+    INTEGRITY_REST_KEY_IDENTIFIER: "4d77e2ff-2b3a-42bf-b215-1f140ad036a0"
     DEV_ENDPOINTS_ENABLED: "true"
     ENABLED_PROJECTIONS: "false"
   well_known_url:
@@ -43,7 +46,7 @@ argocd:
     projectRepositoryURL: "https://github.com/pagopa/interop-core-deployment"
     projectRepositoryRef: "main"
     jobNamespace: "argocd-app-monitoring"
-    serviceAccountName: "argocd-terraform-apply-workload-monitoring"
+    serviceAccountName: "argocd-terraform-workload-monitoring"
     tfEnv: "{{ .Values.local.env }}"
     tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
 
