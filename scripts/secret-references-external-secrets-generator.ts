@@ -14,6 +14,7 @@
  *     [--scope microservice|cronjob|both] \
  *     [--keep-old-refs true|false] \
  *     [--validate-helm true|false] \
+ *     [--omit-version] \
  *     [--dry-run]
  */
 
@@ -42,6 +43,7 @@ function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
     keepOldRefs: false,
     validateHelm: true,
     dryRun: false,
+    omitVersion: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -64,6 +66,8 @@ function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
       config.keepOldRefs = args[++i].toLowerCase() === 'true';
     } else if (arg === '--validate-helm' && args[i + 1]) {
       config.validateHelm = args[++i].toLowerCase() === 'true';
+    } else if (arg === '--omit-version') {
+      config.omitVersion = true;
     } else if (arg === '--dry-run') {
       config.dryRun = true;
     } else if (arg === '--output-dir' && args[i + 1]) {
@@ -201,6 +205,7 @@ async function main(): Promise<void> {
     console.log(`   Scope: ${config.scope}`);
     console.log(`   Keep old refs: ${config.keepOldRefs}`);
     console.log(`   Validate Helm: ${config.validateHelm}`);
+    console.log(`   Omit remoteRef version: ${config.omitVersion}`);
     console.log(`   Dry run: ${config.dryRun}\n`);
 
     // Load repo inventory
@@ -229,7 +234,12 @@ async function main(): Promise<void> {
     }
     console.log(`   Secrets with AWS annotation: ${secretsWithAwsAnnotation}/${clusterSecretsMap.size}`);
     
-    const { generated, skipped } = generateExternalSecretsFromWorkloads(allRepoRecords, clusterSecretsMap);
+    const { generated, skipped } = generateExternalSecretsFromWorkloads(
+      allRepoRecords,
+      clusterSecretsMap,
+      'aws-secretsmanager',
+      config.omitVersion
+    );
     console.log(`   Generated ${generated.length} ExternalSecrets configurations`);
     console.log(`   Skipped ${skipped.length} secret references\n`);
 

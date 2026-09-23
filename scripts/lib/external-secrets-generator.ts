@@ -98,7 +98,8 @@ export function groupRepoInventoryByWorkload(
 export function buildRemoteRef(
   secretName: string,
   secretKey: string,
-  clusterSecrets: Map<string, SecretInventoryRecord>
+  clusterSecrets: Map<string, SecretInventoryRecord>,
+  omitVersion: boolean = false
 ): RemoteRef | null {
   const secretInfo = clusterSecrets.get(secretName);
   if (!secretInfo) {
@@ -120,12 +121,12 @@ export function buildRemoteRef(
     return null;
   }
 
-  const versionAnnotation = secretInfo.annotations[AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION];
-
   return {
     key: secretIdAnnotation,
     property: secretKey,
-    version: versionAnnotation,
+    ...(!omitVersion && secretInfo.annotations[AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION]
+      ? { version: secretInfo.annotations[AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION] }
+      : {}),
   };
 }
 
@@ -136,7 +137,8 @@ export function buildRemoteRef(
 export function generateExternalSecretsData(
   group: WorkloadSecretGroup,
   clusterSecrets: Map<string, SecretInventoryRecord>,
-  defaultSecretStoreRef: string
+  defaultSecretStoreRef: string,
+  omitVersion: boolean = false
 ): { data: ExternalSecretsData[]; skipped: SkippedSecret[] } {
   const data: ExternalSecretsData[] = [];
   const skipped: SkippedSecret[] = [];
@@ -172,7 +174,7 @@ export function generateExternalSecretsData(
         continue;
       }
 
-      const remoteRef = buildRemoteRef(secretName, secretKey, clusterSecrets);
+      const remoteRef = buildRemoteRef(secretName, secretKey, clusterSecrets, omitVersion);
       if (remoteRef) {
         data.push({
           secretKey: envVar,  // Use env variable name as the secretKey
@@ -218,7 +220,8 @@ export function generateTargetSecretName(workloadName: string, containerType: 'c
 export function generateExternalSecretsFromWorkloads(
   repoRecords: SecretReferenceRecord[],
   clusterSecrets: Map<string, SecretInventoryRecord>,
-  defaultSecretStoreRef: string = 'aws-secretsmanager'
+  defaultSecretStoreRef: string = 'aws-secretsmanager',
+  omitVersion: boolean = false
 ): {
   generated: GeneratedExternalSecret[];
   skipped: SkippedSecret[];
@@ -229,7 +232,12 @@ export function generateExternalSecretsFromWorkloads(
 
   for (const group of groups) {
     const targetSecretName = generateTargetSecretName(group.workloadName, group.containerType);
-    const { data, skipped: groupSkipped } = generateExternalSecretsData(group, clusterSecrets, defaultSecretStoreRef);
+    const { data, skipped: groupSkipped } = generateExternalSecretsData(
+      group,
+      clusterSecrets,
+      defaultSecretStoreRef,
+      omitVersion
+    );
 
     if (data.length > 0) {
       const config = buildContainerConfig(data, targetSecretName, defaultSecretStoreRef);

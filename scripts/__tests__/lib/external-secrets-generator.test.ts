@@ -152,6 +152,17 @@ describe('external-secrets-generator', () => {
       expect(remoteRef?.version).toBe('uuid/terraform-20260212133048976200000002');
     });
 
+    it('should omit version when requested', () => {
+      const clusterSecretsMap = new Map(mockClusterSecrets.map((s) => [s.secretName, s]));
+      const remoteRef = buildRemoteRef('rds-secret', 'password', clusterSecretsMap, true);
+
+      expect(remoteRef).toEqual({
+        key: 'rds/interop-platform-data-dev/users/email_digest_dispatcher_user',
+        property: 'password',
+      });
+      expect(remoteRef).not.toHaveProperty('version');
+    });
+
     it('should return null if secret not found in cluster', () => {
       const clusterSecretsMap = new Map<string, SecretInventoryRecord>();
       const remoteRef = buildRemoteRef('nonexistent-secret', 'password', clusterSecretsMap);
@@ -270,6 +281,22 @@ describe('external-secrets-generator', () => {
       const flywaySecret = generated.find((g) => g.workloadName === 'flyway-migrator');
       expect(flywaySecret).toBeDefined();
       expect(flywaySecret?.containerType).toBe('initContainer');
+    });
+
+    it('should omit versions from every generated remoteRef when requested', () => {
+      const clusterSecretsMap = new Map(mockClusterSecrets.map((s) => [s.secretName, s]));
+      const { generated } = generateExternalSecretsFromWorkloads(
+        mockRepoRecords,
+        clusterSecretsMap,
+        'aws-secretsmanager',
+        true
+      );
+
+      for (const externalSecret of generated) {
+        for (const entry of externalSecret.externalSecretsConfig.data) {
+          expect(entry.remoteRef).not.toHaveProperty('version');
+        }
+      }
     });
   });
 });

@@ -10,6 +10,7 @@ export interface ExternalSecretsGeneratorConfig {
   keepOldRefs: boolean;
   validateHelm: boolean;
   dryRun: boolean;
+  omitVersion: boolean;
   outputDir?: string;
 }
 

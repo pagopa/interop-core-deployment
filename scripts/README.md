@@ -144,6 +144,7 @@ npm run secret-references-external-secrets-generator -- \
   [--scope microservice|cronjob|both] \
   [--keep-old-refs true|false] \
   [--validate-helm true|false] \
+  [--omit-version] \
   [--dry-run]
 ```
 
@@ -152,6 +153,7 @@ npm run secret-references-external-secrets-generator -- \
 | `--scope` | `both` | Restrict to microservices, cronjobs, or both |
 | `--keep-old-refs` | `false` | Keep existing K8s Secret references |
 | `--validate-helm` | `true` | Validate Helm charts after modification |
+| `--omit-version` | `false` | Generate `remoteRef` entries without the optional `version` field |
 | `--dry-run` | — | Show changes without applying them |
 
 **Output:** patches `values.yaml` files in-place and produces `secret-inventory/external-secrets-migration-<env>.json`
@@ -171,7 +173,46 @@ npm run secret-references-external-secrets-generator -- \
   --cluster arn:aws:eks:eu-south-1:123456789:cluster/interop-eks-dev \
   --namespace dev \
   --scope both
+
+# Generate without pinning remote secret versions
+npm run secret-references-external-secrets-generator -- \
+  --env dev \
+  --cluster arn:aws:eks:eu-south-1:123456789:cluster/interop-eks-dev \
+  --namespace dev \
+  --omit-version
 ```
+
+#### Version handling
+
+By default, the generator reads the AWS Secrets Manager version ID from the Kubernetes Secret annotation and writes it into each `remoteRef`:
+
+```yaml
+remoteRef:
+  key: app/backend/read-model
+  property: READONLY_USR
+  version: d64e70da-6e72-41d0-84b1-b2c705e02574
+```
+
+With `--omit-version`, the `version` property is not added to the generated YAML or migration report:
+
+```yaml
+remoteRef:
+  key: app/backend/read-model
+  property: READONLY_USR
+```
+
+This leaves version resolution to External Secrets and the configured provider. The flag can be combined with `--dry-run` to inspect the migration without changing files:
+
+```bash
+npm run secret-references-external-secrets-generator -- \
+  --env dev \
+  --cluster "$current_cluster" \
+  --namespace dev \
+  --omit-version \
+  --dry-run
+```
+
+The migration validator accepts both versioned and unversioned `remoteRef` entries. `--omit-version` only affects newly generated entries; it does not remove versions from workloads that are outside the generator's migration input.
 
 ---
 
@@ -218,6 +259,8 @@ list-external-secrets  ──►  patches versions in values.yaml
 ### list-external-secrets
 
 Scans all `values.yaml` files, compares the version configured in `externalSecrets.app/flywayInitContainer.data[].remoteRef.version` with the live version on AWS SM, and automatically updates any that are outdated.
+
+> **Important:** this maintenance command is intended for version-pinned configurations. A missing version is treated as `AWSCURRENT` and may be replaced with an explicit version ID. Do not run it when the desired repository policy is to keep the entries generated with `--omit-version` unversioned.
 
 ```bash
 npm run list-external-secrets -- \
