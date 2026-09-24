@@ -39,18 +39,21 @@ npm run secret-references-cluster-inventory -- \
   --cluster <context-name> \
   --namespace <namespace> \
   [--output-dir <path>] \
-  [--format csv|json|both]
+  [--format csv|json|both] \
+  [-h|--help]
 ```
 
 ### Command-Line Options
 
 | Option | Required | Default | Description |
 |--------|----------|---------|-------------|
-| `--cluster` | ✅ Yes | - | Kubernetes context name (from kubeconfig) |
+| `--cluster` | ✅ Yes | - | Kubernetes context name or ARN from kubeconfig |
+| `-c` | ✅ Yes (alt) | - | Short form for `--cluster` |
 | `--namespace` | ✅ Yes | - | Kubernetes namespace to scan |
 | `-n` | ✅ Yes (alt) | - | Short form for `--namespace` |
-| `--output-dir` | ❌ No | `./secret-inventory` | Output directory for reports |
-| `--format` | ❌ No | `both` | Output format: `csv`, `json`, or `both` |
+| `--output-dir` | ❌ No | `secret-inventory` | Output directory for reports |
+| `--format` | ❌ No | `csv` | Output format: `csv`, `json`, or `both` |
+| `-h`, `--help` | ❌ No | - | Show usage and exit |
 
 ### Examples
 

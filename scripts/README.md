@@ -35,6 +35,17 @@ npm run build:secret-references
 | `secret-references-external-secrets-validator` | `scripts/secret-references-external-secrets-validator.ts` | Validate the generated migration |
 | `list-external-secrets` | `scripts/list-external-secrets.ts` | Check and update AWS SM versions in `externalSecrets` |
 
+### Common CLI conventions
+
+All scripts in this family accept the shared help flag:
+
+```bash
+-h
+--help
+```
+
+They print a short usage block and exit without running the command body. The option names and aliases below are the ones actually supported today; this guide keeps the same runtime behavior and does not add or remove flags beyond the documented contract.
+
 ### Required parameters
 
 | npm script | Required parameters | Notes |
@@ -50,6 +61,27 @@ npm run build:secret-references
 
 ```bash
 current_cluster="$(kubectl config current-context)"
+```
+
+### Optional workload filters
+
+Every script in the two workflows accepts these optional filters:
+
+| Option | Value | Behavior |
+|---|---|---|
+| `--microservice <folder>` | A folder directly under `microservices/` | Process only that microservice |
+| `--cronjob <folder>` | A folder directly under `jobs/` | Process only that cronjob |
+
+The options may be passed separately or together. When neither is present, scripts process all workloads as before. A selected folder must contain `<env>/values.yaml`; otherwise the command exits with an error. The Kubernetes workload name is resolved from the selected values file's `name` field.
+
+`--scope` and workload filters are mutually exclusive. Use either `--scope` or `--microservice`/`--cronjob`, never both in the same generator or validator invocation.
+
+Filtered reports use distinct suffixes to avoid overwriting global reports:
+
+```text
+-microservice-api-gateway
+-cronjob-readmodel-checker
+-microservice-api-gateway-cronjob-readmodel-checker
 ```
 
 ---
@@ -82,9 +114,12 @@ Scans all `values.yaml` files and produces an inventory of K8s Secret references
 ```bash
 npm run secret-references-repo-inventory -- \
   --env <env> \
+  [--microservice <folder>] \
+  [--cronjob <folder>] \
   [--root <path>] \
   [--output-dir secret-inventory] \
-  [--format csv|json|both]
+  [--format csv|json|both] \
+  [-h|--help]
 ```
 
 **Output:** `secret-inventory/secret-references-repo-<env>.csv|json`
@@ -104,8 +139,11 @@ Connects to the cluster and builds an inventory of all Secrets present in the na
 npm run secret-references-cluster-inventory -- \
   --cluster <context-or-arn> \
   --namespace <namespace> \
+  [--microservice <folder>] \
+  [--cronjob <folder>] \
   [--format csv|json|both] \
-  [--output-dir secret-inventory]
+  [--output-dir secret-inventory] \
+  [-h|--help]
 ```
 
 **Required:** `--cluster` and `--namespace`.
@@ -133,7 +171,10 @@ Compares the secret references found in the repo with the secrets actually prese
 npm run secret-references-compare -- \
   --env <env> \
   --cluster <context-or-arn> \
-  [--output-dir secret-inventory]
+  [--microservice <folder>] \
+  [--cronjob <folder>] \
+  [--output-dir secret-inventory] \
+  [-h|--help]
 ```
 
 **Required:** `--env` and `--cluster`. The comparison script uses `--env` as the Kubernetes namespace when it invokes the cluster inventory.
@@ -164,11 +205,14 @@ npm run secret-references-external-secrets-generator -- \
   --env <env> \
   --cluster <context-or-arn> \
   --namespace <namespace> \
+  [--microservice <folder>] \
+  [--cronjob <folder>] \
   [--scope microservice|cronjob|both] \
   [--keep-old-refs true|false] \
   [--validate-helm true|false] \
   [--omit-version] \
-  [--dry-run]
+  [--dry-run] \
+  [-h|--help]
 ```
 
 | Option | Default | Description |
@@ -176,6 +220,8 @@ npm run secret-references-external-secrets-generator -- \
 | `--env` | required | Repository environment to process |
 | `--cluster` | required | Kubeconfig context name or ARN used to query Kubernetes |
 | `--namespace` | required | Kubernetes namespace containing workloads and Secrets |
+| `--microservice` | — | Process one folder under `microservices/`; cannot be combined with `--scope` |
+| `--cronjob` | — | Process one folder under `jobs/`; cannot be combined with `--scope` |
 | `--scope` | `both` | Restrict to microservices, cronjobs, or both |
 | `--keep-old-refs` | `false` | Keep existing K8s Secret references |
 | `--validate-helm` | `true` | Validate Helm charts after modification |
@@ -249,17 +295,14 @@ Verifies that the generated `externalSecrets` configuration is consistent with t
 ```bash
 npm run secret-references-external-secrets-validator -- \
   --env <env> \
+  [--microservice <folder>] \
+  [--cronjob <folder>] \
   [--scope microservice|cronjob|both] \
   [--migration-report <path>] \
   [--repo-inventory <path>] \
-  [--cluster-inventory <path>]
+  [--cluster-inventory <path>] \
+  [-h|--help]
 ```
-
-**Checks:**
-1. **YAML presence** — the `externalSecrets` section exists in every migrated `values.yaml`
-2. **Key coverage** — every `(secretName, secretKey)` pair from the repo inventory appears in the generated ExternalSecret
-3. **Cluster coherence** — every `secretKey` from the repo inventory is present in the corresponding cluster secret
-4. **Workload coverage** — no workload with secret references was silently omitted from the migration
 
 **Example:**
 ```bash
@@ -284,15 +327,18 @@ list-external-secrets  ──►  patches versions in values.yaml
 
 ### list-external-secrets
 
-Scans all `values.yaml` files, compares the version configured in `externalSecrets.app/flywayInitContainer.data[].remoteRef.version` with the live version on AWS SM, and automatically updates any that are outdated.
+Scans workload `values.yaml` files, compares configured `externalSecrets` versions with the live version on AWS SM, and automatically updates any that are outdated.
 
 > **Important:** this maintenance command is intended for version-pinned configurations. A missing version is treated as `AWSCURRENT` and may be replaced with an explicit version ID. Do not run it when the desired repository policy is to keep the entries generated with `--omit-version` unversioned.
 
 ```bash
 npm run list-external-secrets -- \
   --env <env> \
+  [--microservice <folder>] \
+  [--cronjob <folder>] \
   [--root <path>] \
-  [--output-dir external-secrets-analysis]
+  [--output-dir external-secrets-analysis] \
+  [-h|--help]
 ```
 
 **Prerequisite:** AWS credentials with `secretsmanager:GetSecretValue` permission.
@@ -300,12 +346,14 @@ npm run list-external-secrets -- \
 **Output:**
 ```
 external-secrets-analysis/
-  external-secrets-<env>.csv
-  external-secrets-report-all-<env>.json
-  external-secrets-report-outdated-<env>.json
-  external-secrets-report-misconfigured-<env>.json
-  external-secrets-report-error-<env>.json
+  external-secrets-<env><filter-suffix>.csv
+  external-secrets-report-all-<env><filter-suffix>.json
+  external-secrets-report-outdated-<env><filter-suffix>.json
+  external-secrets-report-misconfigured-<env><filter-suffix>.json
+  external-secrets-report-error-<env><filter-suffix>.json
 ```
+
+The suffix is omitted for an unfiltered run and identifies selected microservices or cronjobs for filtered runs.
 
 **Example:**
 ```bash
@@ -313,7 +361,7 @@ export AWS_PROFILE=interop-dev
 npm run list-external-secrets -- --env dev
 ```
 
-For full documentation on this script see [LIST_EXTERNAL_SECRETS_README.md](../LIST_EXTERNAL_SECRETS_README.md).
+For full documentation on this script see [list-external-secrets.md](../docs/list-external-secrets.md).
 
 ---
 

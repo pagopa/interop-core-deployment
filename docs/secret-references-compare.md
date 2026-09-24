@@ -38,8 +38,10 @@ npm run build:secret-references
 npm run secret-references-compare -- \
   --env <environment> \
   --cluster <context-name> \
-  [--namespace <namespace>] \
-  [--output-dir <path>]
+  [--microservice <folder>] \
+  [--cronjob <folder>] \
+  [--output-dir <path>] \
+  [-h|--help]
 ```
 
 ### Command-Line Options
@@ -47,10 +49,13 @@ npm run secret-references-compare -- \
 | Option | Required | Default | Description |
 |--------|----------|---------|-------------|
 | `--env` | ✅ Yes | - | Environment name (dev, qa, prod, etc.) |
-| `--cluster` | ✅ Yes | - | Kubernetes context name |
-| `--namespace` | ❌ No | (same as env) | Kubernetes namespace to scan |
-| `-n` | ❌ No | (same as env) | Short form for `--namespace` |
-| `--output-dir` | ❌ No | `./secret-inventory` | Output directory for reports |
+| `-e` | ✅ Yes (alt) | - | Short form for `--env` |
+| `--cluster` | ✅ Yes | - | Kubernetes context name or ARN |
+| `-c` | ✅ Yes (alt) | - | Short form for `--cluster` |
+| `--microservice` | ❌ No | - | Compare only one folder under `microservices/` |
+| `--cronjob` | ❌ No | - | Compare only one folder under `jobs/` |
+| `--output-dir` | ❌ No | `secret-inventory` | Output directory for reports |
+| `-h`, `--help` | ❌ No | - | Show usage and exit |
 
 ### Examples
 
