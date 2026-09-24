@@ -15,6 +15,7 @@
  *
  * Usage:
  *   npm run secret-references-external-secrets-validator -- --env dev
+ *   npm run secret-references-external-secrets-validator -- --env dev --microservice api-gateway
  *   npm run secret-references-external-secrets-validator -- --env dev --scope microservice
  *   npm run secret-references-external-secrets-validator -- --env dev \
  *     --migration-report ./secret-inventory/external-secrets-migration-dev.json \
@@ -27,6 +28,13 @@ import * as path from 'path';
 import { parse as parseYaml } from 'yaml';
 import { csvEscape } from './lib/csv.js';
 import type { GeneratedExternalSecret, MigrationReport, SkippedSecret } from './lib/external-secrets-types.js';
+import {
+  assertScopeNotCombinedWithFilters,
+  getWorkloadFilterSuffix,
+  selectWorkloads,
+  type WorkloadFilters,
+  validateWorkloadFilterValue,
+} from './lib/workload-filter.js';
 import { getExternalSecretsSectionName } from './lib/external-secrets-sections.js';
 import type { ContainerType } from './lib/external-secrets-sections.js';
 
@@ -97,7 +105,7 @@ interface ClusterSecretRecord {
 // Argument parsing
 // ---------------------------------------------------------------------------
 
-interface ValidatorArgs {
+interface ValidatorArgs extends WorkloadFilters {
   env: string;
   scope: 'microservice' | 'cronjob' | 'both';
   migrationReportPath: string;
@@ -107,21 +115,36 @@ interface ValidatorArgs {
   rootDir: string;
 }
 
-function parseArgs(argv: string[]): ValidatorArgs {
+export function parseArgs(argv: string[]): ValidatorArgs {
+  let scopeWasProvided = false;
   let env = '';
   let scope: ValidatorArgs['scope'] = 'both';
   let migrationReportPath = '';
   let repoInventoryPath = '';
   let clusterInventoryPath = '';
   let outputDir = '';
+  let microservice: string | undefined;
+  let cronjob: string | undefined;
 
   for (let i = 0; i < argv.length; i++) {
     switch (argv[i]) {
+      case '--help':
+      case '-h':
+        printHelp();
+        process.exit(0);
+        break;
       case '--env':
         env = argv[++i];
         break;
       case '--scope':
+        scopeWasProvided = true;
         scope = argv[++i] as ValidatorArgs['scope'];
+        break;
+      case '--microservice':
+        microservice = validateWorkloadFilterValue('--microservice', argv[++i]);
+        break;
+      case '--cronjob':
+        cronjob = validateWorkloadFilterValue('--cronjob', argv[++i]);
         break;
       case '--migration-report':
         migrationReportPath = argv[++i];
@@ -142,18 +165,40 @@ function parseArgs(argv: string[]): ValidatorArgs {
     throw new Error('Missing required parameter: --env');
   }
 
+  const filters = { microservice, cronjob };
+  assertScopeNotCombinedWithFilters(scopeWasProvided, filters);
+
   const rootDir = process.cwd();
   const inventoryDir = path.join(rootDir, 'secret-inventory');
+  const suffix = getWorkloadFilterSuffix(filters);
 
   return {
     env,
     scope,
-    migrationReportPath: migrationReportPath || path.join(inventoryDir, `external-secrets-migration-${env}.json`),
-    repoInventoryPath: repoInventoryPath || path.join(inventoryDir, `secret-references-repo-${env}.json`),
-    clusterInventoryPath: clusterInventoryPath || path.join(inventoryDir, `secret-inventory-cluster-secrets-${env}.json`),
+    migrationReportPath: migrationReportPath || path.join(inventoryDir, `external-secrets-migration-${env}${suffix}.json`),
+    repoInventoryPath: repoInventoryPath || path.join(inventoryDir, `secret-references-repo-${env}${suffix}.json`),
+    clusterInventoryPath: clusterInventoryPath || path.join(inventoryDir, `secret-inventory-cluster-secrets-${env}${suffix}.json`),
     outputDir: outputDir || inventoryDir,
     rootDir,
+    ...filters,
   };
+}
+
+function printHelp(): void {
+  console.log(`Usage:
+  npm run secret-references-external-secrets-validator -- [options]
+
+Options:
+  --env <name>              Environment name (required)
+  --scope <microservice|cronjob|both> Filter by workload family (default: both)
+  --microservice <name>     Only validate this microservice folder
+  --cronjob <name>          Only validate this cronjob folder
+  --migration-report <path> Path to the migration report JSON
+  --repo-inventory <path>   Path to repo inventory JSON
+  --cluster-inventory <path> Path to cluster inventory JSON
+  --output-dir <dir>        Directory for validation output
+  -h, --help                Show this help
+`);
 }
 
 // ---------------------------------------------------------------------------
@@ -404,10 +449,10 @@ const CSV_COLUMNS_SUMMARY = [
   'message',
 ] as const;
 
-function writeReports(report: ValidationReport, outputDir: string): void {
+function writeReports(report: ValidationReport, outputDir: string, suffix: string): void {
   fs.mkdirSync(outputDir, { recursive: true });
 
-  const baseName = `external-secrets-validation-${report.environment}`;
+  const baseName = `external-secrets-validation-${report.environment}${suffix}`;
 
   // JSON
   const jsonPath = path.join(outputDir, `${baseName}.json`);
@@ -504,8 +549,16 @@ async function main(): Promise<void> {
   }
 
   const migrationReport: MigrationReport = JSON.parse(fs.readFileSync(args.migrationReportPath, 'utf-8'));
-  const repoRecords: RepoRecord[] = JSON.parse(fs.readFileSync(args.repoInventoryPath, 'utf-8'));
+  let repoRecords: RepoRecord[] = JSON.parse(fs.readFileSync(args.repoInventoryPath, 'utf-8'));
   const clusterSecretRecords: ClusterSecretRecord[] = JSON.parse(fs.readFileSync(args.clusterInventoryPath, 'utf-8'));
+
+  if (args.microservice || args.cronjob) {
+    const selectedWorkloads = selectWorkloads(args.rootDir, args.env, args);
+    const selectedKeys = new Set(
+      selectedWorkloads.map((workload) => `${workload.workloadType}/${workload.component}`)
+    );
+    repoRecords = repoRecords.filter((record) => selectedKeys.has(`${record.workloadType}/${record.component}`));
+  }
 
   console.log(`   Migration report  : ${migrationReport.generatedExternalSecrets.length} generated ExternalSecrets`);
   console.log(`   Repo inventory    : ${repoRecords.length} secret references`);
@@ -639,14 +692,16 @@ async function main(): Promise<void> {
   // ── Output ─────────────────────────────────────────────────────────────────
 
   printSummary(report, allIssues);
-  writeReports(report, args.outputDir);
+  writeReports(report, args.outputDir, getWorkloadFilterSuffix(args));
 
   if (errorCount > 0) {
     process.exit(1);
   }
 }
 
-main().catch((err) => {
-  console.error(`\n❌ Error: ${err instanceof Error ? err.message : String(err)}`);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(`\n❌ Error: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  });
+}
