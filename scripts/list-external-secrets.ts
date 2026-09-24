@@ -4,6 +4,7 @@
  *
  * Usage:
  *   npm run list-external-secrets -- --env dev
+ *   npm run list-external-secrets -- --env dev --microservice api-gateway
  *   npm run list-external-secrets -- --env dev --root /path/to/repo --output-dir external-secrets-analysis
  */
 
@@ -16,6 +17,12 @@ import type { AwsSecretVersion } from "./lib/aws-secrets-manager.js";
 import { getExternalSecretsSectionName } from "./lib/external-secrets-sections.js";
 import { walkWorkloads } from "./lib/workload.js";
 import type { WorkloadType } from "./lib/types.js";
+import {
+  getWorkloadFilterSuffix,
+  selectWorkloads,
+  type WorkloadFilters,
+  validateWorkloadFilterValue,
+} from './lib/workload-filter.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -24,7 +31,7 @@ import type { WorkloadType } from "./lib/types.js";
 const AWS_SM_LABELS = ["AWSCURRENT", "AWSPREVIOUS"] as const;
 const DEFAULT_OUTPUT_DIR = "external-secrets-analysis";
 
-interface CliArgs {
+interface CliArgs extends WorkloadFilters {
   env: string;
   root: string;
   outputDir: string;
@@ -51,10 +58,12 @@ interface ExternalSecretEntry {
 // CLI argument parsing
 // ---------------------------------------------------------------------------
 
-function parseArgs(argv: string[]): CliArgs {
+export function parseArgs(argv: string[]): CliArgs {
   let env: string | null = null;
   let root = process.cwd();
   let outputDir = DEFAULT_OUTPUT_DIR;
+  let microservice: string | undefined;
+  let cronjob: string | undefined;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -72,6 +81,14 @@ function parseArgs(argv: string[]): CliArgs {
       if (!next) throw new Error(`${arg} requires a value`);
       outputDir = next;
       i += 1;
+    } else if (arg === '--microservice') {
+      if (!next) throw new Error(`${arg} requires a value`);
+      microservice = validateWorkloadFilterValue(arg, next);
+      i += 1;
+    } else if (arg === '--cronjob') {
+      if (!next) throw new Error(`${arg} requires a value`);
+      cronjob = validateWorkloadFilterValue(arg, next);
+      i += 1;
     } else if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
@@ -82,19 +99,21 @@ function parseArgs(argv: string[]): CliArgs {
 
   if (!env) throw new Error("--env is required");
 
-  return { env, root: path.resolve(root), outputDir };
+  return { env, root: path.resolve(root), outputDir, microservice, cronjob };
 }
 
 function printHelp(): void {
-  console.log(`
-Usage: list-external-secrets [options]
+  console.log(`Usage:
+  npm run list-external-secrets -- [options]
 
 Options:
-  --env,        -e  <env>   Environment to scan (required)
-  --root,       -r  <path>  Repository root (default: cwd)
-  --output-dir, -o  <dir>   Output directory (default: ${DEFAULT_OUTPUT_DIR})
-  --help,       -h           Show this help
-`.trim());
+  -e, --env <name>          Environment name (required)
+  -r, --root <path>         Repository root (default: current directory)
+  -o, --output-dir <dir>    Output directory (default: ${DEFAULT_OUTPUT_DIR})
+      --microservice <name> Only scan this microservice folder
+      --cronjob <name>      Only scan this cronjob folder
+  -h, --help                Show this help
+`);
 }
 
 // ---------------------------------------------------------------------------
@@ -225,7 +244,7 @@ async function enrichEntry(
 // Reporting
 // ---------------------------------------------------------------------------
 
-function writeCsv(entries: ExternalSecretEntry[], outputDir: string, env: string): void {
+function writeCsv(entries: ExternalSecretEntry[], outputDir: string, env: string, suffix: string): void {
   const headers = [
     "component",
     "workloadType",
@@ -261,12 +280,12 @@ function writeCsv(entries: ExternalSecretEntry[], outputDir: string, env: string
   );
 
   const csv = [headers.join(","), ...rows].join("\n");
-  const csvPath = path.join(outputDir, `external-secrets-${env}.csv`);
+  const csvPath = path.join(outputDir, `external-secrets-${env}${suffix}.csv`);
   fs.writeFileSync(csvPath, `${csv}\n`);
   console.log(`✅ CSV exported to: ${csvPath}`);
 }
 
-function writeJsonReports(entries: ExternalSecretEntry[], outputDir: string, env: string): void {
+function writeJsonReports(entries: ExternalSecretEntry[], outputDir: string, env: string, suffix: string): void {
   type GroupedReport = Record<string, ExternalSecretEntry[]>;
 
   function groupByFile(subset: ExternalSecretEntry[]): GroupedReport {
@@ -278,10 +297,10 @@ function writeJsonReports(entries: ExternalSecretEntry[], outputDir: string, env
   }
 
   const reports: Array<[string, GroupedReport]> = [
-    [`external-secrets-report-all-${env}.json`, groupByFile(entries)],
-    [`external-secrets-report-outdated-${env}.json`, groupByFile(entries.filter((e) => e.upToDate === false))],
-    [`external-secrets-report-misconfigured-${env}.json`, groupByFile(entries.filter((e) => e.misconfigured))],
-    [`external-secrets-report-error-${env}.json`, groupByFile(entries.filter((e) => e.hasError))],
+    [`external-secrets-report-all-${env}${suffix}.json`, groupByFile(entries)],
+    [`external-secrets-report-outdated-${env}${suffix}.json`, groupByFile(entries.filter((e) => e.upToDate === false))],
+    [`external-secrets-report-misconfigured-${env}${suffix}.json`, groupByFile(entries.filter((e) => e.misconfigured))],
+    [`external-secrets-report-error-${env}${suffix}.json`, groupByFile(entries.filter((e) => e.hasError))],
   ];
 
   const written = reports.map(([name, report]) => {
@@ -359,10 +378,7 @@ async function main(): Promise<void> {
 
   fs.mkdirSync(resolvedOutputDir, { recursive: true });
 
-  const workloads = [
-    ...walkWorkloads(root, env, "microservice"),
-    ...walkWorkloads(root, env, "cronjob"),
-  ];
+  const workloads = selectWorkloads(root, env, args);
 
   // Only workload-specific values.yaml files (exclude commons/)
   const valueFiles = workloads.flatMap((w) =>
@@ -419,8 +435,9 @@ async function main(): Promise<void> {
 
   if (allEntries.length === 0) return;
 
-  writeCsv(allEntries, resolvedOutputDir, env);
-  writeJsonReports(allEntries, resolvedOutputDir, env);
+  const suffix = getWorkloadFilterSuffix(args);
+  writeCsv(allEntries, resolvedOutputDir, env, suffix);
+  writeJsonReports(allEntries, resolvedOutputDir, env, suffix);
 
   // Patch outdated or misconfigured entries back into their values.yaml files
   const filesToPatch = [
@@ -437,7 +454,9 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((err) => {
-  console.error(`❌ Fatal error: ${err instanceof Error ? err.message : String(err)}`);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(`❌ Fatal error: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  });
+}
