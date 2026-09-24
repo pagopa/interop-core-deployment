@@ -4,6 +4,7 @@
 
 import type { K8sCliArgs } from './k8s-types.js';
 import * as path from 'path';
+import { validateWorkloadFilterValue } from './workload-filter.js';
 
 /**
  * Parse command-line arguments
@@ -29,6 +30,10 @@ export function parseK8sArgs(argv: string[]): K8sCliArgs {
       if (['csv', 'json', 'both'].includes(fmt)) {
         args.format = fmt as 'csv' | 'json' | 'both';
       }
+    } else if (arg === '--microservice' && i + 1 < argv.length) {
+      args.microservice = validateWorkloadFilterValue(arg, argv[++i]);
+    } else if (arg === '--cronjob' && i + 1 < argv.length) {
+      args.cronjob = validateWorkloadFilterValue(arg, argv[++i]);
     }
   }
 
