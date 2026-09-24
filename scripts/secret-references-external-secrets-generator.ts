@@ -59,7 +59,10 @@ export function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
-    if (arg === '--env' && args[i + 1]) {
+    if (arg === '--help' || arg === '-h') {
+      printHelp();
+      process.exit(0);
+    } else if (arg === '--env' && args[i + 1]) {
       config.env = args[++i];
     } else if (arg === '--cluster' && args[i + 1]) {
       config.cluster = args[++i];
@@ -102,6 +105,26 @@ export function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
   assertScopeNotCombinedWithFilters(scopeWasProvided, config);
 
   return config;
+}
+
+function printHelp(): void {
+  console.log(`Usage:
+  npm run secret-references-external-secrets-generator -- [options]
+
+Options:
+  --env <name>              Environment name (required)
+  --cluster <cluster>       Cluster ARN or context name (required)
+  --namespace <ns>          Namespace (required)
+  --scope <microservice|cronjob|both> Workloads to process (default: both)
+  --microservice <name>     Only process this microservice folder
+  --cronjob <name>          Only process this cronjob folder
+  --keep-old-refs <true|false> Keep legacy externalSecret refs (default: false)
+  --validate-helm <true|false> Validate generated Helm values (default: true)
+  --omit-version            Do not emit remoteRef.version in generated entries
+  --dry-run                 Preview changes without writing files
+  --output-dir <dir>        Output directory for migration reports
+  -h, --help                Show this help
+`);
 }
 
 /**

@@ -49,7 +49,10 @@ export function parseComparisonArgs(args: string[]): ComparisonArgs {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (arg === '--env' || arg === '-e') {
+    if (arg === '--help' || arg === '-h') {
+      printHelp();
+      process.exit(0);
+    } else if (arg === '--env' || arg === '-e') {
       result.env = args[++i];
     } else if (arg === '--cluster' || arg === '-c') {
       result.cluster = args[++i];
@@ -70,6 +73,20 @@ export function parseComparisonArgs(args: string[]): ComparisonArgs {
   }
 
   return result as ComparisonArgs;
+}
+
+function printHelp(): void {
+  console.log(`Usage:
+  npm run secret-references-compare -- [options]
+
+Options:
+  -e, --env <name>          Environment name (required)
+  -c, --cluster <arn>       Cluster ARN or context (required)
+  -o, --output-dir <dir>    Output directory (default: secret-inventory)
+      --microservice <name> Only compare this microservice folder
+      --cronjob <name>      Only compare this cronjob folder
+  -h, --help                Show this help
+`);
 }
 
 async function main(): Promise<void> {
