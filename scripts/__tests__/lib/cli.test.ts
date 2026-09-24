@@ -54,6 +54,22 @@ describe("parseArgs", () => {
     expect(parseArgs(["--env", "dev", "--output-dir", "reports"]).outputDir).toBe("reports");
   });
 
+  it('parses optional workload folder filters', () => {
+    const args = parseArgs([
+      '--env', 'dev',
+      '--microservice', 'api-gateway',
+      '--cronjob', 'readmodel-checker',
+    ]);
+    expect(args.microservice).toBe('api-gateway');
+    expect(args.cronjob).toBe('readmodel-checker');
+  });
+
+  it('rejects workload filter paths', () => {
+    expect(() => parseArgs(['--env', 'dev', '--microservice', 'foo/bar'])).toThrow(
+      '--microservice must be a workload folder name, not a path'
+    );
+  });
+
   it("throws for unknown arguments", () => {
     expect(() => parseArgs(["--env", "dev", "--unknown"])).toThrow("Unknown argument: --unknown");
   });
