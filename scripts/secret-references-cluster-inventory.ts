@@ -21,6 +21,11 @@ import {
 } from './lib/k8s-inventory.js';
 import { csvEscape } from './lib/csv.js';
 import type { SecretCentricOutputRecord, WorkloadCentricOutputRecord } from './lib/k8s-inventory.js';
+import {
+  getWorkloadFilterSuffix,
+  hasWorkloadFilters,
+  selectWorkloads,
+} from './lib/workload-filter.js';
 
 interface InventoryOutputRecord {
   secretName: string;
@@ -83,12 +88,26 @@ async function main(): Promise<void> {
 
     // Fetch all secrets inventory
     console.log('Fetching Secret inventory...');
-    const secretsMap = await fetchSecretsInventory(client);
-    console.log(`Found ${secretsMap.size} secrets.`);
+    const allSecretsMap = await fetchSecretsInventory(client);
+    console.log(`Found ${allSecretsMap.size} secrets.`);
 
     // Extract secret references from workloads
     console.log('Extracting secret references from workloads...');
-    const references = await extractSecretReferencesFromCluster(client);
+    const allReferences = await extractSecretReferencesFromCluster(client);
+    let references = allReferences;
+    let secretsMap = allSecretsMap;
+
+    if (hasWorkloadFilters(args)) {
+      const selectedWorkloads = selectWorkloads(process.cwd(), args.namespace, args);
+      const selectedNames = new Set(selectedWorkloads.map((workload) => workload.component));
+      references = allReferences.filter((reference) => selectedNames.has(reference.workloadName));
+      const referencedSecretNames = new Set(references.map((reference) => reference.secretName));
+      secretsMap = new Map(
+        Array.from(allSecretsMap.entries()).filter(([secretName]) => referencedSecretNames.has(secretName))
+      );
+      console.log(`Filtered to ${selectedWorkloads.length} selected workload(s).`);
+    }
+
     console.log(`Found ${references.length} secret references.`);
 
     // Build inventory
@@ -108,13 +127,14 @@ async function main(): Promise<void> {
 
     // Create output directory
     const outputDir = args.outputDir || 'secret-inventory';
+    const suffix = getWorkloadFilterSuffix(args);
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
     // Write secret-centric outputs
     if (args.format === 'csv' || args.format === 'both') {
-      const csvFile = path.join(outputDir, `secret-inventory-cluster-secrets-${args.namespace}.csv`);
+      const csvFile = path.join(outputDir, `secret-inventory-cluster-secrets-${args.namespace}${suffix}.csv`);
       const csvHeader = SECRET_CENTRIC_COLUMNS.join(',');
       const csvRows = secretCentricRecords.map((record) =>
         SECRET_CENTRIC_COLUMNS.map((col) => csvEscape(String(record[col as keyof SecretCentricOutputRecord] || ''))).join(',')
@@ -125,14 +145,14 @@ async function main(): Promise<void> {
     }
 
     if (args.format === 'json' || args.format === 'both') {
-      const jsonFile = path.join(outputDir, `secret-inventory-cluster-secrets-${args.namespace}.json`);
+      const jsonFile = path.join(outputDir, `secret-inventory-cluster-secrets-${args.namespace}${suffix}.json`);
       fs.writeFileSync(jsonFile, JSON.stringify(secretCentricRecords, null, 2), 'utf-8');
       console.log(`Wrote secret-centric view: ${jsonFile}`);
     }
 
     // Write workload-centric outputs
     if (args.format === 'csv' || args.format === 'both') {
-      const csvFile = path.join(outputDir, `secret-inventory-cluster-workloads-${args.namespace}.csv`);
+      const csvFile = path.join(outputDir, `secret-inventory-cluster-workloads-${args.namespace}${suffix}.csv`);
       const csvHeader = WORKLOAD_CENTRIC_COLUMNS.join(',');
       const csvRows = workloadCentricRecords.map((record) =>
         WORKLOAD_CENTRIC_COLUMNS.map((col) => csvEscape(String(record[col as keyof WorkloadCentricOutputRecord] || ''))).join(',')
@@ -143,7 +163,7 @@ async function main(): Promise<void> {
     }
 
     if (args.format === 'json' || args.format === 'both') {
-      const jsonFile = path.join(outputDir, `secret-inventory-cluster-workloads-${args.namespace}.json`);
+      const jsonFile = path.join(outputDir, `secret-inventory-cluster-workloads-${args.namespace}${suffix}.json`);
       fs.writeFileSync(jsonFile, JSON.stringify(workloadCentricRecords, null, 2), 'utf-8');
       console.log(`Wrote workload-centric view: ${jsonFile}`);
     }

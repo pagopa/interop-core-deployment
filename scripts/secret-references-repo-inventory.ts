@@ -4,6 +4,7 @@ import { parseArgs } from "./lib/cli.js";
 import { toCsv } from "./lib/csv.js";
 import type { CliArgs, SecretReferenceRecord } from "./lib/types.js";
 import { dedupe, inventoryWorkload, walkWorkloads } from "./lib/workload.js";
+import { getWorkloadFilterSuffix, selectWorkloads } from './lib/workload-filter.js';
 
 // Re-export public API so external consumers can import from a single entry point.
 export type { OutputFormat, ReferenceType, RecordContext, SecretReferenceRecord, SourceScope, WorkloadType } from "./lib/types.js";
@@ -19,7 +20,8 @@ function writeOutputs(records: SecretReferenceRecord[], args: CliArgs): string[]
   const outputDir = path.isAbsolute(args.outputDir) ? args.outputDir : path.join(args.root, args.outputDir);
   fs.mkdirSync(outputDir, { recursive: true });
 
-  const baseName = `secret-references-repo-${args.env}`;
+  const suffix = getWorkloadFilterSuffix(args);
+  const baseName = `secret-references-repo-${args.env}${suffix}`;
   const written: string[] = [];
 
   if (args.format === "csv" || args.format === "both") {
@@ -51,10 +53,7 @@ function main(): void {
     throw new Error(`Common values directory not found for environment "${args.env}": ${path.relative(args.root, commonEnvDir)}`);
   }
 
-  const workloads = [
-    ...walkWorkloads(args.root, args.env, "microservice"),
-    ...walkWorkloads(args.root, args.env, "cronjob"),
-  ];
+  const workloads = selectWorkloads(args.root, args.env, args);
 
   if (workloads.length === 0) {
     throw new Error(`No workload values found for exact environment "${args.env}"`);
