@@ -28,14 +28,19 @@ import {
   statsComparisonToCSV,
 } from './lib/secret-references-compare.js';
 import type { SecretReferenceRecord } from './lib/types.js';
+import {
+  getWorkloadFilterSuffix,
+  type WorkloadFilters,
+  validateWorkloadFilterValue,
+} from './lib/workload-filter.js';
 
-interface ComparisonArgs {
+interface ComparisonArgs extends WorkloadFilters {
   env: string;
   cluster: string;
   outputDir: string;
 }
 
-function parseComparisonArgs(args: string[]): ComparisonArgs {
+export function parseComparisonArgs(args: string[]): ComparisonArgs {
   const result: Partial<ComparisonArgs> = {
     env: undefined,
     cluster: undefined,
@@ -50,6 +55,10 @@ function parseComparisonArgs(args: string[]): ComparisonArgs {
       result.cluster = args[++i];
     } else if (arg === '--output-dir' || arg === '-o') {
       result.outputDir = args[++i];
+    } else if (arg === '--microservice') {
+      result.microservice = validateWorkloadFilterValue(arg, args[++i]);
+    } else if (arg === '--cronjob') {
+      result.cronjob = validateWorkloadFilterValue(arg, args[++i]);
     }
   }
 
@@ -72,12 +81,17 @@ async function main(): Promise<void> {
   console.log(`   Output Directory: ${args.outputDir}\n`);
 
   const outputDir = path.isAbsolute(args.outputDir) ? args.outputDir : path.join(process.cwd(), args.outputDir);
+  const suffix = getWorkloadFilterSuffix(args);
+  const filterArgs = [
+    args.microservice ? `--microservice ${JSON.stringify(args.microservice)}` : '',
+    args.cronjob ? `--cronjob ${JSON.stringify(args.cronjob)}` : '',
+  ].filter(Boolean).join(' ');
   fs.mkdirSync(outputDir, { recursive: true });
 
   // Run repo inventory (repo analysis)
   console.log(' Running repo inventory (repo analysis)...');
   try {
-    execSync(`npm run secret-references-repo-inventory -- --env ${args.env} --format json --output-dir "${outputDir}"`, {
+    execSync(`npm run secret-references-repo-inventory -- --env ${args.env} --format json --output-dir "${outputDir}" ${filterArgs}`, {
       stdio: 'pipe',
     });
   } catch (error) {
@@ -85,7 +99,7 @@ async function main(): Promise<void> {
   }
 
   // Load repo raw data
-  const repoFile = path.join(outputDir, `secret-references-repo-${args.env}.json`);
+  const repoFile = path.join(outputDir, `secret-references-repo-${args.env}${suffix}.json`);
   if (!fs.existsSync(repoFile)) {
     throw new Error(`Repo inventory output not found: ${repoFile}`);
   }
@@ -101,7 +115,7 @@ async function main(): Promise<void> {
   // Run cluster inventory (cluster analysis)
   console.log('\n Running cluster inventory (cluster analysis)...');
   try {
-    execSync(`npm run secret-references-cluster-inventory -- --cluster "${args.cluster}" --namespace ${args.env} --format json --output-dir "${outputDir}"`, {
+    execSync(`npm run secret-references-cluster-inventory -- --cluster "${args.cluster}" --namespace ${args.env} --format json --output-dir "${outputDir}" ${filterArgs}`, {
       stdio: 'pipe',
     });
   } catch (error) {
@@ -109,8 +123,8 @@ async function main(): Promise<void> {
   }
 
   // Load cluster aggregated data
-  const clusterSecretsFile = path.join(outputDir, `secret-inventory-cluster-secrets-${args.env}.json`);
-  const clusterWorkloadsFile = path.join(outputDir, `secret-inventory-cluster-workloads-${args.env}.json`);
+  const clusterSecretsFile = path.join(outputDir, `secret-inventory-cluster-secrets-${args.env}${suffix}.json`);
+  const clusterWorkloadsFile = path.join(outputDir, `secret-inventory-cluster-workloads-${args.env}${suffix}.json`);
 
   if (!fs.existsSync(clusterSecretsFile) || !fs.existsSync(clusterWorkloadsFile)) {
     throw new Error(`Cluster inventory output files not found at ${clusterSecretsFile} or ${clusterWorkloadsFile}`);
@@ -160,11 +174,11 @@ async function main(): Promise<void> {
   ];
 
   reports.forEach((report) => {
-    const jsonReportFile = path.join(outputDir, `secret-inventory-compare-${report.name}-${args.env}-${clusterName}.json`);
+    const jsonReportFile = path.join(outputDir, `secret-inventory-compare-${report.name}-${args.env}-${clusterName}${suffix}.json`);
     fs.writeFileSync(jsonReportFile, JSON.stringify(report.json, null, 2), 'utf-8');
     console.log(`✓ Wrote ${report.name} JSON report: ${jsonReportFile}`);
 
-    const csvReportFile = path.join(outputDir, `secret-inventory-compare-${report.name}-${args.env}-${clusterName}.csv`);
+    const csvReportFile = path.join(outputDir, `secret-inventory-compare-${report.name}-${args.env}-${clusterName}${suffix}.csv`);
     fs.writeFileSync(csvReportFile, report.csv, 'utf-8');
     console.log(`✓ Wrote ${report.name} CSV report: ${csvReportFile}`);
   });
