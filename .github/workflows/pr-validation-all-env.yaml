@@ -96,7 +96,7 @@ jobs:
             repo_structure_validation_warning_only: true
     steps:
       - name: Run deployment repo validation
-        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@main
+        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@dbfebb88617f1c83675f353faa867a5680a4a2b2
         with:
           environment: ${{ matrix.environment }}
           infra_commons_tag: ${{ matrix.infra_commons_tag }}
