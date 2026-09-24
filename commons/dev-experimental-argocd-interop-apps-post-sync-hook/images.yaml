@@ -1,0 +1,6 @@
+images:
+  microservices:
+    post-sync-app1:
+      tag: "latest"
+    post-sync-app2:
+      tag: "latest"

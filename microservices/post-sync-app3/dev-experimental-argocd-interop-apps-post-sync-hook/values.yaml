@@ -1,0 +1,13 @@
+name: "post-sync-app3"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/post-sync-app3-dev-es1"
+
+service:
+  create: false
+
+deployment:
+  args: ["echo 'hello there'; sleep 3000; exit 0;"]
+  env:
+    MY_VALUE: "MY_VALUE"

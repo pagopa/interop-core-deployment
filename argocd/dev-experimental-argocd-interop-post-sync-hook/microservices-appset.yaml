@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: interop-microservices-appset-post-sync-hook
+  labels:
+    app.kubernetes.io/part-of: interop-appset-microservices-post-sync-hook
+    argocd.argoproj.io/instance: interop-ms-appset-post-sync-hook
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  goTemplate: true
+  goTemplateOptions: [ "missingkey=error" ]
+  generators:
+  - matrix:
+      generators:
+      - list:
+          elements:
+          - env: dev-experimental-argocd-interop-apps-post-sync-hook
+            namespace: dev-experimental-argocd-interop-apps
+            project: default
+      - git:
+          repoURL: https://github.com/pagopa/interop-core-deployment.git
+          revision: feature/argocd
+          pathParamPrefix: ms
+          directories:
+          - path: microservices/*/dev-experimental-argocd-interop-apps-post-sync-hook
+  template:
+    metadata:
+      name: '{{ base (dir .ms.path.path) }}-post-sync-hook'
+      namespace: dev-experimental-argocd-interop-apps
+      labels:
+        appset: interop-microservices-appset-post-sync-hook
+        app.kubernetes.io/part-of: interop-appset-microservices-post-sync-hook 
+        env: '{{.env}}'
+        service: '{{ base (dir .ms.path.path) }}'
+    spec:
+      project: '{{.project}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: dev-experimental-argocd-interop-apps
+      source:
+        repoURL: https://github.com/pagopa/interop-core-deployment.git
+        targetRevision: feature/argocd
+        path: '.'
+        plugin:
+          name: infra-commons-microservices-plugin
+          env:
+          - name: ENV
+            value: '{{.env}}'
+          - name: SERVICE
+            value: '{{ base (dir .ms.path.path) }}'
+          - name: IMAGES_FILE
+            value: "commons/{{.env}}/images.yaml"
+          - name: PROJECT_DIR
+            value: "."

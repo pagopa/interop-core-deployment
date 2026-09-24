@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: interop-core-deployment-repo-default
+  namespace: dev-experimental-argocd-default-apps
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  # URL del repository Git
+  url: https://github.com/pagopa/interop-core-deployment
+  
+  # Tipo di repository (git, helm, ecc.)
+  type: git
+  
+  # Nome identificativo del repository (opzionale ma consigliato)
+  name: interop-core-deployment-repo-default
+  
+  # Autenticazione con username/password
+  username: __REPO_USERNAME__
+  password: __REPO_PASSWORD__

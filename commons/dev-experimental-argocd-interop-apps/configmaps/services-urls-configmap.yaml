@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-services-urls
+  namespace: dev-experimental-argocd-interop-apps
+data:
+  AGREEMENT_PROCESS_URL: "http://interop-be-agreement-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  ATTRIBUTE_REGISTRY_PROCESS_URL: "http://interop-be-attribute-registry-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  AUTHORIZATION_MANAGEMENT_URL: "http://interop-be-authorization-management.dev-experimental-argocd-interop-appssvc.cluster.local:8088/authorization-management/0.0"
+  AUTHORIZATION_PROCESS_URL: "http://interop-be-authorization-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  CATALOG_PROCESS_URL: "http://interop-be-catalog-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  DELEGATION_PROCESS_URL: "http://interop-be-delegation-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  ESERVICE_TEMPLATE_PROCESS_URL: "http://interop-be-eservice-template-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  IN_APP_NOTIFICATION_MANAGER_URL: "http://interop-be-in-app-notification-manager.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  NOTIFICATION_CONFIG_PROCESS_URL: "http://interop-be-notification-config-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  NOTIFIER_URL: "http://interop-be-notifier.dev-experimental-argocd-interop-appssvc.cluster.local:8088/notifier/0.0"
+  PARTY_REGISTRY_PROXY_URL: "http://interop-be-party-registry-proxy.dev-experimental-argocd-interop-appssvc.cluster.local:8088/party-registry-proxy/0.0"
+  PURPOSE_PROCESS_URL: http://interop-be-purpose-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088
+  PURPOSE_TEMPLATE_PROCESS_URL: "http://interop-be-purpose-template-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  TENANT_PROCESS_URL: "http://interop-be-tenant-process.dev-experimental-argocd-interop-appssvc.cluster.local:8088"
+  EVENT_MANAGER_URL: "http://interop-be-m2m-event-manager.dev-experimental-argocd-interop-appssvc.cluster.local:8088"

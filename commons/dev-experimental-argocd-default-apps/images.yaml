@@ -1,0 +1,279 @@
+images:
+  microservices:
+    agreement-outbound-writer:
+      #tag: "develop"
+      tag: "latest"
+    agreement-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    agreement-platformstate-writer:
+      #tag: "develop"
+      tag: "latest"
+    agreement-process:
+      #tag: "develop"
+      tag: "latest"
+    agreement-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    api-gateway:
+      #tag: "develop"
+      tag: "latest"
+    attribute-registry-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    attribute-registry-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    attribute-registry-process:
+      #tag: "develop"
+      tag: "latest"
+    audit-signer:
+      #tag: "develop"
+      tag: "latest"
+    authorization-management:
+      #tag: "1.0.x-latest"
+      tag: "latest"
+    authorization-process:
+      #tag: "develop"
+      tag: "latest"
+    authorization-platformstate-writer:
+      #tag: "develop"
+      tag: "latest"
+    authorization-server:
+      #tag: "1.0.x-latest"
+      tag: "latest"
+    authorization-server-node:
+      #tag: "develop"
+      tag: "latest"
+    authorization-updater:
+      #tag: "develop"
+      tag: "latest"
+    backend-for-frontend:
+      #tag: "develop"
+      tag: "latest"
+    catalog-outbound-writer:
+      #tag: "develop"
+      tag: "latest"
+    catalog-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    catalog-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    catalog-platformstate-writer:
+      #tag: "develop"
+      tag: "latest"
+    catalog-process:
+      #tag: "develop"
+      tag: "latest"
+    certified-email-sender:
+      #tag: "develop"
+      tag: "latest"
+    client-purpose-updater:
+      #tag: "develop"
+      tag: "latest"
+    client-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    client-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    compute-agreements-consumer:
+      #tag: "develop"
+      tag: "latest"
+    datalake-interface-exporter:
+      #tag: "develop"
+      tag: "latest"
+    delegation-outbound-writer:
+      #tag: "develop"
+      tag: "latest"
+    delegation-process:
+      #tag: "develop"
+      tag: "latest"
+    delegation-items-archiver:
+      #tag: "develop"
+      tag: "latest"
+    delegation-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    delegation-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    documents-generator:
+      #tag: "develop"
+      tag: "latest"
+    documents-signer:
+      #tag: "develop"
+      tag: "latest"
+    email-notification-dispatcher:
+      #tag: "develop"
+      tag: "latest"
+    email-sender:
+      #tag: "develop"
+      tag: "latest"
+    eservice-descriptors-archiver:
+      #tag: "develop"
+      tag: "latest"
+    eservice-template-process:
+      #tag: "develop"
+      tag: "latest"
+    eservice-template-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    eservice-template-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    eservice-template-instances-updater:
+      #tag: "develop"
+      tag: "latest"
+    events-signer:
+      #tag: "develop"
+      tag: "latest"
+    frontend:
+      tag: "dev-latest"
+    in-app-notification-manager:
+      #tag: "develop"
+      tag: "latest"
+    in-app-notification-dispatcher:
+      #tag: "develop"
+      tag: "latest"
+    key-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    key-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    m2m-event-dispatcher:
+      #tag: "2.10.0-RC7"
+      tag: "latest"
+    m2m-event-manager:
+      #tag: "2.10.0-RC7"
+      tag: "latest"
+    m2m-gateway:
+      #tag: "2.10.0-RC7"
+      tag: "latest"
+    notification-config-process:
+      #tag: "develop"
+      tag: "latest"
+    notification-config-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    notification-email-sender:
+      #tag: "develop"
+      tag: "latest"
+    notification-user-lifecycle-consumer:
+      #tag: "develop"
+      tag: "latest"
+    notification-tenant-lifecycle-consumer:
+      #tag: "develop"
+      tag: "latest"
+    notifier:
+      #tag: "1.0.x-latest"
+      tag: "latest"
+    notifier-seeder:
+      #tag: "develop"
+      tag: "latest"
+    producer-keychain-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    producer-key-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    producer-key-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    producer-keychain-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    party-registry-proxy:
+      #tag: "1.0.x-latest"
+      tag: "latest"
+    purpose-outbound-writer:
+      #tag: "develop"
+      tag: "latest"
+    purpose-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    purpose-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    purpose-template-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    purpose-platformstate-writer:
+      #tag: "develop"
+      tag: "latest"
+    purpose-process:
+      #tag: "develop"
+      tag: "latest"
+    purpose-template-process:
+      #tag: "develop"
+      tag: "latest"
+    redis:
+      tag: "7.0.4"
+    selfcare-client-users-updater:
+      #tag: "develop"
+      tag: "latest"
+    selfcare-onboarding-consumer:
+      #tag: "develop"
+      tag: "latest"
+    ses-mock:
+      tag: "20"
+    signed-objects-persister:
+      #tag: "develop"
+      tag: "latest"
+    smtp-mock:
+      tag: "1.10.4"
+    tenant-process:
+      #tag: "develop"
+      tag: "latest"
+    tenant-readmodel-writer:
+      #tag: "develop"
+      tag: "latest"
+    tenant-readmodel-writer-sql:
+      #tag: "develop"
+      tag: "latest"
+    tenant-outbound-writer:
+      #tag: "develop"
+      tag: "latest"
+    token-details-persister-node:
+      #tag: "develop"
+      tag: "latest"
+
+  jobs:
+    anac-certified-attributes-importer:
+      #tag: "develop"
+      tag: "latest"
+    datalake-data-export:
+      #tag: "develop"
+      tag: "latest"
+    dtd-catalog-exporter:
+      #tag: "develop"
+      tag: "latest"
+    ipa-certified-attributes-importer:
+      #tag: "develop"
+      tag: "latest"
+    ivass-certified-attributes-importer:
+      #tag: "develop"
+      tag: "latest"
+    m2m-event-cleaner:
+      #tag: "2.10.0-RC7"
+      tag: "latest"
+    one-trust-notices:
+      #tag: "develop"
+      tag: "latest"
+    pn-consumers:
+      #tag: "develop"
+      tag: "latest"
+    readmodel-checker:
+      #tag: "develop"
+      tag: "latest"
+    token-details-persister:
+      #tag: "1.0.x-latest"
+      tag: "latest"
+    token-generation-readmodel-checker:
+      #tag: "develop"
+      tag: "latest"
+    in-app-notification-cleaner:
+      #tag: "develop"
+      tag: "latest"

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-m2m-events-db
+  namespace: dev-experimental-argocd-default-apps
+data:
+  DB_HOST_RW: "#interop-platform-data-dev.cluster-cevisn7oellx.eu-south-1.rds.amazonaws.com"
+  DB_HOST_RO: "#interop-platform-data-dev.cluster-ro-cevisn7oellx.eu-south-1.rds.amazonaws.com"
+  DB_NAME: "m2m_events"
+  DB_PORT: "5432"
+  DB_USE_SSL: "true"
+  DB_SCHEMA: "dev_m2m_event"
