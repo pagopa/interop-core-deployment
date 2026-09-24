@@ -11,6 +11,8 @@
  *     --env <environment> \
  *     --cluster <context> \
  *     --namespace <ns> \
+ *     [--microservice <folder>] \
+ *     [--cronjob <folder>] \
  *     [--scope microservice|cronjob|both] \
  *     [--keep-old-refs true|false] \
  *     [--validate-helm true|false] \
@@ -30,11 +32,19 @@ import {
 } from './lib/external-secrets-generator.js';
 import { applyExternalSecretsToWorkload, createBackup } from './lib/values-yaml-patcher.js';
 import type { ExternalSecretsGeneratorConfig, MigrationReport } from './lib/external-secrets-types.js';
+import type { WorkloadType } from './lib/types.js';
+import {
+  assertScopeNotCombinedWithFilters,
+  getWorkloadFilterSuffix,
+  selectWorkloads,
+  validateWorkloadFilterValue,
+} from './lib/workload-filter.js';
 
 /**
  * Parse command-line arguments
  */
-function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
+export function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
+  let scopeWasProvided = false;
   const config: ExternalSecretsGeneratorConfig = {
     env: '',
     cluster: '',
@@ -56,6 +66,7 @@ function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
     } else if (arg === '--namespace' && args[i + 1]) {
       config.namespace = args[++i];
     } else if (arg === '--scope' && args[i + 1]) {
+      scopeWasProvided = true;
       const scope = args[++i];
       if (scope === 'microservice' || scope === 'cronjob' || scope === 'both') {
         config.scope = scope;
@@ -68,6 +79,10 @@ function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
       config.validateHelm = args[++i].toLowerCase() === 'true';
     } else if (arg === '--omit-version') {
       config.omitVersion = true;
+    } else if (arg === '--microservice' && args[i + 1]) {
+      config.microservice = validateWorkloadFilterValue(arg, args[++i]);
+    } else if (arg === '--cronjob' && args[i + 1]) {
+      config.cronjob = validateWorkloadFilterValue(arg, args[++i]);
     } else if (arg === '--dry-run') {
       config.dryRun = true;
     } else if (arg === '--output-dir' && args[i + 1]) {
@@ -84,6 +99,7 @@ function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
   if (!config.namespace) {
     throw new Error('Missing required argument: --namespace <namespace>');
   }
+  assertScopeNotCombinedWithFilters(scopeWasProvided, config);
 
   return config;
 }
@@ -104,20 +120,13 @@ function getClusterContext(cluster: string, namespace: string): { cluster: strin
 function loadRepoInventory(
   rootDir: string,
   env: string,
-  scope: 'microservice' | 'cronjob' | 'both'
+  config: ExternalSecretsGeneratorConfig
 ): Array<{ workload: any; component: string; records: any[] }> {
-  const workloads = [];
-
-  if (scope === 'microservice' || scope === 'both') {
-    workloads.push(...walkWorkloads(rootDir, env, 'microservice'));
-  }
-
-  if (scope === 'cronjob' || scope === 'both') {
-    workloads.push(...walkWorkloads(rootDir, env, 'cronjob'));
-  }
+  const allowedTypes: WorkloadType[] = config.scope === 'both' ? ['microservice', 'cronjob'] : [config.scope];
+  const workloads = selectWorkloads(rootDir, env, config, allowedTypes);
 
   if (workloads.length === 0) {
-    throw new Error(`No workloads found for environment "${env}" and scope "${scope}"`);
+    throw new Error(`No workloads found for environment "${env}" and scope "${config.scope}"`);
   }
 
   return workloads.map((workload) => ({
@@ -203,6 +212,8 @@ async function main(): Promise<void> {
     console.log(`   Cluster: ${config.cluster || 'current-context'}`);
     console.log(`   Namespace: ${config.namespace || 'interop'}`);
     console.log(`   Scope: ${config.scope}`);
+    console.log(`   Microservice filter: ${config.microservice || 'all'}`);
+    console.log(`   Cronjob filter: ${config.cronjob || 'all'}`);
     console.log(`   Keep old refs: ${config.keepOldRefs}`);
     console.log(`   Validate Helm: ${config.validateHelm}`);
     console.log(`   Omit remoteRef version: ${config.omitVersion}`);
@@ -210,7 +221,7 @@ async function main(): Promise<void> {
 
     // Load repo inventory
     console.log('📂 Scanning repository for secret references...');
-    const repoInventoryData = loadRepoInventory(rootDir, config.env, config.scope);
+    const repoInventoryData = loadRepoInventory(rootDir, config.env, config);
     const allRepoRecords = repoInventoryData.flatMap((item) => item.records);
     console.log(`   Found ${allRepoRecords.length} secret references across ${repoInventoryData.length} workloads\n`);
 
@@ -248,7 +259,18 @@ async function main(): Promise<void> {
     const { initializeCommonsExternalSecrets } = await import('./lib/values-yaml-patcher.js');
     const commonsEnvPath = path.join(rootDir, 'commons', config.env);
     
-    if (config.scope === 'microservice' || config.scope === 'both') {
+    const processMicroservices = config.microservice
+      ? true
+      : config.cronjob
+        ? false
+        : config.scope === 'microservice' || config.scope === 'both';
+    const processCronjobs = config.cronjob
+      ? true
+      : config.microservice
+        ? false
+        : config.scope === 'cronjob' || config.scope === 'both';
+
+    if (processMicroservices) {
       const microserviceCommonsPath = path.join(commonsEnvPath, 'values-microservice.yaml');
       const result = initializeCommonsExternalSecrets(microserviceCommonsPath, config.dryRun);
       if (result.success) {
@@ -258,7 +280,7 @@ async function main(): Promise<void> {
       }
     }
 
-    if (config.scope === 'cronjob' || config.scope === 'both') {
+    if (processCronjobs) {
       const cronjobCommonsPath = path.join(commonsEnvPath, 'values-cronjob.yaml');
       const result = initializeCommonsExternalSecrets(cronjobCommonsPath, config.dryRun);
       if (result.success) {
@@ -378,9 +400,10 @@ async function main(): Promise<void> {
 
     // Save report
     if (!config.dryRun) {
+      const suffix = getWorkloadFilterSuffix(config);
       const reportPath = config.outputDir
-        ? path.join(config.outputDir, `external-secrets-migration-${config.env}.json`)
-        : path.join(rootDir, 'secret-inventory', `external-secrets-migration-${config.env}.json`);
+        ? path.join(config.outputDir, `external-secrets-migration-${config.env}${suffix}.json`)
+        : path.join(rootDir, 'secret-inventory', `external-secrets-migration-${config.env}${suffix}.json`);
 
       fs.mkdirSync(path.dirname(reportPath), { recursive: true });
       fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
@@ -399,4 +422,6 @@ async function main(): Promise<void> {
   }
 }
 
-main();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}
