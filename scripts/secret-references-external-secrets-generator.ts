@@ -180,12 +180,6 @@ async function loadClusterInventory(clusterContext: string, namespace: string): 
 
   // Build inventory with annotations and reference information
   const secretInventory = buildSecretInventory(secretsMap, references);
-  
-  // Debug: Log first few secrets to verify annotations are present
-  if (secretInventory.length > 0) {
-    const firstSecret = secretInventory[0];
-    console.log(`   Sample secret "${firstSecret.secretName}": hasAwsSecretsManagerSecretId=${firstSecret.hasAwsSecretsManagerSecretId}, annotationCount=${Object.keys(firstSecret.annotations).length}`);
-  }
 
   return secretInventory;
 }
