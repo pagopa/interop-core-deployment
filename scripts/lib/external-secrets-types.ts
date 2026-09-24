@@ -11,6 +11,8 @@ export interface ExternalSecretsGeneratorConfig {
   validateHelm: boolean;
   dryRun: boolean;
   omitVersion: boolean;
+  microservice?: string;
+  cronjob?: string;
   outputDir?: string;
 }
 
