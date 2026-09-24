@@ -2,13 +2,19 @@
 
 This directory documents the workflow for migrating Kubernetes Secret references in Helm values to External Secrets Operator (ESO) entries backed by AWS Secrets Manager.
 
-## Source of truth
+## Canonical entry point
 
-Use [scripts/README.md](../scripts/README.md) as the authoritative operational manual. It defines the supported parameters, help flags, workflow order, filters, scopes, and standard output locations.
+The authoritative workflow is in [scripts/README.md](../scripts/README.md). Use that file as the source of truth for:
 
-This page is only an index and a quick workflow reference.
+- the required command parameters
+- the supported help flags
+- the workflow order
+- the workload filters and scope rules
+- the examples used in day-to-day operations
 
-## Workflow
+This page is intentionally a short guide and index, not a duplicate of the operational manual.
+
+## Workflow overview
 
 ```text
 repo inventory -> cluster inventory -> compare -> generate externalSecrets -> validate
@@ -26,22 +32,25 @@ repo inventory -> cluster inventory -> compare -> generate externalSecrets -> va
 ## Recommended sequence
 
 ```bash
+# 1) inventory the repo
 npm run secret-references-repo-inventory -- --env dev
 
+# 2) inventory the cluster
 npm run secret-references-cluster-inventory -- \
   --cluster "$current_cluster" \
   --namespace dev
 
-npm run secret-references-compare -- \
-  --env dev \
-  --cluster "$current_cluster"
+# 3) compare repo and cluster expectations
+npm run secret-references-compare -- --env dev --cluster "$current_cluster"
 
+# 4) generate externalSecrets blocks
 npm run secret-references-external-secrets-generator -- \
   --env dev \
   --cluster "$current_cluster" \
   --namespace dev \
   --dry-run
 
+# 5) validate the generated result
 npm run secret-references-external-secrets-validator -- --env dev
 ```
 
