@@ -1,0 +1,107 @@
+name: PR Validation (all environments)
+
+on: 
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  extract-infra-commons-tag:
+    runs-on: ubuntu-22.04
+    outputs:
+      resolved_infra_commons_tag: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Extract tag from reusable workflow
+        id: extract-infra-commons-tag
+        env:
+          INPUT_GITHUB_REF: ${{ github.ref }}
+        run: |
+          echo "Extracting tag from reusable workflow (wf version $INPUT_GITHUB_REF)"
+          if [ ! -f .github/workflows/pr-validation-all-env.yaml ]; then
+            echo "File not found"
+            exit 1
+          fi
+          
+          fullref=$(yq e '.jobs.validation_all_env.steps[0].uses' .github/workflows/pr-validation-all-env.yaml)
+          tag=${fullref#*@}
+          echo "fullref=$fullref"
+          echo "tag=$tag"
+          final_tag="$tag"
+
+          echo "infra_commons_tag=$final_tag" >> $GITHUB_OUTPUT
+
+      - name: Show extracted tag
+        env:
+          INFRA_COMMONS_TAG: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
+        run: |
+          echo "infra_commons_tag = $INFRA_COMMONS_TAG"
+      
+  validation_all_env:
+    name: "Validation - ${{ matrix.environment }}"
+    runs-on: ubuntu-22.04
+    needs: [extract-infra-commons-tag]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: dev
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: true
+            enable_argocd_schema_validation: true
+            repo_structure_validation_warning_only: true
+          - environment: test
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
+          - environment: qa
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
+          - environment: vapt
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
+          - environment: att
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
+          - environment: prod
+            infra_commons_tag: ${{ needs.extract-infra-commons-tag.outputs.resolved_infra_commons_tag }}
+            enable_kube_linter: true
+            strict_kube_linter_checks: false
+            enable_argocd_validation: false
+            enable_argocd_schema_validation: false
+            repo_structure_validation_warning_only: true
+    steps:
+      - name: Run deployment repo validation
+        uses: pagopa/interop-infra-commons/.github/actions/deployment-repo-validation@dbfebb88617f1c83675f353faa867a5680a4a2b2
+        with:
+          environment: ${{ matrix.environment }}
+          infra_commons_tag: ${{ matrix.infra_commons_tag }}
+          enable_kube_linter: ${{ matrix.enable_kube_linter }}
+          strict_kube_linter_checks: ${{ matrix.strict_kube_linter_checks }}
+          enable_argocd_validation: ${{ matrix.enable_argocd_validation }}
+          enable_argocd_schema_validation: ${{ matrix.enable_argocd_schema_validation }}
+          repo_structure_validation_warning_only: ${{ matrix.repo_structure_validation_warning_only }}
