@@ -1,21 +1,25 @@
-#!/usr/bin/bash
-
+#!/usr/bin/env bash
 set -euo pipefail
+
+case "${BASH##*/}:${BASH_VERSION:-}" in
+  sh:*|:*) exec bash "$0" "$@" ;;
+esac
 
 usage() {
   cat <<'EOF'
 Generate Flyway migration values from Kubernetes ConfigMaps.
 
 Usage:
-  generate-flyway-migrations.sh -e|--environment <environment>
+  generate-flyway-migrations.sh -r|--root <project_root> -e|--environment <environment>
 
 Options:
+  -r, --root         Absolute path to the project root, containing commons/<environment>.
   -e, --environment  Target environment under commons/<environment>.
   -p, --prune        Remove values.yaml files from the target migrations directory that do not have corresponding ConfigMaps.
   -h, --help         Show this help message.
 
 Examples:
-  scripts/migrations/generate-flyway-migrations.sh --environment dev
+  scripts/migrations/generate-flyway-migrations.sh --root "$(pwd)" --environment dev
 EOF
 }
 
@@ -29,11 +33,17 @@ warn_exit() {
   exit 0
 }
 
+project_root=""
 environment=""
 prune=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    -r|--root)
+      [[ $# -ge 2 ]] || fail "Missing value for $1."
+      project_root="$2"
+      shift 2
+      ;;
     -e|--environment)
       [[ $# -ge 2 ]] || fail "Missing value for $1."
       environment="$2"
@@ -53,6 +63,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+[[ -n "$project_root" ]] || {
+  usage >&2
+  fail "Project root is required."
+}
+
+[[ "$project_root" == /* ]] || fail "Project root must be an absolute path: $project_root"
+[[ -d "$project_root" ]] || fail "Project root directory not found: $project_root"
+
 [[ -n "$environment" ]] || {
   usage >&2
   fail "Target environment is required."
@@ -60,8 +78,7 @@ done
 
 command -v yq >/dev/null 2>&1 || fail "Required command 'yq' was not found."
 
-script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-repo_root=$(cd "$script_dir/../.." && pwd)
+repo_root=$(cd "$project_root" && pwd)
 
 commons_dir="$repo_root/commons/$environment"
 configmaps_dir="$commons_dir/configmaps"
