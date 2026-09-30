@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   extract-infra-commons-tag:
+    name: "Setup validation"
     runs-on: ubuntu-22.04
     outputs:
       resolved_infra_commons_tag: ${{ steps.extract-infra-commons-tag.outputs.infra_commons_tag }}
