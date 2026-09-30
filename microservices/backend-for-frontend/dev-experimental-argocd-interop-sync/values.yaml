@@ -1,0 +1,66 @@
+name: "interop-be-backend-for-frontend"
+techStack: "nodejs"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::505630707203:role/interop-be-backend-for-frontend-dev-es1"
+
+service:
+  create: false
+  
+configmap:
+  BACKEND_FOR_FRONTEND_INTERFACE_VERSION: "0.0"
+  GENERATED_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  GENERATED_JWT_SECONDS_DURATION: "86400"
+  GENERATED_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  GENERATED_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/ui"
+  CLIENT_ASSERTION_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
+  CLIENT_ASSERTION_JWT_AUDIENCE: "auth.{{.Values.namespace}}.interop.pagopa.it/client-assertion"
+  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,selfcare.{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
+  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "3600"
+  CONSUMER_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  CONSUMER_SIGNED_DOCUMENTS_CONTAINER: "interop-signed-application-documents-{{.Values.namespace}}-es1"
+  CONSUMER_DOCUMENTS_PATH: "{{.Values.namespace}}/agreement/consumer-docs"
+  ESERVICE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  ESERVICE_DOCUMENTS_PATH: "eservices/docs"
+
+deployment:
+  env:
+    HOST: "0.0.0.0"
+    PORT: "8088"
+    SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
+  envFromConfigmaps:
+    WELL_KNOWN_URLS: "common-jwt.BFF_WELL_KNOWN_URLS"
+    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
+    ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
+    AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
+    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
+    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    PURPOSE_TEMPLATE_PROCESS_URL: "common-services-urls.PURPOSE_TEMPLATE_PROCESS_URL"
+    DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
+    ESERVICE_TEMPLATE_PROCESS_URL: "common-services-urls.ESERVICE_TEMPLATE_PROCESS_URL"
+    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+    NOTIFICATION_CONFIG_PROCESS_URL: "common-services-urls.NOTIFICATION_CONFIG_PROCESS_URL"
+    IN_APP_NOTIFICATION_MANAGER_URL: "common-services-urls.IN_APP_NOTIFICATION_MANAGER_URL"
+    SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
+    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
+    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
+    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
+    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
+    FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
+    FEATURE_FLAG_NOTIFICATION_CONFIG: "common-feature-flags.FEATURE_FLAG_NOTIFICATION_CONFIG"
+    FEATURE_FLAG_PURPOSE_TEMPLATE: "common-feature-flags.FEATURE_FLAG_PURPOSE_TEMPLATE"
+    FEATURE_FLAG_USE_SIGNED_DOCUMENT: "common-feature-flags.FEATURE_FLAG_USE_SIGNED_DOCUMENT"
+    
+  resources:
+    limits:
+      cpu: "200m"
+      memory: "128Mi"
+    requests:
+      cpu: "100m"
+      memory: "128Mi"

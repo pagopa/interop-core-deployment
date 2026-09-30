@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: interop-default-root-app  
+  namespace: dev-experimental-argocd-default
+spec:
+  project: interop-core-dev-experimental-argocd-default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-experimental-argocd-default
+  sources:
+    - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      targetRevision: feature/argocd
+      path: argocd/dev-experimental-argocd-default
+      directory:
+        include: 'common-cm.yaml'
+    - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      targetRevision: feature/argocd
+      path: argocd/dev-experimental-argocd-default
+      directory:
+        include: 'microservices-appset.yaml'
+    - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      targetRevision: feature/argocd
+      path: argocd/dev-experimental-argocd-default
+      directory:
+        include: 'cronjobs-appset.yaml'
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

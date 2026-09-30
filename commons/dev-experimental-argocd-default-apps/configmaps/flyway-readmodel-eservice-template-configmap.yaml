@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flyway-read-model-eservice-template
+  namespace: dev-experimental-argocd-default-apps
+data:
+  V1__Init_EserviceTemplate.sql: |-
+    CREATE SCHEMA IF NOT EXISTS "${NAMESPACE}_eservice_template";
+
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to
+      "${NAMESPACE}_eservice_template_rmw_user",
+      "${NAMESPACE}_eservice_template_process_user",
+      readonly_user;
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template (
+      id UUID,
+      metadata_version INTEGER NOT NULL,
+      creator_id UUID NOT NULL,
+      name VARCHAR NOT NULL,
+      intended_target VARCHAR NOT NULL,
+      description VARCHAR NOT NULL,
+      technology VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      mode VARCHAR NOT NULL,
+      is_signal_hub_enabled BOOLEAN,
+      PRIMARY KEY (id),
+      CONSTRAINT eservice_template_id_metadata_version_unique UNIQUE (id, metadata_version)
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template TO "${NAMESPACE}_eservice_template_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template TO readonly_user;    
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template_version (
+      id UUID,
+      eservice_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      version INTEGER NOT NULL,
+      description VARCHAR,
+      state VARCHAR NOT NULL,
+      voucher_lifespan INTEGER NOT NULL,
+      daily_calls_per_consumer INTEGER,
+      daily_calls_total INTEGER,
+      agreement_approval_policy VARCHAR,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      published_at TIMESTAMP WITH TIME ZONE,
+      suspended_at TIMESTAMP WITH TIME ZONE,
+      deprecated_at TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (id),
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version TO "${NAMESPACE}_eservice_template_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version TO readonly_user;        
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template_version_interface (
+      id UUID,
+      eservice_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      version_id UUID UNIQUE NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template_version (id) ON DELETE CASCADE,
+      name VARCHAR NOT NULL,
+      content_type VARCHAR NOT NULL,
+      pretty_name VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      checksum VARCHAR NOT NULL,
+      upload_date TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id),
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface TO "${NAMESPACE}_eservice_template_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_interface TO readonly_user;        
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template_version_document (
+      id UUID,
+      eservice_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      version_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template_version (id) ON DELETE CASCADE,
+      name VARCHAR NOT NULL,
+      content_type VARCHAR NOT NULL,
+      pretty_name VARCHAR NOT NULL,
+      path VARCHAR NOT NULL,
+      checksum VARCHAR NOT NULL,
+      upload_date TIMESTAMP WITH TIME ZONE NOT NULL,
+      PRIMARY KEY (id),
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_document TO "${NAMESPACE}_eservice_template_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_document TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_document TO readonly_user;        
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template_version_attribute (
+      attribute_id UUID NOT NULL,
+      eservice_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      version_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template_version (id) ON DELETE CASCADE,
+      explicit_attribute_verification BOOLEAN NOT NULL,
+      kind VARCHAR NOT NULL,
+      group_id INTEGER NOT NULL,
+      PRIMARY KEY (attribute_id, version_id, group_id),
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_attribute TO "${NAMESPACE}_eservice_template_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_attribute TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_version_attribute TO readonly_user;      
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template_risk_analysis (
+      id UUID,
+      eservice_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      name VARCHAR NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      risk_analysis_form_id UUID UNIQUE NOT NULL,
+      risk_analysis_form_version VARCHAR NOT NULL,
+      PRIMARY KEY (id),
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis TO "${NAMESPACE}_eservice_template_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis TO readonly_user;        
+
+    CREATE TABLE IF NOT EXISTS "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer (
+      id UUID,
+      eservice_template_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id) ON DELETE CASCADE,
+      metadata_version INTEGER NOT NULL,
+      risk_analysis_form_id UUID NOT NULL REFERENCES "${NAMESPACE}_eservice_template".eservice_template_risk_analysis (risk_analysis_form_id) ON DELETE CASCADE,
+      kind VARCHAR NOT NULL,
+      key VARCHAR NOT NULL,
+      value VARCHAR ARRAY NOT NULL,
+      PRIMARY KEY (id),
+      FOREIGN KEY (eservice_template_id, metadata_version) REFERENCES "${NAMESPACE}_eservice_template".eservice_template (id, metadata_version) DEFERRABLE INITIALLY DEFERRED
+    );
+    GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO "${NAMESPACE}_eservice_template_rmw_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO "${NAMESPACE}_eservice_template_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_eservice_template".eservice_template_risk_analysis_answer TO readonly_user;        
+
+  V1.1__Permission_Process_Template.sql: |-
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_catalog_process_user";
+
+  V1.2__Grant_Usage_Schema_Template.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_catalog_process_user";
+
+  V1.3__Grant_Access_EserviceTemplateInstancesUpdater_Template.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" to "${NAMESPACE}_eservice_template_instances_updater_user";
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_eservice_template_instances_updater_user";
+
+  V1.4__Add_Column_TenantId_RiskAnalysis_Template.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_eservice_template".eservice_template_risk_analysis ADD COLUMN IF NOT EXISTS tenant_kind VARCHAR NOT NULL;
+  
+  V1.5__Grant_Access_Job_Datalake-Export_Schema_Template.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_datalake_data_export_user";    
+    GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_eservice_template" TO "${NAMESPACE}_datalake_data_export_user";
+
+  V1.6__Add_Column_PersonalData_EServiceTemplate.sql: |-
+    ALTER TABLE IF EXISTS "${NAMESPACE}_eservice_template".eservice_template ADD COLUMN IF NOT EXISTS personal_data BOOLEAN;

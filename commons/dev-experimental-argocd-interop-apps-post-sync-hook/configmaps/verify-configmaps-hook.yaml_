@@ -1,0 +1,95 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: configmap-verifier
+  namespace: dev-experimental-argocd-interop-apps
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: configmap-reader
+  namespace: dev-experimental-argocd-interop-apps
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: configmap-verifier-binding
+  namespace: dev-experimental-argocd-interop-apps
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: configmap-reader
+subjects:
+  - kind: ServiceAccount
+    name: configmap-verifier
+    namespace: dev-experimental-argocd-interop-apps
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: verify-configmaps-postsync
+  namespace: dev-experimental-argocd-interop-apps
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-options: Replace=true
+spec:
+  ttlSecondsAfterFinished: 30
+  template:
+    metadata:
+      name: verify-configmaps
+    spec:
+      serviceAccountName: configmap-verifier
+      restartPolicy: Never
+      containers:
+        - name: kubectl
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              
+              echo "========================================"
+              echo "Verifica ConfigMaps nel namespace dev-experimental-argocd-interop-apps"
+              echo "========================================"
+              
+              NAMESPACE="dev-experimental-argocd-interop-apps"
+              CONFIGMAPS=("common-kafka-postsync-hook" "common-jwt-postsync-hook")
+              
+              ALL_EXIST=true
+              
+              for cm in "${CONFIGMAPS[@]}"; do
+                echo ""
+                echo "Verifica esistenza ConfigMap: $cm"
+                
+                if kubectl get configmap "$cm" -n "$NAMESPACE" &> /dev/null; then
+                  echo "✓ ConfigMap '$cm' esiste"
+                  echo "  Dettagli:"
+                  kubectl get configmap "$cm" -n "$NAMESPACE" -o jsonpath='{.metadata.creationTimestamp}' | xargs -I {} echo "  - Creata: {}"
+                  kubectl get configmap "$cm" -n "$NAMESPACE" -o jsonpath='{.data}' | wc -c | xargs -I {} echo "  - Dimensione dati: {} bytes"
+                else
+                  echo "✗ ConfigMap '$cm' NON esiste!"
+                  ALL_EXIST=false
+                fi
+              done
+              
+              echo ""
+              echo "========================================"
+              if [ "$ALL_EXIST" = true ]; then
+                echo "✓ Tutte le ConfigMaps richieste esistono"
+                echo "========================================"
+                exit 0
+              else
+                echo "✗ Alcune ConfigMaps mancano!"
+                echo "========================================"
+                exit 1
+              fi

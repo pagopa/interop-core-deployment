@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: interop-core-dev-experimental-argocd-default
+  namespace: dev-experimental-argocd-default
+spec:
+  sourceNamespaces:
+    - '*'
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  destinations:
+    - namespace: 'dev-experimental-argocd-default'
+      server: '*'
+    - namespace: 'dev-experimental-argocd-default-apps'
+      server: '*'
+  sourceRepos:
+    - '*'
