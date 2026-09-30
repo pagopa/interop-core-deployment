@@ -72,7 +72,6 @@ deployment:
     REQUIRED_CONTACT_POINT_NR: "1"
     PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/persistence-events.fifo"
     WELL_KNOWN_URLS: >-
-      {{.Values.local.well_known_url.AUTHSRV}},
       {{.Values.local.well_known_url.BFF}},
       {{.Values.local.well_known_url.INTERNAL}},
       {{.Values.local.well_known_url.MAINTENANCE}}
