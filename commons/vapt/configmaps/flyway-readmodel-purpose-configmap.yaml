@@ -216,3 +216,6 @@ data:
   V1.13__Grant_Access_ScheduledNotificationDispatchers_Purpose.sql: |-
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_purpose" TO "${NAMESPACE}_email_scheduled_notification_dispatcher_user", "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+
+  V1.14__Add_WaitingForApprovalReason_PurposeVersion.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_version ADD COLUMN IF NOT EXISTS waiting_for_approval_reason VARCHAR;
