@@ -209,6 +209,7 @@ npm run secret-references-external-secrets-generator -- \
   [--cronjob <folder>] \
   [--scope microservice|cronjob|both] \
   [--keep-old-refs true|false] \
+  [--secret-store <name>] \
   [--validate-helm true|false] \
   [--omit-version] \
   [--dry-run] \
@@ -224,6 +225,7 @@ npm run secret-references-external-secrets-generator -- \
 | `--cronjob` | — | Process one folder under `jobs/`; cannot be combined with `--scope` |
 | `--scope` | `both` | Restrict to microservices, cronjobs, or both |
 | `--keep-old-refs` | `false` | Keep existing K8s Secret references |
+| `--secret-store` | — | SecretStore name written to `secretStoreRef` in commons values. If omitted, it must already be set in commons; the run fails if missing or if it conflicts with the commons value |
 | `--validate-helm` | `true` | Validate Helm charts after modification |
 | `--omit-version` | `false` | Generate `remoteRef` entries without the optional `version` field |
 | `--dry-run` | — | Show changes without applying them |

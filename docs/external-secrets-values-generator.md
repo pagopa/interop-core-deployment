@@ -25,12 +25,14 @@ npm run secret-references-external-secrets-generator -- \
   [--dry-run] \
   [--omit-version] \
   [--keep-old-refs true|false] \
+  [--secret-store <name>] \
   [--validate-helm true|false] \
   [-h|--help]
 ```
 
 - `--cluster` and `--namespace` are required even when a kubeconfig context is already active.
 - `--scope` cannot be combined with `--microservice` or `--cronjob`.
+- `--secret-store` has no default: if omitted, `secretStoreRef` must already be set in `commons/<env>/values-*.yaml`. The run fails before any change if it is missing or conflicts with the commons value.
 - The workload filters accept folder names, not Kubernetes workload names.
 - Without a filter, all workloads in the selected environment are processed.
 
