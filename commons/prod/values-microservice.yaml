@@ -33,5 +33,11 @@ local:
     RSA_KEYS_IDENTIFIERS: "9432c16b-7aae-49df-b9c4-ea61b556652b"
     DEV_ENDPOINTS_ENABLED: "false"
     ENABLED_PROJECTIONS: "false"
+  well_known_url:
+    AUTHSRV: "https://interop.pagopa.it/.well-known/jwks.json"
+    SELFCARE: "<INSERT VALUE HERE>"
+    BFF: "<INSERT VALUE HERE>"
+    INTERNAL: "<INSERT VALUE HERE>"
+    MAINTENANCE: "<INSERT VALUE HERE>"
   awsAccountId: "697818730278"
   env: "prod"
