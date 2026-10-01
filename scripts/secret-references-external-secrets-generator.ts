@@ -15,6 +15,7 @@
  *     [--cronjob <folder>] \
  *     [--scope microservice|cronjob|both] \
  *     [--keep-old-refs true|false] \
+ *     [--secret-store <name>] \
  *     [--validate-helm true|false] \
  *     [--omit-version] \
  *     [--dry-run]
@@ -78,6 +79,11 @@ export function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
       }
     } else if (arg === '--keep-old-refs' && args[i + 1]) {
       config.keepOldRefs = args[++i].toLowerCase() === 'true';
+    } else if (arg === '--secret-store' && args[i + 1]) {
+      config.secretStore = args[++i].trim();
+      if (!config.secretStore) {
+        throw new Error('Invalid --secret-store value: must be a non-empty SecretStore name');
+      }
     } else if (arg === '--validate-helm' && args[i + 1]) {
       config.validateHelm = args[++i].toLowerCase() === 'true';
     } else if (arg === '--omit-version') {
@@ -119,6 +125,8 @@ Options:
   --microservice <name>     Only process this microservice folder
   --cronjob <name>          Only process this cronjob folder
   --keep-old-refs <true|false> Keep legacy externalSecret refs (default: false)
+  --secret-store <name>     SecretStore name for commons secretStoreRef (no default;
+                            if omitted, it must already be set in commons values)
   --validate-helm <true|false> Validate generated Helm values (default: true)
   --omit-version            Do not emit remoteRef.version in generated entries
   --dry-run                 Preview changes without writing files
@@ -232,9 +240,40 @@ async function main(): Promise<void> {
     console.log(`   Microservice filter: ${config.microservice || 'all'}`);
     console.log(`   Cronjob filter: ${config.cronjob || 'all'}`);
     console.log(`   Keep old refs: ${config.keepOldRefs}`);
+    console.log(`   Secret store: ${config.secretStore || '(from commons)'}`);
     console.log(`   Validate Helm: ${config.validateHelm}`);
     console.log(`   Omit remoteRef version: ${config.omitVersion}`);
     console.log(`   Dry run: ${config.dryRun}\n`);
+
+    const { initializeCommonsExternalSecrets } = await import('./lib/values-yaml-patcher.js');
+    const commonsEnvPath = path.join(rootDir, 'commons', config.env);
+    const processMicroservices = config.microservice
+      ? true
+      : config.cronjob
+        ? false
+        : config.scope === 'microservice' || config.scope === 'both';
+    const processCronjobs = config.cronjob
+      ? true
+      : config.microservice
+        ? false
+        : config.scope === 'cronjob' || config.scope === 'both';
+    const commonsTargets: Array<{ label: string; path: string }> = [];
+    if (processMicroservices) {
+      commonsTargets.push({ label: 'microservice', path: path.join(commonsEnvPath, 'values-microservice.yaml') });
+    }
+    if (processCronjobs) {
+      commonsTargets.push({ label: 'cronjob', path: path.join(commonsEnvPath, 'values-cronjob.yaml') });
+    }
+
+    // Validate secret store resolution on every commons file before touching anything.
+    console.log('  Resolving commons secretStoreRef...');
+    for (const target of commonsTargets) {
+      const check = initializeCommonsExternalSecrets(target.path, true, config.secretStore);
+      if (!check.success) {
+        throw new Error(`Cannot initialize ${target.label} commons: ${check.error}`);
+      }
+    }
+    console.log('');
 
     // Load repo inventory
     console.log('📂 Scanning repository for secret references...');
@@ -265,7 +304,6 @@ async function main(): Promise<void> {
     const { generated, skipped } = generateExternalSecretsFromWorkloads(
       allRepoRecords,
       clusterSecretsMap,
-      'aws-secretsmanager',
       config.omitVersion
     );
     console.log(`   Generated ${generated.length} ExternalSecrets configurations`);
@@ -273,38 +311,12 @@ async function main(): Promise<void> {
 
     // Initialize externalSecrets in commons values files
     console.log('🔧 Initializing commons externalSecrets section...');
-    const { initializeCommonsExternalSecrets } = await import('./lib/values-yaml-patcher.js');
-    const commonsEnvPath = path.join(rootDir, 'commons', config.env);
-    
-    const processMicroservices = config.microservice
-      ? true
-      : config.cronjob
-        ? false
-        : config.scope === 'microservice' || config.scope === 'both';
-    const processCronjobs = config.cronjob
-      ? true
-      : config.microservice
-        ? false
-        : config.scope === 'cronjob' || config.scope === 'both';
-
-    if (processMicroservices) {
-      const microserviceCommonsPath = path.join(commonsEnvPath, 'values-microservice.yaml');
-      const result = initializeCommonsExternalSecrets(microserviceCommonsPath, config.dryRun);
-      if (result.success) {
-        console.log(`   ✅ Initialized microservice commons`);
-      } else {
-        console.log(`   ⚠️  Could not initialize microservice commons: ${result.error}`);
+    for (const target of commonsTargets) {
+      const result = initializeCommonsExternalSecrets(target.path, config.dryRun, config.secretStore);
+      if (!result.success) {
+        throw new Error(`Cannot initialize ${target.label} commons: ${result.error}`);
       }
-    }
-
-    if (processCronjobs) {
-      const cronjobCommonsPath = path.join(commonsEnvPath, 'values-cronjob.yaml');
-      const result = initializeCommonsExternalSecrets(cronjobCommonsPath, config.dryRun);
-      if (result.success) {
-        console.log(`   ✅ Initialized cronjob commons`);
-      } else {
-        console.log(`   ⚠️  Could not initialize cronjob commons: ${result.error}`);
-      }
+      console.log(`   ✅ Initialized ${target.label} commons`);
     }
     console.log('');
 

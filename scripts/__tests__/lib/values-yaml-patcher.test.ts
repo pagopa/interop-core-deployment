@@ -415,27 +415,31 @@ local:
 `;
       fs.writeFileSync(testValuesFile, commonsContent);
 
-      const result = initializeCommonsExternalSecrets(testValuesFile, false);
+      const result = initializeCommonsExternalSecrets(testValuesFile, false, 'test-secret-store');
       expect(result.success).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
       expect(updated.externalSecrets).toBeDefined();
       expect(updated.externalSecrets.app).toBeDefined();
       expect(updated.externalSecrets.app.secretStoreRef).toBeDefined();
-      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('test-secret-store');
       expect(updated.externalSecrets.app.secretStoreRef.kind).toBe('SecretStore');
       expect(updated.externalSecrets.flywayInitContainer).toBeDefined();
       expect(updated.externalSecrets.flywayInitContainer.secretStoreRef).toBeDefined();
     });
 
-    it('should preserve existing externalSecrets structure', () => {
+    it('should take the secret store from commons when not provided', () => {
       const commonsContent = `
 local:
   env: "dev"
 externalSecrets:
   app:
     secretStoreRef:
-      name: app-secret-store
+      name: commons-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: commons-store
       kind: SecretStore
 `;
       fs.writeFileSync(testValuesFile, commonsContent);
@@ -444,10 +448,31 @@ externalSecrets:
       expect(result.success).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
-      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('commons-store');
+      expect(updated.externalSecrets.flywayInitContainer.secretStoreRef.name).toBe('commons-store');
     });
 
-    it('should add missing secretStoreRef to existing sections', () => {
+    it('should accept a provided secret store equal to the commons one', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: commons-store
+      kind: SecretStore
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false, 'commons-store');
+      expect(result.success).toBe(true);
+
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('commons-store');
+      expect(updated.externalSecrets.flywayInitContainer.secretStoreRef.name).toBe('commons-store');
+    });
+
+    it('should fail when no secret store is provided nor set in commons', () => {
       const commonsContent = `
 local:
   env: "dev"
@@ -457,11 +482,44 @@ externalSecrets:
       fs.writeFileSync(testValuesFile, commonsContent);
 
       const result = initializeCommonsExternalSecrets(testValuesFile, false);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Missing secretStoreRef');
+      expect(fs.readFileSync(testValuesFile, 'utf-8')).toBe(commonsContent);
+    });
+
+    it('should fail when the provided secret store conflicts with commons', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: commons-store
+      kind: SecretStore
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false, 'other-store');
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Conflicting secretStoreRef');
+      expect(fs.readFileSync(testValuesFile, 'utf-8')).toBe(commonsContent);
+    });
+
+    it('should use the provided secret store name', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+externalSecrets:
+  app: {}
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false, 'custom-store');
       expect(result.success).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
-      expect(updated.externalSecrets.app.secretStoreRef).toBeDefined();
-      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('custom-store');
+      expect(updated.externalSecrets.flywayInitContainer.secretStoreRef.name).toBe('custom-store');
     });
 
     it('should handle dry-run mode without writing', () => {
@@ -471,7 +529,7 @@ local:
 `;
       fs.writeFileSync(testValuesFile, commonsContent);
 
-      const result = initializeCommonsExternalSecrets(testValuesFile, true);
+      const result = initializeCommonsExternalSecrets(testValuesFile, true, 'test-secret-store');
       expect(result.success).toBe(true);
 
       // File should remain unchanged

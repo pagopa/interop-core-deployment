@@ -11,6 +11,7 @@ import { initializeCommonsExternalSecrets } from '../../lib/values-yaml-patcher.
 import { readValuesFile } from '../../lib/values-yaml-patcher.js';
 
 describe('commons-initialization integration', () => {
+  const secretStore = 'test-secret-store';
   let tempDir: string;
   let devCommonsDir: string;
 
@@ -41,7 +42,7 @@ local:
       fs.writeFileSync(cronjobCommonsPath, commonsContent);
 
       // Initialize only microservice commons
-      const microserviceResult = initializeCommonsExternalSecrets(microserviceCommonsPath, false);
+      const microserviceResult = initializeCommonsExternalSecrets(microserviceCommonsPath, false, secretStore);
       expect(microserviceResult.success).toBe(true);
 
       // Do NOT initialize cronjob commons
@@ -52,7 +53,7 @@ local:
       const updatedMicroservice = readValuesFile(microserviceCommonsPath);
       expect(updatedMicroservice.externalSecrets).toBeDefined();
       expect(updatedMicroservice.externalSecrets.app.secretStoreRef).toBeDefined();
-      expect(updatedMicroservice.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updatedMicroservice.externalSecrets.app.secretStoreRef.name).toBe(secretStore);
       expect(updatedMicroservice.externalSecrets.flywayInitContainer.secretStoreRef).toBeDefined();
     });
   });
@@ -72,7 +73,7 @@ local:
       fs.writeFileSync(cronjobCommonsPath, commonsContent);
 
       // Initialize only cronjob commons
-      const cronjobResult = initializeCommonsExternalSecrets(cronjobCommonsPath, false);
+      const cronjobResult = initializeCommonsExternalSecrets(cronjobCommonsPath, false, secretStore);
       expect(cronjobResult.success).toBe(true);
 
       // Do NOT initialize microservice commons
@@ -102,8 +103,8 @@ local:
       fs.writeFileSync(cronjobCommonsPath, commonsContent);
 
       // Initialize both commons
-      const microserviceResult = initializeCommonsExternalSecrets(microserviceCommonsPath, false);
-      const cronjobResult = initializeCommonsExternalSecrets(cronjobCommonsPath, false);
+      const microserviceResult = initializeCommonsExternalSecrets(microserviceCommonsPath, false, secretStore);
+      const cronjobResult = initializeCommonsExternalSecrets(cronjobCommonsPath, false, secretStore);
 
       expect(microserviceResult.success).toBe(true);
       expect(cronjobResult.success).toBe(true);
@@ -113,10 +114,10 @@ local:
       const updatedCronjob = readValuesFile(cronjobCommonsPath);
 
       expect(updatedMicroservice.externalSecrets).toBeDefined();
-      expect(updatedMicroservice.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updatedMicroservice.externalSecrets.app.secretStoreRef.name).toBe(secretStore);
 
       expect(updatedCronjob.externalSecrets).toBeDefined();
-      expect(updatedCronjob.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updatedCronjob.externalSecrets.app.secretStoreRef.name).toBe(secretStore);
     });
   });
 
@@ -133,13 +134,13 @@ local:
 
       // Initialize commons
       fs.writeFileSync(microserviceCommonsPath, commonsContent);
-      initializeCommonsExternalSecrets(microserviceCommonsPath, false);
+      initializeCommonsExternalSecrets(microserviceCommonsPath, false, secretStore);
 
       const updatedCommons = readValuesFile(microserviceCommonsPath);
 
       // Verify commons has secretStoreRef
       expect(updatedCommons.externalSecrets.app.secretStoreRef).toBeDefined();
-      expect(updatedCommons.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updatedCommons.externalSecrets.app.secretStoreRef.name).toBe(secretStore);
 
       // When Helm merges these files, the workload values (with create, targetSecret, data)
       // would be merged with commons values (with secretStoreRef)
@@ -153,7 +154,7 @@ local:
       };
 
       expect(mergedConfig.secretStoreRef).toBeDefined();
-      expect(mergedConfig.secretStoreRef.name).toBe('app-secret-store');
+      expect(mergedConfig.secretStoreRef.name).toBe(secretStore);
       expect(mergedConfig.create).toBe(true);
       expect(mergedConfig.targetSecret.name).toBe('my-secret');
     });

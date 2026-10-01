@@ -69,6 +69,12 @@ describe('workload filters across CLI commands', () => {
     expect(args.cronjob).toBe('readmodel-checker');
   });
 
+  it('parses secret store in generator without default', () => {
+    const base = ['--env', 'dev', '--cluster', 'dev-cluster', '--namespace', 'dev'];
+    expect(parseGeneratorArgs(base).secretStore).toBeUndefined();
+    expect(parseGeneratorArgs([...base, '--secret-store', 'custom-store']).secretStore).toBe('custom-store');
+  });
+
   it('parses both filters in generator without scope', () => {
     const args = parseGeneratorArgs([
       '--env', 'dev',

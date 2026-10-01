@@ -202,7 +202,7 @@ describe('external-secrets-generator', () => {
       const emailGroup = groups.find((g) => g.workloadName === 'email-digest-dispatcher');
 
       expect(emailGroup).toBeDefined();
-      const { data, skipped } = generateExternalSecretsData(emailGroup!, clusterSecretsMap, 'aws-secretsmanager');
+      const { data, skipped } = generateExternalSecretsData(emailGroup!, clusterSecretsMap);
 
       expect(data).toHaveLength(2);
       // secretKey should be the envVar name (original variable name)
@@ -235,7 +235,7 @@ describe('external-secrets-generator', () => {
       const groups = groupRepoInventoryByWorkload(repoRecordsWithOldSecret);
       const group = groups[0];
 
-      const { data, skipped } = generateExternalSecretsData(group, clusterSecretsMap, 'aws-secretsmanager');
+      const { data, skipped } = generateExternalSecretsData(group, clusterSecretsMap);
 
       expect(data).toHaveLength(0);
       expect(skipped).toHaveLength(1);
@@ -256,7 +256,7 @@ describe('external-secrets-generator', () => {
         },
       ];
 
-      const config = buildContainerConfig(data, 'my-secret', 'aws-secretsmanager');
+      const config = buildContainerConfig(data);
 
       expect(config.create).toBe(true);
       // secretStoreRef and targetSecret are NOT included - inherited from commons
@@ -288,7 +288,6 @@ describe('external-secrets-generator', () => {
       const { generated } = generateExternalSecretsFromWorkloads(
         mockRepoRecords,
         clusterSecretsMap,
-        'aws-secretsmanager',
         true
       );
 

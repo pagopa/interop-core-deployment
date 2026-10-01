@@ -8,6 +8,7 @@ export interface ExternalSecretsGeneratorConfig {
   namespace: string;
   scope: 'microservice' | 'cronjob' | 'both';
   keepOldRefs: boolean;
+  secretStore?: string;
   validateHelm: boolean;
   dryRun: boolean;
   omitVersion: boolean;

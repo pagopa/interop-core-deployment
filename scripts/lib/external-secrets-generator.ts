@@ -137,7 +137,6 @@ export function buildRemoteRef(
 export function generateExternalSecretsData(
   group: WorkloadSecretGroup,
   clusterSecrets: Map<string, SecretInventoryRecord>,
-  defaultSecretStoreRef: string,
   omitVersion: boolean = false
 ): { data: ExternalSecretsData[]; skipped: SkippedSecret[] } {
   const data: ExternalSecretsData[] = [];
@@ -194,9 +193,7 @@ export function generateExternalSecretsData(
  * Commons templates provide: secretStoreRef for store reference and targetSecret metadata
  */
 export function buildContainerConfig(
-  externalSecretsData: ExternalSecretsData[],
-  targetSecretName: string,
-  defaultSecretStoreRef: string
+  externalSecretsData: ExternalSecretsData[]
 ): ContainerExternalSecretsConfig {
   return {
     create: true,
@@ -220,7 +217,6 @@ export function generateTargetSecretName(workloadName: string, containerType: 'c
 export function generateExternalSecretsFromWorkloads(
   repoRecords: SecretReferenceRecord[],
   clusterSecrets: Map<string, SecretInventoryRecord>,
-  defaultSecretStoreRef: string = 'aws-secretsmanager',
   omitVersion: boolean = false
 ): {
   generated: GeneratedExternalSecret[];
@@ -235,12 +231,11 @@ export function generateExternalSecretsFromWorkloads(
     const { data, skipped: groupSkipped } = generateExternalSecretsData(
       group,
       clusterSecrets,
-      defaultSecretStoreRef,
       omitVersion
     );
 
     if (data.length > 0) {
-      const config = buildContainerConfig(data, targetSecretName, defaultSecretStoreRef);
+      const config = buildContainerConfig(data);
       generated.push({
         workloadType: group.workloadType,
         workloadName: group.workloadName,

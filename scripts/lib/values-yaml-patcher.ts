@@ -307,10 +307,16 @@ export function applyExternalSecretsToWorkload(
 }
 
 /**
- * Initialize externalSecrets section in commons values.yaml with default secretStoreRef
- * This adds the shared secretStoreRef definition that microservices/cronjobs will inherit
+ * Initialize externalSecrets section in commons values.yaml with the shared secretStoreRef
+ * that microservices/cronjobs will inherit.
+ * The store name comes from `secretStoreName` or from an existing secretStoreRef in commons;
+ * fails if neither is available or if they disagree.
  */
-export function initializeCommonsExternalSecrets(commonsValuesPath: string, dryRun: boolean = false): { success: boolean; error?: string } {
+export function initializeCommonsExternalSecrets(
+  commonsValuesPath: string,
+  dryRun: boolean = false,
+  secretStoreName?: string
+): { success: boolean; error?: string } {
   try {
     if (!fs.existsSync(commonsValuesPath)) {
       return { success: false, error: `Commons file not found: ${commonsValuesPath}` };
@@ -323,49 +329,33 @@ export function initializeCommonsExternalSecrets(commonsValuesPath: string, dryR
     const appKey = getExternalSecretsSectionName(workloadType, 'container');
     const flywayKey = getExternalSecretsSectionName(workloadType, 'initContainer');
 
-    // Check if externalSecrets already exists
-    const existingExternalSecrets = doc.getIn(['externalSecrets']) as any;
+    // Normalize legacy keys before merging.
+    const normalizedExisting = normalizeExternalSecrets((doc.toJS() as any)?.externalSecrets);
+    const existing: any = normalizedExisting && typeof normalizedExisting === 'object' ? normalizedExisting : {};
 
-    // Build the complete externalSecrets structure
-    let externalSecretsStructure: any = {
-      [appKey]: {
-        secretStoreRef: {
-          name: 'app-secret-store',
-          kind: 'SecretStore',
-        },
-      },
-      [flywayKey]: {
-        secretStoreRef: {
-          name: 'app-secret-store',
-          kind: 'SecretStore',
-        },
-      },
-    };
+    const externalSecretsStructure: any = {};
+    for (const key of [appKey, flywayKey]) {
+      const section = existing[key] && typeof existing[key] === 'object' ? existing[key] : {};
+      const existingRef = section.secretStoreRef;
+      const existingName: string | undefined = existingRef?.name;
 
-    // Normalize legacy keys before merging defaults.
-    const normalizedExisting = normalizeExternalSecrets(existingExternalSecrets);
-
-    if (normalizedExisting && typeof normalizedExisting === 'object') {
-      // Merge existing structure with defaults
-      // Preserve existing content in each ExternalSecrets section.
-      if (normalizedExisting[appKey]) {
-        externalSecretsStructure[appKey] = {
-          ...normalizedExisting[appKey],
-          secretStoreRef: normalizedExisting[appKey].secretStoreRef || {
-            name: 'app-secret-store',
-            kind: 'SecretStore',
-          },
+      if (secretStoreName && existingName && existingName !== secretStoreName) {
+        return {
+          success: false,
+          error: `Conflicting secretStoreRef in ${commonsValuesPath} (externalSecrets.${key}): commons has "${existingName}", --secret-store is "${secretStoreName}"`,
         };
       }
-      if (normalizedExisting[flywayKey]) {
-        externalSecretsStructure[flywayKey] = {
-          ...normalizedExisting[flywayKey],
-          secretStoreRef: normalizedExisting[flywayKey].secretStoreRef || {
-            name: 'app-secret-store',
-            kind: 'SecretStore',
-          },
+      if (!secretStoreName && !existingName) {
+        return {
+          success: false,
+          error: `Missing secretStoreRef in ${commonsValuesPath} (externalSecrets.${key}): pass --secret-store <name>`,
         };
       }
+
+      externalSecretsStructure[key] = {
+        ...section,
+        secretStoreRef: existingName ? existingRef : { name: secretStoreName, kind: 'SecretStore' },
+      };
     }
 
     // Set the complete structure back to the document
