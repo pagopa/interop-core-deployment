@@ -202,11 +202,11 @@ async function main(): Promise<void> {
 
   // Print summary
   console.log('\nSummary:');
-  console.log(`   Secrets missing in repo (only in cluster): ${result.summary.secretCentric.secretsOnlyInStatic}`);
-  console.log(`   Secrets missing in cluster (only in repo): ${result.summary.secretCentric.secretsOnlyInDynamic}`);
+  console.log(`   Secrets missing in repo (only in cluster): ${result.summary.secretCentric.secretsOnlyInDynamic}`);
+  console.log(`   Secrets missing in cluster (only in repo): ${result.summary.secretCentric.secretsOnlyInStatic}`);
   console.log(`   Secrets with different usage: ${result.summary.secretCentric.secretsWithDifferentUsage}`);
-  console.log(`\n   Workloads missing in repo (Found in Cluster but not in Repo): ${result.summary.workloadCentric.workloadsOnlyInStatic}`);
-  console.log(`   Workloads missing in cluster (Found in Repo but not in Cluster): ${result.summary.workloadCentric.workloadsOnlyInDynamic}`);
+  console.log(`\n   Workloads missing in repo (Found in Cluster but not in Repo): ${result.summary.workloadCentric.workloadsOnlyInDynamic}`);
+  console.log(`   Workloads missing in cluster (Found in Repo but not in Cluster): ${result.summary.workloadCentric.workloadsOnlyInStatic}`);
   console.log(`   Workloads with different references (Found in both Cluster and Repo but with different references): ${result.summary.workloadCentric.workloadsWithDifferentReferences}`);
 
 }
