@@ -54,6 +54,8 @@ images:
       tag: "2.23.0"
     compute-agreements-consumer:
       tag: "2.23.0"
+    datalake-interface-exporter:
+      tag: "2.23.0"
     delegation-items-archiver:
       tag: "2.23.0"
     delegation-outbound-writer:
