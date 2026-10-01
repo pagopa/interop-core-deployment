@@ -10,3 +10,4 @@ dependencies:
   - name: interop-eks-cronjob-chart
     version: 1.18.0
     repository: "https://pagopa.github.io/interop-eks-cronjob-chart"
+
