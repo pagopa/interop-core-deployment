@@ -204,6 +204,8 @@ images:
       tag: "2.23.0"
     in-app-notification-cleaner:
       tag: "2.23.0"
+    check-selfcare-diff:
+      tag: "2.23.0"
     risk-analysis-processing:
       tag: "2.23.0"
     email-scheduled-notification-dispatcher:

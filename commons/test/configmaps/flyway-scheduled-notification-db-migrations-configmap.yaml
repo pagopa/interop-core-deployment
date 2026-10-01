@@ -39,8 +39,3 @@ data:
     ALTER TABLE "${NAMESPACE}_scheduled_notification".scheduled_notification ADD COLUMN IF NOT EXISTS skipped_at TIMESTAMP WITH TIME ZONE;
     DROP INDEX IF EXISTS "${NAMESPACE}_scheduled_notification".scheduled_notification_due_idx;
     CREATE INDEX IF NOT EXISTS scheduled_notification_due_idx ON "${NAMESPACE}_scheduled_notification".scheduled_notification (channel, send_at) WHERE sent_at IS NULL AND skipped_at IS NULL;
-
-  V2__Add_skipped_at.sql: |-
-    ALTER TABLE "${NAMESPACE}_scheduled_notification".scheduled_notification ADD COLUMN IF NOT EXISTS skipped_at TIMESTAMP WITH TIME ZONE;
-    DROP INDEX IF EXISTS "${NAMESPACE}_scheduled_notification".scheduled_notification_due_idx;
-    CREATE INDEX IF NOT EXISTS scheduled_notification_due_idx ON "${NAMESPACE}_scheduled_notification".scheduled_notification (channel, send_at) WHERE sent_at IS NULL AND skipped_at IS NULL;
