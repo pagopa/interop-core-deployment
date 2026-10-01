@@ -396,6 +396,56 @@ describe('values-yaml-patcher', () => {
       expect(cronjobIndex).toBeGreaterThan(-1);
       expect(externalSecretsIndex).toBeLessThan(cronjobIndex);
     });
+
+    it('should replace an existing externalSecrets block without removing the blocks that follow it', () => {
+      fs.writeFileSync(
+        testValuesFile,
+        `name: test-app
+externalSecrets:
+  app:
+    create: false
+
+    data: []
+serviceAccount:
+  name: test-sa
+# configmap comment
+configmap:
+  FOO: "bar"
+
+deployment:
+  replicas: 1
+`
+      );
+
+      const result = applyExternalSecretsToWorkload(testValuesFile, mockExternalSecretsConfig, undefined, false, false);
+      expect(result.success).toBe(true);
+
+      const fileContent = fs.readFileSync(testValuesFile, 'utf-8');
+      expect(fileContent.match(/^externalSecrets:/gm)).toHaveLength(1);
+      expect(fileContent).toContain('# configmap comment');
+      expect(fileContent.indexOf('externalSecrets:')).toBeLessThan(fileContent.indexOf('deployment:'));
+
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.serviceAccount).toEqual({ name: 'test-sa' });
+      expect(updated.configmap).toEqual({ FOO: 'bar' });
+      expect(updated.deployment).toEqual({ replicas: 1 });
+      expect(updated.externalSecrets.app.create).toBe(true);
+      expect(updated.externalSecrets.app.data).toHaveLength(1);
+    });
+
+    it('should replace an externalSecrets block placed at the top or bottom of the file', () => {
+      fs.writeFileSync(testValuesFile, `externalSecrets:\n  app:\n    create: false\nname: test-app\n`);
+      expect(applyExternalSecretsToWorkload(testValuesFile, mockExternalSecretsConfig, undefined, false, false).success).toBe(true);
+      let updated = readValuesFile(testValuesFile);
+      expect(updated.name).toBe('test-app');
+      expect(updated.externalSecrets.app.create).toBe(true);
+
+      fs.writeFileSync(testValuesFile, `name: test-app\nexternalSecrets:\n  app:\n    create: false\n`);
+      expect(applyExternalSecretsToWorkload(testValuesFile, mockExternalSecretsConfig, undefined, false, false).success).toBe(true);
+      updated = readValuesFile(testValuesFile);
+      expect(updated.name).toBe('test-app');
+      expect(updated.externalSecrets.app.create).toBe(true);
+    });
   });
 
   describe('initializeCommonsExternalSecrets', () => {

@@ -26,6 +26,26 @@ function normalizeExternalSecrets(externalSecrets: any): any {
 }
 
 /**
+ * Remove a top-level YAML block: the `<key>:` line plus all following indented or empty lines.
+ * Stops at the next non-indented line (another top-level key or comment) or at end of file.
+ */
+function removeTopLevelBlock(content: string, key: string): string {
+  const lines = content.split('\n');
+  const start = lines.findIndex((line) => line.startsWith(`${key}:`));
+  if (start === -1) return content;
+
+  const isInsideBlock = (line: string) => line === '' || line.startsWith(' ') || line.startsWith('\t');
+
+  let end = start + 1;
+  while (end < lines.length && isInsideBlock(lines[end])) {
+    end++;
+  }
+
+  lines.splice(start, end - start);
+  return lines.join('\n');
+}
+
+/**
  * Determine the anchor point key where externalSecrets should be inserted before
  * For microservices: "deployment"
  * For cronjobs: "cronjob"
@@ -195,9 +215,7 @@ export function applyExternalSecretsToWorkload(
     let modifiedContent = originalContent;
 
     if (appMerged || flywayInitContainerMerged) {
-      // Remove existing externalSecrets section if present
-      const externalSecretsPattern = /\nexternalSecrets:[\s\S]*?(?=\n(?:deployment|cronjob|$))/;
-      const withoutExisting = modifiedContent.replace(externalSecretsPattern, '');
+      const withoutExisting = removeTopLevelBlock(modifiedContent, 'externalSecrets');
 
       // Generate YAML for externalSecrets
       const externalSecretsYaml = stringifyYaml({ externalSecrets: externalSecretsValue }, {
