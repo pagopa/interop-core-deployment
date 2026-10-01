@@ -15,17 +15,18 @@ import {
   AWS_SECRETSMANAGER_SECRET_ID_ANNOTATION,
   AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION,
 } from './k8s-inventory.js';
+import { resolveExternalSecretsSection, type ExternalSecretsSection } from './external-secrets-sections.js';
 
 interface WorkloadSecretGroup {
   workloadType: 'microservice' | 'cronjob';
   workloadName: string;
   workloadPath: string;
-  containerType: 'container' | 'initContainer';
+  section: ExternalSecretsSection;
   secrets: Map<string, Map<string, string>>; // secretName -> (envVar -> secretKey)
 }
 
 /**
- * Group repo inventory records by (workload, containerType, secretName)
+ * Group repo inventory records by (workload, externalSecrets section, secretName)
  * Preserves mapping between envVar (env variable name) and secretKey (remote property)
  * Supports both individual secret keys and envFromSecrets references
  */
@@ -48,14 +49,9 @@ export function groupRepoInventoryByWorkload(
       secretRefCount++;
     }
 
-    // Determine container type from record
-    const containerType =
-      record.containerPath?.toLowerCase().includes('initcontainer') ||
-      record.yamlPath?.toLowerCase().includes('initcontainer')
-        ? 'initContainer'
-        : 'container';
+    const section = resolveExternalSecretsSection(record.containerPath, record.yamlPath);
 
-    const groupKey = `${record.workloadType}/${record.component}/${containerType}`;
+    const groupKey = `${record.workloadType}/${record.component}/${section}`;
     let group = groups.get(groupKey);
 
     if (!group) {
@@ -63,7 +59,7 @@ export function groupRepoInventoryByWorkload(
         workloadType: record.workloadType as 'microservice' | 'cronjob',
         workloadName: record.component,
         workloadPath: record.sourceFile,
-        containerType,
+        section,
         secrets: new Map(),
       };
       groups.set(groupKey, group);
@@ -202,10 +198,10 @@ export function buildContainerConfig(
 }
 
 /**
- * Generate default target secret name based on workload and container type
+ * Default target secret name for an externalSecrets section (matches the chart defaults)
  */
-export function generateTargetSecretName(workloadName: string, containerType: 'container' | 'initContainer'): string {
-  if (containerType === 'initContainer') {
+export function generateTargetSecretName(workloadName: string, section: ExternalSecretsSection): string {
+  if (section === 'flywayInitContainer') {
     return `${workloadName}-flyway`;
   }
   return workloadName;
@@ -227,7 +223,7 @@ export function generateExternalSecretsFromWorkloads(
   const skipped: SkippedSecret[] = [];
 
   for (const group of groups) {
-    const targetSecretName = generateTargetSecretName(group.workloadName, group.containerType);
+    const targetSecretName = generateTargetSecretName(group.workloadName, group.section);
     const { data, skipped: groupSkipped } = generateExternalSecretsData(
       group,
       clusterSecrets,
@@ -240,7 +236,7 @@ export function generateExternalSecretsFromWorkloads(
         workloadType: group.workloadType,
         workloadName: group.workloadName,
         workloadPath: group.workloadPath,
-        containerType: group.containerType,
+        section: group.section,
         secretName: targetSecretName,
         externalSecretsConfig: config,
       });

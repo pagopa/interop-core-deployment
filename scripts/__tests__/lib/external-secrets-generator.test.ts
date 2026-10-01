@@ -105,15 +105,15 @@ describe('external-secrets-generator', () => {
 
       expect(groups).toHaveLength(2);
       expect(groups[0].workloadName).toBe('email-digest-dispatcher');
-      expect(groups[0].containerType).toBe('container');
+      expect(groups[0].section).toBe('app');
       expect(groups[1].workloadName).toBe('flyway-migrator');
-      expect(groups[1].containerType).toBe('initContainer');
+      expect(groups[1].section).toBe('flywayInitContainer');
     });
 
     it('should aggregate secrets by name within same container', () => {
       const groups = groupRepoInventoryByWorkload(mockRepoRecords);
       const emailGroup = groups.find(
-        (g) => g.workloadName === 'email-digest-dispatcher' && g.containerType === 'container'
+        (g) => g.workloadName === 'email-digest-dispatcher' && g.section === 'app'
       );
 
       expect(emailGroup).toBeDefined();
@@ -185,12 +185,12 @@ describe('external-secrets-generator', () => {
 
   describe('generateTargetSecretName', () => {
     it('should use workload name for container', () => {
-      const name = generateTargetSecretName('email-digest-dispatcher', 'container');
+      const name = generateTargetSecretName('email-digest-dispatcher', 'app');
       expect(name).toBe('email-digest-dispatcher');
     });
 
     it('should append -flyway for initContainer', () => {
-      const name = generateTargetSecretName('email-digest-dispatcher', 'initContainer');
+      const name = generateTargetSecretName('email-digest-dispatcher', 'flywayInitContainer');
       expect(name).toBe('email-digest-dispatcher-flyway');
     });
   });
@@ -280,7 +280,7 @@ describe('external-secrets-generator', () => {
 
       const flywaySecret = generated.find((g) => g.workloadName === 'flyway-migrator');
       expect(flywaySecret).toBeDefined();
-      expect(flywaySecret?.containerType).toBe('initContainer');
+      expect(flywaySecret?.section).toBe('flywayInitContainer');
     });
 
     it('should omit versions from every generated remoteRef when requested', () => {

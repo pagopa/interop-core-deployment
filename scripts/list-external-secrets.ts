@@ -14,7 +14,7 @@ import { parseDocument } from "yaml";
 import { parse as parseYaml } from "yaml";
 import { createAwsClient, fetchLatestSecretVersion } from "./lib/aws-secrets-manager.js";
 import type { AwsSecretVersion } from "./lib/aws-secrets-manager.js";
-import { getExternalSecretsSectionName } from "./lib/external-secrets-sections.js";
+import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from "./lib/external-secrets-sections.js";
 import { walkWorkloads } from "./lib/workload.js";
 import type { WorkloadType } from "./lib/types.js";
 import {
@@ -41,7 +41,7 @@ interface ExternalSecretEntry {
   file: string;
   component: string;
   workloadType: WorkloadType;
-  containerType: "container" | "initContainer";
+  section: ExternalSecretsSection;
   secretKey: string;
   key: string;
   property: string;
@@ -120,20 +120,6 @@ Options:
 // Extraction
 // ---------------------------------------------------------------------------
 
-type ContainerType = "container" | "initContainer";
-
-function resolveSectionData(
-  externalSecrets: Record<string, RawContainerConfig> | undefined,
-  workloadType: WorkloadType,
-  containerType: ContainerType
-): RawExternalSecretRef[] {
-  if (!externalSecrets) return [];
-
-  const sectionName = getExternalSecretsSectionName(workloadType, containerType);
-  const refs = externalSecrets[sectionName]?.data;
-  return Array.isArray(refs) ? refs : [];
-}
-
 interface RawExternalSecretRef {
   secretKey?: string;
   remoteRef?: {
@@ -167,10 +153,8 @@ function extractEntries(
   const externalSecrets = record?.externalSecrets as Record<string, RawContainerConfig> | undefined;
   if (!externalSecrets) return [];
 
-  const containerTypes: ContainerType[] = ["container", "initContainer"];
-
-  return containerTypes.flatMap((containerType) => {
-    const refs = resolveSectionData(externalSecrets, workloadType, containerType);
+  return EXTERNAL_SECRETS_SECTIONS.flatMap((section) => {
+    const refs = externalSecrets[section]?.data;
     if (!Array.isArray(refs) || refs.length === 0) return [];
 
     return refs.flatMap((ref) => {
@@ -185,7 +169,7 @@ function extractEntries(
           file,
           component,
           workloadType,
-          containerType,
+          section,
           secretKey: ref.secretKey ?? "N/A",
           key: ref.remoteRef.key ?? "N/A",
           property: ref.remoteRef.property ?? "N/A",
@@ -248,7 +232,7 @@ function writeCsv(entries: ExternalSecretEntry[], outputDir: string, env: string
   const headers = [
     "component",
     "workloadType",
-    "containerType",
+    "section",
     "file",
     "secretKey",
     "key",
@@ -265,7 +249,7 @@ function writeCsv(entries: ExternalSecretEntry[], outputDir: string, env: string
     [
       e.component,
       e.workloadType,
-      e.containerType,
+      e.section,
       e.file,
       e.secretKey,
       e.key,
@@ -323,11 +307,8 @@ function patchValuesFile(file: string, entries: ExternalSecretEntry[]): void {
   const doc = parseDocument(content);
   let changed = false;
 
-  const workloadType: WorkloadType = file.replace(/\\/g, "/").includes("/jobs/") ? "cronjob" : "microservice";
-
-  for (const containerType of ["container", "initContainer"] as const) {
-    const sectionName = getExternalSecretsSectionName(workloadType, containerType);
-    const data = doc.getIn(["externalSecrets", sectionName, "data"]) as { items: unknown[] } | undefined;
+  for (const section of EXTERNAL_SECRETS_SECTIONS) {
+    const data = doc.getIn(["externalSecrets", section, "data"]) as { items: unknown[] } | undefined;
     if (!data?.items) continue;
 
     for (const item of data.items as YamlItem[]) {
@@ -339,7 +320,7 @@ function patchValuesFile(file: string, entries: ExternalSecretEntry[]): void {
         (e) =>
           !e.hasError &&
           e.latestVersion &&
-          e.containerType === containerType &&
+          e.section === section &&
           e.secretKey === secretKey &&
           e.key === key &&
           e.property === property

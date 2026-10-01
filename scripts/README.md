@@ -232,6 +232,8 @@ npm run secret-references-external-secrets-generator -- \
 
 **Output:** patches `values.yaml` files in-place and produces `secret-inventory/external-secrets-migration-<env>.json`
 
+Generated sections follow the chart layout: `externalSecrets.app` (main container) and `externalSecrets.flywayInitContainer` (Flyway init container). Any other key under `externalSecrets` is dropped, since the chart schema rejects it. The migration report stores the target section in the `section` field.
+
 **Example:**
 ```bash
 # Dry-run first to preview changes

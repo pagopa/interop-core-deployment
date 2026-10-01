@@ -1,22 +1,10 @@
-import type { WorkloadType } from './types.js';
+export const EXTERNAL_SECRETS_SECTIONS = ['app', 'flywayInitContainer'] as const;
+export type ExternalSecretsSection = (typeof EXTERNAL_SECRETS_SECTIONS)[number];
 
-export type ContainerType = 'container' | 'initContainer';
-export type ExternalSecretsSectionName = 'app' | 'flywayInitContainer';
-
-const SECTION_NAMES: Record<WorkloadType, Record<ContainerType, ExternalSecretsSectionName>> = {
-  microservice: {
-    container: 'app',
-    initContainer: 'flywayInitContainer',
-  },
-  cronjob: {
-    container: 'app',
-    initContainer: 'flywayInitContainer',
-  },
-};
-
-export function getExternalSecretsSectionName(
-  workloadType: WorkloadType,
-  containerType: ContainerType
-): ExternalSecretsSectionName {
-  return SECTION_NAMES[workloadType][containerType];
+/**
+ * Map a repo secret reference to its externalSecrets section:
+ * references inside the Flyway init container go to `flywayInitContainer`, all others to `app`.
+ */
+export function resolveExternalSecretsSection(...paths: Array<string | undefined>): ExternalSecretsSection {
+  return paths.some((p) => p?.toLowerCase().includes('initcontainer')) ? 'flywayInitContainer' : 'app';
 }

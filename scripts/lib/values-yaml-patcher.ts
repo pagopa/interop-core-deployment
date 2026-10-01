@@ -5,26 +5,22 @@
 import * as fs from 'fs';
 import { parse as parseYaml, stringify as stringifyYaml, parseDocument, isMap } from 'yaml';
 import type { ContainerExternalSecretsConfig, ValuesMergeResult } from './external-secrets-types.js';
-import { getExternalSecretsSectionName } from './external-secrets-sections.js';
-import type { WorkloadType } from './types.js';
+import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from './external-secrets-sections.js';
 
-function inferWorkloadTypeFromPath(valuesPath: string): WorkloadType {
-  const normalized = valuesPath.replace(/\\/g, '/');
-  if (normalized.includes('/jobs/')) return 'cronjob';
-  return 'microservice';
-}
-
+/**
+ * Normalize externalSecrets to the chart layout: only `app` and `flywayInitContainer` are kept
+ * (chart schema has additionalProperties: false). Legacy keys are migrated and removed:
+ * `container` -> `app`, `initContainer` -> `flywayInitContainer`.
+ * Values already under the new sections take precedence; any other key is dropped.
+ */
 function normalizeExternalSecrets(externalSecrets: any): any {
-  const normalized = externalSecrets || {};
+  const source = externalSecrets && typeof externalSecrets === 'object' ? externalSecrets : {};
 
-  if (normalized.container && !normalized.app) {
-    normalized.app = deepMerge({}, normalized.container);
-  }
-  if (normalized.initContainer && !normalized.flywayInitContainer) {
-    normalized.flywayInitContainer = deepMerge({}, normalized.initContainer);
-  }
-  delete normalized.container;
-  delete normalized.initContainer;
+  const normalized: any = {};
+  const app = deepMerge(deepMerge({}, source.container || {}), source.app || {});
+  const flyway = deepMerge(deepMerge({}, source.initContainer || {}), source.flywayInitContainer || {});
+  if (Object.keys(app).length > 0) normalized.app = app;
+  if (Object.keys(flyway).length > 0) normalized.flywayInitContainer = flyway;
 
   return normalized;
 }
@@ -121,44 +117,18 @@ function deepMerge(target: any, source: any): any {
 }
 
 /**
- * Merge ExternalSecrets config for the main workload container.
+ * Merge ExternalSecrets config into the given section (`app` or `flywayInitContainer`).
  */
-export function mergeExternalSecretsContainer(
+export function mergeExternalSecretsSection(
   values: any,
-  config: ContainerExternalSecretsConfig,
-  workloadType: WorkloadType = 'microservice'
+  section: ExternalSecretsSection,
+  config: ContainerExternalSecretsConfig
 ): boolean {
   if (!values.externalSecrets) {
     values.externalSecrets = {};
   }
 
-  const sectionName = getExternalSecretsSectionName(workloadType, 'container');
-  if (!values.externalSecrets[sectionName]) {
-    values.externalSecrets[sectionName] = {};
-  }
-
-  values.externalSecrets[sectionName] = deepMerge(values.externalSecrets[sectionName], config);
-  return true;
-}
-
-/**
- * Merge ExternalSecrets config for the workload init container.
- */
-export function mergeExternalSecretsInitContainer(
-  values: any,
-  config: ContainerExternalSecretsConfig,
-  workloadType: WorkloadType = 'microservice'
-): boolean {
-  if (!values.externalSecrets) {
-    values.externalSecrets = {};
-  }
-
-  const sectionName = getExternalSecretsSectionName(workloadType, 'initContainer');
-  if (!values.externalSecrets[sectionName]) {
-    values.externalSecrets[sectionName] = {};
-  }
-
-  values.externalSecrets[sectionName] = deepMerge(values.externalSecrets[sectionName], config);
+  values.externalSecrets[section] = deepMerge(values.externalSecrets[section] || {}, config);
   return true;
 }
 
@@ -195,11 +165,10 @@ export function removeEnvFromSecretsReferences(values: any): boolean {
  */
 export function applyExternalSecretsToWorkload(
   valuesPath: string,
-  containerConfig: ContainerExternalSecretsConfig | undefined,
-  initContainerConfig: ContainerExternalSecretsConfig | undefined,
+  appConfig: ContainerExternalSecretsConfig | undefined,
+  flywayInitContainerConfig: ContainerExternalSecretsConfig | undefined,
   removeOldRefs: boolean,
-  dryRun: boolean = false,
-  workloadType?: WorkloadType
+  dryRun: boolean = false
 ): ValuesMergeResult {
   try {
     const originalContent = fs.readFileSync(valuesPath, 'utf-8');
@@ -207,30 +176,25 @@ export function applyExternalSecretsToWorkload(
 
     // Build the externalSecrets structure
     const existingValues = parseYaml(originalContent) || {};
-    const resolvedWorkloadType = workloadType || inferWorkloadTypeFromPath(valuesPath);
     const externalSecretsValue: any = normalizeExternalSecrets(existingValues.externalSecrets);
 
-    let containerMerged = false;
-    let initContainerMerged = false;
+    let appMerged = false;
+    let flywayInitContainerMerged = false;
     let oldRefsRemoved = false;
 
-    if (containerConfig) {
-      const key = getExternalSecretsSectionName(resolvedWorkloadType, 'container');
-      if (!externalSecretsValue[key]) externalSecretsValue[key] = {};
-      externalSecretsValue[key] = deepMerge(externalSecretsValue[key], containerConfig);
-      containerMerged = true;
+    if (appConfig) {
+      mergeExternalSecretsSection({ externalSecrets: externalSecretsValue }, 'app', appConfig);
+      appMerged = true;
     }
 
-    if (initContainerConfig) {
-      const key = getExternalSecretsSectionName(resolvedWorkloadType, 'initContainer');
-      if (!externalSecretsValue[key]) externalSecretsValue[key] = {};
-      externalSecretsValue[key] = deepMerge(externalSecretsValue[key], initContainerConfig);
-      initContainerMerged = true;
+    if (flywayInitContainerConfig) {
+      mergeExternalSecretsSection({ externalSecrets: externalSecretsValue }, 'flywayInitContainer', flywayInitContainerConfig);
+      flywayInitContainerMerged = true;
     }
 
     let modifiedContent = originalContent;
 
-    if (containerMerged || initContainerMerged) {
+    if (appMerged || flywayInitContainerMerged) {
       // Remove existing externalSecrets section if present
       const externalSecretsPattern = /\nexternalSecrets:[\s\S]*?(?=\n(?:deployment|cronjob|$))/;
       const withoutExisting = modifiedContent.replace(externalSecretsPattern, '');
@@ -290,16 +254,16 @@ export function applyExternalSecretsToWorkload(
     return {
       workloadPath: valuesPath,
       success: true,
-      containerMerged,
-      initContainerMerged,
+      appMerged,
+      flywayInitContainerMerged,
       oldRefsRemoved,
     };
   } catch (error) {
     return {
       workloadPath: valuesPath,
       success: false,
-      containerMerged: false,
-      initContainerMerged: false,
+      appMerged: false,
+      flywayInitContainerMerged: false,
       oldRefsRemoved: false,
       error: error instanceof Error ? error.message : String(error),
     };
@@ -325,16 +289,10 @@ export function initializeCommonsExternalSecrets(
     const content = fs.readFileSync(commonsValuesPath, 'utf-8');
     const doc = parseDocument(content);
 
-    const workloadType = commonsValuesPath.includes('values-cronjob.yaml') ? 'cronjob' : 'microservice';
-    const appKey = getExternalSecretsSectionName(workloadType, 'container');
-    const flywayKey = getExternalSecretsSectionName(workloadType, 'initContainer');
-
-    // Normalize legacy keys before merging.
-    const normalizedExisting = normalizeExternalSecrets((doc.toJS() as any)?.externalSecrets);
-    const existing: any = normalizedExisting && typeof normalizedExisting === 'object' ? normalizedExisting : {};
+    const existing: any = normalizeExternalSecrets((doc.toJS() as any)?.externalSecrets);
 
     const externalSecretsStructure: any = {};
-    for (const key of [appKey, flywayKey]) {
+    for (const key of EXTERNAL_SECRETS_SECTIONS) {
       const section = existing[key] && typeof existing[key] === 'object' ? existing[key] : {};
       const existingRef = section.secretStoreRef;
       const existingName: string | undefined = existingRef?.name;

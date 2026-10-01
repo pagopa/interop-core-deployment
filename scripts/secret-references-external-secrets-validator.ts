@@ -3,9 +3,8 @@
  *
  * Validates the output of secret-references-external-secrets-generator by verifying:
  *
- * 1. YAML PRESENCE      – expected externalSecrets sections exist in every target values.yaml:
- *                          - microservice: externalSecrets.app / externalSecrets.flywayInitContainer
- *                          - cronjob: externalSecrets.app / externalSecrets.flywayInitContainer
+ * 1. YAML PRESENCE      – expected externalSecrets sections exist in every target values.yaml
+ *                          (externalSecrets.app / externalSecrets.flywayInitContainer)
  * 2. KEY COVERAGE       – every (secretName, secretKey) pair from the original repo inventory
  *                          appears as a secretKey in the generated ExternalSecret data
  * 3. CLUSTER COHERENCE  – every secretKey referenced in the repo inventory is actually present
@@ -35,14 +34,12 @@ import {
   type WorkloadFilters,
   validateWorkloadFilterValue,
 } from './lib/workload-filter.js';
-import { getExternalSecretsSectionName } from './lib/external-secrets-sections.js';
-import type { ContainerType } from './lib/external-secrets-sections.js';
+import { resolveExternalSecretsSection, type ExternalSecretsSection } from './lib/external-secrets-sections.js';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type WorkloadType = 'microservice' | 'cronjob';
 type CheckType =
   | 'yaml-presence'
   | 'key-coverage'
@@ -53,7 +50,7 @@ type Severity = 'error' | 'warning' | 'info';
 interface ValidationIssue {
   workloadType: string;
   workloadName: string;
-  containerType: ContainerType | 'n/a';
+  section: ExternalSecretsSection | 'n/a';
   checkType: CheckType;
   severity: Severity;
   message: string;
@@ -63,7 +60,7 @@ interface ValidationIssue {
 interface WorkloadCheckResult {
   workloadType: string;
   workloadName: string;
-  containerType: ContainerType;
+  section: ExternalSecretsSection;
   status: 'PASSED' | 'ERROR' | 'WARNING';
   message?: string;
 }
@@ -205,13 +202,7 @@ Options:
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Derive container type the same way the generator does */
-function deriveContainerType(record: RepoRecord): ContainerType {
-  const lower = (record.containerPath ?? record.yamlPath ?? '').toLowerCase();
-  return lower.includes('initcontainer') ? 'initContainer' : 'container';
-}
-
-/** Group repo records by (workloadName, containerType)
+/** Group repo records by (workloadName, externalSecrets section)
  *
  * Returns map with TWO separate fields:
  * - envVarsBySecret: For coverage check (envVar vs generated secretKey)
@@ -223,7 +214,7 @@ function groupRepoRecords(
 ): Map<string, {
   workloadType: string;
   workloadName: string;
-  containerType: ContainerType;
+  section: ExternalSecretsSection;
   sourceFile: string;
   envVarsBySecret: Map<string, Set<string>>;        // For coverage check
   secretKeysBySecret: Map<string, Set<string>>;     // For coherence check
@@ -231,7 +222,7 @@ function groupRepoRecords(
   const map = new Map<string, {
     workloadType: string;
     workloadName: string;
-    containerType: ContainerType;
+    section: ExternalSecretsSection;
     sourceFile: string;
     envVarsBySecret: Map<string, Set<string>>;
     secretKeysBySecret: Map<string, Set<string>>;
@@ -241,14 +232,14 @@ function groupRepoRecords(
     if (!record.envVar) continue; // envFromSecrets with no env var or secret key – skip
     if (scope !== 'both' && record.workloadType !== scope) continue;
 
-    const containerType = deriveContainerType(record);
-    const groupKey = `${record.workloadType}/${record.component}/${containerType}`;
+    const section = resolveExternalSecretsSection(record.containerPath, record.yamlPath);
+    const groupKey = `${record.workloadType}/${record.component}/${section}`;
 
     if (!map.has(groupKey)) {
       map.set(groupKey, {
         workloadType: record.workloadType,
         workloadName: record.component,
-        containerType,
+        section,
         sourceFile: record.sourceFile,
         envVarsBySecret: new Map(),        // envVar for coverage check
         secretKeysBySecret: new Map(),     // remote secretKey for coherence check
@@ -282,18 +273,12 @@ function readExternalSecretsFromFile(
   return values?.externalSecrets ?? null;
 }
 
-function getPreferredExternalSecretsSectionName(workloadType: string, containerType: ContainerType): string {
-  return getExternalSecretsSectionName(workloadType as WorkloadType, containerType);
-}
-
-function resolveExternalSecretsSection(
+function getExternalSecretsSectionValue(
   externalSecrets: Record<string, any> | null,
-  workloadType: string,
-  containerType: ContainerType
+  section: ExternalSecretsSection
 ): any | null {
   if (!externalSecrets) return null;
-  const key = getExternalSecretsSectionName(workloadType as WorkloadType, containerType);
-  return externalSecrets[key] ?? null;
+  return externalSecrets[section] ?? null;
 }
 
 /** Get all secretKeys from an ExternalSecrets config data array */
@@ -317,7 +302,7 @@ function checkYamlPresence(
     return {
       workloadType: gen.workloadType,
       workloadName: gen.workloadName,
-      containerType: gen.containerType,
+      section: gen.section,
       checkType: 'yaml-presence',
       severity: 'error',
       message: `externalSecrets section is missing in ${gen.workloadPath}`,
@@ -325,16 +310,15 @@ function checkYamlPresence(
     };
   }
 
-  const section = resolveExternalSecretsSection(externalSecrets, gen.workloadType, gen.containerType);
-  const preferredSectionName = getPreferredExternalSecretsSectionName(gen.workloadType, gen.containerType);
+  const section = getExternalSecretsSectionValue(externalSecrets, gen.section);
   if (!section) {
     return {
       workloadType: gen.workloadType,
       workloadName: gen.workloadName,
-      containerType: gen.containerType,
+      section: gen.section,
       checkType: 'yaml-presence',
       severity: 'error',
-      message: `externalSecrets.${preferredSectionName} section is missing in ${gen.workloadPath}`,
+      message: `externalSecrets.${gen.section} section is missing in ${gen.workloadPath}`,
     };
   }
 
@@ -342,10 +326,10 @@ function checkYamlPresence(
     return {
       workloadType: gen.workloadType,
       workloadName: gen.workloadName,
-      containerType: gen.containerType,
+      section: gen.section,
       checkType: 'yaml-presence',
       severity: 'error',
-      message: `externalSecrets.${preferredSectionName}.data is empty in ${gen.workloadPath}`,
+      message: `externalSecrets.${gen.section}.data is empty in ${gen.workloadPath}`,
     };
   }
 
@@ -355,8 +339,7 @@ function checkYamlPresence(
 function checkKeyCoverage(
   workloadType: string,
   workloadName: string,
-  containerType: ContainerType,
-  sectionName: string,
+  section: ExternalSecretsSection,
   expectedEnvVars: Map<string, Set<string>>,  // secretName → envVars (for coverage check)
   actualDataKeys: Set<string>
 ): ValidationIssue[] {
@@ -369,10 +352,10 @@ function checkKeyCoverage(
         issues.push({
           workloadType,
           workloadName,
-          containerType,
+          section,
           checkType: 'key-coverage',
           severity: 'error',
-          message: `Environment variable "${envVar}" from K8s secret "${secretName}" is not covered in externalSecrets.${sectionName}.data`,
+          message: `Environment variable "${envVar}" from K8s secret "${secretName}" is not covered in externalSecrets.${section}.data`,
           details: `Expected secretKey "${envVar}" to appear in ExternalSecret data entries`,
         });
       }
@@ -385,7 +368,7 @@ function checkKeyCoverage(
 function checkClusterCoherence(
   workloadType: string,
   workloadName: string,
-  containerType: ContainerType,
+  section: ExternalSecretsSection,
   expectedRemoteKeys: Map<string, Set<string>>, // secretName → remote secretKeys (from repo)
   clusterSecretsMap: Map<string, Set<string>>   // secretName → available keys in cluster
 ): ValidationIssue[] {
@@ -399,7 +382,7 @@ function checkClusterCoherence(
       issues.push({
         workloadType,
         workloadName,
-        containerType,
+        section,
         checkType: 'cluster-coherence',
         severity: 'warning',
         message: `K8s secret "${secretName}" not found in cluster inventory`,
@@ -414,7 +397,7 @@ function checkClusterCoherence(
         issues.push({
           workloadType,
           workloadName,
-          containerType,
+          section,
           checkType: 'cluster-coherence',
           severity: 'warning',
           message: `Key "${remoteKey}" from repo reference to secret "${secretName}" is not in cluster secret keys`,
@@ -434,7 +417,7 @@ function checkClusterCoherence(
 const CSV_COLUMNS_ISSUES = [
   'workloadType',
   'workloadName',
-  'containerType',
+  'section',
   'checkType',
   'severity',
   'message',
@@ -444,7 +427,7 @@ const CSV_COLUMNS_ISSUES = [
 const CSV_COLUMNS_SUMMARY = [
   'workloadType',
   'workloadName',
-  'containerType',
+  'section',
   'status',
   'message',
 ] as const;
@@ -502,7 +485,7 @@ function printSummary(report: ValidationReport, issues: ValidationIssue[]): void
     console.log(`\n${'─'.repeat(60)}`);
     console.log('❌ ERRORS:');
     for (const e of errors) {
-      console.log(`\n  [${e.workloadType}/${e.workloadName}] (${e.containerType}) — ${e.checkType}`);
+      console.log(`\n  [${e.workloadType}/${e.workloadName}] (${e.section}) — ${e.checkType}`);
       console.log(`    ${e.message}`);
       if (e.details) console.log(`    → ${e.details}`);
     }
@@ -512,7 +495,7 @@ function printSummary(report: ValidationReport, issues: ValidationIssue[]): void
     console.log(`\n${'─'.repeat(60)}`);
     console.log('⚠️  WARNINGS:');
     for (const w of warnings) {
-      console.log(`\n  [${w.workloadType}/${w.workloadName}] (${w.containerType}) — ${w.checkType}`);
+      console.log(`\n  [${w.workloadType}/${w.workloadName}] (${w.section}) — ${w.checkType}`);
       console.log(`    ${w.message}`);
       if (w.details) console.log(`    → ${w.details}`);
     }
@@ -566,10 +549,10 @@ async function main(): Promise<void> {
 
   // ── Build lookup maps ──────────────────────────────────────────────────────
 
-  // generated ExternalSecrets indexed by (workloadName, containerType)
+  // generated ExternalSecrets indexed by (workloadName, section)
   const generatedMap = new Map<string, GeneratedExternalSecret>();
   for (const gen of migrationReport.generatedExternalSecrets) {
-    const key = `${gen.workloadType}/${gen.workloadName}/${gen.containerType}`;
+    const key = `${gen.workloadType}/${gen.workloadName}/${gen.section}`;
     generatedMap.set(key, gen);
   }
 
@@ -587,7 +570,7 @@ async function main(): Promise<void> {
     }
   }
 
-  // repo records grouped by (workloadName, containerType)
+  // repo records grouped by (workloadName, section)
   const effectiveScope = args.scope !== 'both' ? args.scope : migrationReport.scope as ValidatorArgs['scope'];
   const repoGroups = groupRepoRecords(repoRecords, effectiveScope !== 'both' ? effectiveScope : 'both');
 
@@ -601,8 +584,8 @@ async function main(): Promise<void> {
   const checkedWorkloads = new Set<string>();
 
   for (const [groupKey, group] of repoGroups) {
-    const { workloadType, workloadName, containerType, envVarsBySecret, secretKeysBySecret } = group;
-    checkedWorkloads.add(`${workloadType}/${workloadName}/${containerType}`);
+    const { workloadType, workloadName, section, envVarsBySecret, secretKeysBySecret } = group;
+    checkedWorkloads.add(`${workloadType}/${workloadName}/${section}`);
     const gen = generatedMap.get(groupKey);
 
     let workloadStatus: 'PASSED' | 'ERROR' | 'WARNING' = 'PASSED';
@@ -620,12 +603,12 @@ async function main(): Promise<void> {
       allIssues.push({
         workloadType,
         workloadName,
-        containerType,
+        section,
         checkType: 'workload-coverage',
         severity: inSkipped ? 'info' : 'error',
         message: workloadMessage,
       });
-      workloadResults.push({ workloadType, workloadName, containerType, status: workloadStatus, message: workloadMessage });
+      workloadResults.push({ workloadType, workloadName, section, status: workloadStatus, message: workloadMessage });
       continue;
     }
 
@@ -641,16 +624,15 @@ async function main(): Promise<void> {
     // Get actual keys from values.yaml on disk (authoritative source)
     const absPath = path.join(args.rootDir, gen.workloadPath);
     const externalSecrets = readExternalSecretsFromFile(absPath);
-    const actualSection = resolveExternalSecretsSection(externalSecrets, gen.workloadType, gen.containerType);
+    const actualSection = getExternalSecretsSectionValue(externalSecrets, gen.section);
     const actualKeys = actualSection?.data
       ? new Set<string>(actualSection.data.map((d: any) => String(d.secretKey)))
       : getDataSecretKeys(gen.externalSecretsConfig);
-    const preferredSectionName = getPreferredExternalSecretsSectionName(gen.workloadType, gen.containerType);
 
     // ── Check 2: key coverage ──────────────────────────────────────────────
     // Verify each envVar appears as secretKey in generated externalSecrets
     totalChecks++;
-    const coverageIssues = checkKeyCoverage(workloadType, workloadName, containerType, preferredSectionName, envVarsBySecret, actualKeys);
+    const coverageIssues = checkKeyCoverage(workloadType, workloadName, section, envVarsBySecret, actualKeys);
     allIssues.push(...coverageIssues);
     if (coverageIssues.length > 0) {
       workloadStatus = 'ERROR';
@@ -660,7 +642,7 @@ async function main(): Promise<void> {
     // ── Check 3: cluster coherence ─────────────────────────────────────────
     // Verify each remote secretKey (from repo) exists in cluster secret
     totalChecks++;
-    const coherenceIssues = checkClusterCoherence(workloadType, workloadName, containerType, secretKeysBySecret, clusterSecretsMap);
+    const coherenceIssues = checkClusterCoherence(workloadType, workloadName, section, secretKeysBySecret, clusterSecretsMap);
     allIssues.push(...coherenceIssues);
     if (coherenceIssues.length > 0) {
       workloadStatus = 'ERROR';
@@ -668,7 +650,7 @@ async function main(): Promise<void> {
     }
 
     // Record workload result
-    workloadResults.push({ workloadType, workloadName, containerType, status: workloadStatus, message: workloadMessage });
+    workloadResults.push({ workloadType, workloadName, section, status: workloadStatus, message: workloadMessage });
   }
 
   // ── Build report ───────────────────────────────────────────────────────────

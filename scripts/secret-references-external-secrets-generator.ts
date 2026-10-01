@@ -352,23 +352,22 @@ async function main(): Promise<void> {
           createBackup(valuesPath);
         }
 
-        // Determine container configs
-        const containerConfig = externalSecret.containerType === 'container' ? externalSecret.externalSecretsConfig : undefined;
-        const initContainerConfig = externalSecret.containerType === 'initContainer' ? externalSecret.externalSecretsConfig : undefined;
+        const appConfig = externalSecret.section === 'app' ? externalSecret.externalSecretsConfig : undefined;
+        const flywayInitContainerConfig =
+          externalSecret.section === 'flywayInitContainer' ? externalSecret.externalSecretsConfig : undefined;
 
         // Apply to file
         const result = applyExternalSecretsToWorkload(
           valuesPath,
-          containerConfig,
-          initContainerConfig,
+          appConfig,
+          flywayInitContainerConfig,
           !config.keepOldRefs, // keepOldRefs=true means do NOT remove; removeOldRefs is the inverse
-          config.dryRun,
-          externalSecret.workloadType
+          config.dryRun
         );
 
         if (result.success) {
           console.log(
-            `   ✅ ${externalSecret.workloadType}/${externalSecret.workloadName} (${externalSecret.containerType})`
+            `   ✅ ${externalSecret.workloadType}/${externalSecret.workloadName} (externalSecrets.${externalSecret.section})`
           );
         } else {
           console.log(

@@ -2,6 +2,8 @@
  * Type definitions for ExternalSecrets configuration generation
  */
 
+import type { ExternalSecretsSection } from './external-secrets-sections.js';
+
 export interface ExternalSecretsGeneratorConfig {
   env: string;
   cluster: string;
@@ -51,7 +53,7 @@ export interface GeneratedExternalSecret {
   workloadType: 'microservice' | 'cronjob';
   workloadName: string;
   workloadPath: string;
-  containerType: 'container' | 'initContainer';
+  section: ExternalSecretsSection;
   secretName: string;
   externalSecretsConfig: ContainerExternalSecretsConfig;
 }
@@ -80,8 +82,8 @@ export interface MigrationReport {
 export interface ValuesMergeResult {
   workloadPath: string;
   success: boolean;
-  containerMerged: boolean;
-  initContainerMerged: boolean;
+  appMerged: boolean;
+  flywayInitContainerMerged: boolean;
   oldRefsRemoved: boolean;
   error?: string;
 }
