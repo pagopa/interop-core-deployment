@@ -116,7 +116,41 @@ The generated section is inserted before the main workload section:
 - microservices: before `deployment:`
 - cronjobs: before `cronjob:`
 
-The generator supports the current and legacy externalSecrets section names through the same workload/container mapping used by the validator and `list-external-secrets` script.
+Both `interop-eks-microservice-chart` and `interop-eks-cronjob-chart` expect `externalSecrets` to contain only two sub-keys (the chart schema rejects any other key):
+
+| Sub-key | ExternalSecret for | Default target Secret |
+|---|---|---|
+| `externalSecrets.app` | main container | `<workload name>` |
+| `externalSecrets.flywayInitContainer` | Flyway init container | `<workload name>-flyway` |
+
+Workload values receive only `create` and `data`:
+
+```yaml
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: rds/.../readmodel
+          property: READONLY_USR
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+```
+
+`secretStoreRef` is written once per section in `commons/<env>/values-microservice.yaml` and `commons/<env>/values-cronjob.yaml` and inherited by every workload.
+
+When the generator rewrites an existing `externalSecrets` block (workload or commons), legacy keys are migrated and then removed, so the result contains only `app` and/or `flywayInitContainer`:
+
+- `container` → `app`, `initContainer` → `flywayInitContainer`;
+- values already under `app`/`flywayInitContainer` take precedence; any other key is dropped.
+
+The migration report records the target section in the `section` field (`app` or `flywayInitContainer`), and the validator and `list-external-secrets` read only those two sections.
 
 ## Reports and safety
 

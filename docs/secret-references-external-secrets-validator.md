@@ -4,7 +4,9 @@ The validator checks that the generated `externalSecrets` sections cover the rep
 
 ## Checks performed
 
-- ExternalSecrets presence in each selected workload values file
+- ExternalSecrets presence in each selected workload values file (`externalSecrets.app` for the main container, `externalSecrets.flywayInitContainer` for the Flyway init container)
+
+Issues and per-workload results report the checked section in the `section` field (`app` or `flywayInitContainer`).
 - Coverage of repository Secret references
 - Mapping correctness between repository environment variables and generated `secretKey` entries
 - Coherence with the cluster inventory and AWS annotation metadata

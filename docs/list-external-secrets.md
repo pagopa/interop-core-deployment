@@ -60,7 +60,7 @@ npm run list-external-secrets -- \
 ## What the script does
 
 1. Finds workload values files under `microservices/<workload>/<env>/` and `jobs/<workload>/<env>/`.
-2. Reads `externalSecrets` data for the workload container and init container sections.
+2. Reads `externalSecrets.app.data` (main container) and `externalSecrets.flywayInitContainer.data` (Flyway init container).
 3. Treats a missing version as `AWSCURRENT` and reports AWS labels such as `AWSCURRENT` and `AWSPREVIOUS` as misconfigured for version-pinned maintenance.
 4. Queries AWS Secrets Manager for the current version and validates the referenced property.
 5. Updates outdated or misconfigured entries to `uuid/<versionId>` when the AWS lookup succeeds.
@@ -111,7 +111,9 @@ The suffix is omitted for an unfiltered run. Filtered runs use suffixes such as 
 
 CSV columns:
 
-`component`, `workloadType`, `containerType`, `file`, `secretKey`, `key`, `property`, `configuredVersion`, `latestVersion`, `versionStages`, `upToDate`, `misconfigured`, `hasError`
+`component`, `workloadType`, `section`, `file`, `secretKey`, `key`, `property`, `configuredVersion`, `latestVersion`, `versionStages`, `upToDate`, `misconfigured`, `hasError`
+
+`section` is `app` or `flywayInitContainer`.
 
 ## Operational notes
 
