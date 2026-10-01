@@ -35,9 +35,9 @@ local:
     ENABLED_PROJECTIONS: "false"
   well_known_url:
     AUTHSRV: "https://interop.pagopa.it/.well-known/jwks.json"
-    SELFCARE: "<INSERT VALUE HERE>"
-    BFF: "<INSERT VALUE HERE>"
-    INTERNAL: "<INSERT VALUE HERE>"
-    MAINTENANCE: "<INSERT VALUE HERE>"
+    SELFCARE: "https://selfcare.pagopa.it/.well-known/jwks.json"
+    BFF: "https://interop-private-well-known-prod.s3.eu-south-1.amazonaws.com/.well-known/bff-jwks.json"
+    INTERNAL: "https://interop-private-well-known-prod.s3.eu-south-1.amazonaws.com/.well-known/internal-jwks.json"
+    MAINTENANCE: "https://interop-private-well-known-prod.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
   awsAccountId: "697818730278"
   env: "prod"
