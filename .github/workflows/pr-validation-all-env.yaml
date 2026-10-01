@@ -106,3 +106,19 @@ jobs:
           enable_argocd_validation: ${{ matrix.enable_argocd_validation }}
           enable_argocd_schema_validation: ${{ matrix.enable_argocd_schema_validation }}
           repo_structure_validation_warning_only: ${{ matrix.repo_structure_validation_warning_only }}
+
+  validation_result:
+    name: "Validation Result"
+    runs-on: ubuntu-22.04
+    needs: [validation_all_env]
+    if: ${{ always() }}
+    steps:
+      - name: Check validation results
+        env:
+          VALIDATION_RESULT: ${{ needs.validation_all_env.result }}
+        run: |
+          echo "Validation (all environments) result: $VALIDATION_RESULT"
+          if [[ "$VALIDATION_RESULT" != "success" ]]; then
+            echo "::error::One or more validation jobs did not succeed"
+            exit 1
+          fi
