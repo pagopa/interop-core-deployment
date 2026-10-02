@@ -30,10 +30,10 @@ deployment:
 
 local:
   interop_be_commons:
-    AUTHSRV_KEY_IDENTIFIER: "NotYetGenerated"
-    INTERNAL_KEY_IDENTIFIER: "NotYetGenerated"
-    BFF_KEY_IDENTIFIER: "NotYetGenerated"
-    INTEGRITY_REST_KEY_IDENTIFIER: "NotYetGenerated"
+    AUTHSRV_KEY_IDENTIFIER: "9432c16b-7aae-49df-b9c4-ea61b556652b"
+    INTERNAL_KEY_IDENTIFIER: "f514a529-971d-479d-88b8-dc0c48fd7b7f"
+    BFF_KEY_IDENTIFIER: "9f331acb-6e87-47b6-bf4d-f616e4a3db38"
+    INTEGRITY_REST_KEY_IDENTIFIER: "9528a016-bf67-456d-b52a-d33f81c443b4"
     DEV_ENDPOINTS_ENABLED: "false"
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "697818730278"

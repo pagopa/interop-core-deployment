@@ -19,6 +19,6 @@ cronjob:
 
 local:
   interop_be_commons:
-    INTERNAL_KEY_IDENTIFIER: "NotYetGenerated"
+    INTERNAL_KEY_IDENTIFIER: "f514a529-971d-479d-88b8-dc0c48fd7b7f"
   awsAccountId: "697818730278"
   env: "prod"
