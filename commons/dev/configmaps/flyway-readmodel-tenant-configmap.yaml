@@ -322,3 +322,46 @@ data:
       "${NAMESPACE}_private_certified_attributes_importer_user",
       "${NAMESPACE}_email_scheduled_notification_dispatcher_user",
       "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
+
+  V1.9__Add_Search_Vector_Keyword_Search_Tenant.sql: |-
+    CREATE EXTENSION IF NOT EXISTS unaccent WITH SCHEMA public;
+    CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_catalog.pg_ts_config
+        WHERE cfgname = 'italian_unaccent' AND cfgnamespace = 'public'::regnamespace
+      ) THEN
+        CREATE TEXT SEARCH CONFIGURATION public.italian_unaccent ( COPY = pg_catalog.italian );
+        ALTER TEXT SEARCH CONFIGURATION public.italian_unaccent
+          ALTER MAPPING FOR hword, hword_part, word
+          WITH public.unaccent, pg_catalog.italian_stem, pg_catalog.simple;
+      END IF;
+    END$$;
+
+    CREATE OR REPLACE FUNCTION public.normalize_text(t TEXT)
+    RETURNS TEXT
+    LANGUAGE sql IMMUTABLE PARALLEL SAFE AS $$
+      SELECT trim(
+        regexp_replace(
+          lower(
+            regexp_replace(
+              public.unaccent('public.unaccent'::regdictionary, coalesce(t, '')),
+              '\.', '', 'g'
+            )
+          ),
+          '[^a-z0-9]+', ' ', 'g'
+        )
+      )
+    $$;
+
+    ALTER TABLE "${NAMESPACE}_tenant".tenant
+      ADD COLUMN IF NOT EXISTS search_vector TSVECTOR GENERATED ALWAYS AS (
+        setweight(to_tsvector('public.italian_unaccent', public.normalize_text(name)), 'A')
+      ) STORED;
+
+    CREATE INDEX IF NOT EXISTS tenant_search_vector_gin
+      ON "${NAMESPACE}_tenant".tenant USING GIN (search_vector);
+    CREATE INDEX IF NOT EXISTS tenant_name_trgm
+      ON "${NAMESPACE}_tenant".tenant USING GIN (public.normalize_text(name) public.gin_trgm_ops);
