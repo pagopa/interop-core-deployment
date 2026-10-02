@@ -244,3 +244,6 @@ data:
 
   V1.25__Add_reviewer_workflow_rejected_at.sql: |-
     ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_rejected_at TIMESTAMP WITH TIME ZONE;
+
+  V1.26__Add_WaitingForApprovalReason_PurposeVersion.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose_version ADD COLUMN IF NOT EXISTS waiting_for_approval_reason VARCHAR;
