@@ -33,5 +33,11 @@ local:
     RSA_KEYS_IDENTIFIERS: "490baa58-8d24-4adf-bfb3-f19a9e505b9a"
     DEV_ENDPOINTS_ENABLED: "false"
     ENABLED_PROJECTIONS: "false"
+  well_known_url:
+    AUTHSRV: "https://att.interop.pagopa.it/.well-known/jwks.json"
+    SELFCARE: "https://selfcare.pagopa.it/.well-known/jwks.json"
+    BFF: "https://interop-private-well-known-att.s3.eu-south-1.amazonaws.com/.well-known/bff-jwks.json"
+    INTERNAL: "https://interop-private-well-known-att.s3.eu-south-1.amazonaws.com/.well-known/internal-jwks.json"
+    MAINTENANCE: "https://interop-private-well-known-att.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
   awsAccountId: "533267098416"
   env: "att"
