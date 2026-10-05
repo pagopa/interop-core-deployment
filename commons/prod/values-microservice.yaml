@@ -36,5 +36,11 @@ local:
     INTEGRITY_REST_KEY_IDENTIFIER: "9528a016-bf67-456d-b52a-d33f81c443b4"
     DEV_ENDPOINTS_ENABLED: "false"
     ENABLED_PROJECTIONS: "false"
+  well_known_url:
+    AUTHSRV: "https://interop.pagopa.it/.well-known/jwks.json"
+    SELFCARE: "https://selfcare.pagopa.it/.well-known/jwks.json"
+    BFF: "https://interop-private-well-known-prod.s3.eu-south-1.amazonaws.com/.well-known/bff-jwks.json"
+    INTERNAL: "https://interop-private-well-known-prod.s3.eu-south-1.amazonaws.com/.well-known/internal-jwks.json"
+    MAINTENANCE: "https://interop-private-well-known-prod.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
   awsAccountId: "697818730278"
   env: "prod"
