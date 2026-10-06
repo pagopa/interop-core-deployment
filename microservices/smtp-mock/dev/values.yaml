@@ -16,6 +16,6 @@ deployment:
     repositoryPrefix: docker.io
     repositoryName: "gessnerfl/fake-smtp-server"
   env:
-    fakesmtp.authentication.username: username
-    fakesmtp.authentication.password: password
+    FAKESMTP_AUTHENTICATION_USERNAME: username
+    FAKESMTP_AUTHENTICATION_PASSWORD: password
     SERVER_PORT: "8080"
