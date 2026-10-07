@@ -40,6 +40,7 @@ describe('workload filters across CLI commands', () => {
 
     expect(() => parseGeneratorArgs(['--help'])).toThrow('process.exit:0');
     expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Usage:'));
+    expect(logSpy).not.toHaveBeenCalledWith(expect.stringContaining('--validate-helm'));
 
     exitSpy.mockRestore();
     logSpy.mockRestore();
@@ -71,6 +72,7 @@ describe('workload filters across CLI commands', () => {
 
   it('parses secret store in generator without default', () => {
     const base = ['--env', 'dev', '--cluster', 'dev-cluster', '--namespace', 'dev'];
+    expect(parseGeneratorArgs(base)).not.toHaveProperty('validateHelm');
     expect(parseGeneratorArgs(base).secretStore).toBeUndefined();
     expect(parseGeneratorArgs([...base, '--secret-store', 'custom-store']).secretStore).toBe('custom-store');
   });

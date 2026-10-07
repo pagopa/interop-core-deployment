@@ -16,7 +16,6 @@
  *     [--scope microservice|cronjob|both] \
  *     [--keep-old-refs true|false] \
  *     [--secret-store <name>] \
- *     [--validate-helm true|false] \
  *     [--omit-version] \
  *     [--dry-run]
  */
@@ -52,7 +51,6 @@ export function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
     namespace: '',
     scope: 'both',
     keepOldRefs: false,
-    validateHelm: true,
     dryRun: false,
     omitVersion: false,
   };
@@ -84,8 +82,6 @@ export function parseArgs(args: string[]): ExternalSecretsGeneratorConfig {
       if (!config.secretStore) {
         throw new Error('Invalid --secret-store value: must be a non-empty SecretStore name');
       }
-    } else if (arg === '--validate-helm' && args[i + 1]) {
-      config.validateHelm = args[++i].toLowerCase() === 'true';
     } else if (arg === '--omit-version') {
       config.omitVersion = true;
     } else if (arg === '--microservice' && args[i + 1]) {
@@ -127,7 +123,6 @@ Options:
   --keep-old-refs <true|false> Keep legacy externalSecret refs (default: false)
   --secret-store <name>     SecretStore name for commons secretStoreRef (no default;
                             if omitted, it must already be set in commons values)
-  --validate-helm <true|false> Validate generated Helm values (default: true)
   --omit-version            Do not emit remoteRef.version in generated entries
   --dry-run                 Preview changes without writing files
   --output-dir <dir>        Output directory for migration reports
@@ -241,7 +236,6 @@ async function main(): Promise<void> {
     console.log(`   Cronjob filter: ${config.cronjob || 'all'}`);
     console.log(`   Keep old refs: ${config.keepOldRefs}`);
     console.log(`   Secret store: ${config.secretStore || '(from commons)'}`);
-    console.log(`   Validate Helm: ${config.validateHelm}`);
     console.log(`   Omit remoteRef version: ${config.omitVersion}`);
     console.log(`   Dry run: ${config.dryRun}\n`);
 

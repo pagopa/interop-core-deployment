@@ -11,7 +11,6 @@ export interface ExternalSecretsGeneratorConfig {
   scope: 'microservice' | 'cronjob' | 'both';
   keepOldRefs: boolean;
   secretStore?: string;
-  validateHelm: boolean;
   dryRun: boolean;
   omitVersion: boolean;
   microservice?: string;
