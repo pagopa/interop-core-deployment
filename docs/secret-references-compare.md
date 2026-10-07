@@ -37,7 +37,7 @@ npm run build:secret-references
 ```bash
 npm run secret-references-compare -- \
   --env <environment> \
-  --cluster <context-name> \
+  --cluster <context-or-arn> \
   [--microservice <folder>] \
   [--cronjob <folder>] \
   [--output-dir <path>] \
@@ -47,19 +47,17 @@ npm run secret-references-compare -- \
 ### Command-Line Options
 
 | Option | Required | Default | Description |
-|--------|----------|---------|-------------|
-| `--env` | ✅ Yes | - | Environment name (dev, qa, prod, etc.) |
-| `-e` | ✅ Yes (alt) | - | Short form for `--env` |
-| `--cluster` | ✅ Yes | - | Kubernetes context name or ARN |
-| `-c` | ✅ Yes (alt) | - | Short form for `--cluster` |
-| `--microservice` | ❌ No | - | Compare only one folder under `microservices/` |
-| `--cronjob` | ❌ No | - | Compare only one folder under `jobs/` |
-| `--output-dir` | ❌ No | `secret-inventory` | Output directory for reports |
-| `-h`, `--help` | ❌ No | - | Show usage and exit |
+|---|---|---|---|
+| `--env`, `-e` | Yes | - | Repository environment; also used as the Kubernetes namespace by this command |
+| `--cluster`, `-c` | Yes | - | Kubeconfig context name or ARN |
+| `--microservice <folder>` | No | - | Limit the comparison to a folder under `microservices/` |
+| `--cronjob <folder>` | No | - | Limit the comparison to a folder under `jobs/` |
+| `--output-dir`, `-o` | No | `secret-inventory` | Destination directory for inventories and comparison reports |
+| `-h`, `--help` | No | - | Print usage and exit |
 
-### Examples
+The command has no `--namespace` option. If namespace and environment differ, run the inventory commands separately; `secret-references-cluster-inventory` accepts an explicit namespace. Workload filters accept repository folder names and can be combined.
 
-#### 1. Basic Comparison
+## Example
 
 ```bash
 npm run secret-references-compare -- \
@@ -92,7 +90,23 @@ npm run secret-references-compare -- \
 
 ## 📊 Output
 
-The tool generates **three complementary reports**:
+The tool internally creates the repo inventory and both cluster inventory views in JSON, then compares the aggregated records.
+
+For an unfiltered run, report names are:
+
+```text
+secret-inventory/secret-inventory-compare-secrets-<env>-<cluster-name>.json
+secret-inventory/secret-inventory-compare-secrets-<env>-<cluster-name>.csv
+secret-inventory/secret-inventory-compare-workloads-<env>-<cluster-name>.json
+secret-inventory/secret-inventory-compare-workloads-<env>-<cluster-name>.csv
+secret-inventory/secret-inventory-compare-stats-<env>-<cluster-name>.json
+secret-inventory/secret-inventory-compare-stats-<env>-<cluster-name>.csv
+```
+
+The secret report contains secrets only in the repository, secrets only in the cluster, and differences in usage. The workload report contains workloads or container references present on only one side and differences in referenced secrets. The stats report contains counts for both views, including repository-only/cluster-only totals and discrepancy counts. The JSON report shape is defined by the generated files; no readiness score or automatic remediation status is produced.
+
+
+It generates **three complementary reports**:
 
 ### 1. Secret Comparison Report
 
@@ -225,6 +239,15 @@ High-level statistics about the comparison.
   }
 }
 ```
+
+## Interpreting differences
+
+- **Only in repository**: the reference exists in values but was not found in the selected cluster inventory. Check environment, namespace, resource name, and whether the workload is deployed.
+- **Only in cluster**: the cluster contains a Secret or reference not represented in the selected repository values. Establish ownership before changing it.
+- **Different usage/references**: repo and cluster disagree about which workloads or containers use the Secret. Check workload rollout state and values-to-chart rendering.
+
+The comparison is not an authorization to create, patch, or delete a Secret. Resolve differences through the owning configuration and approved deployment process; do not apply sample mutations blindly.
+
 
 ## 🔍 Key Insights
 

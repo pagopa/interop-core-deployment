@@ -22,8 +22,8 @@ This tool scans the repository to:
 ## 🚀 Installation
 
 ```bash
-# Install dependencies
-npm install
+# Install locked dependencies
+npm ci
 
 # Build TypeScript
 npm run build:secret-references
@@ -37,7 +37,10 @@ npm run build:secret-references
 npm run secret-references-repo-inventory -- \
   --env <environment> \
   [--output-dir <path>] \
-  [--format csv|json|both]
+  [--format csv|json|both] \
+  [--root <path>] \
+  [--microservice <folder>] \
+  [--cronjob <folder>]
 ```
 
 ### Command-Line Options
@@ -46,7 +49,10 @@ npm run secret-references-repo-inventory -- \
 |--------|----------|---------|-------------|
 | `--env` | ✅ Yes | - | Environment name (dev, qa, prod, staging, etc.) |
 | `--output-dir` | ❌ No | `./secret-inventory` | Output directory for reports |
-| `--format` | ❌ No | `both` | Output format: `csv`, `json`, or `both` |
+| `--format` | ❌ No | `csv` | Output format: `csv`, `json`, or `both` |
+| `--root` | ❌ No | Current directory | Repository root |
+| `--microservice` | ❌ No | - | Scan one folder under `microservices/` |
+| `--cronjob` | ❌ No | - | Scan one folder under `jobs/` |
 
 ### Examples
 
@@ -58,7 +64,6 @@ npm run secret-references-repo-inventory -- --env dev
 
 **Output**: 
 - `secret-inventory/secret-references-repo-dev.csv`
-- `secret-inventory/secret-references-repo-dev.json`
 
 #### 2. JSON Output Only
 
@@ -77,9 +82,9 @@ npm run secret-references-repo-inventory -- \
   --output-dir ./reports/secrets
 ```
 
-**Output**: 
-- `reports/secrets/secret-references-repo-staging.csv`
-- `reports/secrets/secret-references-repo-staging.json`
+**Output**: `reports/secrets/secret-references-repo-staging.csv` (CSV is the default).
+
+Use `--format json` to produce input for the migration validator. Filtered runs add a workload suffix to the output filename; use matching filters when generating and validating.
 
 ## 📊 Output
 
@@ -108,7 +113,7 @@ dev,microservice,flyway-migrator,workload,microservices/flyway-migrator/dev/valu
 | `yamlPath` | Full YAML path to the reference (e.g., `deployment.spec.template.spec.containers[0].env[0]`) |
 | `containerPath` | Container type path (e.g., `containers[0]`, `initContainers[0]`) |
 | `referenceType` | Type of reference: `secretKeyRef`, `envFromSecrets`, `secretRef`, `volumeSecret` |
-| `envVar` | Environment variable name (only for secretKeyRef) |
+| `envVar` | Environment variable name or projected key name for supported `envFromSecrets` references |
 | `secretName` | Kubernetes Secret name |
 | `secretKey` | Key within the Secret (remote property) |
 | `rawReference` | Human-readable reference format |

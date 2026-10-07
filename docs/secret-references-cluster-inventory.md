@@ -6,7 +6,7 @@ Connects to a live Kubernetes cluster to extract all Secrets and their AWS Secre
 
 This tool queries the Kubernetes cluster to:
 
-1. **Connect to Cluster**: Authenticates using current kubeconfig context
+1. **Connect to Cluster**: Authenticates using the explicitly supplied kubeconfig context or ARN
 2. **Fetch Secrets**: Lists all Secrets in the specified namespace
 3. **Extract Annotations**: Reads AWS Secrets Manager metadata and version IDs
 4. **Identify Usage**: Analyzes which workloads reference each secret
@@ -16,15 +16,15 @@ This tool queries the Kubernetes cluster to:
 
 - Node.js ≥ 20.0.0
 - `kubectl` configured with access to target cluster
-- Current kubeconfig with valid context
+- Kubeconfig with access to the explicitly selected context
 - Target namespace with Secrets (typically `interop` or similar)
 - Network access to Kubernetes API server
 
 ## 🚀 Installation
 
 ```bash
-# Install dependencies
-npm install
+# Install locked dependencies
+npm ci
 
 # Build TypeScript
 npm run build:secret-references
@@ -40,6 +40,8 @@ npm run secret-references-cluster-inventory -- \
   --namespace <namespace> \
   [--output-dir <path>] \
   [--format csv|json|both] \
+  [--microservice <folder>] \
+  [--cronjob <folder>] \
   [-h|--help]
 ```
 
@@ -62,7 +64,8 @@ npm run secret-references-cluster-inventory -- \
 ```bash
 npm run secret-references-cluster-inventory -- \
   --cluster dev-eks-cluster \
-  --namespace interop
+  --namespace interop \
+  --format both
 ```
 
 **Output**: 
@@ -85,7 +88,8 @@ npm run secret-references-cluster-inventory -- \
 npm run secret-references-cluster-inventory -- \
   --cluster qa-cluster \
   --namespace qa \
-  --output-dir ./audit/qa-cluster
+  --output-dir ./audit/qa-cluster \
+  --format both
 ```
 
 #### 4. JSON Output Only
@@ -211,8 +215,9 @@ microservice,flyway-migrator,interop,migrations,initContainer,secretKeyRef,flywa
 npm run secret-references-cluster-inventory -- \
   --cluster prod \
   --namespace interop \
-  --format json | \
-  jq '.[] | select(.isUnused == true) | .secretName'
+  --format json
+jq '.[] | select(.isUnused == true) | .secretName' \
+  secret-inventory/secret-inventory-cluster-secrets-interop.json
 ```
 
 ### Find Secrets Missing AWS Annotations
@@ -221,8 +226,9 @@ npm run secret-references-cluster-inventory -- \
 npm run secret-references-cluster-inventory -- \
   --cluster prod \
   --namespace interop \
-  --format json | \
-  jq '.[] | select(.hasAwsSecretsManagerSecretId == false) | .secretName'
+  --format json
+jq '.[] | select(.hasAwsSecretsManagerSecretId == false) | .secretName' \
+  secret-inventory/secret-inventory-cluster-secrets-interop.json
 ```
 
 ### Export for Compliance Audit
@@ -240,8 +246,9 @@ npm run secret-references-cluster-inventory -- \
 npm run secret-references-cluster-inventory -- \
   --cluster dev \
   --namespace interop \
-  --format json | \
-  jq -r '.[].containerType' | \
+  --format json
+jq -r '.[].containerType' \
+  secret-inventory/secret-inventory-cluster-workloads-interop.json | \
   sort | uniq -c
 ```
 
@@ -374,7 +381,7 @@ kubectl get secrets -n interop -o yaml | grep aws-secretsmanager
 
 ## 🔐 Security Considerations
 
-- **No Secret Values**: Never reads or displays secret data, only metadata
+- **No Secret Values in Reports**: Reports contain Secret names, key names, references, and annotations, not the Secret data values
 - **Read-Only**: Only queries cluster; makes no modifications
 - **Kubeconfig Auth**: Uses local kubeconfig for authentication
 - **Safe Output**: Reports contain only reference paths, not secret contents
@@ -384,3 +391,5 @@ kubectl get secrets -n interop -o yaml | grep aws-secretsmanager
 - **Repository Inventory**: `npm run secret-references-repo-inventory`
 - **Compare Repo vs Cluster**: `npm run secret-references-compare`
 - **Validate Migration**: `npm run secret-references-external-secrets-validator`
+
+Output is CSV by default. Use `--format json` or `--format both` when the reports will be consumed by the migration validator. The validator uses the secret-centric JSON report.

@@ -26,7 +26,7 @@ npm run secret-references-external-secrets-generator -- \
   [--omit-version] \
   [--keep-old-refs true|false] \
   [--secret-store <name>] \
-  [--validate-helm true|false] \
+  [--output-dir <directory>] \
   [-h|--help]
 ```
 
@@ -35,6 +35,9 @@ npm run secret-references-external-secrets-generator -- \
 - `--secret-store` has no default: if omitted, `secretStoreRef` must already be set in `commons/<env>/values-*.yaml`. The run fails before any change if it is missing or conflicts with the commons value.
 - The workload filters accept folder names, not Kubernetes workload names.
 - Without a filter, all workloads in the selected environment are processed.
+- `--keep-old-refs false` removes legacy references from workload files that receive generated ExternalSecrets; `true` preserves them.
+- `--dry-run` does not modify values or commons and does not write the migration report.
+- The generator does not invoke Helm lint or template validation. Run the repository Helm/CI checks separately.
 
 ## Common examples
 
@@ -145,18 +148,22 @@ externalSecrets:
 
 `secretStoreRef` is written once per section in `commons/<env>/values-microservice.yaml` and `commons/<env>/values-cronjob.yaml` and inherited by every workload.
 
+Both workload families use these same two section names. The legacy references are found under `deployment` in microservice values and under `cronjob` in cronjob values; this difference does not change the `externalSecrets` structure.
+
 When the generator rewrites an existing `externalSecrets` block (workload or commons), legacy keys are migrated and then removed, so the result contains only `app` and/or `flywayInitContainer`:
 
 - `container` → `app`, `initContainer` → `flywayInitContainer`;
 - values already under `app`/`flywayInitContainer` take precedence; any other key is dropped.
 
-The migration report records the target section in the `section` field (`app` or `flywayInitContainer`), and the validator and `list-external-secrets` read only those two sections.
+The migration report records the target section in the `section` field (`app` or `flywayInitContainer`), and the validator and `list-external-secrets` read only those two sections. Normalization migrates `container` to `app` and `initContainer` to `flywayInitContainer`; values in the new section take precedence, and unknown keys are dropped.
+
+With `--keep-old-refs false`, the patcher removes legacy `envFromSecrets` references from the workload's root/main-container/Flyway sections. A workload is rewritten only when at least one ExternalSecret configuration was generated for it. Review skipped secrets: if every reference for a workload is skipped, clean up legacy references manually if appropriate.
 
 ## Reports and safety
 
 - `--dry-run` previews changes without modifying files.
-- Normal runs patch the selected `values.yaml` files and write a migration report under `external-secrets-analysis/`.
-- The generator does not read or store secret values; it uses repository references and cluster metadata.
+- Normal runs patch selected workload `values.yaml` files and selected commons files, create timestamped workload backups, and write `external-secrets-migration-<env><filter-suffix>.json` under `secret-inventory/` by default. `--output-dir` changes the report directory.
+- Secret values are not inserted into workload values or migration reports; generation uses repository references and Secret metadata/annotations.
 - Run the validator after generation before committing the changes.
 
 ## Related docs

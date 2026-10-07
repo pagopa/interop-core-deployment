@@ -6,7 +6,7 @@ TypeScript script that scans workload `values.yaml` files, compares configured `
 
 - Node.js >= 20
 - AWS credentials with `secretsmanager:GetSecretValue` permission
-- Repository dependencies installed with `npm install`
+- Repository dependencies installed with `npm ci`
 
 The script uses the AWS SDK default credential chain. Set `AWS_PROFILE` when a named profile is required:
 
@@ -71,7 +71,7 @@ The script reads secret metadata and values needed for property validation; it d
 
 ## Expected YAML structure
 
-The script processes the workload-specific sections resolved by the chart conventions. A typical values file contains entries such as:
+Both microservices and cronjobs use exactly `externalSecrets.app` and `externalSecrets.flywayInitContainer`. The script reads only these current chart sections; it does not read legacy `container` or `initContainer` keys. A typical values file contains entries such as:
 
 ```yaml
 externalSecrets:
@@ -93,7 +93,7 @@ externalSecrets:
           version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
 ```
 
-Both microservices and cronjobs are handled using the section names resolved by the script's workload/container mapping. Legacy and current section names are supported by the same mapping used by the generator and validator.
+The source paths for old Kubernetes references differ (`deployment` in microservice values and `cronjob` in cronjob values), but this does not affect the ExternalSecrets section names.
 
 ## Output
 

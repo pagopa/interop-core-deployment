@@ -27,7 +27,7 @@ npm run secret-references-external-secrets-validator -- \
   [-h|--help]
 ```
 
-`--env` is required. The validator reads the generated migration report, repository inventory, and cluster inventory from `secret-inventory/` by default. Use the explicit path options when those reports are stored elsewhere.
+`--env` is required. The validator requires three JSON inputs: the migration report, repository inventory, and secret-centric cluster inventory. By default it reads them from `secret-inventory/`. Generate repository and cluster inventories using `--format json`; the inventory commands default to CSV. A generator dry-run does not write a migration report and therefore cannot be validated. Use the explicit path options when the reports are stored elsewhere.
 
 `--scope` cannot be combined with `--microservice` or `--cronjob`. The filters select workload folders, not Kubernetes workload names, and use the same suffix convention as the generator and inventory scripts.
 
@@ -63,11 +63,11 @@ npm run secret-references-external-secrets-validator -- \
 The validator writes its results to `secret-inventory/`:
 
 ```text
-validator-results-<env><filter-suffix>.json
-validator-coverage-<env><filter-suffix>.json
+external-secrets-validation-<env><filter-suffix>.json
+external-secrets-validation-<env><filter-suffix>.csv
 ```
 
-The filter suffix is omitted for an unfiltered run and identifies selected microservices or cronjobs for filtered runs.
+The filter suffix is omitted for an unfiltered run and identifies selected microservices or cronjobs for filtered runs. The JSON contains the summary, per-workload results, and issues. The CSV contains issue details, or workload summaries when no issues exist. Errors cause a non-zero exit code; warnings are reported for review.
 
 ## Mapping contract
 
@@ -97,8 +97,11 @@ The validator compares the repository `envVar` with the generated `secretKey`; i
 ## Prerequisites and troubleshooting
 
 - Run the repository and cluster inventory commands before validation.
+- Pass `--format json` to both inventory commands; their default output format is CSV.
 - Run the generator before validating a migration report.
+- Run the generator without `--dry-run` so its migration report is created.
 - If an inventory report is missing, pass the correct path or regenerate it.
+- Keep workload filters consistent across generator and validator, or pass the report paths explicitly.
 - Use `-h` or `--help` to inspect the current CLI contract.
 
 ## Related docs
