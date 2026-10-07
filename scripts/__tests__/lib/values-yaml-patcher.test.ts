@@ -433,6 +433,36 @@ deployment:
       expect(updated.externalSecrets.app.data).toHaveLength(1);
     });
 
+    it('should remove the full block across internal column-zero comments and preserve boundary comments', () => {
+      fs.writeFileSync(testValuesFile, `name: test-app
+externalSecrets:
+  app:
+    create: false
+    data: []
+# Foo
+  flywayInitContainer:
+    create: true
+    data: []
+# service account comment
+serviceAccount:
+  name: test-sa
+deployment:
+  replicas: 1
+`);
+
+      const result = applyExternalSecretsToWorkload(testValuesFile, mockExternalSecretsConfig, undefined, false);
+
+      expect(result.success).toBe(true);
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.externalSecrets.app.data).toHaveLength(1);
+      expect(updated.externalSecrets.flywayInitContainer).toEqual({ create: true, data: [] });
+      expect(updated.flywayInitContainer).toBeUndefined();
+      expect(updated.serviceAccount).toEqual({ name: 'test-sa' });
+      const content = fs.readFileSync(testValuesFile, 'utf-8');
+      expect(content).toContain('# service account comment');
+      expect(content.match(/^externalSecrets:/gm)).toHaveLength(1);
+    });
+
     it('should replace an externalSecrets block placed at the top or bottom of the file', () => {
       fs.writeFileSync(testValuesFile, `externalSecrets:\n  app:\n    create: false\nname: test-app\n`);
       expect(applyExternalSecretsToWorkload(testValuesFile, mockExternalSecretsConfig, undefined, false, false).success).toBe(true);

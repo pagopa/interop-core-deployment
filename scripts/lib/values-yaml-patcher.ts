@@ -27,20 +27,30 @@ function normalizeExternalSecrets(externalSecrets: any): any {
 
 /**
  * Remove a top-level YAML block: the `<key>:` line plus all following indented or empty lines.
- * Stops at the next non-indented line (another top-level key or comment) or at end of file.
+ * Stops at the next top-level key or boundary comment, skipping comments inside the block.
  */
 function removeTopLevelBlock(content: string, key: string): string {
   const lines = content.split('\n');
+  // Match only an unindented key so nested blocks are not removed.
   const start = lines.findIndex((line) => line.startsWith(`${key}:`));
   if (start === -1) return content;
 
   const isInsideBlock = (line: string) => line === '' || line.startsWith(' ') || line.startsWith('\t');
 
   let end = start + 1;
-  while (end < lines.length && isInsideBlock(lines[end])) {
+  while (end < lines.length) {
+    if (!isInsideBlock(lines[end])) {
+      // A top-level non-comment line starts the next block.
+      if (!lines[end].startsWith('#')) break;
+      // Skip blank lines and comments to determine whether nested content resumes.
+      const nextContent = lines.slice(end + 1).find((line) => line.trim() !== '' && !line.trimStart().startsWith('#'));
+      // Keep boundary comments when followed by a top-level key or the end of the file.
+      if (!nextContent || !isInsideBlock(nextContent)) break;
+    }
     end++;
   }
 
+  // Remove the selected block while leaving the boundary line and remaining content intact.
   lines.splice(start, end - start);
   return lines.join('\n');
 }
