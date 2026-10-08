@@ -54,6 +54,8 @@ images:
       tag: "2.23.1"
     compute-agreements-consumer:
       tag: "2.23.1"
+    datalake-interface-exporter:
+      tag: "2.23.1"
     delegation-items-archiver:
       tag: "2.23.1"
     delegation-outbound-writer:
@@ -203,6 +205,8 @@ images:
     token-generation-readmodel-checker:
       tag: "2.23.1"
     in-app-notification-cleaner:
+      tag: "2.23.1"
+    check-selfcare-diff:
       tag: "2.23.1"
     risk-analysis-processing:
       tag: "2.23.1"
