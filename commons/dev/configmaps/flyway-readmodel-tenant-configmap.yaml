@@ -324,6 +324,9 @@ data:
       "${NAMESPACE}_in_app_scheduled_notification_dispatcher_user";
 
   V1.9__Add_Search_Vector_Keyword_Search_Tenant.sql: |-
+    -- The catalog and tenant migrations create the same public objects and can run at the same time.
+    SELECT pg_advisory_xact_lock(hashtext('readmodel_keyword_search_public_objects'));
+
     CREATE EXTENSION IF NOT EXISTS unaccent WITH SCHEMA public;
     CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 

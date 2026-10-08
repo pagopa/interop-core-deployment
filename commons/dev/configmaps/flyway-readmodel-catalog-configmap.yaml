@@ -431,6 +431,9 @@ data:
     GRANT SELECT ON ALL TABLES IN SCHEMA "${NAMESPACE}_catalog" TO "${NAMESPACE}_delegation_items_archiver_user";
 
   V1.35__Add_Search_Vector_Keyword_Search_Catalog.sql: |-
+    -- The catalog and tenant migrations create the same public objects and can run at the same time.
+    SELECT pg_advisory_xact_lock(hashtext('readmodel_keyword_search_public_objects'));
+
     CREATE EXTENSION IF NOT EXISTS unaccent WITH SCHEMA public;
     CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 
