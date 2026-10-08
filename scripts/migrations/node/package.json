@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.2.0"
+  },
+  "scripts": {
+    "generate": "tsx generate-flyway-migrations.ts",
+    "verify:crc32": "tsx verify-flyway-migration-crc32.ts",
+    "verify:sha256": "tsx verify-flyway-migration-sha256.ts",
+    "test": "tsx --test migrations.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
