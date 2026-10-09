@@ -1,55 +1,70 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: interop-microservices-appset
-  labels:
-    app.kubernetes.io/part-of: interop-dev-appset-microservices
-    argocd.argoproj.io/instance: interop-ms-dev-appset
-  annotations:
-    argocd.argoproj.io/sync-wave: "5"
+  name: interop-microservices
+  namespace: argocd
 spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
   goTemplate: true
-  goTemplateOptions: [ "missingkey=error" ]
+  goTemplateOptions: ["missingkey=error"]
   generators:
-  - matrix:
-      generators:
-      - list:
-          elements:
-          - env: dev
-            namespace: dev
-            project: default
-      - git:
-          repoURL: https://github.com/pagopa/interop-core-deployment.git
-          revision: feature/argocd
-          pathParamPrefix: ms
-          directories:
-          - path: microservices/*
+    - matrix:
+        generators:
+          - matrix:
+              generators:
+                - git:
+                    repoURL: git@github.com:pagopa/interop-core-deployment.git
+                    revision: HEAD
+                    files:
+                      - path: commons/dev/images.yaml
+                - git:
+                    repoURL: git@github.com:pagopa/interop-core-deployment.git
+                    revision: HEAD
+                    pathParamPrefix: ms
+                    directories:
+                      - path: microservices/*/dev
   template:
     metadata:
-      name: '{{.ms.path.basename}}'
-      namespace: '{{.namespace}}'
-      labels:
-        appset: interop-microservices-appset
-        app.kubernetes.io/part-of: interop-dev-appset-microservices
-        env: '{{.env}}'
-        service: '{{.ms.path.basename}}'
+      name: "{{index .ms.path.segments 2}}"
+      namespace: argocd
     spec:
-      project: '{{.project}}'
+      project: "interop-dev"
+      sources:
+        - repoURL: git@github.com:pagopa/interop-core-deployment.git
+          path: "."
+          targetRevision: HEAD
+          ref: values
+        - repoURL: https://pagopa.github.io/interop-eks-cronjob-chart
+          chart: interop-eks-cronjob-chart
+          targetRevision: 1.46.0
+          helm:
+            releaseName: "{{index .ms.path.segments 2}}"
+            valueFiles:
+              #- $values/commons/dev/values-commons.yaml
+              - $values/commons/dev/values-microservice.yaml
+              - $values/microservices/{{index .ms.path.segments 2}}/dev/values.yaml
+              - $values/commons/dev/migrations/flyway*.yaml
+              - $values/commons/dev/images.yaml
+            ignoreMissingValueFiles: true
+            values: |
+              {{- $images := .images | default dict -}}
+              {{- $msmap := (index $images "microservices") | default dict -}}
+              {{- $ms := (index $msmap (index .ms.path.segments 2)) | default dict -}}
+              deployment:
+                image:
+                  tag: {{ get $ms "tag" | default "" }}
+                  digest: {{ get $ms "digest" | default "" }}
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{.namespace}}'
-      source:
-        repoURL: https://github.com/pagopa/interop-core-deployment.git
-        targetRevision: feature/argocd
-        path: '.'
-        plugin:
-          name: infra-commons-microservices-plugin
-          env:
-          - name: ENV
-            value: '{{.env}}'
-          - name: SERVICE
-            value: '{{.ms.path.basename}}'
-          - name: IMAGES_FILE
-            value: "commons/{{.env}}/images.yaml"
-          - name: PROJECT_DIR
-            value: "."
+        namespace: "dev"
+      ignoreDifferences:
+        - group: ""
+          kind: Secret
+          jsonPointers:
+            - /data
+      syncPolicy:
+        automated: {}
+        syncOptions:
+          - CreateNamespace=false
+          - RespectIgnoreDifferences=true
