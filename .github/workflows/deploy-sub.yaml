@@ -34,8 +34,6 @@ jobs:
     outputs:
       microservices: ${{ steps.set-outputs.outputs.microservices }}
       cronjobs: ${{ steps.set-outputs.outputs.cronjobs }}
-      deploy_mode: ${{ steps.set-outputs.outputs.deploy_mode }}
-      cronjob_deploy_mode: ${{ steps.set-outputs.outputs.cronjob_deploy_mode }}
     steps:
       - name: Checkout
         id: checkout
