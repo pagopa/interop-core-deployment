@@ -18,6 +18,26 @@ configmap:
   SELFCARE_API_MAX_RETRIES: "3"
   SELFCARE_API_RETRY_DELAY_IN_MILLIS: "1000"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_email_sender_user
+          property: username
+          version: terraform-20251112151244723400000006
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_email_sender_user
+          property: password
+          version: terraform-20251112151244723400000006
+      - secretKey: SELFCARE_V2_API_KEY
+        remoteRef:
+          key: app/backend/selfcare-v2
+          property: SELFCARE_V2_API_KEY
+          version: 833a6680-7f16-45ed-ba65-55c3bd4407d1
+
 deployment:
   envFromConfigmaps:
     EMAIL_DISPATCH_TOPIC: "common-kafka.EMAIL_DISPATCH_TOPIC"
@@ -40,10 +60,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-email-sender-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-email-sender-user.password"
-    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"

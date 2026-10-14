@@ -14,6 +14,34 @@ configmap:
   ESERVICE_DESCRIPTOR_MANUAL_ARCHIVE_REMINDER_DAYS: "2,1"
   REMINDER_SEND_AT_HOUR: "5"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: username
+          version: terraform-20250318135026647200000005
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: password
+          version: terraform-20250318135026647200000005
+  app:
+    create: true
+    data:
+      - secretKey: SCHEDULED_NOTIFICATION_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_scheduled_notification_scheduler_user
+          property: username
+          version: terraform-20260603154454143700000006
+      - secretKey: SCHEDULED_NOTIFICATION_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_scheduled_notification_scheduler_user
+          property: password
+          version: terraform-20260603154454143700000006
+
 deployment:
   flywayInitContainer:
     create: true
@@ -28,9 +56,6 @@ deployment:
       POSTGRES_HOST: "common-scheduled-notification-db.DB_HOST"
       POSTGRES_PORT: "common-scheduled-notification-db.DB_PORT"
       POSTGRES_DB: "common-scheduled-notification-db.DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   envFromConfigmaps:
     CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
@@ -40,9 +65,6 @@ deployment:
     SCHEDULED_NOTIFICATION_DB_NAME: "common-scheduled-notification-db.DB_NAME"
     SCHEDULED_NOTIFICATION_DB_USE_SSL: "common-scheduled-notification-db.DB_USE_SSL"
     SCHEDULED_NOTIFICATION_DB_SCHEMA: "common-scheduled-notification-db.DB_SCHEMA"
-  envFromSecrets:
-    SCHEDULED_NOTIFICATION_DB_USERNAME: "platform-data-scheduled-notification-scheduler-user.username"
-    SCHEDULED_NOTIFICATION_DB_PASSWORD: "platform-data-scheduled-notification-scheduler-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"

@@ -6,6 +6,21 @@ serviceAccount:
 configmap:
   INTERACTION_TTL_EPSILON_SECONDS: "300"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_async_token_generation_readmodel_checker_user
+          property: username
+          version: terraform-20260505083928173600000002
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_async_token_generation_readmodel_checker_user
+          property: password
+          version: terraform-20260505083928173600000002
+
 cronjob:
   schedule: "0 3 * * *"
   failedJobsHistoryLimit: 1
@@ -34,6 +49,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-async-token-generation-readmodel-checker-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-async-token-generation-readmodel-checker-user.password"
