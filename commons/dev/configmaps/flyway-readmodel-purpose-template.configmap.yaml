@@ -162,3 +162,8 @@ data:
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".eservice_template_version_purpose_template TO "${NAMESPACE}_purpose_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".eservice_template_version_purpose_template TO "${NAMESPACE}_documents_generator_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".eservice_template_version_purpose_template TO readonly_user;
+
+  V1.7__Grant_Catalog_Process_Read_Access.sql: |-
+    GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".purpose_template TO "${NAMESPACE}_catalog_process_user";
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".purpose_template_eservice_descriptor TO "${NAMESPACE}_catalog_process_user";
