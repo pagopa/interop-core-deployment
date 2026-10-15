@@ -1,0 +1,76 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: interop-cronjobs-dev-argocd-deploy
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          - matrix:
+              generators:
+                - git:
+                    repoURL: git@github.com:pagopa/interop-core-deployment.git
+                    revision: PIN-11112_testing-deploy-via-argocd
+                    files:
+                      - path: commons/dev-argocd-deploy/images.yaml
+                - git:
+                    repoURL: git@github.com:pagopa/interop-core-deployment.git
+                    revision: PIN-11112_testing-deploy-via-argocd
+                    pathParamPrefix: cj
+                    directories:
+                      - path: jobs/*/dev-argocd-deploy
+                      - path: jobs/email-digest-dispatcher/dev-argocd-deploy
+                        exclude: true
+                      - path: jobs/email-scheduled-notification-dispatcher/dev-argocd-deploy
+                        exclude: true
+                      - path: jobs/in-app-scheduled-notification-dispatcher/dev-argocd-deploy
+                        exclude: true
+  template:
+    metadata:
+      name: "{{index .cj.path.segments 2}}-dev-argocd-deploy"
+      namespace: argocd
+    spec:
+      project: "interop-core-dev"
+      sources:
+        - repoURL: git@github.com:pagopa/interop-core-deployment.git
+          path: "."
+          targetRevision: PIN-11112_testing-deploy-via-argocd
+          ref: values
+        - repoURL: https://pagopa.github.io/interop-eks-cronjob-chart
+          chart: interop-eks-cronjob-chart
+          targetRevision: 1.18.0
+          helm:
+            releaseName: "{{index .cj.path.segments 2}}"
+            valueFiles:
+              #- $values/commons/dev/values-commons.yaml
+              - $values/commons/dev-argocd-deploy/values-cronjob.yaml
+              - $values/jobs/{{index .cj.path.segments 2}}/dev-argocd-deploy/values.yaml
+              #- $values/commons/dev/migrations/flyway*.yaml
+              - $values/commons/dev-argocd-deploy/images.yaml
+            ignoreMissingValueFiles: true
+            values: |
+              {{- $images := .images | default dict -}}
+              {{- $jobsmap := (index $images "jobs") | default dict -}}
+              {{- $cj := (index $jobsmap (index .cj.path.segments 2)) | default dict -}}
+              cronjob:
+                image:
+                  tag: {{ get $cj "tag" | default "" }}
+                  digest: {{ get $cj "digest" | default "" }}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "dev-argocd-deploy"
+      ignoreDifferences:
+        - group: ""
+          kind: Secret
+          jsonPointers:
+            - /data
+      syncPolicy:
+        automated: {}
+        syncOptions:
+          - CreateNamespace=false
+          - RespectIgnoreDifferences=true
