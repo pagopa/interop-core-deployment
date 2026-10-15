@@ -31,7 +31,10 @@ deployment:
 local:
   interop_be_commons:
     DEV_ENDPOINTS_ENABLED: "false"
-    RSA_KEYS_IDENTIFIERS: "65ce3bd3-88ed-40c1-9787-0a55e7f35332"
+    AUTHSRV_KEY_IDENTIFIER: "65ce3bd3-88ed-40c1-9787-0a55e7f35332"
+    INTERNAL_KEY_IDENTIFIER: "cbf0fdeb-4c56-40f6-bc6e-6b42a1274255"
+    BFF_KEY_IDENTIFIER: "9f63f3e4-ea2b-4510-820a-6879310cd27c"
+    INTEGRITY_REST_KEY_IDENTIFIER: "e2eb4b24-c2d3-4c4e-b2b1-4e32300d0012"
     ENABLED_PROJECTIONS: "false"
   well_known_url:
     AUTHSRV: "https://vapt.interop.pagopa.it/.well-known/jwks.json"
