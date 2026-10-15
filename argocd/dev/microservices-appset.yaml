@@ -37,7 +37,7 @@ spec:
           ref: values
         - repoURL: https://pagopa.github.io/interop-eks-cronjob-chart
           chart: interop-eks-cronjob-chart
-          targetRevision: 1.46.0
+          targetRevision: 1.48.0
           helm:
             releaseName: "{{index .ms.path.segments 2}}"
             valueFiles:
