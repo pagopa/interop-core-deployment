@@ -39,7 +39,6 @@ spec:
       sources:
         - repoURL: https://github.com/pagopa/interop-core-deployment.git
           # repoURL: git@github.com:pagopa/interop-core-deployment.git
-          path: "."
           targetRevision: PIN-11112_testing-deploy-via-argocd
           ref: values
         - repoURL: https://pagopa.github.io/interop-eks-cronjob-chart
