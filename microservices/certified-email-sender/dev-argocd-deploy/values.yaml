@@ -1,0 +1,93 @@
+name: "interop-be-certified-email-sender"
+techStack: "nodejs"
+
+service:
+  create: true
+  containerPort: 8088
+
+serviceAccount:
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-certified-email-sender-dev-es1"
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-certified-email-sender"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-certified-email-sender"
+  PEC_SMTP_ADDRESS: "smtp-mock.dev.svc.cluster.local"
+  PEC_SMTP_PORT: "5025"
+  PEC_SMTP_SECURE: "false"
+  INTEROP_FE_BASE_URL: "selfcare.dev.interop.pagopa.it"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: PEC_SENDER_MAIL
+        remoteRef:
+          key: app/backend/smtp-certified
+          property: PEC_SMTP_SENDER
+          version: 0ae223d8-4d75-4f20-b138-aaa1f158f24c
+      - secretKey: PEC_SENDER_LABEL
+        remoteRef:
+          key: app/backend/smtp-certified
+          property: PEC_SMTP_SENDER
+          version: 0ae223d8-4d75-4f20-b138-aaa1f158f24c
+      - secretKey: PEC_SMTP_USERNAME
+        remoteRef:
+          key: app/backend/smtp-certified
+          property: PEC_SMTP_USER
+          version: 0ae223d8-4d75-4f20-b138-aaa1f158f24c
+      - secretKey: PEC_SMTP_PASSWORD
+        remoteRef:
+          key: app/backend/smtp-certified
+          property: PEC_SMTP_PASSWORD
+          version: 0ae223d8-4d75-4f20-b138-aaa1f158f24c
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_certified_email_sender_user
+          property: username
+          version: terraform-20250610121142984400000003
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_certified_email_sender_user
+          property: password
+          version: terraform-20250610121142984400000003
+
+deployment:
+  replicas: 0
+  env:
+    TOPIC_STARTING_OFFSET: "latest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
+    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
+    READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
+    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_NOTIFICATION_CONFIG: "common-read-model-sql.DB_SCHEMA_NOTIFICATION_CONFIG"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"

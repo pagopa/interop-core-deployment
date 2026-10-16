@@ -1,0 +1,36 @@
+name: "interop-be-scheduled-notification-cleaner"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: SCHEDULED_NOTIFICATION_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_scheduled_notification_cleaner_user
+          property: username
+          version: terraform-20260603154454143900000009
+      - secretKey: SCHEDULED_NOTIFICATION_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_scheduled_notification_cleaner_user
+          property: password
+          version: terraform-20260603154454143900000009
+
+cronjob:
+  suspend: true
+  schedule: "0 3 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  restartPolicy: OnFailure
+
+  env:
+    DELETE_OLDER_THAN_DAYS: "3"
+
+  envFromConfigmaps:
+    SCHEDULED_NOTIFICATION_DB_HOST: "common-scheduled-notification-db.DB_HOST"
+    SCHEDULED_NOTIFICATION_DB_NAME: "common-scheduled-notification-db.DB_NAME"
+    SCHEDULED_NOTIFICATION_DB_PORT: "common-scheduled-notification-db.DB_PORT"
+    SCHEDULED_NOTIFICATION_DB_SCHEMA: "common-scheduled-notification-db.DB_SCHEMA"
+    SCHEDULED_NOTIFICATION_DB_USE_SSL: "common-scheduled-notification-db.DB_USE_SSL"
+
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"

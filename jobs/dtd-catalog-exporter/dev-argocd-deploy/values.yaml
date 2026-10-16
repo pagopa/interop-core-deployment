@@ -1,0 +1,75 @@
+name: "interop-be-dtd-catalog-exporter"
+
+serviceAccount:
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-dtd-catalog-exporter-dev-es1"
+
+configmap:
+  S3_BUCKET: "interop-public-catalog-dev-es1"
+  DTD_CATALOG_STORAGE_PATH: "catalog"
+  DTD_CATALOG_FILENAME: "catalog.json"
+  DTD_CATALOG_JSON_FILENAME: "catalog.json"
+  DTD_CATALOG_CSV_FILENAME: "catalog.csv"
+  DTD_TENANTS_CSV_FILENAME: "tenants.csv"
+  DTD_TENANTS_JSON_FILENAME: "tenants.json"
+  GITHUB_REPO: "interop-metrics-deploy-test"
+  GITHUB_REPO_OWNER: "pagopa"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_dtd_catalog_exporter_user
+          property: username
+          version: terraform-2025061012172350650000000c
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_dtd_catalog_exporter_user
+          property: password
+          version: terraform-2025061012172350650000000c
+      - secretKey: GITHUB_ACCESS_TOKEN
+        remoteRef:
+          key: app/backend/metrics-reports
+          property: BOT_DTD_OPENDATA_GITHUB_ACCESS_TOKEN
+          version: 8e285e9a-c47e-4419-817e-e089dacac51b
+
+cronjob:
+  suspend: true
+  schedule: "0 4 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 0
+  restartPolicy: OnFailure
+  automountServiceAccountToken: false
+  envFromConfigmaps:
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
+    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
+    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
+    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
+    READMODEL_SQL_DB_SCHEMA_AGREEMENT: "common-read-model-sql.DB_SCHEMA_AGREEMENT"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
+    READMODEL_SQL_DB_SCHEMA_CLIENT_JWK_KEY: "common-read-model-sql.DB_SCHEMA_CLIENT_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_CLIENT: "common-read-model-sql.DB_SCHEMA_CLIENT"
+    READMODEL_SQL_DB_SCHEMA_DELEGATION: "common-read-model-sql.DB_SCHEMA_DELEGATION"
+    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_NOTIFICATION_CONFIG: "common-read-model-sql.DB_SCHEMA_NOTIFICATION_CONFIG"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_JWK_KEY: "common-read-model-sql.DB_SCHEMA_PRODUCER_JWK_KEY"
+    READMODEL_SQL_DB_SCHEMA_PRODUCER_KEYCHAIN: "common-read-model-sql.DB_SCHEMA_PRODUCER_KEYCHAIN"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
+    FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"

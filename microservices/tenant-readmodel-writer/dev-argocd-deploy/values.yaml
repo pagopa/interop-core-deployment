@@ -1,0 +1,42 @@
+name: "interop-be-tenant-readmodel-writer"
+techStack: "nodejs"
+
+service:
+  create: false
+
+serviceAccount:
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-tenant-readmodel-writer-dev-es1"
+
+configmap:
+  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-tenant"
+  KAFKA_GROUP_ID: "{{.Values.namespace}}-tenant-readmodel-writer"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: PROJECTION_USR
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: PROJECTION_PSW
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+
+deployment:
+  replicas: 0
+  env:
+    PORT: "8088"
+    HOST: "0.0.0.0"
+    TOPIC_STARTING_OFFSET: "earliest"
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
+  envFromConfigmaps:
+    TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
+    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
+    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
+    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
+    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
