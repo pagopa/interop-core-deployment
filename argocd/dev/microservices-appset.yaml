@@ -35,8 +35,8 @@ spec:
           path: "."
           targetRevision: feature/pin-10592-external-secrets-values-generator-output
           ref: values
-        - repoURL: https://pagopa.github.io/interop-eks-cronjob-chart
-          chart: interop-eks-cronjob-chart
+        - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
+          chart: interop-eks-microservice-chart
           targetRevision: 1.48.0
           helm:
             releaseName: "{{index .ms.path.segments 2}}"
