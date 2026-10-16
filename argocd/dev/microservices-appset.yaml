@@ -29,7 +29,7 @@ spec:
       name: "{{index .ms.path.segments 2}}"
       namespace: argocd
     spec:
-      project: "interop-dev"
+      project: "interop-core-dev"
       sources:
         - repoURL: git@github.com:pagopa/interop-core-deployment.git
           path: "."

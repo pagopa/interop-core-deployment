@@ -185,7 +185,7 @@ spec:
       name: "{{index .ms.path.segments 2}}-dev-argocd-deploy"
       namespace: argocd
     spec:
-      project: "interop-core-dev"
+      project: interop-core-dev
       sources:
         - repoURL: git@github.com:pagopa/interop-core-deployment.git
           path: "."
@@ -213,7 +213,7 @@ spec:
                   digest: {{ get $ms "digest" | default "" }}
       destination:
         server: https://kubernetes.default.svc
-        namespace: "dev-argocd-deploy"
+        namespace: dev-argocd-deploy
       ignoreDifferences:
         - group: ""
           kind: Secret

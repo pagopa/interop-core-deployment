@@ -2,14 +2,14 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: interop-configmaps-dev-argocd-deploy
-  namespace: argocd
+  namespace: dev-argocd-deploy
   annotations:
     argocd.argoproj.io/sync-wave: "0"
   labels:
-    app.kubernetes.io/part-of: interop-dev-common-cm
-    argocd.argoproj.io/instance: interop-appset-dev-common-cm
+    app.kubernetes.io/part-of: interop-dev-argocd-deploy-common-cm
+    argocd.argoproj.io/instance: interop-appset-dev-argocd-deploy-common-cm
 spec:
-  project: default
+  project: interop-core-dev
   destination:
     server: https://kubernetes.default.svc
     namespace: dev-argocd-deploy
