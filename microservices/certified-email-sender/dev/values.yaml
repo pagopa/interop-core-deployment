@@ -16,6 +16,51 @@ configmap:
   PEC_SMTP_SECURE: "false"
   INTEROP_FE_BASE_URL: "selfcare.dev.interop.pagopa.it"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: PEC_SENDER_MAIL
+        remoteRef:
+          key: app/backend/smtp-certified
+          property: PEC_SMTP_SENDER
+          version: 0ae223d8-4d75-4f20-b138-aaa1f158f24c
+      - secretKey: PEC_SENDER_LABEL
+        remoteRef:
+          key: app/backend/smtp-certified
+          property: PEC_SMTP_SENDER
+          version: 0ae223d8-4d75-4f20-b138-aaa1f158f24c
+      - secretKey: PEC_SMTP_USERNAME
+        remoteRef:
+          key: app/backend/smtp-certified
+          property: PEC_SMTP_USER
+          version: 0ae223d8-4d75-4f20-b138-aaa1f158f24c
+      - secretKey: PEC_SMTP_PASSWORD
+        remoteRef:
+          key: app/backend/smtp-certified
+          property: PEC_SMTP_PASSWORD
+          version: 0ae223d8-4d75-4f20-b138-aaa1f158f24c
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_certified_email_sender_user
+          property: username
+          version: terraform-20250610121142984400000003
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_certified_email_sender_user
+          property: password
+          version: terraform-20250610121142984400000003
+
 deployment:
   replicas: 0
   env:
@@ -46,12 +91,3 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-  envFromSecrets:
-    PEC_SENDER_MAIL: "smtp-certified.PEC_SMTP_SENDER"
-    PEC_SENDER_LABEL: "smtp-certified.PEC_SMTP_SENDER"
-    PEC_SMTP_USERNAME: "smtp-certified.PEC_SMTP_USER"
-    PEC_SMTP_PASSWORD: "smtp-certified.PEC_SMTP_PASSWORD"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-certified-email-sender-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-certified-email-sender-user.password"

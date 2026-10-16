@@ -19,6 +19,41 @@ configmap:
   SMTP_PORT: "5025"
   SMTP_SECURE: "false"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: SMTP_USERNAME
+        remoteRef:
+          key: app/backend/smtp-notifications
+          property: SMTP_USER
+          version: e3023fd6-ae5d-407f-bde1-a3b70d22c1ac
+      - secretKey: SMTP_PASSWORD
+        remoteRef:
+          key: app/backend/smtp-notifications
+          property: SMTP_PASSWORD
+          version: e3023fd6-ae5d-407f-bde1-a3b70d22c1ac
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_notification_email_sender_user
+          property: username
+          version: terraform-20250610121723506800000010
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_notification_email_sender_user
+          property: password
+          version: terraform-20250610121723506800000010
+
 deployment:
   env:
     TOPIC_STARTING_OFFSET: "latest"
@@ -52,13 +87,6 @@ deployment:
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     REDIS_NOTIFICATION_EMAIL_SENDER_HOST: "common-redis.REDIS_HOST"
     REDIS_NOTIFICATION_EMAIL_SENDER_PORT: "common-redis.REDIS_PORT"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    SMTP_USERNAME: "smtp-notifications.SMTP_USER"
-    SMTP_PASSWORD: "smtp-notifications.SMTP_PASSWORD"
-    READMODEL_SQL_DB_USERNAME: "platform-data-notification-email-sender-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-notification-email-sender-user.password"
   resources:
     limits:
       cpu: "500m"

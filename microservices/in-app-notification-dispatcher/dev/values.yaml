@@ -11,6 +11,44 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-in-app-notification-dispatcher"
   TOPIC_STARTING_OFFSET: "latest"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: username
+          version: terraform-20250318135026647200000005
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: password
+          version: terraform-20250318135026647200000005
+  app:
+    create: true
+    data:
+      - secretKey: IN_APP_NOTIFICATION_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_dispatcher_user
+          property: username
+          version: terraform-20250930101705379100000002
+      - secretKey: IN_APP_NOTIFICATION_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_dispatcher_user
+          property: password
+          version: terraform-20250930101705379100000002
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_dispatcher_user
+          property: username
+          version: terraform-20250930101705379100000002
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_dispatcher_user
+          property: password
+          version: terraform-20250930101705379100000002
+
 deployment:
   flywayInitContainer:
     create: true
@@ -25,9 +63,6 @@ deployment:
       POSTGRES_HOST: "common-in-app-notification-db.DB_HOST"
       POSTGRES_PORT: "common-in-app-notification-db.DB_PORT"
       POSTGRES_DB: "common-in-app-notification-db.DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   envFromConfigmaps:
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
@@ -61,11 +96,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-  envFromSecrets:
-    IN_APP_NOTIFICATION_DB_USERNAME: "platform-data-in-app-notification-dispatcher-user.username"
-    IN_APP_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-notification-dispatcher-user.password"
-    READMODEL_SQL_DB_USERNAME: "platform-data-in-app-notification-dispatcher-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-in-app-notification-dispatcher-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
