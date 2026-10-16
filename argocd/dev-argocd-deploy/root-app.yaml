@@ -9,7 +9,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:pagopa/interop-core-deployment.git
+    repoURL: https://github.com/pagopa/interop-core-deployment.git
+    # repoURL: git@github.com:pagopa/interop-core-deployment.git
     targetRevision: PIN-11112_testing-deploy-via-argocd
     path: argocd/dev-argocd-deploy
     directory:

@@ -14,7 +14,8 @@ spec:
     server: https://kubernetes.default.svc
     namespace: dev-argocd-deploy
   source:
-    repoURL: git@github.com:pagopa/interop-core-deployment.git
+    repoURL: https://github.com/pagopa/interop-core-deployment.git
+    # repoURL: git@github.com:pagopa/interop-core-deployment.git
     targetRevision: PIN-11112_testing-deploy-via-argocd
     path: commons/dev-argocd-deploy/configmaps
     directory:

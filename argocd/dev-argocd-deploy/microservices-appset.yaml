@@ -12,12 +12,14 @@ spec:
     - matrix:
         generators:
           - git:
-              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              repoURL: https://github.com/pagopa/interop-core-deployment.git
+              # repoURL: git@github.com:pagopa/interop-core-deployment.git
               revision: PIN-11112_testing-deploy-via-argocd
               files:
                 - path: commons/dev-argocd-deploy/images.yaml
           - git:
-              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              repoURL: https://github.com/pagopa/interop-core-deployment.git
+              # repoURL: git@github.com:pagopa/interop-core-deployment.git
               revision: PIN-11112_testing-deploy-via-argocd
               pathParamPrefix: ms
               directories:
@@ -187,7 +189,8 @@ spec:
     spec:
       project: interop-core-dev
       sources:
-        - repoURL: git@github.com:pagopa/interop-core-deployment.git
+        - repoURL: https://github.com/pagopa/interop-core-deployment.git
+          # repoURL: git@github.com:pagopa/interop-core-deployment.git
           path: "."
           targetRevision: PIN-11112_testing-deploy-via-argocd
           ref: values
