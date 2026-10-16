@@ -6,6 +6,7 @@
   },
   "scripts": {
     "generate": "tsx generate-flyway-migrations.ts",
+    "migrate:workloads": "tsx migrate-workload-values.ts",
     "verify:crc32": "tsx verify-flyway-migration-crc32.ts",
     "verify:sha256": "tsx verify-flyway-migration-sha256.ts",
     "test": "tsx --test migrations.test.ts",
