@@ -17,7 +17,7 @@ configmap:
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "flyway-scheduled-notification"
+    migrationDomain: "flyway-scheduled-notification"
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
