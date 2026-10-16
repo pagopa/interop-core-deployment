@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/part-of: interop-dev-common-cm
     argocd.argoproj.io/instance: interop-appset-dev-common-cm
 spec:
-  project: default
+  project: interop-core-dev
   destination:
     server: https://kubernetes.default.svc
     namespace: dev
