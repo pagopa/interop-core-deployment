@@ -1,29 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: interop-app-root
-  namespace: dev
+  name: interop-root-appofapps
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/tracking-id: interop-root-appofapps:argoproj.io/Application:argocd/interop-root-appofapps
 spec:
   project: default
+  source:
+    repoURL: git@github.com:pagopa/interop-core-deployment.git
+    targetRevision: HEAD
+    path: argocd/dev
+    directory:
+      include: "{*.yaml}"
   destination:
     server: https://kubernetes.default.svc
-    namespace: dev
-  sources:
-  - repoURL: https://github.com/pagopa/interop-core-deployment.git
-    targetRevision: feature/argocd
-    path: argocd/dev
-    directory:
-      include: 'common-cm.yaml'
-  - repoURL: https://github.com/pagopa/interop-core-deployment.git
-    targetRevision: feature/argocd
-    path: argocd/dev
-    directory:
-      include: 'microservices-appset.yaml'
-  - repoURL: https://github.com/pagopa/interop-core-deployment.git
-    targetRevision: feature/argocd
-    path: argocd/dev
-    directory:
-      include: 'cronjobs-appset.yaml'
+    namespace: argocd
   syncPolicy:
+    automated: {}
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=false

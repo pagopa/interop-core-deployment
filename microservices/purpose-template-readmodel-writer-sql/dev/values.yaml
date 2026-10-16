@@ -14,7 +14,7 @@ configmap:
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "flyway-read-model-purpose-template"
+    migrationDomain: "flyway-read-model-purpose-template"
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
