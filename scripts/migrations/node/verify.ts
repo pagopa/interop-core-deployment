@@ -123,7 +123,7 @@ Expected layout: commons/<environment>/configmaps/flyway*.yaml (or .yml)
   }
 
   if (examined === 0) errors.push(`No flyway ConfigMaps found in ${directories.configmaps}.`);
-  console.error(`SUMMARY - ${examined} ConfigMap(s), ${checked} migration(s) compared, ${errors.length} error(s).`);
+  console.log(`\nSUMMARY - ${examined} ConfigMap(s), ${checked} migration(s) compared, ${errors.length} error(s).`);
   if (errors.length > 0) {
     console.error(`Errors found:\n${errors.map(error => `ERROR - ${error}`).join('\n')}`);
     fail(`Verification completed with ${errors.length} error(s).`);
