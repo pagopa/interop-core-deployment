@@ -11,19 +11,17 @@ spec:
   generators:
     - matrix:
         generators:
-          - matrix:
-              generators:
-                - git:
-                    repoURL: git@github.com:pagopa/interop-core-deployment.git
-                    revision: HEAD
-                    files:
-                      - path: commons/dev/images.yaml
-                - git:
-                    repoURL: git@github.com:pagopa/interop-core-deployment.git
-                    revision: HEAD
-                    pathParamPrefix: ms
-                    directories:
-                      - path: microservices/*/dev
+          - git:
+              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: HEAD
+              files:
+                - path: commons/dev/images.yaml
+          - git:
+              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: HEAD
+              pathParamPrefix: ms
+              directories:
+                - path: microservices/*/dev
   template:
     metadata:
       name: "{{index .ms.path.segments 2}}"

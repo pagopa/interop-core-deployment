@@ -45,6 +45,7 @@ externalSecrets:
           version: 8e285e9a-c47e-4419-817e-e089dacac51b
 
 cronjob:
+  suspend: true
   schedule: "0 4 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0

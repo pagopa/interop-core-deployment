@@ -56,6 +56,7 @@ externalSecrets:
           version: terraform-20250610121142984500000004
 
 cronjob:
+  suspend: true
   schedule: "15 5,11,17,23 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0

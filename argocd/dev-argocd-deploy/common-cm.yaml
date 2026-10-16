@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: interop-configmaps-dev-argocd-deploy
-  namespace: dev-argocd-deploy
+  namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "0"
   labels:
@@ -14,7 +14,7 @@ spec:
     server: https://kubernetes.default.svc
     namespace: dev-argocd-deploy
   source:
-    repoURL: https://github.com/pagopa/interop-core-deployment.git
+    repoURL: git@github.com:pagopa/interop-core-deployment.git
     targetRevision: PIN-11112_testing-deploy-via-argocd
     path: commons/dev-argocd-deploy/configmaps
     directory:

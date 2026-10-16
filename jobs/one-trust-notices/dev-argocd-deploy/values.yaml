@@ -26,6 +26,7 @@ externalSecrets:
           version: 5d9b1f43-a51b-4355-bb2a-1f23b4a9f1a7
 
 cronjob:
+  suspend: true
   schedule: "0 */3 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0
