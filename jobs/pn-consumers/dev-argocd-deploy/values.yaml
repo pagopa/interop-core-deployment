@@ -20,37 +20,37 @@ externalSecrets:
         remoteRef:
           key: app/backend/read-model
           property: READONLY_USR
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_DB_PASSWORD
         remoteRef:
           key: app/backend/read-model
           property: READONLY_PSW
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: MAIL_RECIPIENTS
         remoteRef:
           key: app/backend/pn-consumers
           property: MAIL_RECIPIENTS
-          version: 89d46a5a-cb41-468c-af6c-9ad5891b055d
+          version: uuid/89d46a5a-cb41-468c-af6c-9ad5891b055d
       - secretKey: SMTP_USER
         remoteRef:
           key: app/backend/smtp-reports
           property: SMTP_USER
-          version: 153785ee-4bc0-405d-a70f-21392605cec8
+          version: uuid/153785ee-4bc0-405d-a70f-21392605cec8
       - secretKey: SMTP_PASSWORD
         remoteRef:
           key: app/backend/smtp-reports
           property: SMTP_PASSWORD
-          version: 153785ee-4bc0-405d-a70f-21392605cec8
+          version: uuid/153785ee-4bc0-405d-a70f-21392605cec8
       - secretKey: READMODEL_SQL_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_pn_consumers_user
           property: username
-          version: terraform-2025061012172350670000000f
+          version: uuid/terraform-2025061012172350670000000f
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_pn_consumers_user
           property: password
-          version: terraform-2025061012172350670000000f
+          version: uuid/terraform-2025061012172350670000000f
 
 cronjob:
   suspend: true

@@ -14,12 +14,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_m2m_event_cleaner_user
           property: username
-          version: terraform-20251201084353520600000002
+          version: uuid/terraform-20251201084353520600000002
       - secretKey: M2M_EVENT_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_m2m_event_cleaner_user
           property: password
-          version: terraform-20251201084353520600000002
+          version: uuid/terraform-20251201084353520600000002
 
 cronjob:
   suspend: true
