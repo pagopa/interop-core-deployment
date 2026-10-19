@@ -8,8 +8,8 @@ service:
   create: false
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-catalog-outbound-writer"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-catalog-outbound-writer"
+  KAFKA_CLIENT_ID: "{{.Values.local.env}}-pagopa-interop-catalog-outbound-writer"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-catalog-outbound-writer"
 
 deployment:
   env:

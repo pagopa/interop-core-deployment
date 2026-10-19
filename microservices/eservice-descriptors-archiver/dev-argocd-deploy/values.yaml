@@ -8,12 +8,12 @@ service:
   create: false
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-eservice-descriptors-archiver"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-eservice-descriptors-archiver"
+  KAFKA_CLIENT_ID: "{{.Values.local.env}}-pagopa-interop-eservice-descriptors-archiver"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-eservice-descriptors-archiver"
   INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.INTERNAL_KEY_IDENTIFIER}}"
-  INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
-  INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
-  INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_ISSUER: "{{.Values.local.env}}.interop.pagopa.it"
+  INTERNAL_JWT_SUBJECT: "{{.Values.local.env}}.interop-m2m"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.local.env}}.interop.pagopa.it/internal"
   INTERNAL_JWT_SECONDS_DURATION: "60"
 
 externalSecrets:

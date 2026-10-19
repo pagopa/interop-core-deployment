@@ -4,9 +4,9 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-email-digest-dispatcher-dev-es1"
 
 configmap:
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-email-digest-dispatcher"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-email-digest-dispatcher"
   TOPIC_STARTING_OFFSET: "latest"
-  PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-digest-dispatcher-transactional-id"
+  PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.local.env}}-email-digest-dispatcher-transactional-id"
 
 externalSecrets:
   flywayInitContainer:

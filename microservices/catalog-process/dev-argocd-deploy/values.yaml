@@ -9,12 +9,12 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-catalog-process-dev-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_catalog"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.local.env}}_catalog"
   ESERVICE_DOCUMENTS_PATH: "eservices/docs"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
+  S3_BUCKET: "interop-application-documents-{{.Values.local.env}}-es1"
   PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT,PDND_INFOCAMERE"
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
+  ACCEPTED_AUDIENCES: "{{.Values.local.env}}.interop.pagopa.it/ui,{{.Values.local.env}}.interop.pagopa.it/m2m,{{.Values.local.env}}.interop.pagopa.it/internal"
+  ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.local.env}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
 
 externalSecrets:

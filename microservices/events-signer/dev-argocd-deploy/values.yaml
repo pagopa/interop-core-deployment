@@ -13,7 +13,7 @@ configmap:
   MESSAGES_TO_READ_PER_BATCH: "500"
   MAX_WAIT_KAFKA_BATCH_MILLIS: "5000"
   TOPIC_STARTING_OFFSET: "earliest"
-  SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-events-signer"
+  SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.local.env}}-events-signer"
   S3_BUCKET: "interop-domain-events-{{.Values.local.env}}-es1"
 
 externalSecrets:

@@ -8,8 +8,8 @@ service:
   create: false
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-authorization-platformstate-writer"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-authorization-platformstate-writer"
+  KAFKA_CLIENT_ID: "{{.Values.local.env}}-pagopa-interop-authorization-platformstate-writer"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-authorization-platformstate-writer"
 
 deployment:
   env:

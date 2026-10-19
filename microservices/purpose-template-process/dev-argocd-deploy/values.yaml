@@ -9,10 +9,10 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-purpose-template-process-dev-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_purpose_template"
-  S3_BUCKET: "interop-application-documents-{{.Values.namespace}}-es1"
-  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/purpose-template/docs"
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.local.env}}_purpose_template"
+  S3_BUCKET: "interop-application-documents-{{.Values.local.env}}-es1"
+  PURPOSE_TEMPLATE_DOCUMENTS_PATH: "{{.Values.local.env}}/purpose-template/docs"
+  ACCEPTED_AUDIENCES: "{{.Values.local.env}}.interop.pagopa.it/ui,{{.Values.local.env}}.interop.pagopa.it/m2m,{{.Values.local.env}}.interop.pagopa.it/internal"
   MAX_ESERVICES_PER_LINK_REQUEST: "25"
   MAX_ESERVICE_TEMPLATES_PER_LINK_REQUEST: "25"
 

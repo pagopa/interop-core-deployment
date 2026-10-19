@@ -13,8 +13,8 @@ configmap:
   SQS_LONG_POLL_WAIT_TIME_SECONDS: "20"
   SQS_VISIBILITY_TIMEOUT_SECONDS: "20"
   S3_BUCKET: "interop-generated-m2m-jwt-details-{{.Values.local.env}}-es1"
-  SQS_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/interop-m2m-jwt-details-new-s3-object-{{.Values.namespace}}"
-  SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-m2m-audit-signer"
+  SQS_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/interop-m2m-jwt-details-new-s3-object-{{.Values.local.env}}"
+  SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.local.env}}-m2m-audit-signer"
 
 externalSecrets:
   app:

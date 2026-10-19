@@ -12,8 +12,8 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-api-gateway-dev-es1"
 
 configmap:
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
-  BASE_URL: "api.{{.Values.namespace}}.interop.pagopa.it"
+  ACCEPTED_AUDIENCES: "{{.Values.local.env}}.interop.pagopa.it/m2m"
+  BASE_URL: "api.{{.Values.local.env}}.interop.pagopa.it"
   API_GATEWAY_INTERFACE_VERSION: "0.0"
   RATE_LIMITER_MAX_REQUESTS: "9999999"
   RATE_LIMITER_BURST_PERCENTAGE: "1.0"

@@ -8,8 +8,8 @@ serviceAccount:
   roleArn: arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-agreement-readmodel-writer-dev-es1
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-agreement"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-agreement-readmodel-writer"
+  KAFKA_CLIENT_ID: "{{.Values.local.env}}-pagopa-interop-agreement"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-agreement-readmodel-writer"
 
 externalSecrets:
   app:

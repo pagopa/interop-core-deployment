@@ -8,8 +8,8 @@ service:
   create: false
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-notifier-seeder"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-notifier-seeder"
+  KAFKA_CLIENT_ID: "{{.Values.local.env}}-pagopa-interop-notifier-seeder"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-notifier-seeder"
   NOTIFICATION_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/persistence-events.fifo"
 
 deployment:

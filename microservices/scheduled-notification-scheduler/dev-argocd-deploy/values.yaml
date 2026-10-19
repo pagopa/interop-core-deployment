@@ -8,7 +8,7 @@ service:
   create: false
 
 configmap:
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-scheduled-notification-scheduler"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-scheduled-notification-scheduler"
   TOPIC_STARTING_OFFSET: "latest"
   ESERVICE_MANUAL_ARCHIVE_REMINDER_DAYS: "2,1"
   ESERVICE_DESCRIPTOR_MANUAL_ARCHIVE_REMINDER_DAYS: "2,1"

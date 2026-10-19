@@ -8,8 +8,8 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-tenant-readmodel-writer-dev-es1"
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-tenant"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-tenant-readmodel-writer"
+  KAFKA_CLIENT_ID: "{{.Values.local.env}}-pagopa-interop-tenant"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-tenant-readmodel-writer"
 
 externalSecrets:
   app:

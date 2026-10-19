@@ -4,7 +4,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-email-scheduled-notification-dispatcher-dev-es1"
 
 configmap:
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-email-scheduled-notification-dispatcher"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-email-scheduled-notification-dispatcher"
   TOPIC_STARTING_OFFSET: "latest"
 
 externalSecrets:

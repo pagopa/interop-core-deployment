@@ -8,8 +8,8 @@ service:
   create: false
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-attribute"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-attribute-registry-readmodel-writer"
+  KAFKA_CLIENT_ID: "{{.Values.local.env}}-pagopa-interop-attribute"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-attribute-registry-readmodel-writer"
 
 externalSecrets:
   app:

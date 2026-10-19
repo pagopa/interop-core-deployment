@@ -8,12 +8,12 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-token-details-persister-dev-es1"
 
 configmap:
-  KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-token-details-persister"
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-token-details-persister"
+  KAFKA_CLIENT_ID: "{{.Values.local.env}}-pagopa-interop-token-details-persister"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-token-details-persister"
   AVERAGE_KAFKA_MESSAGE_SIZE_IN_BYTES: "1110"
   MESSAGES_TO_READ_PER_BATCH: "1000"
   MAX_WAIT_KAFKA_BATCH_MILLIS: "25000"
-  S3_BUCKET: "interop-generated-jwt-details-{{.Values.namespace}}-es1"
+  S3_BUCKET: "interop-generated-jwt-details-{{.Values.local.env}}-es1"
 
 deployment:
   image:

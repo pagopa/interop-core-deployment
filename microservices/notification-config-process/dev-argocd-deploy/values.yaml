@@ -9,8 +9,8 @@ service:
   containerPort: 8088
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_notification_config"
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/internal"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.local.env}}_notification_config"
+  ACCEPTED_AUDIENCES: "{{.Values.local.env}}.interop.pagopa.it/ui,{{.Values.local.env}}.interop.pagopa.it/internal"
 
 externalSecrets:
   flywayInitContainer:

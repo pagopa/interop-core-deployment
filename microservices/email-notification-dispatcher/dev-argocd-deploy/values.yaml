@@ -8,9 +8,9 @@ service:
   create: false
 
 configmap:
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-email-notification-dispatcher"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-email-notification-dispatcher"
   TOPIC_STARTING_OFFSET: "latest"
-  PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-notification-dispatcher-transactional-id"
+  PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.local.env}}-email-notification-dispatcher-transactional-id"
 
 externalSecrets:
   app:

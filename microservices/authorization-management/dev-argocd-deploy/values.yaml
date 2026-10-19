@@ -18,8 +18,8 @@ service:
       targetPort: management
 
 configmap:
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
-  POSTGRES_SCHEMA: "{{.Values.namespace}}_authz"
+  ACCEPTED_AUDIENCES: "{{.Values.local.env}}.interop.pagopa.it/ui,{{.Values.local.env}}.interop.pagopa.it/m2m,{{.Values.local.env}}.interop.pagopa.it/internal"
+  POSTGRES_SCHEMA: "{{.Values.local.env}}_authz"
   POSTGRES_DB: "persistence_management"
   CQRS_PROJECTION_COLLECTION_NAME: "clients"
   CQRS_KEYS_PROJECTION_COLLECTION_NAME: "keys"

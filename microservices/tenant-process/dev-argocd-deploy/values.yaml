@@ -9,8 +9,8 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-tenant-process-dev-es1"
 
 configmap:
-  EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_tenant"
-  ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
+  EVENTSTORE_DB_SCHEMA: "{{.Values.local.env}}_tenant"
+  ACCEPTED_AUDIENCES: "{{.Values.local.env}}.interop.pagopa.it/ui,{{.Values.local.env}}.interop.pagopa.it/m2m,{{.Values.local.env}}.interop.pagopa.it/internal"
   DELEGATIONS_ALLOWED_ORIGINS: "IPA"
   DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "48621601-1066-422d-aec8-65a19072cfb0"
 

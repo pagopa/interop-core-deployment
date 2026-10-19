@@ -8,7 +8,7 @@ service:
   create: false
 
 configmap:
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-notification-config-readmodel-writer-sql"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-notification-config-readmodel-writer-sql"
   TOPIC_STARTING_OFFSET: "earliest"
 
 externalSecrets:

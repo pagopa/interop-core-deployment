@@ -8,7 +8,7 @@ service:
   create: false
 
 configmap:
-  KAFKA_GROUP_ID: "{{.Values.namespace}}-tenant-readmodel-writer-sql"
+  KAFKA_GROUP_ID: "{{.Values.local.env}}-tenant-readmodel-writer-sql"
   TOPIC_STARTING_OFFSET: "earliest"
 
 externalSecrets:
