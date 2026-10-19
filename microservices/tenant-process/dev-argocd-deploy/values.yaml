@@ -22,12 +22,12 @@ externalSecrets:
         remoteRef:
           key: app/backend/event-store
           property: POSTGRES_USR
-          version: 6e4e8f69-be18-4c6e-832a-248bfb462151
+          version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
       - secretKey: FLYWAY_PASSWORD
         remoteRef:
           key: app/backend/event-store
           property: POSTGRES_PSW
-          version: 6e4e8f69-be18-4c6e-832a-248bfb462151
+          version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
   app:
     create: true
     data:
@@ -35,32 +35,32 @@ externalSecrets:
         remoteRef:
           key: app/backend/event-store
           property: POSTGRES_USR
-          version: 6e4e8f69-be18-4c6e-832a-248bfb462151
+          version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
       - secretKey: EVENTSTORE_DB_PASSWORD
         remoteRef:
           key: app/backend/event-store
           property: POSTGRES_PSW
-          version: 6e4e8f69-be18-4c6e-832a-248bfb462151
+          version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
       - secretKey: READMODEL_DB_USERNAME
         remoteRef:
           key: app/backend/read-model
           property: READONLY_USR
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_DB_PASSWORD
         remoteRef:
           key: app/backend/read-model
           property: READONLY_PSW
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_SQL_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_tenant_process_user
           property: username
-          version: terraform-2025041516223316250000000a
+          version: uuid/terraform-2025041516223316250000000a
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_tenant_process_user
           property: password
-          version: terraform-2025041516223316250000000a
+          version: uuid/terraform-2025041516223316250000000a
 
 deployment:
   flywayInitContainer:

@@ -85,12 +85,12 @@ externalSecrets:
         remoteRef:
           key: app/backend/support-saml
           property: SUPPORT_SAML_PUBLIC_KEY
-          version: ae49c608-948f-4faf-b0e0-5a4adc0cc472
+          version: uuid/ae49c608-948f-4faf-b0e0-5a4adc0cc472
       - secretKey: SELFCARE_V2_API_KEY
         remoteRef:
           key: app/backend/selfcare-v2
           property: SELFCARE_V2_API_KEY
-          version: 833a6680-7f16-45ed-ba65-55c3bd4407d1
+          version: uuid/833a6680-7f16-45ed-ba65-55c3bd4407d1
 
 deployment:
   env:
