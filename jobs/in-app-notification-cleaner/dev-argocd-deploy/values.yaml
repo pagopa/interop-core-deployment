@@ -1,0 +1,34 @@
+name: "interop-be-in-app-notification-cleaner"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: IN_APP_NOTIFICATION_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_cleaner_user
+          property: username
+          version: uuid/terraform-20251210173024609000000002
+      - secretKey: IN_APP_NOTIFICATION_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_cleaner_user
+          property: password
+          version: uuid/terraform-20251210173024609000000002
+
+cronjob:
+  suspend: true
+  schedule: "0 3 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  restartPolicy: OnFailure
+
+  env:
+    DELETE_OLDER_THAN_DAYS: "3"
+  envFromConfigmaps:
+    IN_APP_NOTIFICATION_DB_HOST: "common-in-app-notification-db.DB_HOST"
+    IN_APP_NOTIFICATION_DB_NAME: "common-in-app-notification-db.DB_NAME"
+    IN_APP_NOTIFICATION_DB_PORT: "common-in-app-notification-db.DB_PORT"
+    IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"
+    IN_APP_NOTIFICATION_DB_USE_SSL: "common-in-app-notification-db.DB_USE_SSL"
+  envFromFieldRef:
+    NAMESPACE: "metadata.namespace"

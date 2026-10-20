@@ -1,0 +1,228 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: interop-microservices-dev-argocd-deploy
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: https://github.com/pagopa/interop-core-deployment.git
+              # repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: PIN-11112_testing-deploy-via-argocd
+              files:
+                - path: commons/dev-argocd-deploy/images.yaml
+          - git:
+              repoURL: https://github.com/pagopa/interop-core-deployment.git
+              # repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: PIN-11112_testing-deploy-via-argocd
+              pathParamPrefix: ms
+              directories:
+                - path: microservices/*/dev-argocd-deploy
+                - path: microservices/agreement-outbound-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/agreement-platformstate-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/agreement-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/agreement-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/agreement-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/api-gateway/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/attribute-registry-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/attribute-registry-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/attribute-registry-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/authorization-management/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/authorization-platformstate-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/authorization-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/authorization-server-node/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/authorization-updater/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/backend-for-frontend/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/catalog-outbound-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/catalog-platformstate-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/catalog-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/catalog-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/catalog-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/certified-email-sender/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/client-purpose-updater/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/client-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/client-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/compute-agreements-consumer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/datalake-interface-exporter/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/delegation-items-archiver/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/delegation-outbound-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/delegation-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/delegation-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/delegation-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/documents-generator/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/documents-signer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/email-notification-dispatcher/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/email-sender/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/eservice-descriptors-archiver/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/eservice-template-instances-updater/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/eservice-template-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/eservice-template-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/eservice-template-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/events-signer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/frontend/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/in-app-notification-dispatcher/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/in-app-notification-manager/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/key-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/key-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/m2m-event-dispatcher/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/m2m-event-manager/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/m2m-gateway/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/m2m-gateway-v3/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/m2m-token-details-persister/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/notification-config-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/notification-config-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/notification-email-sender/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/notification-tenant-lifecycle-consumer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/notification-user-lifecycle-consumer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/notifier/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/notifier-seeder/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/producer-key-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/producer-key-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/producer-keychain-platformstate-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/producer-keychain-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/producer-keychain-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/purpose-outbound-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/purpose-platformstate-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/purpose-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/purpose-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/purpose-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/purpose-template-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/purpose-template-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/scheduled-notification-scheduler/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/selfcare-client-users-updater/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/selfcare-onboarding-consumer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/tenant-kind-history-consumer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/tenant-outbound-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/tenant-process/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/tenant-readmodel-writer/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/tenant-readmodel-writer-sql/dev-argocd-deploy
+                  exclude: true
+                - path: microservices/token-details-persister-node/dev-argocd-deploy
+                  exclude: true
+  template:
+    metadata:
+      name: "{{index .ms.path.segments 1}}-dev-argocd-deploy"
+      namespace: argocd
+    spec:
+      project: interop-core-dev
+      sources:
+        - repoURL: https://github.com/pagopa/interop-core-deployment.git
+          # repoURL: git@github.com:pagopa/interop-core-deployment.git
+          targetRevision: PIN-11112_testing-deploy-via-argocd
+          ref: values
+        - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
+          chart: interop-eks-microservice-chart
+          targetRevision: 1.48.0
+          helm:
+            releaseName: "{{index .ms.path.segments 1}}"
+            valueFiles:
+              #- $values/commons/dev/values-commons.yaml
+              - $values/commons/dev-argocd-deploy/values-microservice.yaml
+              - $values/microservices/{{index .ms.path.segments 1}}/dev-argocd-deploy/values.yaml
+              #- $values/commons/dev/migrations/flyway*.yaml
+              - $values/commons/dev-argocd-deploy/images.yaml
+            ignoreMissingValueFiles: true
+            values: |
+              {{- $images := .images | default dict -}}
+              {{- $msmap := (index $images "microservices") | default dict -}}
+              {{- $ms := (index $msmap (index .ms.path.segments 1)) | default dict -}}
+              deployment:
+                image:
+                  tag: {{ get $ms "tag" | default "" }}
+                  digest: {{ get $ms "digest" | default "" }}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: dev-argocd-deploy
+      ignoreDifferences:
+        - group: ""
+          kind: Secret
+          jsonPointers:
+            - /data
+      syncPolicy:
+        automated: {}
+        syncOptions:
+          - CreateNamespace=false
+          - RespectIgnoreDifferences=true

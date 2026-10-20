@@ -1,0 +1,48 @@
+name: interop-be-signed-objects-persister
+techStack: nodejs
+
+serviceAccount:
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-signed-objects-persister-dev-es1"
+
+service:
+  create: false
+
+configmap:
+  SQS_MAX_NUMBER_OF_MSGS: "5"
+  SQS_LONG_POLL_WAIT_TIME_SECONDS: "20"
+  SQS_VISIBILITY_TIMEOUT_SECONDS: "20"
+  S3_BUCKET_SIGNED_DOCUMENTS: "interop-signed-application-documents-v2-{{.Values.local.env}}-es1"
+  S3_BUCKET_EVENTS: "interop-signed-domain-events-v2-{{.Values.local.env}}-es1"
+  S3_BUCKET_AUDIT: "interop-signed-jwt-audit-v2-{{.Values.local.env}}-es1"
+  S3_BUCKET_M2M_AUDIT: "interop-signed-m2m-jwt-audit-v2-{{.Values.local.env}}-es1"
+  SQS_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/interop-safe-storage-completed-tasks-{{.Values.local.env}}"
+  SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.local.env}}-signed-objects-persister"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.INTERNAL_KEY_IDENTIFIER}}"
+  INTERNAL_JWT_SUBJECT: "{{.Values.local.env}}.interop-signed-objects-persister"
+  INTERNAL_JWT_ISSUER: "{{.Values.local.env}}.interop.pagopa.it"
+  INTERNAL_JWT_AUDIENCE: "{{.Values.local.env}}.interop.pagopa.it/internal"
+  INTERNAL_JWT_SECONDS_DURATION: "3600"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: SAFE_STORAGE_API_KEY
+        remoteRef:
+          key: app/backend/safe-storage-signing-credentials
+          property: password
+          version: uuid/5ee4c5b8-5efa-43a2-9fe9-7768484451a6
+
+deployment:
+  envFromConfigmaps:
+    SAFE_STORAGE_BASE_URL: "common-safe-storage.BASE_URL"
+    SAFE_STORAGE_DOC_TYPE: "common-safe-storage.DOC_TYPE"
+    SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"
+    SIGNATURE_REFERENCES_TABLE_NAME: "common-safe-storage.LIVE_REQUESTS_DYNAMO_TABLE_NAME"
+    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
+    DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
+    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
+    PURPOSE_TEMPLATE_PROCESS_URL: "common-services-urls.PURPOSE_TEMPLATE_PROCESS_URL"
+
+  envFromFieldRef:
+    AWS_ROLE_SESSION_NAME: "metadata.name"
