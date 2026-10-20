@@ -156,11 +156,11 @@ jobs:
     needs: [ create_runner, tf_apply_secrets ]
     secrets: inherit
     if: ${{ !cancelled() && needs.create_runner.result == 'success' && (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success'))) }}
-    uses: pagopa/interop-infra-commons/.github/workflows/common-k8s-deploy.yaml@v1.51.0
+    uses: pagopa/interop-infra-commons/.github/workflows/common-k8s-deploy.yaml@e09d53f2453f907db9794102ec04ef27c19cc6aa
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 300
-      infra_commons_tag: ${{ vars.INFRA_COMMONS_TAG || 'v1.51.0' }}
+      infra_commons_tag: ${{ vars.INFRA_COMMONS_TAG || 'e09d53f2453f907db9794102ec04ef27c19cc6aa' }}
       enable_force_upgrade: ${{ inputs.enable_force_upgrade }}
 
   delete_runner:
