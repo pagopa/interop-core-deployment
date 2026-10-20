@@ -11,22 +11,20 @@ spec:
   generators:
     - matrix:
         generators:
-          - matrix:
-              generators:
-                - git:
-                    repoURL: git@github.com:pagopa/interop-core-deployment.git
-                    revision: HEAD
-                    files:
-                      - path: commons/dev/images.yaml
-                - git:
-                    repoURL: git@github.com:pagopa/interop-core-deployment.git
-                    revision: HEAD
-                    pathParamPrefix: ms
-                    directories:
-                      - path: microservices/*/dev
+          - git:
+              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: HEAD
+              files:
+                - path: commons/dev/images.yaml
+          - git:
+              repoURL: git@github.com:pagopa/interop-core-deployment.git
+              revision: HEAD
+              pathParamPrefix: ms
+              directories:
+                - path: microservices/*/dev
   template:
     metadata:
-      name: "{{index .ms.path.segments 2}}"
+      name: "{{index .ms.path.segments 1}}"
       namespace: argocd
     spec:
       project: "interop-core-dev"
@@ -39,18 +37,18 @@ spec:
           chart: interop-eks-microservice-chart
           targetRevision: 1.48.0
           helm:
-            releaseName: "{{index .ms.path.segments 2}}"
+            releaseName: "{{index .ms.path.segments 1}}"
             valueFiles:
               #- $values/commons/dev/values-commons.yaml
               - $values/commons/dev/values-microservice.yaml
-              - $values/microservices/{{index .ms.path.segments 2}}/dev/values.yaml
+              - $values/microservices/{{index .ms.path.segments 1}}/dev/values.yaml
               #- $values/commons/dev/migrations/flyway*.yaml
               - $values/commons/dev/images.yaml
             ignoreMissingValueFiles: true
             values: |
               {{- $images := .images | default dict -}}
               {{- $msmap := (index $images "microservices") | default dict -}}
-              {{- $ms := (index $msmap (index .ms.path.segments 2)) | default dict -}}
+              {{- $ms := (index $msmap (index .ms.path.segments 1)) | default dict -}}
               deployment:
                 image:
                   tag: {{ get $ms "tag" | default "" }}
