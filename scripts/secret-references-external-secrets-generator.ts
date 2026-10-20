@@ -4,6 +4,7 @@
  * Generates externalSecrets configuration for microservices and cronjobs by:
  * 1. Scanning repo values.yaml files for secret references
  * 2. Fetching AWS Secrets Manager annotations from live cluster
+ *    (version IDs use the same uuid/ formatting as list-external-secrets)
  * 3. Merging externalSecrets config into workload values.yaml files
  * 
  * Usage:

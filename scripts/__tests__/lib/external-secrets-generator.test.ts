@@ -142,6 +142,42 @@ describe('external-secrets-generator', () => {
   });
 
   describe('buildRemoteRef', () => {
+    it.each([
+      ['terraform-version-id', 'uuid/terraform-version-id'],
+      ['uuid/terraform-version-id', 'uuid/terraform-version-id'],
+      ['AWSCURRENT', 'AWSCURRENT'],
+      ['AWSPREVIOUS', 'AWSPREVIOUS'],
+    ])('should format annotation version %s as %s', (annotation, expected) => {
+      const secret = {
+        ...mockClusterSecrets[0],
+        annotations: {
+          ...mockClusterSecrets[0].annotations,
+          'infra.interop.pagopa.it/aws-secretsmanager-version-id': annotation,
+        },
+      };
+      const clusterSecretsMap = new Map([[secret.secretName, secret]]);
+
+      expect(buildRemoteRef(secret.secretName, 'password', clusterSecretsMap)?.version).toBe(expected);
+      expect(buildRemoteRef(secret.secretName, 'password', clusterSecretsMap, true))
+        .not.toHaveProperty('version');
+    });
+
+    it('should preserve absent version annotations', () => {
+      const secret = {
+        ...mockClusterSecrets[0],
+        annotations: {
+          'infra.interop.pagopa.it/aws-secretsmanager-secret-id': 'rds/test',
+        },
+        hasAwsSecretsManagerVersionId: false,
+      };
+      const clusterSecretsMap = new Map([[secret.secretName, secret]]);
+
+      expect(buildRemoteRef(secret.secretName, 'password', clusterSecretsMap)).toEqual({
+        key: 'rds/test',
+        property: 'password',
+      });
+    });
+
     it('should build RemoteRef from cluster annotations', () => {
       const clusterSecretsMap = new Map(mockClusterSecrets.map((s) => [s.secretName, s]));
       const remoteRef = buildRemoteRef('rds-secret', 'password', clusterSecretsMap);
@@ -267,6 +303,28 @@ describe('external-secrets-generator', () => {
   });
 
   describe('generateExternalSecretsFromWorkloads', () => {
+    it('should prefix raw version IDs in both app and Flyway sections', () => {
+      const clusterSecretsMap = new Map(mockClusterSecrets.map((secret) => [
+        secret.secretName,
+        {
+          ...secret,
+          annotations: {
+            ...secret.annotations,
+            'infra.interop.pagopa.it/aws-secretsmanager-version-id': 'raw-version-id',
+          },
+        },
+      ]));
+      const { generated, skipped } = generateExternalSecretsFromWorkloads(mockRepoRecords, clusterSecretsMap);
+
+      expect(skipped).toEqual([]);
+      expect(generated.map((secret) => secret.section)).toEqual(['app', 'flywayInitContainer']);
+      for (const secret of generated) {
+        for (const entry of secret.externalSecretsConfig.data) {
+          expect(entry.remoteRef.version).toBe('uuid/raw-version-id');
+        }
+      }
+    });
+
     it('should generate all external secrets end-to-end', () => {
       const clusterSecretsMap = new Map(mockClusterSecrets.map((s) => [s.secretName, s]));
       const { generated, skipped } = generateExternalSecretsFromWorkloads(mockRepoRecords, clusterSecretsMap);

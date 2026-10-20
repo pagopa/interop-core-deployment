@@ -16,6 +16,7 @@ import {
   AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION,
 } from './k8s-inventory.js';
 import { resolveExternalSecretsSection, type ExternalSecretsSection } from './external-secrets-sections.js';
+import { formatSecretVersion } from '../list-external-secrets.js';
 
 interface WorkloadSecretGroup {
   workloadType: 'microservice' | 'cronjob';
@@ -121,7 +122,7 @@ export function buildRemoteRef(
     key: secretIdAnnotation,
     property: secretKey,
     ...(!omitVersion && secretInfo.annotations[AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION]
-      ? { version: secretInfo.annotations[AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION] }
+      ? { version: formatSecretVersion(secretInfo.annotations[AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION]) }
       : {}),
   };
 }
