@@ -19,12 +19,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_risk_analysis_processing_user
           property: username
-          version: terraform-20260522092912718400000006
+          version: uuid/terraform-20260522092912718400000006
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_risk_analysis_processing_user
           property: password
-          version: terraform-20260522092912718400000006
+          version: uuid/terraform-20260522092912718400000006
 
 cronjob:
   schedule: "0 0 * * *"

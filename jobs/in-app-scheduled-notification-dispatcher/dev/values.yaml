@@ -11,12 +11,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/flyway_user
           property: username
-          version: terraform-20250318135026647200000005
+          version: uuid/terraform-20250318135026647200000005
       - secretKey: FLYWAY_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/flyway_user
           property: password
-          version: terraform-20250318135026647200000005
+          version: uuid/terraform-20250318135026647200000005
   app:
     create: true
     data:
@@ -24,32 +24,32 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_in_app_scheduled_notification_dispatcher_user
           property: username
-          version: terraform-20260603154454143900000008
+          version: uuid/terraform-20260603154454143900000008
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_in_app_scheduled_notification_dispatcher_user
           property: password
-          version: terraform-20260603154454143900000008
+          version: uuid/terraform-20260603154454143900000008
       - secretKey: SCHEDULED_NOTIFICATION_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_in_app_scheduled_notification_dispatcher_user
           property: username
-          version: terraform-20260603154454143900000008
+          version: uuid/terraform-20260603154454143900000008
       - secretKey: SCHEDULED_NOTIFICATION_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_in_app_scheduled_notification_dispatcher_user
           property: password
-          version: terraform-20260603154454143900000008
+          version: uuid/terraform-20260603154454143900000008
       - secretKey: IN_APP_NOTIFICATION_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_in_app_notification_dispatcher_user
           property: username
-          version: terraform-20250930101705379100000002
+          version: uuid/terraform-20250930101705379100000002
       - secretKey: IN_APP_NOTIFICATION_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_in_app_notification_dispatcher_user
           property: password
-          version: terraform-20250930101705379100000002
+          version: uuid/terraform-20250930101705379100000002
 
 cronjob:
   schedule: "30 7 * * 1-5"

@@ -24,12 +24,12 @@ externalSecrets:
         remoteRef:
           key: app/backend/read-model
           property: PROJECTION_USR
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_DB_PASSWORD
         remoteRef:
           key: app/backend/read-model
           property: PROJECTION_PSW
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
 
 deployment:
   env:

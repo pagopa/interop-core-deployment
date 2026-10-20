@@ -20,12 +20,12 @@ externalSecrets:
         remoteRef:
           key: app/backend/event-store
           property: POSTGRES_USR
-          version: 6e4e8f69-be18-4c6e-832a-248bfb462151
+          version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
       - secretKey: FLYWAY_PASSWORD
         remoteRef:
           key: app/backend/event-store
           property: POSTGRES_PSW
-          version: 6e4e8f69-be18-4c6e-832a-248bfb462151
+          version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
   app:
     create: true
     data:
@@ -33,22 +33,22 @@ externalSecrets:
         remoteRef:
           key: app/backend/event-store
           property: POSTGRES_USR
-          version: 6e4e8f69-be18-4c6e-832a-248bfb462151
+          version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
       - secretKey: EVENTSTORE_DB_PASSWORD
         remoteRef:
           key: app/backend/event-store
           property: POSTGRES_PSW
-          version: 6e4e8f69-be18-4c6e-832a-248bfb462151
+          version: uuid/6e4e8f69-be18-4c6e-832a-248bfb462151
       - secretKey: READMODEL_SQL_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_notification_config_process_user
           property: username
-          version: terraform-20250904124836472600000004
+          version: uuid/terraform-20250904124836472600000004
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_notification_config_process_user
           property: password
-          version: terraform-20250904124836472600000004
+          version: uuid/terraform-20250904124836472600000004
 
 deployment:
   flywayInitContainer:

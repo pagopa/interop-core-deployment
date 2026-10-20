@@ -24,7 +24,7 @@ externalSecrets:
         remoteRef:
           key: app/backend/safe-storage-signing-credentials
           property: password
-          version: 5ee4c5b8-5efa-43a2-9fe9-7768484451a6
+          version: uuid/5ee4c5b8-5efa-43a2-9fe9-7768484451a6
 
 deployment:
   envFromConfigmaps:

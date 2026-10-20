@@ -19,12 +19,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/flyway_user
           property: username
-          version: terraform-20250318135026647200000005
+          version: uuid/terraform-20250318135026647200000005
       - secretKey: FLYWAY_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/flyway_user
           property: password
-          version: terraform-20250318135026647200000005
+          version: uuid/terraform-20250318135026647200000005
   app:
     create: true
     data:
@@ -32,12 +32,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_tenant_kind_history_consumer_user
           property: username
-          version: terraform-20260522092912718200000005
+          version: uuid/terraform-20260522092912718200000005
       - secretKey: TENANT_KIND_HISTORY_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_tenant_kind_history_consumer_user
           property: password
-          version: terraform-20260522092912718200000005
+          version: uuid/terraform-20260522092912718200000005
 
 deployment:
   flywayInitContainer:

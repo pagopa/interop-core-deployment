@@ -27,32 +27,32 @@ externalSecrets:
         remoteRef:
           key: app/backend/read-model
           property: READONLY_USR
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_DB_PASSWORD
         remoteRef:
           key: app/backend/read-model
           property: READONLY_PSW
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: SMTP_USERNAME
         remoteRef:
           key: app/backend/smtp-notifications
           property: SMTP_USER
-          version: e3023fd6-ae5d-407f-bde1-a3b70d22c1ac
+          version: uuid/e3023fd6-ae5d-407f-bde1-a3b70d22c1ac
       - secretKey: SMTP_PASSWORD
         remoteRef:
           key: app/backend/smtp-notifications
           property: SMTP_PASSWORD
-          version: e3023fd6-ae5d-407f-bde1-a3b70d22c1ac
+          version: uuid/e3023fd6-ae5d-407f-bde1-a3b70d22c1ac
       - secretKey: READMODEL_SQL_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_notification_email_sender_user
           property: username
-          version: terraform-20250610121723506800000010
+          version: uuid/terraform-20250610121723506800000010
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_notification_email_sender_user
           property: password
-          version: terraform-20250610121723506800000010
+          version: uuid/terraform-20250610121723506800000010
 
 deployment:
   env:

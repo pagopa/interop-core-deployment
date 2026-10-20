@@ -29,7 +29,7 @@ externalSecrets:
         remoteRef:
           key: app/backend/selfcare-v2
           property: SELFCARE_BROKER_CONNECTION_STRING
-          version: 833a6680-7f16-45ed-ba65-55c3bd4407d1
+          version: uuid/833a6680-7f16-45ed-ba65-55c3bd4407d1
 
 deployment:
   envFromConfigmaps:

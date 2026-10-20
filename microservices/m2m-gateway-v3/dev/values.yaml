@@ -48,7 +48,7 @@ externalSecrets:
         remoteRef:
           key: app/backend/selfcare-v2
           property: SELFCARE_V2_API_KEY
-          version: 833a6680-7f16-45ed-ba65-55c3bd4407d1
+          version: uuid/833a6680-7f16-45ed-ba65-55c3bd4407d1
 
 deployment:
   env:

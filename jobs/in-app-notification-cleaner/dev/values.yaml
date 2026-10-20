@@ -8,12 +8,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_in_app_notification_cleaner_user
           property: username
-          version: terraform-20251210173024609000000002
+          version: uuid/terraform-20251210173024609000000002
       - secretKey: IN_APP_NOTIFICATION_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_in_app_notification_cleaner_user
           property: password
-          version: terraform-20251210173024609000000002
+          version: uuid/terraform-20251210173024609000000002
 
 cronjob:
   schedule: "0 3 * * *"
