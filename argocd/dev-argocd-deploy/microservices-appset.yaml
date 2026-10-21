@@ -107,7 +107,7 @@ spec:
                 - path: microservices/events-signer/dev-argocd-deploy
                   exclude: true
                 - path: microservices/frontend/dev-argocd-deploy
-                  exclude: true
+                  exclude: false
                 - path: microservices/in-app-notification-dispatcher/dev-argocd-deploy
                   exclude: true
                 - path: microservices/in-app-notification-manager/dev-argocd-deploy
@@ -222,7 +222,6 @@ spec:
           jsonPointers:
             - /data
       syncPolicy:
-        automated: {}
         syncOptions:
           - CreateNamespace=false
           - RespectIgnoreDifferences=true
