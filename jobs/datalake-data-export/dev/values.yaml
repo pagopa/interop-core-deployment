@@ -6,6 +6,31 @@ serviceAccount:
 configmap:
   DATALAKE_STORAGE_BUCKET: "interop-data-lake-exports-dev-es1"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_datalake_data_export_user
+          property: username
+          version: uuid/terraform-20250610121723506800000011
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_datalake_data_export_user
+          property: password
+          version: uuid/terraform-20250610121723506800000011
+
 cronjob:
   schedule: "45 6 * * *"
   failedJobsHistoryLimit: 1
@@ -36,8 +61,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-datalake-data-export-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-datalake-data-export-user.password"

@@ -40,6 +40,16 @@ configmap:
   INTEGRITY_REST_JWT_ISSUER: "https://api.dev.interop.pagopa.it"
   INTEGRITY_REST_JWT_SECONDS_DURATION: 100
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: SELFCARE_V2_API_KEY
+        remoteRef:
+          key: app/backend/selfcare-v2
+          property: SELFCARE_V2_API_KEY
+          version: uuid/833a6680-7f16-45ed-ba65-55c3bd4407d1
+
 deployment:
   env:
     HOST: "0.0.0.0"
@@ -70,8 +80,6 @@ deployment:
     RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
     RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
     SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
-  envFromSecrets:
-    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
   livenessProbe:
     httpGet:
       path: "/m2m-gateway/v3/status"

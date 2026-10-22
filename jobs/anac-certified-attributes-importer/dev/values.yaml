@@ -15,6 +15,46 @@ configmap:
   ANAC_TENANT_ID: "e99c1081-8fcb-4701-a461-ac2725b18fe7"
   RECORDS_PROCESS_BATCH_SIZE: "100"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: SFTP_HOST
+        remoteRef:
+          key: app/backend/anac
+          property: SFTP_HOST
+          version: uuid/29f07b6f-0076-4728-88fa-6c48cba085f5
+      - secretKey: SFTP_USERNAME
+        remoteRef:
+          key: app/backend/anac
+          property: SFTP_USERNAME
+          version: uuid/29f07b6f-0076-4728-88fa-6c48cba085f5
+      - secretKey: SFTP_PASSWORD
+        remoteRef:
+          key: app/backend/anac
+          property: SFTP_PASSWORD
+          version: uuid/29f07b6f-0076-4728-88fa-6c48cba085f5
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_anac_certified_attributes_importer_user
+          property: username
+          version: uuid/terraform-20250610121142984500000004
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_anac_certified_attributes_importer_user
+          property: password
+          version: uuid/terraform-20250610121142984500000004
+
 cronjob:
   schedule: "15 5,11,17,23 * * *"
   failedJobsHistoryLimit: 1
@@ -46,11 +86,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    SFTP_HOST: "anac.SFTP_HOST"
-    SFTP_USERNAME: "anac.SFTP_USERNAME"
-    SFTP_PASSWORD: "anac.SFTP_PASSWORD"
-    READMODEL_SQL_DB_USERNAME: "platform-data-anac-certified-attributes-importer-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-anac-certified-attributes-importer-user.password"

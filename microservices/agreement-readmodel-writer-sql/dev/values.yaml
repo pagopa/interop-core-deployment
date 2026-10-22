@@ -11,6 +11,34 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-agreement-readmodel-writer-sql"
   TOPIC_STARTING_OFFSET: "earliest"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: username
+          version: uuid/terraform-20250318135026647200000005
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: password
+          version: uuid/terraform-20250318135026647200000005
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_agreement_rmw_user
+          property: username
+          version: uuid/terraform-20250402124805090600000004
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_agreement_rmw_user
+          property: password
+          version: uuid/terraform-20250402124805090600000004
+
 deployment:
   flywayInitContainer:
     create: true
@@ -25,9 +53,6 @@ deployment:
       POSTGRES_HOST: "common-read-model-sql.DB_HOST_RW"
       POSTGRES_PORT: "common-read-model-sql.DB_PORT"
       POSTGRES_DB: "common-read-model-sql.DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
@@ -49,9 +74,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-  envFromSecrets:   
-    READMODEL_SQL_DB_USERNAME: "platform-data-agreement-rmw-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-agreement-rmw-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"

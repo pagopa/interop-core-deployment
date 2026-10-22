@@ -9,13 +9,13 @@ metadata:
     app.kubernetes.io/part-of: interop-dev-common-cm
     argocd.argoproj.io/instance: interop-appset-dev-common-cm
 spec:
-  project: default
+  project: interop-core-dev
   destination:
     server: https://kubernetes.default.svc
     namespace: dev
   source:
     repoURL: https://github.com/pagopa/interop-core-deployment.git
-    targetRevision: feature/argocd
+    targetRevision: feature/pin-10592-external-secrets-values-generator-output
     path: commons/dev/configmaps
     directory:
       recurse: true

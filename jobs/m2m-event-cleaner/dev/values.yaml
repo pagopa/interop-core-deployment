@@ -6,6 +6,21 @@ serviceAccount:
 configmap:
   DELETE_OLDER_THAN_DAYS: "30"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: M2M_EVENT_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_m2m_event_cleaner_user
+          property: username
+          version: uuid/terraform-20251201084353520600000002
+      - secretKey: M2M_EVENT_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_m2m_event_cleaner_user
+          property: password
+          version: uuid/terraform-20251201084353520600000002
+
 cronjob:
   schedule: "0 4 * * *"
   failedJobsHistoryLimit: 1
@@ -18,6 +33,3 @@ cronjob:
     M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
     M2M_EVENT_DB_USE_SSL: "common-m2m-events-db.DB_USE_SSL"
     M2M_EVENT_DB_SCHEMA: "common-m2m-events-db.DB_SCHEMA"
-  envFromSecrets:
-    M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-cleaner-user.username"
-    M2M_EVENT_DB_PASSWORD: "platform-data-m2m-event-cleaner-user.password"
