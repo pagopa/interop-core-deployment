@@ -11,21 +11,21 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { parseK8sArgs } from './lib/k8s-cli.js';
-import { initializeK8sClient, verifyClusterAccess, fetchSecretsInventory } from './lib/k8s-client.js';
-import { extractSecretReferencesFromCluster } from './lib/k8s-secret-extractor.js';
+import { parseK8sArgs } from '../lib/k8s-cli.js';
+import { initializeK8sClient, verifyClusterAccess, fetchSecretsInventory } from '../lib/k8s-client.js';
+import { extractSecretReferencesFromCluster } from '../lib/k8s-secret-extractor.js';
 import {
   buildSecretInventory,
   formatInventoryForOutput,
   formatInventoryWorkloadCentric,
-} from './lib/k8s-inventory.js';
-import { csvEscape } from './lib/csv.js';
-import type { SecretCentricOutputRecord, WorkloadCentricOutputRecord } from './lib/k8s-inventory.js';
+} from '../lib/k8s-inventory.js';
+import { csvEscape } from '../lib/csv.js';
+import type { SecretCentricOutputRecord, WorkloadCentricOutputRecord } from '../lib/k8s-inventory.js';
 import {
   getWorkloadFilterSuffix,
   hasWorkloadFilters,
   selectWorkloads,
-} from './lib/workload-filter.js';
+} from '../lib/workload-filter.js';
 
 interface InventoryOutputRecord {
   secretName: string;

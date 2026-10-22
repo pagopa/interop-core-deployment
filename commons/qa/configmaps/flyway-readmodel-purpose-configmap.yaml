@@ -227,3 +227,10 @@ data:
 
   V1.17__Add_WaitingForApprovalReason_PurposeVersion.sql: |-
     ALTER TABLE "${NAMESPACE}_purpose".purpose_version ADD COLUMN IF NOT EXISTS waiting_for_approval_reason VARCHAR;
+
+  V1.18__Update_reviewer_workflow.sql: |-
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS risk_analysis_review_mode VARCHAR;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_signed_at TIMESTAMP WITH TIME ZONE;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_rejected_by UUID;
+    ALTER TABLE "${NAMESPACE}_purpose".purpose ADD COLUMN IF NOT EXISTS reviewer_workflow_rejected_at TIMESTAMP WITH TIME ZONE;
+    ALTER TABLE "${NAMESPACE}_purpose".risk_analysis_reviewer ADD COLUMN IF NOT EXISTS sent_to_reviewer_at TIMESTAMP WITH TIME ZONE;

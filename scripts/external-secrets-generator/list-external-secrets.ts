@@ -12,17 +12,17 @@ import * as fs from "fs";
 import * as path from "path";
 import { parseDocument } from "yaml";
 import { parse as parseYaml } from "yaml";
-import { createAwsClient, fetchLatestSecretVersion } from "./lib/aws-secrets-manager.js";
-import type { AwsSecretVersion } from "./lib/aws-secrets-manager.js";
-import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from "./lib/external-secrets-sections.js";
-import { walkWorkloads } from "./lib/workload.js";
-import type { WorkloadType } from "./lib/types.js";
+import { createAwsClient, fetchLatestSecretVersion } from "../lib/aws-secrets-manager.js";
+import type { AwsSecretVersion } from "../lib/aws-secrets-manager.js";
+import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from "../lib/external-secrets-sections.js";
+import { walkWorkloads } from "../lib/workload.js";
+import type { WorkloadType } from "../lib/types.js";
 import {
   getWorkloadFilterSuffix,
   selectWorkloads,
   type WorkloadFilters,
   validateWorkloadFilterValue,
-} from './lib/workload-filter.js';
+} from '../lib/workload-filter.js';
 
 // ---------------------------------------------------------------------------
 // Types

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatSecretVersion } from '../../list-external-secrets.js';
+import { formatSecretVersion } from '../../external-secrets-generator/list-external-secrets.js';
 
 describe('list-external-secrets version formatting', () => {
   it.each([
