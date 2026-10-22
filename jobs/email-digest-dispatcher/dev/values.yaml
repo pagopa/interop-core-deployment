@@ -16,7 +16,7 @@ cronjob:
 
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "flyway-digest-tracking"
+    migrationDomain: "flyway-digest-tracking"
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true

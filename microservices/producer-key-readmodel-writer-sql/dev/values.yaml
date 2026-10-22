@@ -14,7 +14,7 @@ configmap:
 deployment:
   flywayInitContainer:
     create: true
-    migrationsConfigmap: "flyway-read-model-producer-key"
+    migrationDomain: "flyway-read-model-producer-key"
     env:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
