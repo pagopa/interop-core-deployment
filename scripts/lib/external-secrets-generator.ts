@@ -16,7 +16,7 @@ import {
   AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION,
 } from './k8s-inventory.js';
 import { resolveExternalSecretsSection, type ExternalSecretsSection } from './external-secrets-sections.js';
-import { formatSecretVersion } from '../list-external-secrets.js';
+import { formatSecretVersion } from '../external-secrets-generator/list-external-secrets.js';
 
 interface WorkloadSecretGroup {
   workloadType: 'microservice' | 'cronjob';

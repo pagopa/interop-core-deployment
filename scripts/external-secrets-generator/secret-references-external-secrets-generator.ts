@@ -23,23 +23,23 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { initializeK8sClient, verifyClusterAccess, fetchSecretsInventory } from './lib/k8s-client.js';
-import { buildSecretInventory, formatInventoryForOutput } from './lib/k8s-inventory.js';
-import { walkWorkloads, inventoryWorkload } from './lib/workload.js';
-import { extractSecretReferencesFromCluster } from './lib/k8s-secret-extractor.js';
+import { initializeK8sClient, verifyClusterAccess, fetchSecretsInventory } from '../lib/k8s-client.js';
+import { buildSecretInventory, formatInventoryForOutput } from '../lib/k8s-inventory.js';
+import { walkWorkloads, inventoryWorkload } from '../lib/workload.js';
+import { extractSecretReferencesFromCluster } from '../lib/k8s-secret-extractor.js';
 import {
   generateExternalSecretsFromWorkloads,
   buildClusterSecretsMap,
-} from './lib/external-secrets-generator.js';
-import { applyExternalSecretsToWorkload, createBackup } from './lib/values-yaml-patcher.js';
-import type { ExternalSecretsGeneratorConfig, MigrationReport } from './lib/external-secrets-types.js';
-import type { WorkloadType } from './lib/types.js';
+} from '../lib/external-secrets-generator.js';
+import { applyExternalSecretsToWorkload, createBackup } from '../lib/values-yaml-patcher.js';
+import type { ExternalSecretsGeneratorConfig, MigrationReport } from '../lib/external-secrets-types.js';
+import type { WorkloadType } from '../lib/types.js';
 import {
   assertScopeNotCombinedWithFilters,
   getWorkloadFilterSuffix,
   selectWorkloads,
   validateWorkloadFilterValue,
-} from './lib/workload-filter.js';
+} from '../lib/workload-filter.js';
 
 /**
  * Parse command-line arguments
@@ -240,7 +240,7 @@ async function main(): Promise<void> {
     console.log(`   Omit remoteRef version: ${config.omitVersion}`);
     console.log(`   Dry run: ${config.dryRun}\n`);
 
-    const { initializeCommonsExternalSecrets } = await import('./lib/values-yaml-patcher.js');
+    const { initializeCommonsExternalSecrets } = await import('../lib/values-yaml-patcher.js');
     const commonsEnvPath = path.join(rootDir, 'commons', config.env);
     const processMicroservices = config.microservice
       ? true

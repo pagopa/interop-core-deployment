@@ -89,7 +89,7 @@ export function parseOutputFormat(value: string): OutputFormat {
  */
 function printHelp(): void {
   console.log(`Usage:
-  node scripts/secret-references-repo-inventory.js --env dev [options]
+  node scripts/external-secrets-generator/secret-references-repo-inventory.js --env dev [options]
   npm run secret-references-repo-inventory -- --env dev [options]
 
 Options:
@@ -101,7 +101,7 @@ Options:
       --cronjob <name>      Only scan this folder under jobs/
 
 Examples:
-  node scripts/secret-references-repo-inventory.js --env dev
+  node scripts/external-secrets-generator/secret-references-repo-inventory.js --env dev
   npm run secret-references-repo-inventory -- --env qa --format both --output-dir reports/secrets
 `);
 }

@@ -1,17 +1,17 @@
 import * as fs from "fs";
 import * as path from "path";
-import { parseArgs } from "./lib/cli.js";
-import { toCsv } from "./lib/csv.js";
-import type { CliArgs, SecretReferenceRecord } from "./lib/types.js";
-import { dedupe, inventoryWorkload, walkWorkloads } from "./lib/workload.js";
-import { getWorkloadFilterSuffix, selectWorkloads } from './lib/workload-filter.js';
+import { parseArgs } from "../lib/cli.js";
+import { toCsv } from "../lib/csv.js";
+import type { CliArgs, SecretReferenceRecord } from "../lib/types.js";
+import { dedupe, inventoryWorkload, walkWorkloads } from "../lib/workload.js";
+import { getWorkloadFilterSuffix, selectWorkloads } from '../lib/workload-filter.js';
 
 // Re-export public API so external consumers can import from a single entry point.
-export type { OutputFormat, ReferenceType, RecordContext, SecretReferenceRecord, SourceScope, WorkloadType } from "./lib/types.js";
-export { parseArgs, parseOutputFormat } from "./lib/cli.js";
-export { CSV_COLUMNS, csvEscape, toCsv } from "./lib/csv.js";
-export { collectSecretReferencesFromFile, parseSecretAddress, yamlPathToString } from "./lib/yaml-walker.js";
-export { dedupe, inventoryWorkload, walkWorkloads } from "./lib/workload.js";
+export type { OutputFormat, ReferenceType, RecordContext, SecretReferenceRecord, SourceScope, WorkloadType } from "../lib/types.js";
+export { parseArgs, parseOutputFormat } from "../lib/cli.js";
+export { CSV_COLUMNS, csvEscape, toCsv } from "../lib/csv.js";
+export { collectSecretReferencesFromFile, parseSecretAddress, yamlPathToString } from "../lib/yaml-walker.js";
+export { dedupe, inventoryWorkload, walkWorkloads } from "../lib/workload.js";
 
 /**
  * Write the selected output formats to disk.
