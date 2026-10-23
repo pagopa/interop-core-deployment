@@ -65,6 +65,8 @@ jobs:
   initChecks:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.environment }}
+    outputs:
+      infra_commons_tag_computed: ${{ steps.extract-deploy-wf-tag.outputs.infra_commons_tag_computed }}
     steps:
       - name: Check user is a ${{ vars.ALLOWED_DEPLOY_GH_TEAMS }} team member
         id: checkUserPermissions
