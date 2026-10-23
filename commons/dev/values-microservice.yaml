@@ -1,5 +1,5 @@
 namespace: dev
-deployMode: "KUBECTL_APPLY"
+deployMode: "HELM_UPGRADE"
 
 service:
   targetPort: http
