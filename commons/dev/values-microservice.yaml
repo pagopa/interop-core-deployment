@@ -1,4 +1,5 @@
 namespace: dev
+deployMode: "HELM_UPGRADE"
 
 service:
   targetPort: http
