@@ -106,6 +106,49 @@ jobs:
 
           echo "$USER has the correct permissions to execute the workflow."
 
+      - name: Checkout repo @ current ref
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Extract deployment reusable workflow used tag
+        id: extract-deploy-wf-tag
+        env:
+          INFRA_COMMONS_TAG: ${{ vars.INFRA_COMMONS_TAG }}
+        run: |
+          set -euo pipefail
+
+          WORKFLOW_FILE=".github/workflows/deployment.yaml"
+
+          if [[ ! -f "$WORKFLOW_FILE" ]]; then
+            echo "::error:: Workflow file '$WORKFLOW_FILE' not found."
+            exit 1
+          fi
+          job_content=$(yq e '.jobs.deploy // ""' .github/workflows/deployment.yaml)
+          if [[ -z "$job_content" ]]; then
+            echo "::error:: 'deploy' job not found in the workflow file."
+            exit 1
+          fi
+
+          fullref=$(yq e '.jobs."deploy".uses' .github/workflows/deployment.yaml)
+
+          tag=${fullref#*@}
+
+          echo "fullref=$fullref"
+          echo "tag=$tag"
+
+          if [[ -n "$INFRA_COMMONS_TAG" ]]; then
+            final_tag="$INFRA_COMMONS_TAG"
+          else
+            final_tag="$tag"
+          fi
+          echo "infra_commons_tag_computed=$final_tag" >> $GITHUB_OUTPUT
+
+      - name: Show extracted tag
+        env:
+          INFRA_COMMONS_TAG_COMPUTED: ${{ steps.extract-deploy-wf-tag.outputs.infra_commons_tag_computed }}
+        run: echo "infra_commons_tag_computed = $INFRA_COMMONS_TAG_COMPUTED"
+
   create_runner:
     name: Create Self-Hosted Runner
     runs-on: ubuntu-22.04
@@ -153,14 +196,14 @@ jobs:
 #  we want to apply secrets to k8s (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success')
  
   deploy:
-    needs: [ create_runner, tf_apply_secrets ]
+    needs: [ initChecks,create_runner, tf_apply_secrets ]
     secrets: inherit
     if: ${{ !cancelled() && needs.create_runner.result == 'success' && (inputs.run_k8s_workflow && ((!inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'skipped') || (inputs.run_tf_apply_secrets_workflow && needs.tf_apply_secrets.result == 'success'))) }}
     uses: pagopa/interop-infra-commons/.github/workflows/common-k8s-deploy.yaml@e09d53f2453f907db9794102ec04ef27c19cc6aa
     with:
       environment: ${{ inputs.environment }}
       timeout_seconds: 300
-      infra_commons_tag: ${{ vars.INFRA_COMMONS_TAG || 'e09d53f2453f907db9794102ec04ef27c19cc6aa' }}
+      infra_commons_tag: ${{ needs.initChecks.outputs.infra_commons_tag_computed }}
       enable_force_upgrade: ${{ inputs.enable_force_upgrade }}
 
   delete_runner:
