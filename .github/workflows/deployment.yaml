@@ -139,11 +139,11 @@ jobs:
           echo "fullref=$fullref"
           echo "tag=$tag"
 
-          if [[ -n "$INFRA_COMMONS_TAG" ]]; then
-            final_tag="$INFRA_COMMONS_TAG"
-          else
-            final_tag="$tag"
-          fi
+          # if [[ -n "$INFRA_COMMONS_TAG" ]]; then
+          #   final_tag="$INFRA_COMMONS_TAG"
+          # else
+          final_tag="$tag"
+          # fi
           echo "infra_commons_tag_computed=$final_tag" >> $GITHUB_OUTPUT
 
       - name: Show extracted tag
