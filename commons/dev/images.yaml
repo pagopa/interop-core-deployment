@@ -87,7 +87,7 @@ images:
     events-signer:
       tag: "develop"
     frontend:
-      tag: "2.8.0.RC1"
+      tag: "dev-latest"
     in-app-notification-manager:
       tag: "develop"
     in-app-notification-dispatcher:
