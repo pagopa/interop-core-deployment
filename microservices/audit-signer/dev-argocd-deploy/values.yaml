@@ -9,7 +9,7 @@ service:
 
 configmap:
   FILE_KIND: "VOUCHER_AUDIT"
-  SQS_MAX_NUMBER_OF_MSGS: "5"
+  SQS_MAX_NUMBER_OF_MSGS: "6"
   SQS_LONG_POLL_WAIT_TIME_SECONDS: "20"
   SQS_VISIBILITY_TIMEOUT_SECONDS: "20"
   S3_BUCKET: "interop-generated-jwt-details-{{.Values.local.env}}-es1"
