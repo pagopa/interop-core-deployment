@@ -1,0 +1,106 @@
+name: Deployment mode guard
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment to validate; can be a single value or if it's empty it validates all registered environments
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Deployment mode guard
+    runs-on: ubuntu-22.04
+    env:
+      # Move an environment here after its successful kubectl apply split migration.
+      MIGRATED_ENVIRONMENTS: ''
+      NON_MIGRATED_ENVIRONMENTS: 'dev test qa vapt att prod'
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Validate deployment modes
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          read -r -a migrated <<< "$MIGRATED_ENVIRONMENTS"
+          read -r -a non_migrated <<< "$NON_MIGRATED_ENVIRONMENTS"
+          environments=("${migrated[@]}" "${non_migrated[@]}")
+          registered=" "
+
+          if [[ ${#environments[@]} -eq 0 ]]; then
+            echo "::error::The environment registry must not be empty."
+            exit 1
+          fi
+
+          for environment in "${environments[@]}"; do
+            if [[ "$registered" == *" $environment "* ]]; then
+              echo "::error::Environment '$environment' is duplicated or belongs to both migration lists."
+              exit 1
+            fi
+            registered+="$environment "
+          done
+
+          if [[ -n "$TARGET_ENVIRONMENT" ]]; then
+            if [[ "$registered" != *" $TARGET_ENVIRONMENT "* ]]; then
+              echo "::error::Environment '$TARGET_ENVIRONMENT' is not registered in either migration list."
+              exit 1
+            fi
+            
+            # If a specific target environment is provided, only validate that environment.
+            environments=("$TARGET_ENVIRONMENT")
+          fi
+
+          for environment in "${environments[@]}"; do
+            is_migrated=false
+            for migrated_environment in "${migrated[@]}"; do
+              if [[ "$environment" == "$migrated_environment" ]]; then
+                is_migrated=true
+                break
+              fi
+            done
+
+            for workload in microservice cronjob; do
+              file="commons/$environment/values-$workload.yaml"
+              if [[ ! -f "$file" ]]; then
+                echo "::error file=$file::Values file not found."
+                exit 1
+              fi
+
+              mode=$(yq -r '.deployMode' "$file")
+              has_mode=$(yq e 'has("deployMode")' "$file")
+              is_valid_mode=false
+              case "$mode" in
+                HELM_UPGRADE|KUBECTL_APPLY)
+                  is_valid_mode=true
+                  ;;
+              esac
+
+              if [[ "$is_migrated" == true ]]; then
+                if [[ "$mode" != "KUBECTL_APPLY" ]]; then
+                  echo "::error file=$file::Migrated environment '$environment' requires explicit deployMode: KUBECTL_APPLY; found '$mode'. Helm upgrade is forbidden."
+                  exit 1
+                fi
+              elif [[ "$has_mode" == true && "$is_valid_mode" == false ]]; then
+                echo "::error file=$file::Invalid deployMode '$mode'. Expected HELM_UPGRADE or KUBECTL_APPLY, or an absent key for a non-migrated environment."
+                exit 1
+              fi
+              echo "$environment / $workload: migrated=$is_migrated, deployMode=$mode"
+            done
+
+          done
+
+          {
+            echo "### Deployment mode guard"
+            echo "- Migrated environments: ${MIGRATED_ENVIRONMENTS:-none}"
+            echo "- Non-migrated environments: ${NON_MIGRATED_ENVIRONMENTS:-none}"
+            echo "- Validated environments: ${environments[*]}"
+          } >> "$GITHUB_STEP_SUMMARY"

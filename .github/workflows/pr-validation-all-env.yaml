@@ -9,6 +9,9 @@ permissions:
   contents: read
 
 jobs:
+  check_deploy_mode:
+    uses: ./.github/workflows/check-deploy-mode.yaml
+
   extract-infra-commons-tag:
     name: "Setup validation"
     runs-on: ubuntu-22.04
@@ -110,15 +113,17 @@ jobs:
   validation_result:
     name: "Validation Result"
     runs-on: ubuntu-22.04
-    needs: [validation_all_env]
+    needs: [validation_all_env, check_deploy_mode]
     if: ${{ always() }}
     steps:
       - name: Check validation results
         env:
           VALIDATION_RESULT: ${{ needs.validation_all_env.result }}
+          DEPLOY_MODE_RESULT: ${{ needs.check_deploy_mode.result }}
         run: |
           echo "Validation (all environments) result: $VALIDATION_RESULT"
-          if [[ "$VALIDATION_RESULT" != "success" ]]; then
+          echo "Deployment mode guard result: $DEPLOY_MODE_RESULT"
+          if [[ "$VALIDATION_RESULT" != "success" || "$DEPLOY_MODE_RESULT" != "success" ]]; then
             echo "::error::One or more validation jobs did not succeed"
             exit 1
           fi

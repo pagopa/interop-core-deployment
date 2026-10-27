@@ -34,6 +34,11 @@ permissions:
   contents: read
 
 jobs:
+  check_deploy_mode:
+    uses: ./.github/workflows/check-deploy-mode.yaml
+    with:
+      environment: ${{ inputs.environment }}
+
   print_inputs:
     runs-on: ubuntu-24.04
     environment: ${{ inputs.environment }}
@@ -156,7 +161,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ inputs.run_k8s_workflow || inputs.run_tf_apply_secrets_workflow }}
     environment: ${{ inputs.environment }}
-    needs: [ initChecks ]
+    needs: [ initChecks, check_deploy_mode ]
     outputs:
       ecs_task_id: ${{ steps.start_runner.outputs.ecs_task_id }}
     strategy:
@@ -230,7 +235,7 @@ jobs:
           environment: ${{ inputs.environment }}
 
   tf_apply_monitoring:
-    needs: [ initChecks ]
+    needs: [ initChecks, check_deploy_mode ]
     secrets: inherit
     if: ${{ inputs.run_tf_apply_monitoring_workflow }}
     uses: ./.github/workflows/tf-apply-monitoring.yaml
