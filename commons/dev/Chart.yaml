@@ -8,6 +8,6 @@ dependencies:
     version: 1.49.0
     repository: "https://pagopa.github.io/interop-eks-microservice-chart"
   - name: interop-eks-cronjob-chart
-    version: 1.18.0
+    version: 1.19.0
     repository: "https://pagopa.github.io/interop-eks-cronjob-chart"
 
