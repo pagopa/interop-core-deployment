@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       # Move an environment here after its successful kubectl apply split migration.
-      MIGRATED_ENVIRONMENTS: ''
-      NON_MIGRATED_ENVIRONMENTS: 'dev test qa vapt att prod'
+      MIGRATED_ENVIRONMENTS: 'dev'
+      NON_MIGRATED_ENVIRONMENTS: 'test qa vapt att prod'
     steps:
       - name: Checkout caller repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
