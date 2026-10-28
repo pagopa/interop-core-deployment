@@ -188,44 +188,44 @@ spec:
       namespace: argocd
     spec:
       project: interop-core-dev
-      # source:
-      #   repoURL: https://github.com/pagopa/interop-core-deployment.git
-      #   targetRevision: PIN-11112_testing-deploy-via-argocd
-      #   path: .
-      #   plugin:
-      #     name: infra-commons-microservices-plugin
-      #     env:
-      #       - name: ENV
-      #         value: dev-argocd-deploy
-      #       - name: SERVICE
-      #         value: "{{ index .ms.path.segments 1 }}"
-      #       - name: IMAGES_FILE
-      #         value: commons/dev-argocd-deploy/images.yaml
-      sources:
-        - repoURL: https://github.com/pagopa/interop-core-deployment.git
-          # repoURL: git@github.com:pagopa/interop-core-deployment.git
-          targetRevision: PIN-11112_testing-deploy-via-argocd
-          ref: values
-        - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
-          chart: interop-eks-microservice-chart
-          targetRevision: 1.48.0
-          helm:
-            releaseName: "{{index .ms.path.segments 1}}"
-            valueFiles:
-              #- $values/commons/dev/values-commons.yaml
-              - $values/commons/dev-argocd-deploy/values-microservice.yaml
-              - $values/microservices/{{index .ms.path.segments 1}}/dev-argocd-deploy/values.yaml
-              #- $values/commons/dev/migrations/flyway*.yaml
-              - $values/commons/dev-argocd-deploy/images.yaml
-            ignoreMissingValueFiles: true
-            values: |
-              {{- $images := .images | default dict -}}
-              {{- $msmap := (index $images "microservices") | default dict -}}
-              {{- $ms := (index $msmap (index .ms.path.segments 1)) | default dict -}}
-              deployment:
-                image:
-                  tag: {{ get $ms "tag" | default "" }}
-                  digest: {{ get $ms "digest" | default "" }}
+      source:
+        repoURL: https://github.com/pagopa/interop-core-deployment.git
+        targetRevision: PIN-11112_testing-deploy-via-argocd
+        path: .
+        plugin:
+          name: infra-commons-microservices-plugin
+          env:
+            - name: ENV
+              value: dev-argocd-deploy
+            - name: SERVICE
+              value: "{{ index .ms.path.segments 1 }}"
+            - name: IMAGES_FILE
+              value: commons/dev-argocd-deploy/images.yaml
+      # sources:
+      #   - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      #     # repoURL: git@github.com:pagopa/interop-core-deployment.git
+      #     targetRevision: PIN-11112_testing-deploy-via-argocd
+      #     ref: values
+      #   - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
+      #     chart: interop-eks-microservice-chart
+      #     targetRevision: 1.48.0
+      #     helm:
+      #       releaseName: "{{index .ms.path.segments 1}}"
+      #       valueFiles:
+      #         #- $values/commons/dev/values-commons.yaml
+      #         - $values/commons/dev-argocd-deploy/values-microservice.yaml
+      #         - $values/microservices/{{index .ms.path.segments 1}}/dev-argocd-deploy/values.yaml
+      #         #- $values/commons/dev/migrations/flyway*.yaml
+      #         - $values/commons/dev-argocd-deploy/images.yaml
+      #       ignoreMissingValueFiles: true
+      #       values: |
+      #         {{- $images := .images | default dict -}}
+      #         {{- $msmap := (index $images "microservices") | default dict -}}
+      #         {{- $ms := (index $msmap (index .ms.path.segments 1)) | default dict -}}
+      #         deployment:
+      #           image:
+      #             tag: {{ get $ms "tag" | default "" }}
+      #             digest: {{ get $ms "digest" | default "" }}
       destination:
         server: https://kubernetes.default.svc
         namespace: dev-argocd-deploy

@@ -36,44 +36,44 @@ spec:
       namespace: argocd
     spec:
       project: interop-core-dev
-    #   source:
-    #     repoURL: https://github.com/pagopa/interop-core-deployment.git
-    #     targetRevision: PIN-11112_testing-deploy-via-argocd
-    #     path: .
-    #     plugin:
-    #       name: infra-commons-cronjobs-plugin
-    #       env:
-    #         - name: ENV
-    #           value: dev-argocd-deploy
-    #         - name: CRONJOB
-    #           value: "{{ index .cj.path.segments 1 }}"
-    #         - name: IMAGES_FILE
-    #           value: commons/dev-argocd-deploy/images.yaml
-      sources:
-        - repoURL: https://github.com/pagopa/interop-core-deployment.git
-          # repoURL: git@github.com:pagopa/interop-core-deployment.git
-          targetRevision: PIN-11112_testing-deploy-via-argocd
-          ref: values
-        - repoURL: https://pagopa.github.io/interop-eks-cronjob-chart
-          chart: interop-eks-cronjob-chart
-          targetRevision: 1.18.0
-          helm:
-            releaseName: "{{index .cj.path.segments 1}}"
-            valueFiles:
-              #- $values/commons/dev/values-commons.yaml
-              - $values/commons/dev-argocd-deploy/values-cronjob.yaml
-              - $values/jobs/{{index .cj.path.segments 1}}/dev-argocd-deploy/values.yaml
-              #- $values/commons/dev/migrations/flyway*.yaml
-              - $values/commons/dev-argocd-deploy/images.yaml
-            ignoreMissingValueFiles: true
-            values: |
-              {{- $images := .images | default dict -}}
-              {{- $jobsmap := (index $images "jobs") | default dict -}}
-              {{- $cj := (index $jobsmap (index .cj.path.segments 1)) | default dict -}}
-              cronjob:
-                image:
-                  tag: {{ get $cj "tag" | default "" }}
-                  digest: {{ get $cj "digest" | default "" }}
+      source:
+        repoURL: https://github.com/pagopa/interop-core-deployment.git
+        targetRevision: PIN-11112_testing-deploy-via-argocd
+        path: .
+        plugin:
+          name: infra-commons-cronjobs-plugin
+          env:
+            - name: ENV
+              value: dev-argocd-deploy
+            - name: CRONJOB
+              value: "{{ index .cj.path.segments 1 }}"
+            - name: IMAGES_FILE
+              value: commons/dev-argocd-deploy/images.yaml
+      # sources:
+      #   - repoURL: https://github.com/pagopa/interop-core-deployment.git
+      #     # repoURL: git@github.com:pagopa/interop-core-deployment.git
+      #     targetRevision: PIN-11112_testing-deploy-via-argocd
+      #     ref: values
+      #   - repoURL: https://pagopa.github.io/interop-eks-cronjob-chart
+      #     chart: interop-eks-cronjob-chart
+      #     targetRevision: 1.18.0
+      #     helm:
+      #       releaseName: "{{index .cj.path.segments 1}}"
+      #       valueFiles:
+      #         #- $values/commons/dev/values-commons.yaml
+      #         - $values/commons/dev-argocd-deploy/values-cronjob.yaml
+      #         - $values/jobs/{{index .cj.path.segments 1}}/dev-argocd-deploy/values.yaml
+      #         #- $values/commons/dev/migrations/flyway*.yaml
+      #         - $values/commons/dev-argocd-deploy/images.yaml
+      #       ignoreMissingValueFiles: true
+      #       values: |
+      #         {{- $images := .images | default dict -}}
+      #         {{- $jobsmap := (index $images "jobs") | default dict -}}
+      #         {{- $cj := (index $jobsmap (index .cj.path.segments 1)) | default dict -}}
+      #         cronjob:
+      #           image:
+      #             tag: {{ get $cj "tag" | default "" }}
+      #             digest: {{ get $cj "digest" | default "" }}
       destination:
         server: https://kubernetes.default.svc
         namespace: dev-argocd-deploy
