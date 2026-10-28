@@ -68,6 +68,7 @@ jobs:
               fi
             done
 
+            workload_modes=()
             for workload in microservice cronjob; do
               file="commons/$environment/values-$workload.yaml"
               if [[ ! -f "$file" ]]; then
@@ -83,6 +84,7 @@ jobs:
                   is_valid_mode=true
                   ;;
               esac
+              workload_modes+=("$mode")
 
               if [[ "$is_migrated" == true ]]; then
                 if [[ "$mode" != "KUBECTL_APPLY" ]]; then
@@ -96,6 +98,10 @@ jobs:
               echo "$environment / $workload: migrated=$is_migrated, deployMode=$mode"
             done
 
+            if [[ "${workload_modes[0]}" != "${workload_modes[1]}" ]]; then
+              echo "::error::Environment '$environment' has inconsistent deployMode values: microservice=${workload_modes[0]}, cronjob=${workload_modes[1]}. Both values files must use the same mode."
+              exit 1
+            fi
           done
 
           {
