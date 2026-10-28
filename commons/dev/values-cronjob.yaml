@@ -1,5 +1,5 @@
 namespace: "dev"
-deployMode: "HELM_UPGRADE"
+deployMode: "KUBECTL_APPLY"
 
 cronjob:
   image:
