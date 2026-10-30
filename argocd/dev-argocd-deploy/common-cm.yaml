@@ -10,9 +10,6 @@ metadata:
     argocd.argoproj.io/instance: interop-appset-dev-argocd-deploy-common-cm
 spec:
   project: interop-core-dev
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: dev-argocd-deploy
   source:
     repoURL: https://github.com/pagopa/interop-core-deployment.git
     # repoURL: git@github.com:pagopa/interop-core-deployment.git
@@ -20,3 +17,13 @@ spec:
     path: commons/dev-argocd-deploy/configmaps
     directory:
       recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev-argocd-deploy
+  syncPolicy:
+    automated:
+      selfHeal: true # Automatically override manual edits to the cluster resources by syncing the application when it drifts from the desired state
+      prune: true # Automatically delete resources from the cluster that are no longer defined in the desired state
+    syncOptions:
+      - CreateNamespace=false
+      - RespectIgnoreDifferences=true

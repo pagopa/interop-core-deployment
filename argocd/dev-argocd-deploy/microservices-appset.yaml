@@ -235,7 +235,9 @@ spec:
           jsonPointers:
             - /data
       syncPolicy:
-        automated: {}
+        automated:
+          selfHeal: true # Automatically override manual edits to the cluster resources by syncing the application when it drifts from the desired state
+          prune: true # Automatically delete resources from the cluster that are no longer defined in the desired state
         syncOptions:
           - CreateNamespace=false
           - RespectIgnoreDifferences=true
