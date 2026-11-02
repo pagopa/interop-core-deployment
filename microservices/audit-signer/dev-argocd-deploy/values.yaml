@@ -7,6 +7,16 @@ serviceAccount:
 service:
   create: false
 
+argocd:
+  appMonitoring:
+    enable: true
+    projectRepositoryURL: "https://github.com/pagopa/interop-core-deployment"
+    projectRepositoryRef: "PIN-11112_testing-deploy-via-argocd"
+    jobNamespace: "argocd-app-monitoring"
+    serviceAccountName: "argocd-terraform-workload-monitoring"
+    tfEnv: "{{ .Values.local.env }}"
+    tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
+
 configmap:
   FILE_KIND: "VOUCHER_AUDIT"
   SQS_MAX_NUMBER_OF_MSGS: "6"
