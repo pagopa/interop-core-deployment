@@ -9,13 +9,14 @@ service:
 
 argocd:
   appMonitoring:
-    enable: true
+    enable: false
     projectRepositoryURL: "https://github.com/pagopa/interop-core-deployment"
-    projectRepositoryRef: "PIN-11112_testing-deploy-via-argocd"
+    projectRepositoryRef: "main"
     jobNamespace: "argocd-app-monitoring"
     serviceAccountName: "argocd-terraform-workload-monitoring"
     tfEnv: "{{ .Values.local.env }}"
     tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
+    tfPlanOnly: true
 
 configmap:
   FILE_KIND: "VOUCHER_AUDIT"
