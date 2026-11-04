@@ -21,7 +21,7 @@ export interface ExternalSecretsGeneratorConfig {
 export interface RemoteRef {
   key: string; // AWS Secrets Manager path (e.g., "rds/interop-platform-data-dev/users/...")
   property: string; // Specific key within the secret (e.g., "password")
-  version?: string; // Version ID from annotation (e.g., "uuid/terraform-...")
+  version?: string; // Explicit IDs use "uuid/" (e.g., "uuid/terraform-..."); stage labels stay unprefixed
 }
 
 export interface ExternalSecretsData {

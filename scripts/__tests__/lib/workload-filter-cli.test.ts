@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { parseK8sArgs } from '../../lib/k8s-cli.js';
-import { parseComparisonArgs } from '../../secret-references-compare.js';
-import { parseArgs as parseGeneratorArgs } from '../../secret-references-external-secrets-generator.js';
-import { parseArgs as parseValidatorArgs } from '../../secret-references-external-secrets-validator.js';
-import { parseArgs as parseListArgs } from '../../list-external-secrets.js';
+import { parseComparisonArgs } from '../../external-secrets-generator/secret-references-compare.js';
+import { parseArgs as parseGeneratorArgs } from '../../external-secrets-generator/secret-references-external-secrets-generator.js';
+import { parseArgs as parseValidatorArgs } from '../../external-secrets-generator/secret-references-external-secrets-validator.js';
+import { parseArgs as parseListArgs } from '../../external-secrets-generator/list-external-secrets.js';
 
 describe('workload filters across CLI commands', () => {
   it('prints help and exits for cluster inventory', () => {

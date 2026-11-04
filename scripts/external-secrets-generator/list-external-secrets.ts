@@ -12,17 +12,17 @@ import * as fs from "fs";
 import * as path from "path";
 import { parseDocument } from "yaml";
 import { parse as parseYaml } from "yaml";
-import { createAwsClient, fetchLatestSecretVersion } from "./lib/aws-secrets-manager.js";
-import type { AwsSecretVersion } from "./lib/aws-secrets-manager.js";
-import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from "./lib/external-secrets-sections.js";
-import { walkWorkloads } from "./lib/workload.js";
-import type { WorkloadType } from "./lib/types.js";
+import { createAwsClient, fetchLatestSecretVersion } from "../lib/aws-secrets-manager.js";
+import type { AwsSecretVersion } from "../lib/aws-secrets-manager.js";
+import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from "../lib/external-secrets-sections.js";
+import { walkWorkloads } from "../lib/workload.js";
+import type { WorkloadType } from "../lib/types.js";
 import {
   getWorkloadFilterSuffix,
   selectWorkloads,
   type WorkloadFilters,
   validateWorkloadFilterValue,
-} from './lib/workload-filter.js';
+} from '../lib/workload-filter.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -302,6 +302,14 @@ function writeJsonReports(entries: ExternalSecretEntry[], outputDir: string, env
 
 type YamlItem = { get: (k: string) => unknown; getIn: (p: string[]) => unknown; setIn: (p: string[], v: unknown) => void };
 
+/** ESO distinguishes explicit version IDs (uuid/) from version stage labels. */
+export function formatSecretVersion(version: string): string {
+  const normalized = version.substring(version.indexOf("/") + 1);
+  return (AWS_SM_LABELS as readonly string[]).includes(normalized)
+    ? normalized
+    : `uuid/${normalized}`;
+}
+
 function patchValuesFile(file: string, entries: ExternalSecretEntry[]): void {
   const content = fs.readFileSync(file, "utf-8");
   const doc = parseDocument(content);
@@ -327,7 +335,7 @@ function patchValuesFile(file: string, entries: ExternalSecretEntry[]): void {
       );
 
       if (match?.latestVersion) {
-        item.setIn(["remoteRef", "version"], `uuid/${match.latestVersion}`);
+        item.setIn(["remoteRef", "version"], formatSecretVersion(match.latestVersion));
         changed = true;
       }
     }

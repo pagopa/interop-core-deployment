@@ -25,16 +25,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { parse as parseYaml } from 'yaml';
-import { csvEscape } from './lib/csv.js';
-import type { GeneratedExternalSecret, MigrationReport, SkippedSecret } from './lib/external-secrets-types.js';
+import { csvEscape } from '../lib/csv.js';
+import type { GeneratedExternalSecret, MigrationReport, SkippedSecret } from '../lib/external-secrets-types.js';
 import {
   assertScopeNotCombinedWithFilters,
   getWorkloadFilterSuffix,
   selectWorkloads,
   type WorkloadFilters,
   validateWorkloadFilterValue,
-} from './lib/workload-filter.js';
-import { resolveExternalSecretsSection, type ExternalSecretsSection } from './lib/external-secrets-sections.js';
+} from '../lib/workload-filter.js';
+import { resolveExternalSecretsSection, type ExternalSecretsSection } from '../lib/external-secrets-sections.js';
 
 // ---------------------------------------------------------------------------
 // Types

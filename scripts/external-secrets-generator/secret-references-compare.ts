@@ -26,13 +26,13 @@ import {
   secretComparisonToCSV,
   workloadComparisonToCSV,
   statsComparisonToCSV,
-} from './lib/secret-references-compare.js';
-import type { SecretReferenceRecord } from './lib/types.js';
+} from '../lib/secret-references-compare.js';
+import type { SecretReferenceRecord } from '../lib/types.js';
 import {
   getWorkloadFilterSuffix,
   type WorkloadFilters,
   validateWorkloadFilterValue,
-} from './lib/workload-filter.js';
+} from '../lib/workload-filter.js';
 
 interface ComparisonArgs extends WorkloadFilters {
   env: string;
