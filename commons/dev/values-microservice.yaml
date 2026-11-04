@@ -1,4 +1,5 @@
 namespace: dev
+deployMode: "KUBECTL_APPLY"
 
 service:
   targetPort: http

@@ -167,3 +167,6 @@ data:
     GRANT USAGE ON SCHEMA "${NAMESPACE}_purpose_template" TO "${NAMESPACE}_catalog_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".purpose_template TO "${NAMESPACE}_catalog_process_user";
     GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".purpose_template_eservice_descriptor TO "${NAMESPACE}_catalog_process_user";
+
+  V1.8__Grant_Catalog_Process_EService_Template_Link_Read_Access.sql: |-
+    GRANT SELECT ON TABLE "${NAMESPACE}_purpose_template".eservice_template_version_purpose_template TO "${NAMESPACE}_catalog_process_user";
