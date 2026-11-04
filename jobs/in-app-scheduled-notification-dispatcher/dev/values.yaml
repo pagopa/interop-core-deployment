@@ -3,6 +3,54 @@ name: interop-be-in-app-scheduled-notification-dispatcher
 serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-in-app-scheduled-notification-dispatcher-{{.Values.namespace}}-es1"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: username
+          version: terraform-20250318135026647200000005
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: password
+          version: terraform-20250318135026647200000005
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_scheduled_notification_dispatcher_user
+          property: username
+          version: terraform-20260603154454143900000008
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_scheduled_notification_dispatcher_user
+          property: password
+          version: terraform-20260603154454143900000008
+      - secretKey: SCHEDULED_NOTIFICATION_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_scheduled_notification_dispatcher_user
+          property: username
+          version: terraform-20260603154454143900000008
+      - secretKey: SCHEDULED_NOTIFICATION_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_scheduled_notification_dispatcher_user
+          property: password
+          version: terraform-20260603154454143900000008
+      - secretKey: IN_APP_NOTIFICATION_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_dispatcher_user
+          property: username
+          version: terraform-20250930101705379100000002
+      - secretKey: IN_APP_NOTIFICATION_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_dispatcher_user
+          property: password
+          version: terraform-20250930101705379100000002
+
 cronjob:
   schedule: "30 7 * * 1-5"
   failedJobsHistoryLimit: 1
@@ -26,9 +74,6 @@ cronjob:
       POSTGRES_HOST: "common-scheduled-notification-db.DB_HOST"
       POSTGRES_PORT: "common-scheduled-notification-db.DB_PORT"
       POSTGRES_DB: "common-scheduled-notification-db.DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   env:
     NOTIFICATION_TYPE_BLOCKLIST: ""
@@ -60,12 +105,5 @@ cronjob:
     SCHEDULED_NOTIFICATION_DB_NAME: "common-scheduled-notification-db.DB_NAME"
     SCHEDULED_NOTIFICATION_DB_USE_SSL: "common-scheduled-notification-db.DB_USE_SSL"
     SCHEDULED_NOTIFICATION_DB_SCHEMA: "common-scheduled-notification-db.DB_SCHEMA"
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-in-app-scheduled-notification-dispatcher-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-in-app-scheduled-notification-dispatcher-user.password"
-    IN_APP_NOTIFICATION_DB_USERNAME: "platform-data-in-app-notification-dispatcher-user.username"
-    IN_APP_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-notification-dispatcher-user.password"
-    SCHEDULED_NOTIFICATION_DB_USERNAME: "platform-data-in-app-scheduled-notification-dispatcher-user.username"
-    SCHEDULED_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-scheduled-notification-dispatcher-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"

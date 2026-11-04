@@ -13,6 +13,21 @@ configmap:
   DEFAULT_POLLING_RETRY_DELAY: "300"
   DEFAULT_POLLING_MAX_RETRIES: "20"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_eservice_descriptors_scheduled_archiver_user
+          property: username
+          version: terraform-2026060315445414400000000a
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_eservice_descriptors_scheduled_archiver_user
+          property: password
+          version: terraform-2026060315445414400000000a
+
 cronjob:
   schedule: "30 6 * * 1-5"
   failedJobsHistoryLimit: 3
@@ -40,7 +55,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-eservice-descriptors-scheduled-archiver-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-descriptors-scheduled-archiver-user.password"
