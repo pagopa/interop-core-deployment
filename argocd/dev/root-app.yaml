@@ -10,7 +10,7 @@ spec:
   project: default
   source:
     repoURL: git@github.com:pagopa/interop-core-deployment.git
-    targetRevision: feature/pin-10592-external-secrets-values-generator-output
+    targetRevision: HEAD
     path: argocd/dev
     directory:
       include: "{*.yaml}"

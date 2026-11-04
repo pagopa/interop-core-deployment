@@ -32,6 +32,7 @@ argocd:
     serviceAccountName: "argocd-terraform-workload-monitoring"
     tfEnv: "{{ .Values.local.env }}"
     tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
+
 externalSecrets:
   app:
     secretStoreRef:
