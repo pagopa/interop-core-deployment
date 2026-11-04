@@ -13,8 +13,3 @@ eks_cluster_name = "interop-eks-cluster-dev"
 sns_topic_name = "interop-platform-alarms-dev"
 
 cloudwatch_log_group_name = "/aws/eks/interop-eks-cluster-dev/application"
-  
-# For testing purposes  
-argocd_workload_name = "interop-be-audit-signer"
-argocd_workload_kind = "Deployment"
-k8s_namespace        = "dev-argocd-deploy"
