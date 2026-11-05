@@ -16,6 +16,16 @@ configmap:
   SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-events-signer"
   S3_BUCKET: "interop-domain-events-{{.Values.local.env}}-es1"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: SAFE_STORAGE_API_KEY
+        remoteRef:
+          key: app/backend/safe-storage-signing-credentials
+          property: password
+          version: uuid/5ee4c5b8-5efa-43a2-9fe9-7768484451a6
+
 deployment:
   envFromConfigmaps:
     AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
@@ -29,9 +39,6 @@ deployment:
     SAFE_STORAGE_DOC_TYPE: "common-safe-storage.DOC_TYPE"
     SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"
     SIGNATURE_REFERENCES_TABLE_NAME: "common-safe-storage.LIVE_REQUESTS_DYNAMO_TABLE_NAME"
-
-  envFromSecrets:
-    SAFE_STORAGE_API_KEY: "safe-storage-signing-credentials.password"
 
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
