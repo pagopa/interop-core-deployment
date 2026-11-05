@@ -17,6 +17,36 @@ configmap:
   KAFKA_CLIENT_ID: "interop-{{.Values.namespace}}"
   KAFKA_GROUP_ID: "interop-users-{{.Values.namespace}}"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: KAFKA_BROKER_CONNECTION_STRING
+        remoteRef:
+          key: app/backend/selfcare-v2
+          property: SELFCARE_USERS_BROKER_CONNECTION_STRING
+          version: uuid/833a6680-7f16-45ed-ba65-55c3bd4407d1
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_selfcare_client_users_updater_user
+          property: username
+          version: uuid/terraform-20250526100659093500000002
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_selfcare_client_users_updater_user
+          property: password
+          version: uuid/terraform-20250526100659093500000002
+
 deployment:
   env:
     TOPIC_STARTING_OFFSET: earliest
@@ -45,9 +75,3 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
     SELFCARE_TOPIC: "common-selfcare.SELFCARE_USERS_TOPIC"
-  envFromSecrets:
-    KAFKA_BROKER_CONNECTION_STRING: "selfcare-v2.SELFCARE_USERS_BROKER_CONNECTION_STRING"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-selfcare-client-users-updater-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-selfcare-client-users-updater-user.password"

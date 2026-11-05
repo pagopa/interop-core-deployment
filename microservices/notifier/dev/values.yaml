@@ -37,6 +37,54 @@ configmap:
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_DURATION_SECONDS: "3600"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: app/backend/postgres
+          property: POSTGRES_USR
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: app/backend/postgres
+          property: POSTGRES_PSW
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
+  app:
+    create: true
+    data:
+      - secretKey: NOTIFICATION_DB_USER
+        remoteRef:
+          key: app/backend/postgres
+          property: POSTGRES_USR
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
+      - secretKey: NOTIFICATION_DB_PASSWORD
+        remoteRef:
+          key: app/backend/postgres
+          property: POSTGRES_PSW
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
+      - secretKey: POSTGRES_USR
+        remoteRef:
+          key: app/backend/postgres
+          property: POSTGRES_USR
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
+      - secretKey: POSTGRES_PSW
+        remoteRef:
+          key: app/backend/postgres
+          property: POSTGRES_PSW
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
+      - secretKey: CQRS_PROJECTION_DB_USER
+        remoteRef:
+          key: app/backend/documentdb
+          property: PROJECTION_USR
+          version: uuid/c18b6293-6bf1-4e16-9d0e-7ddf93db128f
+      - secretKey: CQRS_PROJECTION_DB_PASSWORD
+        remoteRef:
+          key: app/backend/documentdb
+          property: PROJECTION_PSW
+          version: uuid/c18b6293-6bf1-4e16-9d0e-7ddf93db128f
+
 deployment:
   flywayInitContainer:
     create: true
@@ -51,9 +99,6 @@ deployment:
       FLYWAY_SCHEMAS: "{{.Values.name}}.POSTGRES_SCHEMA"
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-    envFromSecrets:
-      FLYWAY_USER: "postgres.POSTGRES_USR"
-      FLYWAY_PASSWORD: "postgres.POSTGRES_PSW"
     resources:
       limits:
         cpu: "500m"
@@ -64,18 +109,15 @@ deployment:
   podTemplateMetadata:
     labels:
       actorSystemName: "{{.Values.name}}"
-  command: ["bin/interop-be-notifier"]
-  args: ["-Dconfig.override_with_env_vars=true"]
+  command: [ "bin/interop-be-notifier" ]
+  args: [ "-Dconfig.override_with_env_vars=true" ]
   securityContext:
     runAsUser: 1001
   env:
     REQUIRED_CONTACT_POINT_NR: "1"
     PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/persistence-events.fifo"
     WELL_KNOWN_URLS: >-
-      {{.Values.local.well_known_url.AUTHSRV}},
-      {{.Values.local.well_known_url.BFF}},
-      {{.Values.local.well_known_url.INTERNAL}},
-      {{.Values.local.well_known_url.MAINTENANCE}}
+      {{.Values.local.well_known_url.AUTHSRV}}, {{.Values.local.well_known_url.BFF}}, {{.Values.local.well_known_url.INTERNAL}}, {{.Values.local.well_known_url.MAINTENANCE}}
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
   envFromConfigmaps:
@@ -90,13 +132,6 @@ deployment:
     CQRS_PROJECTION_DB_HOST: "common-read-model.READMODEL_DB_HOST"
     CQRS_PROJECTION_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     CQRS_PROJECTION_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-  envFromSecrets:
-    NOTIFICATION_DB_USER: "postgres.POSTGRES_USR"
-    NOTIFICATION_DB_PASSWORD: "postgres.POSTGRES_PSW"
-    POSTGRES_USR: "postgres.POSTGRES_USR"
-    POSTGRES_PSW: "postgres.POSTGRES_PSW"
-    CQRS_PROJECTION_DB_USER: "documentdb.PROJECTION_USR"
-    CQRS_PROJECTION_DB_PASSWORD: "documentdb.PROJECTION_PSW"
   readinessProbe:
     httpGet:
       path: /ready
