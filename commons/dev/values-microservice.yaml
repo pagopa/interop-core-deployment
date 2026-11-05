@@ -43,7 +43,7 @@ local:
 
 argocd:
   appMonitoring:
-    enable: true
+    enable: false
     projectRepositoryURL: "https://github.com/pagopa/interop-core-deployment"
     projectRepositoryRef: "main"
     jobNamespace: "argocd-app-monitoring"
