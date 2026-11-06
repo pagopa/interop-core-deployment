@@ -62,7 +62,6 @@ spec:
           jsonPointers:
             - /data
       syncPolicy:
-        automated: {}
         syncOptions:
           - CreateNamespace=false
           - RespectIgnoreDifferences=true
