@@ -44,3 +44,8 @@ variable "argocd_workload_kind" {
     error_message = "Value must be either 'Deployment' or 'Cronjob'."
   }
 }
+
+variable "k8s_namespace" {
+  type        = string
+  description = "Kubernetes namespace where the workload is deployed"
+}
