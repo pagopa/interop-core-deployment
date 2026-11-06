@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync, openSync, writeSync, closeSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { basename, join, relative } from 'node:path';
@@ -65,10 +65,21 @@ export async function main(): Promise<void> {
       if (name === '.' || name === '..' || name.includes('/')) fail(`${sourceFile}: invalid metadata.name '${name}'.`);
 
       const outputFile = join(temporary, `${name}.yaml`);
-      if (existsSync(outputFile)) fail(`Duplicate metadata.name '${name}' found while processing '${sourceFile}'.`);
+      try {
+        const fd = openSync(outputFile, 'wx');
+        try {
+          const output = rawData(readFileSync(sourceFile, 'utf8'), name);
+          writeSync(fd, output);
+        } finally {
+          closeSync(fd);
+        }
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code === 'EEXIST') {
+          fail(`Duplicate metadata.name '${name}' found while processing '${sourceFile}'.`);
+        }
+        throw err;
+      }
 
-      const output = rawData(readFileSync(sourceFile, 'utf8'), name);
-      writeFileSync(outputFile, output);
       yamlDocument(outputFile);
       generated += 1;
     }
