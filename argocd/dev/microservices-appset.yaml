@@ -31,7 +31,7 @@ spec:
       sources:
         - repoURL: git@github.com:pagopa/interop-core-deployment.git
           path: "."
-          targetRevision: feature/pin-10592-external-secrets-values-generator-output
+          targetRevision: HEAD
           ref: values
         - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
           chart: interop-eks-microservice-chart
