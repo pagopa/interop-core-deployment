@@ -35,7 +35,7 @@ spec:
           ref: values
         - repoURL: https://pagopa.github.io/interop-eks-microservice-chart
           chart: interop-eks-microservice-chart
-          targetRevision: 1.50.0
+          targetRevision: 1.50.1
           helm:
             releaseName: "{{index .ms.path.segments 1}}"
             valueFiles:
