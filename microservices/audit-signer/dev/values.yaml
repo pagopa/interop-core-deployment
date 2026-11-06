@@ -16,6 +16,16 @@ configmap:
   SQS_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/interop-jwt-details-new-s3-object-{{.Values.namespace}}"
   SAFE_STORAGE_CLIENT_ID: "interop-{{.Values.namespace}}-audit-signer"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: SAFE_STORAGE_API_KEY
+        remoteRef:
+          key: app/backend/safe-storage-signing-credentials
+          property: password
+          version: uuid/5ee4c5b8-5efa-43a2-9fe9-7768484451a6
+
 deployment:
   envFromConfigmaps:
     SAFE_STORAGE_BASE_URL: "common-safe-storage.BASE_URL"
@@ -23,8 +33,5 @@ deployment:
     SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"
     SIGNATURE_REFERENCES_TABLE_NAME: "common-safe-storage.LIVE_REQUESTS_DYNAMO_TABLE_NAME"
 
-  envFromSecrets:
-    SAFE_STORAGE_API_KEY: "safe-storage-signing-credentials.password"
-    
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"

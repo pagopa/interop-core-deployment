@@ -1,4 +1,5 @@
 namespace: "dev"
+deployMode: "KUBECTL_APPLY"
 
 cronjob:
   image:
@@ -25,10 +26,20 @@ local:
 
 argocd:
   appMonitoring:
-    enable: true
+    enable: false
     projectRepositoryURL: "https://github.com/pagopa/interop-core-deployment"
     projectRepositoryRef: "main"
     jobNamespace: "argocd-app-monitoring"
     serviceAccountName: "argocd-terraform-workload-monitoring"
     tfEnv: "{{ .Values.local.env }}"
     tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
+    
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
