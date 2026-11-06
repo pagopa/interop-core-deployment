@@ -21,12 +21,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_eservice_descriptors_scheduled_archiver_user
           property: username
-          version: terraform-2026060315445414400000000a
+          version: uuid/terraform-2026060315445414400000000a
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_eservice_descriptors_scheduled_archiver_user
           property: password
-          version: terraform-2026060315445414400000000a
+          version: uuid/terraform-2026060315445414400000000a
 
 cronjob:
   schedule: "30 6 * * 1-5"

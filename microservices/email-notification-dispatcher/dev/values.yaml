@@ -20,12 +20,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_email_notification_dispatcher_user
           property: username
-          version: terraform-20251111133748043900000007
+          version: uuid/terraform-20251111133748043900000007
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_email_notification_dispatcher_user
           property: password
-          version: terraform-20251111133748043900000007
+          version: uuid/terraform-20251111133748043900000007
 
 deployment:
   env:

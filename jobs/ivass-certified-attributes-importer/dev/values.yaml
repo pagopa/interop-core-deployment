@@ -22,22 +22,22 @@ externalSecrets:
         remoteRef:
           key: app/backend/read-model
           property: READONLY_USR
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_DB_PASSWORD
         remoteRef:
           key: app/backend/read-model
           property: READONLY_PSW
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_SQL_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_ivass_certified_attributes_importer_user
           property: username
-          version: terraform-2025061012172350660000000d
+          version: uuid/terraform-2025061012172350660000000d
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_ivass_certified_attributes_importer_user
           property: password
-          version: terraform-2025061012172350660000000d
+          version: uuid/terraform-2025061012172350660000000d
 
 cronjob:
   schedule: "15 5,11,17,23 * * *"

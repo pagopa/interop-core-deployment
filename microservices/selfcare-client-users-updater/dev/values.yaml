@@ -25,27 +25,27 @@ externalSecrets:
         remoteRef:
           key: app/backend/selfcare-v2
           property: SELFCARE_USERS_BROKER_CONNECTION_STRING
-          version: 833a6680-7f16-45ed-ba65-55c3bd4407d1
+          version: uuid/833a6680-7f16-45ed-ba65-55c3bd4407d1
       - secretKey: READMODEL_DB_USERNAME
         remoteRef:
           key: app/backend/read-model
           property: READONLY_USR
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_DB_PASSWORD
         remoteRef:
           key: app/backend/read-model
           property: READONLY_PSW
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_SQL_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_selfcare_client_users_updater_user
           property: username
-          version: terraform-20250526100659093500000002
+          version: uuid/terraform-20250526100659093500000002
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_selfcare_client_users_updater_user
           property: password
-          version: terraform-20250526100659093500000002
+          version: uuid/terraform-20250526100659093500000002
 
 deployment:
   env:

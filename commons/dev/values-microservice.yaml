@@ -43,23 +43,13 @@ local:
 
 argocd:
   appMonitoring:
-    enable: true
+    enable: false
     projectRepositoryURL: "https://github.com/pagopa/interop-core-deployment"
     projectRepositoryRef: "main"
     jobNamespace: "argocd-app-monitoring"
     serviceAccountName: "argocd-terraform-workload-monitoring"
     tfEnv: "{{ .Values.local.env }}"
     tfStateBucketKeyPrefix: "{{ .Values.local.env }}-es1"
-
-externalSecrets:
-  app:
-    secretStoreRef:
-      name: app-secret-store
-      kind: SecretStore
-  flywayInitContainer:
-    secretStoreRef:
-      name: app-secret-store
-      kind: SecretStore
 
 autoscaling:
   keda:
@@ -73,3 +63,13 @@ autoscaling:
           start: 0 8 * * 1-5
           end: 0 20 * * 1-5
           desiredReplicas: "{{.Values.deployment.replicas}}" # must be a string
+          
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore

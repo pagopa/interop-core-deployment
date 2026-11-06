@@ -45,12 +45,12 @@ externalSecrets:
         remoteRef:
           key: app/backend/postgres
           property: POSTGRES_USR
-          version: 3e2fb700-551e-4cd4-86f6-37e2d26bd444
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
       - secretKey: FLYWAY_PASSWORD
         remoteRef:
           key: app/backend/postgres
           property: POSTGRES_PSW
-          version: 3e2fb700-551e-4cd4-86f6-37e2d26bd444
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
   app:
     create: true
     data:
@@ -58,32 +58,32 @@ externalSecrets:
         remoteRef:
           key: app/backend/postgres
           property: POSTGRES_USR
-          version: 3e2fb700-551e-4cd4-86f6-37e2d26bd444
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
       - secretKey: NOTIFICATION_DB_PASSWORD
         remoteRef:
           key: app/backend/postgres
           property: POSTGRES_PSW
-          version: 3e2fb700-551e-4cd4-86f6-37e2d26bd444
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
       - secretKey: POSTGRES_USR
         remoteRef:
           key: app/backend/postgres
           property: POSTGRES_USR
-          version: 3e2fb700-551e-4cd4-86f6-37e2d26bd444
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
       - secretKey: POSTGRES_PSW
         remoteRef:
           key: app/backend/postgres
           property: POSTGRES_PSW
-          version: 3e2fb700-551e-4cd4-86f6-37e2d26bd444
+          version: uuid/3e2fb700-551e-4cd4-86f6-37e2d26bd444
       - secretKey: CQRS_PROJECTION_DB_USER
         remoteRef:
           key: app/backend/documentdb
           property: PROJECTION_USR
-          version: c18b6293-6bf1-4e16-9d0e-7ddf93db128f
+          version: uuid/c18b6293-6bf1-4e16-9d0e-7ddf93db128f
       - secretKey: CQRS_PROJECTION_DB_PASSWORD
         remoteRef:
           key: app/backend/documentdb
           property: PROJECTION_PSW
-          version: c18b6293-6bf1-4e16-9d0e-7ddf93db128f
+          version: uuid/c18b6293-6bf1-4e16-9d0e-7ddf93db128f
 
 deployment:
   flywayInitContainer:

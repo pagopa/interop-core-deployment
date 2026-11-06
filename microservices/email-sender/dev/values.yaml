@@ -26,17 +26,17 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_email_sender_user
           property: username
-          version: terraform-20251112151244723400000006
+          version: uuid/terraform-20251112151244723400000006
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_email_sender_user
           property: password
-          version: terraform-20251112151244723400000006
+          version: uuid/terraform-20251112151244723400000006
       - secretKey: SELFCARE_V2_API_KEY
         remoteRef:
           key: app/backend/selfcare-v2
           property: SELFCARE_V2_API_KEY
-          version: 833a6680-7f16-45ed-ba65-55c3bd4407d1
+          version: uuid/833a6680-7f16-45ed-ba65-55c3bd4407d1
 
 deployment:
   envFromConfigmaps:

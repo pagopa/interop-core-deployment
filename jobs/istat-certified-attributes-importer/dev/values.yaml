@@ -22,12 +22,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_istat_certified_attributes_importer_user
           property: username
-          version: terraform-20260610080118638900000002
+          version: uuid/terraform-20260610080118638900000002
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_istat_certified_attributes_importer_user
           property: password
-          version: terraform-20260610080118638900000002
+          version: uuid/terraform-20260610080118638900000002
 
 cronjob:
   schedule: "30 8 * * *"

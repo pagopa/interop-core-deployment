@@ -22,27 +22,27 @@ externalSecrets:
         remoteRef:
           key: app/backend/read-model
           property: READONLY_USR
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_DB_PASSWORD
         remoteRef:
           key: app/backend/read-model
           property: READONLY_PSW
-          version: d64e70da-6e72-41d0-84b1-b2c705e02574
+          version: uuid/d64e70da-6e72-41d0-84b1-b2c705e02574
       - secretKey: READMODEL_SQL_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_dtd_catalog_exporter_user
           property: username
-          version: terraform-2025061012172350650000000c
+          version: uuid/terraform-2025061012172350650000000c
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_dtd_catalog_exporter_user
           property: password
-          version: terraform-2025061012172350650000000c
+          version: uuid/terraform-2025061012172350650000000c
       - secretKey: GITHUB_ACCESS_TOKEN
         remoteRef:
           key: app/backend/metrics-reports
           property: BOT_DTD_OPENDATA_GITHUB_ACCESS_TOKEN
-          version: 8e285e9a-c47e-4419-817e-e089dacac51b
+          version: uuid/8e285e9a-c47e-4419-817e-e089dacac51b
 
 cronjob:
   schedule: "0 4 * * *"

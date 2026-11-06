@@ -14,12 +14,12 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_async_token_generation_readmodel_checker_user
           property: username
-          version: terraform-20260505083928173600000002
+          version: uuid/terraform-20260505083928173600000002
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_async_token_generation_readmodel_checker_user
           property: password
-          version: terraform-20260505083928173600000002
+          version: uuid/terraform-20260505083928173600000002
 
 cronjob:
   schedule: "0 3 * * *"

@@ -18,12 +18,12 @@ externalSecrets:
         remoteRef:
           key: app/backend/onetrust
           property: ONETRUST_CLIENT_ID
-          version: 5d9b1f43-a51b-4355-bb2a-1f23b4a9f1a7
+          version: uuid/5d9b1f43-a51b-4355-bb2a-1f23b4a9f1a7
       - secretKey: ONETRUST_CLIENT_SECRET
         remoteRef:
           key: app/backend/onetrust
           property: ONETRUST_CLIENT_SECRET
-          version: 5d9b1f43-a51b-4355-bb2a-1f23b4a9f1a7
+          version: uuid/5d9b1f43-a51b-4355-bb2a-1f23b4a9f1a7
 
 cronjob:
   schedule: "0 */3 * * *"

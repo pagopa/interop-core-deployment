@@ -25,17 +25,17 @@ externalSecrets:
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_notification_user_lifecycle_consumer_user
           property: username
-          version: terraform-20251112151244723300000005
+          version: uuid/terraform-20251112151244723300000005
       - secretKey: READMODEL_SQL_DB_PASSWORD
         remoteRef:
           key: rds/interop-platform-data-dev/users/dev_notification_user_lifecycle_consumer_user
           property: password
-          version: terraform-20251112151244723300000005
+          version: uuid/terraform-20251112151244723300000005
       - secretKey: KAFKA_BROKER_CONNECTION_STRING
         remoteRef:
           key: app/backend/selfcare-v2
           property: SELFCARE_USERS_BROKER_CONNECTION_STRING
-          version: 833a6680-7f16-45ed-ba65-55c3bd4407d1
+          version: uuid/833a6680-7f16-45ed-ba65-55c3bd4407d1
 
 deployment:
   envFromConfigmaps:
