@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: interop-microservices
+  name: interop-core-microservices-dev
   namespace: argocd
 spec:
   syncPolicy:

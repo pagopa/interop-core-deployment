@@ -1,11 +1,11 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: interop-root-appofapps
+  name: interop-core-root-appofapps-dev
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-options: Prune=false
-    argocd.argoproj.io/tracking-id: interop-root-appofapps:argoproj.io/Application:argocd/interop-root-appofapps
+    argocd.argoproj.io/tracking-id: interop-core-root-appofapps-dev:argoproj.io/Application:argocd/interop-core-root-appofapps-dev
 spec:
   project: default
   source:
