@@ -122,3 +122,29 @@ test('CLI modules export main and do not execute when imported', async () => {
     assert.equal(typeof module.main, 'function');
   }
 });
+
+test('phases write JSON/CSV reports with per-item status even when failing', context => {
+  const data = fixture();
+  context.after(() => rmSync(data.root, { recursive: true, force: true }));
+  const reports = join(data.root, 'reports');
+  assert.equal(run(entrypoints.generate, data.root, '--report-dir', reports).status, 0);
+  const generated = JSON.parse(readFileSync(join(reports, 'generate-dev.json'), 'utf8'));
+  assert.equal(generated.success, true);
+  assert.deepEqual(generated.items.map((item: { status: string }) => item.status), ['CREATED']);
+  assert.match(readFileSync(join(reports, 'generate-dev.csv'), 'utf8'), /^status,severity,configMap,keys,sourceFile,targetFile,detail,description\nCREATED,ok,flyway-test,1,/);
+
+  const target = join(data.migrations, 'flyway-test.yaml');
+  writeFileSync(target, readFileSync(target, 'utf8').replace('SELECT 1;', 'SELECT 2;'));
+  assert.equal(run(entrypoints.sha256, data.root, '--report-dir', reports).status, 1);
+  const verified = JSON.parse(readFileSync(join(reports, 'verify-sha256-dev.json'), 'utf8'));
+  assert.equal(verified.success, false);
+  assert.equal(verified.items[0].status, 'MISMATCH');
+  assert.equal(verified.items[0].severity, 'critical');
+
+  const workload = join(data.root, 'microservices', 'svc', 'dev');
+  mkdirSync(workload, { recursive: true });
+  writeFileSync(join(workload, 'values.yaml'), 'name: svc\ndeployment:\n  flywayInitContainer:\n    migrationsConfigmap: flyway-test\n');
+  assert.equal(run(entrypoints.migrate, data.root, '--dry-run', '--report-dir', reports).status, 0);
+  const plan = JSON.parse(readFileSync(join(reports, 'plan-dev.json'), 'utf8'));
+  assert.deepEqual(plan.items.map((item: { status: string; workloadType: string; workloadName: string; configMap: string }) => [item.status, item.workloadType, item.workloadName, item.configMap]), [['WOULD_UPDATE', 'Deployment', 'svc', 'flyway-test']]);
+});

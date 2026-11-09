@@ -3,6 +3,7 @@ import { existsSync, readFileSync, readdirSync, realpathSync, statSync, writeFil
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { isMap, isScalar, parseDocument, type Document, type ParsedNode } from 'yaml';
+import { extractReportDir, writePhaseReport, type ReportRow, type StatusDefinition } from './phase-report.js';
 
 interface Options {
   root: string;
@@ -20,6 +21,27 @@ interface Candidate {
   output: string;
 }
 
+type SkipStatus = 'NO_FLYWAY_INIT_CONTAINER' | 'NO_MIGRATION_REFERENCE' | 'IGNORED';
+
+interface Skipped {
+  skipped: SkipStatus;
+  domain?: string;
+  key?: string;
+}
+
+const DEFINITIONS: Record<string, StatusDefinition> = {
+  WOULD_UPDATE: { severity: 'info', description: 'Dry run: migrationsConfigmap would be renamed to migrationDomain.' },
+  UPDATED: { severity: 'ok', description: 'migrationsConfigmap has been renamed to migrationDomain and the file content verified after writing.' },
+  NOT_APPLIED: { severity: 'warning', description: 'Workload needs migration but no file was changed because validation failed for other workloads (all-or-nothing).' },
+  ALREADY_MIGRATED: { severity: 'ok', description: 'Workload already uses migrationDomain; nothing to do.' },
+  IGNORED: { severity: 'info', description: 'Known exception (deprecated Scala MongoDB domain); reference left unchanged.' },
+  NO_FLYWAY_INIT_CONTAINER: { severity: 'info', description: 'Workload values have no flywayInitContainer section; not in scope.' },
+  NO_MIGRATION_REFERENCE: { severity: 'info', description: 'flywayInitContainer has neither migrationsConfigmap nor migrationDomain; not in scope.' },
+  INVALID_REFERENCE: { severity: 'critical', description: 'Workload reference is invalid (malformed YAML, conflicting keys or domain without generated Flyway source); no file was changed.' },
+  WRITE_VERIFICATION_FAILED: { severity: 'critical', description: 'File content read back after writing differs from the expected content.' },
+};
+const COLUMNS = ['workloadType', 'workloadName', 'configMap', 'fromKey', 'toKey', 'valuesFile'];
+
 interface WorkloadFile {
   file: string;
   section: 'deployment' | 'cronjob';
@@ -36,7 +58,7 @@ function fail(message: string): never {
 }
 
 function usage(): string {
-  return `Usage: npm run migrate:workloads -- --environment <env> [--root <absolute-path>] [--dry-run]
+  return `Usage: npm run migrate:workloads -- --environment <env> [--root <absolute-path>] [--dry-run] [--report-dir <dir>]
 
 Replaces migrationsConfigmap with migrationDomain in:
   microservices/*/<env>/values.yaml
@@ -141,20 +163,20 @@ function workloadFiles(root: string, environment: string): WorkloadFile[] {
   return result;
 }
 
-function inspectCandidate(workloadFile: WorkloadFile, domains: Map<string, string>): Candidate | undefined {
+function inspectCandidate(workloadFile: WorkloadFile, domains: Map<string, string>): Candidate | Skipped {
   const { file, section, workloadKind, workloadName } = workloadFile;
   const source = readFileSync(file, 'utf8');
   const document = yamlDocument(file);
   const workload = document.get(section, true);
-  if (workload === undefined) return undefined;
+  if (workload === undefined) return { skipped: 'NO_FLYWAY_INIT_CONTAINER' };
   if (!isMap(workload)) fail(`${file}: '${section}' must be a mapping.`);
   const flyway = workload.get('flywayInitContainer', true);
-  if (flyway === undefined) return undefined;
+  if (flyway === undefined) return { skipped: 'NO_FLYWAY_INIT_CONTAINER' };
   if (!isMap(flyway)) fail(`${file}: '${section}.flywayInitContainer' must be a mapping.`);
 
   const legacyPair = flyway.items.find(pair => scalarString(pair.key) === 'migrationsConfigmap');
   const newPair = flyway.items.find(pair => scalarString(pair.key) === 'migrationDomain');
-  if (!legacyPair && !newPair) return undefined;
+  if (!legacyPair && !newPair) return { skipped: 'NO_MIGRATION_REFERENCE' };
 
   const legacy = legacyPair ? scalarString(legacyPair.value) : undefined;
   const current = newPair ? scalarString(newPair.value) : undefined;
@@ -168,7 +190,7 @@ function inspectCandidate(workloadFile: WorkloadFile, domains: Map<string, strin
   if (!domains.has(domain)) {
     if (IGNORED_MIGRATION_DOMAINS.has(domain)) {
       console.log(`IGNORED - ${relative(DEFAULT_ROOT, file)} -> ${domain} (deprecated Scala workload)`);
-      return undefined;
+      return { skipped: 'IGNORED', domain, key: legacyPair ? 'migrationsConfigmap' : 'migrationDomain' };
     }
     fail(`${file}: migration domain '${domain}' is referenced but has no generated Flyway migration source.`);
   }
@@ -216,48 +238,101 @@ function printMigrationPlan(root: string, environment: string, candidates: Candi
   console.log("-----------------------------");
 }
 
-export function migrate(args: string[]): number {
+export function migrate(rawArgs: string[]): number {
+  const { reportDir, args } = extractReportDir(rawArgs);
   const options = parseOptions(args);
   if (options.help) {
     console.log(usage());
     return 0;
   }
 
-  const commonsDirectory = join(options.root, 'commons', options.environment);
-  const domains = loadMigrationDomains(join(commonsDirectory, 'configmaps'), join(commonsDirectory, 'migrations'));
-  const errors: string[] = [];
-  const candidates: Candidate[] = [];
-
-  for (const workloadFile of workloadFiles(options.root, options.environment)) {
+  const phase = options.dryRun ? 'plan' : 'migrate';
+  const rows: ReportRow[] = [];
+  const writeReport = () => writePhaseReport(reportDir, `${phase}-${options.environment}`, {
+    phase, environment: options.environment, root: options.root, definitions: DEFINITIONS, columns: COLUMNS, rows,
+    parameters: { dryRun: options.dryRun },
+  });
+  // Same workload identity used by the inventory/validate reports: Kubernetes kind and the `name` declared in values.yaml.
+  const describe = (workloadFile: WorkloadFile) => {
+    let workloadName = workloadFile.workloadName;
     try {
-      const candidate = inspectCandidate(workloadFile, domains);
-      if (candidate) candidates.push(candidate);
-    } catch (error) {
-      errors.push(error instanceof Error ? error.message : String(error));
+      workloadName = scalarString(yamlDocument(workloadFile.file).get('name', true)) ?? workloadName;
+    } catch {
+      // Malformed files are reported as INVALID_REFERENCE; keep the folder name.
     }
-  }
-  if (errors.length > 0) fail(`Validation failed; no files were changed:\n- ${errors.join('\n- ')}`);
+    return {
+      workloadType: workloadFile.section === 'deployment' ? 'Deployment' : 'CronJob',
+      workloadName,
+      valuesFile: relative(options.root, workloadFile.file),
+    };
+  };
 
-  printMigrationPlan(options.root, options.environment, candidates);
+  try {
+    const commonsDirectory = join(options.root, 'commons', options.environment);
+    const domains = loadMigrationDomains(join(commonsDirectory, 'configmaps'), join(commonsDirectory, 'migrations'));
+    const errors: string[] = [];
+    const candidates: Candidate[] = [];
+    const candidateRows = new Map<Candidate, ReportRow>();
 
-  console.log("========================================");
-  console.log(`UPDATE PLAN - environment '${options.environment}'`);
-  console.log("========================================\n");
-  const changed = candidates.filter(candidate => candidate.changed);
-  for (const candidate of changed) {
-    if (options.dryRun) {
-      console.log(`WOULD UPDATE ${relative(options.root, candidate.file)} -> ${candidate.domain}`);
-      continue;
+    for (const workloadFile of workloadFiles(options.root, options.environment)) {
+      try {
+        const result = inspectCandidate(workloadFile, domains);
+        if ('skipped' in result) {
+          const detail = {
+            NO_FLYWAY_INIT_CONTAINER: `No ${workloadFile.section}.flywayInitContainer section.`,
+            NO_MIGRATION_REFERENCE: `${workloadFile.section}.flywayInitContainer has neither migrationsConfigmap nor migrationDomain.`,
+            IGNORED: `${result.key}: ${result.domain} left unchanged.`,
+          }[result.skipped];
+          rows.push({ status: result.skipped, ...describe(workloadFile), configMap: result.domain ?? '', fromKey: result.key ?? '', toKey: result.key ?? '', detail });
+          continue;
+        }
+        candidates.push(result);
+        const row: ReportRow = result.changed
+          ? { status: options.dryRun ? 'WOULD_UPDATE' : 'NOT_APPLIED', ...describe(workloadFile), configMap: result.domain, fromKey: 'migrationsConfigmap', toKey: 'migrationDomain', detail: `${workloadFile.section}.flywayInitContainer.migrationsConfigmap: ${result.domain} -> migrationDomain: ${result.domain}${options.dryRun ? ' (dry run).' : ' not applied: validation failed for other workloads.'}` }
+          : { status: 'ALREADY_MIGRATED', ...describe(workloadFile), configMap: result.domain, fromKey: 'migrationDomain', toKey: 'migrationDomain', detail: `${workloadFile.section}.flywayInitContainer.migrationDomain: ${result.domain}.` };
+        rows.push(row);
+        candidateRows.set(result, row);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        errors.push(message);
+        rows.push({ status: 'INVALID_REFERENCE', ...describe(workloadFile), detail: message });
+      }
     }
-    writeFileSync(candidate.file, candidate.output, 'utf8');
-    if (readFileSync(candidate.file, 'utf8') !== candidate.output) {
-      fail(`${candidate.file}: content verification failed after writing.`);
+    if (errors.length > 0) fail(`Validation failed; no files were changed:\n- ${errors.join('\n- ')}`);
+
+    printMigrationPlan(options.root, options.environment, candidates);
+
+    console.log("========================================");
+    console.log(`UPDATE PLAN - environment '${options.environment}'`);
+    console.log("========================================\n");
+    const changed = candidates.filter(candidate => candidate.changed);
+    for (const candidate of changed) {
+      if (options.dryRun) {
+        console.log(`WOULD UPDATE ${relative(options.root, candidate.file)} -> ${candidate.domain}`);
+        continue;
+      }
+      writeFileSync(candidate.file, candidate.output, 'utf8');
+      const row = candidateRows.get(candidate)!;
+      if (readFileSync(candidate.file, 'utf8') !== candidate.output) {
+        row.status = 'WRITE_VERIFICATION_FAILED';
+        row.detail = `${relative(options.root, candidate.file)}: content read back after writing differs from the expected content.`;
+        fail(`${candidate.file}: content verification failed after writing.`);
+      }
+      row.status = 'UPDATED';
+      row.detail = `migrationsConfigmap: ${candidate.domain} -> migrationDomain: ${candidate.domain}; written and verified.`;
+      console.log(`UPDATED ${relative(options.root, candidate.file)} -> ${candidate.domain}`);
     }
-    console.log(`UPDATED ${relative(options.root, candidate.file)} -> ${candidate.domain}`);
+    console.log("========================================\n");
+    console.log(`SUCCESS - validated ${candidates.length} Flyway workload reference(s); ${changed.length} file(s) ${options.dryRun ? 'would be updated' : 'updated'}.`);
+    writeReport();
+    return 0;
+  } catch (error) {
+    if (!rows.some(row => DEFINITIONS[row.status]?.severity === 'critical')) {
+      rows.push({ status: 'FATAL_ERROR', detail: error instanceof Error ? error.message : String(error) });
+    }
+    writeReport();
+    throw error;
   }
-  console.log("========================================\n");
-  console.log(`SUCCESS - validated ${candidates.length} Flyway workload reference(s); ${changed.length} file(s) ${options.dryRun ? 'would be updated' : 'updated'}.`);
-  return 0;
 }
 
 export async function main(): Promise<void> {
