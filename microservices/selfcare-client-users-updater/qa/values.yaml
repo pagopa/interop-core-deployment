@@ -24,7 +24,7 @@ externalSecrets:
       - secretKey: KAFKA_BROKER_CONNECTION_STRING
         remoteRef:
           key: app/backend/selfcare-v2
-          property: SELFCARE_USERS_BROKER_CONNECTION_STRING
+          property: SELFCARE_BROKER_CONNECTION_STRING
           version: uuid/1f3a6db1-0f4f-4dab-b4bc-4c60e946ed3a
       - secretKey: READMODEL_DB_USERNAME
         remoteRef:
