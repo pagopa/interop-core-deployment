@@ -24,3 +24,13 @@ local:
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "755649575658"
   env: "qa"
+
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
