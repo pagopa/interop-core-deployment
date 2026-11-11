@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-import { existsSync, readFileSync, readdirSync, realpathSync, statSync, writeFileSync } from 'node:fs';
-import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
+import { existsSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { isMap, isScalar, parseDocument, type Document, type ParsedNode } from 'yaml';
+import { isMap, isScalar } from 'yaml';
+import { fail, IGNORED_MIGRATION_DOMAINS, readSourceConfigMaps, yamlDocument } from './common.js';
 import { extractReportDir, writePhaseReport, type ReportRow, type StatusDefinition } from './phase-report.js';
+import { LEGACY_KEY, readFlywayReference, TARGET_KEY, workloadValuesFiles, type FlywayReference, type WorkloadValuesFile } from './workloads.js';
 
 interface Options {
   root: string;
@@ -14,7 +16,7 @@ interface Options {
 
 interface Candidate {
   file: string;
-  workloadKind: 'microservice' | 'job';
+  workloadType: WorkloadValuesFile['workloadType'];
   workloadName: string;
   domain: string;
   changed: boolean;
@@ -42,20 +44,7 @@ const DEFINITIONS: Record<string, StatusDefinition> = {
 };
 const COLUMNS = ['workloadType', 'workloadName', 'configMap', 'fromKey', 'toKey', 'valuesFile'];
 
-interface WorkloadFile {
-  file: string;
-  section: 'deployment' | 'cronjob';
-  workloadKind: 'microservice' | 'job';
-  workloadName: string;
-}
-
-const YAML_FILE = /\.ya?ml$/i;
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
-const IGNORED_MIGRATION_DOMAINS = new Set(['common-db-migrations']);
-
-function fail(message: string): never {
-  throw new Error(message);
-}
 
 function usage(): string {
   return `Usage: npm run migrate:workloads -- --environment <env> [--root <absolute-path>] [--dry-run] [--report-dir <dir>]
@@ -99,125 +88,60 @@ function parseOptions(args: string[]): Options {
   return options;
 }
 
-function yamlDocument(file: string): Document.Parsed<ParsedNode> {
-  const document = parseDocument(readFileSync(file, 'utf8'), { uniqueKeys: true });
-  if (document.errors.length > 0) fail(`${file}: ${document.errors[0].message}`);
-  return document as Document.Parsed<ParsedNode>;
-}
-
-function scalarString(node: unknown): string | undefined {
-  return isScalar(node) && typeof node.value === 'string' ? node.value : undefined;
-}
-
-function yamlFiles(directory: string): string[] {
-  if (!existsSync(directory) || !statSync(directory).isDirectory()) fail(`Directory not found: ${directory}`);
-  return readdirSync(directory, { withFileTypes: true })
-    .filter(entry => entry.isFile() && YAML_FILE.test(entry.name))
-    .map(entry => join(directory, entry.name))
-    .sort();
-}
-
+/** Returns the migration domains (ConfigMap names) whose generated values file contains migrations.<domain>. */
 export function loadMigrationDomains(configmapDirectory: string, migrationDirectory: string): Map<string, string> {
   const domains = new Map<string, string>();
-  const sourceFiles = yamlFiles(configmapDirectory).filter(file => /^flyway.*\.ya?ml$/i.test(basename(file)));
-  if (sourceFiles.length === 0) fail(`No flyway*.yaml or flyway*.yml ConfigMaps found in ${configmapDirectory}`);
-
-  for (const sourceFile of sourceFiles) {
-    const source = yamlDocument(sourceFile);
-    const kind = scalarString(source.get('kind', true));
-    const metadata = source.get('metadata', true);
-    const domain = isMap(metadata) ? scalarString(metadata.get('name', true)) : undefined;
-    if (kind !== 'ConfigMap') fail(`${sourceFile}: expected kind ConfigMap, found '${kind ?? '<empty>'}'.`);
-    if (!domain) fail(`${sourceFile}: metadata.name is required.`);
-    const previous = domains.get(domain);
-    if (previous) fail(`Duplicate Flyway ConfigMap metadata.name '${domain}' in ${previous} and ${sourceFile}.`);
-
-    const migrationFile = join(migrationDirectory, `${domain}.yaml`);
-    if (!existsSync(migrationFile)) fail(`${sourceFile}: generated migration values file not found: ${migrationFile}`);
+  for (const source of readSourceConfigMaps(configmapDirectory)) {
+    const migrationFile = join(migrationDirectory, `${source.name}.yaml`);
+    if (!existsSync(migrationFile)) fail(`${source.file}: generated migration values file not found: ${migrationFile}`);
     const migrations = yamlDocument(migrationFile).get('migrations', true);
     if (!isMap(migrations)) fail(`${migrationFile}: expected a root 'migrations' mapping.`);
-    if (!migrations.has(domain)) {
-      fail(`${migrationFile}: expected migration domain key '${domain}' generated from ${sourceFile}.`);
+    if (!migrations.has(source.name)) {
+      fail(`${migrationFile}: expected migration domain key '${source.name}' generated from ${source.file}.`);
     }
-    domains.set(domain, migrationFile);
+    domains.set(source.name, migrationFile);
   }
   return domains;
 }
 
-function workloadFiles(root: string, environment: string): WorkloadFile[] {
-  const result: WorkloadFile[] = [];
-  for (const [directoryName, section, workloadKind] of [
-    ['microservices', 'deployment', 'microservice'],
-    ['jobs', 'cronjob', 'job'],
-  ] as const) {
-    const directory = join(root, directoryName);
-    if (!existsSync(directory)) continue;
-    for (const entry of readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-      if (!entry.isDirectory()) continue;
-      const file = join(directory, entry.name, environment, 'values.yaml');
-      if (existsSync(file) && statSync(file).isFile()) {
-        result.push({ file, section, workloadKind, workloadName: entry.name });
-      }
-    }
-  }
-  return result;
-}
-
-function inspectCandidate(workloadFile: WorkloadFile, domains: Map<string, string>): Candidate | Skipped {
-  const { file, section, workloadKind, workloadName } = workloadFile;
-  const source = readFileSync(file, 'utf8');
-  const document = yamlDocument(file);
-  const workload = document.get(section, true);
-  if (workload === undefined) return { skipped: 'NO_FLYWAY_INIT_CONTAINER' };
-  if (!isMap(workload)) fail(`${file}: '${section}' must be a mapping.`);
-  const flyway = workload.get('flywayInitContainer', true);
-  if (flyway === undefined) return { skipped: 'NO_FLYWAY_INIT_CONTAINER' };
-  if (!isMap(flyway)) fail(`${file}: '${section}.flywayInitContainer' must be a mapping.`);
-
-  const legacyPair = flyway.items.find(pair => scalarString(pair.key) === 'migrationsConfigmap');
-  const newPair = flyway.items.find(pair => scalarString(pair.key) === 'migrationDomain');
-  if (!legacyPair && !newPair) return { skipped: 'NO_MIGRATION_REFERENCE' };
-
-  const legacy = legacyPair ? scalarString(legacyPair.value) : undefined;
-  const current = newPair ? scalarString(newPair.value) : undefined;
-  if (legacyPair && !legacy) fail(`${file}: 'migrationsConfigmap' must be a non-empty string.`);
-  if (newPair && !current) fail(`${file}: 'migrationDomain' must be a non-empty string.`);
-  if (legacy && current && legacy !== current) {
-    fail(`${file}: migrationsConfigmap '${legacy}' conflicts with migrationDomain '${current}'.`);
-  }
-
-  const domain = current ?? legacy!;
+function inspectCandidate(workload: WorkloadValuesFile, reference: FlywayReference, domains: Map<string, string>): Candidate | Skipped {
+  const { file } = workload;
+  if (reference.state !== 'REFERENCE') return { skipped: reference.state };
+  const { legacyPair, targetPair, workloadName } = reference;
+  const domain = reference.domain!;
   if (!domains.has(domain)) {
     if (IGNORED_MIGRATION_DOMAINS.has(domain)) {
       console.log(`IGNORED - ${relative(DEFAULT_ROOT, file)} -> ${domain} (deprecated Scala workload)`);
-      return { skipped: 'IGNORED', domain, key: legacyPair ? 'migrationsConfigmap' : 'migrationDomain' };
+      return { skipped: 'IGNORED', domain, key: legacyPair ? LEGACY_KEY : TARGET_KEY };
     }
     fail(`${file}: migration domain '${domain}' is referenced but has no generated Flyway migration source.`);
   }
-  if (!legacyPair) return { file, workloadKind, workloadName, domain, changed: false, output: source };
+  const source = readFileSync(file, 'utf8');
+  const candidate = { file, workloadType: workload.workloadType, workloadName, domain };
+  if (!legacyPair) return { ...candidate, changed: false, output: source };
 
   const keyRange = isScalar(legacyPair.key) ? legacyPair.key.range : undefined;
-  if (!keyRange) fail(`${file}: cannot locate 'migrationsConfigmap' in the original YAML text.`);
+  if (!keyRange) fail(`${file}: cannot locate '${LEGACY_KEY}' in the original YAML text.`);
   let output: string;
-  if (newPair) {
+  if (targetPair) {
     const lineStart = source.lastIndexOf('\n', keyRange[0] - 1) + 1;
     const nextNewline = source.indexOf('\n', keyRange[2]);
     const lineEnd = nextNewline < 0 ? source.length : nextNewline + 1;
     output = source.slice(0, lineStart) + source.slice(lineEnd);
   } else {
     const keySource = source.slice(keyRange[0], keyRange[1]);
-    const offset = keySource.indexOf('migrationsConfigmap');
-    if (offset < 0) fail(`${file}: cannot replace 'migrationsConfigmap' in the original YAML text.`);
+    const offset = keySource.indexOf(LEGACY_KEY);
+    if (offset < 0) fail(`${file}: cannot replace '${LEGACY_KEY}' in the original YAML text.`);
     const start = keyRange[0] + offset;
-    output = source.slice(0, start) + 'migrationDomain' + source.slice(start + 'migrationsConfigmap'.length);
+    output = source.slice(0, start) + TARGET_KEY + source.slice(start + LEGACY_KEY.length);
   }
-  return { file, workloadKind, workloadName, domain, changed: true, output };
+  return { ...candidate, changed: true, output };
 }
 
 function printMigrationPlan(root: string, environment: string, candidates: Candidate[]): void {
   const changed = candidates.filter(candidate => candidate.changed);
-  const microservices = changed.filter(candidate => candidate.workloadKind === 'microservice');
-  const jobs = changed.filter(candidate => candidate.workloadKind === 'job');
+  const microservices = changed.filter(candidate => candidate.workloadType === 'Deployment');
+  const jobs = changed.filter(candidate => candidate.workloadType === 'CronJob');
 
   console.log("========================================");
   console.log(`MIGRATION PLAN - environment '${environment}'`);
@@ -253,19 +177,11 @@ export function migrate(rawArgs: string[]): number {
     parameters: { dryRun: options.dryRun },
   });
   // Same workload identity used by the inventory/validate reports: Kubernetes kind and the `name` declared in values.yaml.
-  const describe = (workloadFile: WorkloadFile) => {
-    let workloadName = workloadFile.workloadName;
-    try {
-      workloadName = scalarString(yamlDocument(workloadFile.file).get('name', true)) ?? workloadName;
-    } catch {
-      // Malformed files are reported as INVALID_REFERENCE; keep the folder name.
-    }
-    return {
-      workloadType: workloadFile.section === 'deployment' ? 'Deployment' : 'CronJob',
-      workloadName,
-      valuesFile: relative(options.root, workloadFile.file),
-    };
-  };
+  const describe = (workload: WorkloadValuesFile, workloadName = workload.folder) => ({
+    workloadType: workload.workloadType,
+    workloadName,
+    valuesFile: relative(options.root, workload.file),
+  });
 
   try {
     const commonsDirectory = join(options.root, 'commons', options.environment);
@@ -274,28 +190,31 @@ export function migrate(rawArgs: string[]): number {
     const candidates: Candidate[] = [];
     const candidateRows = new Map<Candidate, ReportRow>();
 
-    for (const workloadFile of workloadFiles(options.root, options.environment)) {
+    for (const workloadFile of workloadValuesFiles(options.root, options.environment)) {
+      let workloadName = workloadFile.folder;
       try {
-        const result = inspectCandidate(workloadFile, domains);
+        const reference = readFlywayReference(workloadFile);
+        workloadName = reference.workloadName;
+        const result = inspectCandidate(workloadFile, reference, domains);
         if ('skipped' in result) {
           const detail = {
             NO_FLYWAY_INIT_CONTAINER: `No ${workloadFile.section}.flywayInitContainer section.`,
             NO_MIGRATION_REFERENCE: `${workloadFile.section}.flywayInitContainer has neither migrationsConfigmap nor migrationDomain.`,
             IGNORED: `${result.key}: ${result.domain} left unchanged.`,
           }[result.skipped];
-          rows.push({ status: result.skipped, ...describe(workloadFile), configMap: result.domain ?? '', fromKey: result.key ?? '', toKey: result.key ?? '', detail });
+          rows.push({ status: result.skipped, ...describe(workloadFile, workloadName), configMap: result.domain ?? '', fromKey: result.key ?? '', toKey: result.key ?? '', detail });
           continue;
         }
         candidates.push(result);
         const row: ReportRow = result.changed
-          ? { status: options.dryRun ? 'WOULD_UPDATE' : 'NOT_APPLIED', ...describe(workloadFile), configMap: result.domain, fromKey: 'migrationsConfigmap', toKey: 'migrationDomain', detail: `${workloadFile.section}.flywayInitContainer.migrationsConfigmap: ${result.domain} -> migrationDomain: ${result.domain}${options.dryRun ? ' (dry run).' : ' not applied: validation failed for other workloads.'}` }
-          : { status: 'ALREADY_MIGRATED', ...describe(workloadFile), configMap: result.domain, fromKey: 'migrationDomain', toKey: 'migrationDomain', detail: `${workloadFile.section}.flywayInitContainer.migrationDomain: ${result.domain}.` };
+          ? { status: options.dryRun ? 'WOULD_UPDATE' : 'NOT_APPLIED', ...describe(workloadFile, workloadName), configMap: result.domain, fromKey: 'migrationsConfigmap', toKey: 'migrationDomain', detail: `${workloadFile.section}.flywayInitContainer.migrationsConfigmap: ${result.domain} -> migrationDomain: ${result.domain}${options.dryRun ? ' (dry run).' : ' not applied: validation failed for other workloads.'}` }
+          : { status: 'ALREADY_MIGRATED', ...describe(workloadFile, workloadName), configMap: result.domain, fromKey: 'migrationDomain', toKey: 'migrationDomain', detail: `${workloadFile.section}.flywayInitContainer.migrationDomain: ${result.domain}.` };
         rows.push(row);
         candidateRows.set(result, row);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         errors.push(message);
-        rows.push({ status: 'INVALID_REFERENCE', ...describe(workloadFile), detail: message });
+        rows.push({ status: 'INVALID_REFERENCE', ...describe(workloadFile, workloadName), detail: message });
       }
     }
     if (errors.length > 0) fail(`Validation failed; no files were changed:\n- ${errors.join('\n- ')}`);

@@ -2,7 +2,7 @@ import { copyFileSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync,
 import { pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { basename, join, relative } from 'node:path';
-import { fail, field, files, mapping, parseOptions, paths, scalarText, yamlDocument } from './common.js';
+import { fail, files, FLYWAY_SOURCE_FILE, parseOptions, paths, readSourceConfigMap, yamlDocument } from './common.js';
 import { extractReportDir, writePhaseReport, type ReportRow, type StatusDefinition } from './phase-report.js';
 
 const usage = `Generate Flyway migration values from Kubernetes ConfigMaps.
@@ -77,21 +77,14 @@ export async function main(): Promise<void> {
 
   const temporary = mkdtempSync(join(tmpdir(), 'flyway-migrations-'));
   try {
-    const sourceFiles = files(directories.configmaps, /^flyway.*\.ya?ml$/);
+    const sourceFiles = files(directories.configmaps, FLYWAY_SOURCE_FILE);
     const valid: ReportRow[] = [];
     for (const sourceFile of sourceFiles) {
       let name = '';
       try {
-        const document = yamlDocument(sourceFile);
-        const kind = scalarText(field(document.contents, 'kind')) ?? '';
-        name = scalarText(field(field(document.contents, 'metadata'), 'name')) ?? '';
-        const data = field(document.contents, 'data');
-
-        if (kind !== 'ConfigMap') fail(`${sourceFile}: expected kind ConfigMap, found '${kind || "<empty>"}'.`);
-        if (!name) fail(`${sourceFile}: metadata.name is required.`);
-        if (!mapping(data)) fail(`${sourceFile}: data must be a YAML mapping.`);
-        if (data.items.length === 0) fail(`${sourceFile}: data must contain at least one migration.`);
-        if (name === '.' || name === '..' || name.includes('/')) fail(`${sourceFile}: invalid metadata.name '${name}'.`);
+        const source = readSourceConfigMap(sourceFile);
+        name = source.name;
+        const keyCount = Object.keys(source.data).length;
 
         const outputFile = join(temporary, `${name}.yaml`);
         let fd: number;
@@ -110,7 +103,7 @@ export async function main(): Promise<void> {
           closeSync(fd);
         }
         yamlDocument(outputFile);
-        valid.push({ status: 'NOT_WRITTEN', configMap: name, keys: data.items.length, sourceFile: label(sourceFile), targetFile: label(join(directories.migrations, `${name}.yaml`)), detail: '' });
+        valid.push({ status: 'NOT_WRITTEN', configMap: name, keys: keyCount, sourceFile: label(sourceFile), targetFile: label(join(directories.migrations, `${name}.yaml`)), detail: '' });
       } catch (err) {
         rows.push({ status: 'INVALID_SOURCE', configMap: name, sourceFile: label(sourceFile), detail: err instanceof Error ? err.message : String(err) });
       }

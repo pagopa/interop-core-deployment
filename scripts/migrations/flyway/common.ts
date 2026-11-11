@@ -101,3 +101,70 @@ export function keys(node: unknown): string[] {
     ? node.items.map(item => String(isScalar(item.key) ? item.key.value : item.key)).sort()
     : [];
 }
+
+/** Migration domains that are knowingly out of scope, with the reason shown in every report. */
+export const IGNORED_MIGRATION_DOMAINS = new Map<string, string>([
+  [
+    'common-db-migrations',
+    'MongoDB migration used only by deprecated Scala services authorization-management and notifier.',
+  ],
+]);
+
+/** Source ConfigMap files: commons/<env>/configmaps/flyway*.yaml|yml. */
+export const FLYWAY_SOURCE_FILE = /^flyway.*\.ya?ml$/i;
+
+export type SourceErrorCode = 'INVALID_CONFIGMAP' | 'INVALID_DATA' | 'NO_MIGRATIONS' | 'INVALID_VALUE';
+
+/** Validation error of a single source ConfigMap; `code` lets callers map it to their report status. */
+export class SourceConfigMapError extends Error {
+  constructor(readonly code: SourceErrorCode, message: string) {
+    super(message);
+  }
+}
+
+export interface SourceConfigMap {
+  file: string;
+  name: string;
+  data: Record<string, string>;
+}
+
+/** Reads and validates one Flyway source ConfigMap; throws SourceConfigMapError when it is not usable. */
+export function readSourceConfigMap(file: string): SourceConfigMap {
+  const document = yamlDocument(file).contents;
+  const kind = scalarText(field(document, 'kind')) ?? '';
+  const name = scalarText(field(field(document, 'metadata'), 'name')) ?? '';
+  const data = field(document, 'data');
+  if (kind !== 'ConfigMap') throw new SourceConfigMapError('INVALID_CONFIGMAP', `${file}: expected kind ConfigMap, found '${kind || '<empty>'}'.`);
+  if (!name) throw new SourceConfigMapError('INVALID_CONFIGMAP', `${file}: metadata.name is required.`);
+  if (name === '.' || name === '..' || name.includes('/')) throw new SourceConfigMapError('INVALID_CONFIGMAP', `${file}: invalid metadata.name '${name}'.`);
+  if (!mapping(data)) throw new SourceConfigMapError('INVALID_DATA', `${file}: data must be a YAML mapping.`);
+  if (data.items.length === 0) throw new SourceConfigMapError('NO_MIGRATIONS', `${file}: data must contain at least one migration.`);
+  const values: Record<string, string> = {};
+  for (const key of keys(data)) {
+    const value = scalarText(field(data, key));
+    if (value === undefined) throw new SourceConfigMapError('INVALID_VALUE', `${file}: data.${key} must be a string.`);
+    values[key] = value;
+  }
+  return { file, name, data: values };
+}
+
+/** Lists the Flyway source ConfigMap files of a configmaps directory, sorted by name. */
+export function sourceConfigMapFiles(configmapDirectory: string): string[] {
+  if (!existsSync(configmapDirectory) || !statSync(configmapDirectory).isDirectory()) fail(`Directory not found: ${configmapDirectory}`);
+  return files(configmapDirectory, FLYWAY_SOURCE_FILE);
+}
+
+/** Reads every Flyway source ConfigMap of a configmaps directory; fails on the first invalid or duplicate one. */
+export function readSourceConfigMaps(configmapDirectory: string): SourceConfigMap[] {
+  const result: SourceConfigMap[] = [];
+  const seen = new Map<string, string>();
+  for (const file of sourceConfigMapFiles(configmapDirectory)) {
+    const source = readSourceConfigMap(file);
+    const previous = seen.get(source.name);
+    if (previous) fail(`Duplicate Flyway ConfigMap metadata.name '${source.name}' in ${previous} and ${file}.`);
+    seen.set(source.name, file);
+    result.push(source);
+  }
+  if (result.length === 0) fail(`No flyway*.yaml or flyway*.yml ConfigMaps found in ${configmapDirectory}.`);
+  return result;
+}

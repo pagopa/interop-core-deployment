@@ -148,3 +148,28 @@ test('phases write JSON/CSV reports with per-item status even when failing', con
   const plan = JSON.parse(readFileSync(join(reports, 'plan-dev.json'), 'utf8'));
   assert.deepEqual(plan.items.map((item: { status: string; workloadType: string; workloadName: string; configMap: string }) => [item.status, item.workloadType, item.workloadName, item.configMap]), [['WOULD_UPDATE', 'Deployment', 'svc', 'flyway-test']]);
 });
+
+test('shared readers validate source ConfigMaps and workload references', async context => {
+  const { readSourceConfigMaps, SourceConfigMapError, readSourceConfigMap } = await import('./common.js');
+  const { readFlywayReference, workloadValuesFiles } = await import('./workloads.js');
+  const data = fixture();
+  context.after(() => rmSync(data.root, { recursive: true, force: true }));
+  assert.deepEqual(readSourceConfigMaps(data.configmaps).map(item => [item.name, Object.keys(item.data)]), [['flyway-test', ['V1__Init.sql']]]);
+  const invalid = join(data.configmaps, 'flyway-invalid.yaml');
+  writeFileSync(invalid, 'kind: ConfigMap\nmetadata:\n  name: flyway-invalid\ndata: {}\n');
+  assert.throws(() => readSourceConfigMap(invalid), (error: unknown) => error instanceof SourceConfigMapError && error.code === 'NO_MIGRATIONS');
+
+  const write = (folder: string, content: string) => {
+    const directory = join(data.root, 'microservices', folder, 'dev');
+    mkdirSync(directory, { recursive: true });
+    writeFileSync(join(directory, 'values.yaml'), content);
+  };
+  write('a-legacy', 'name: interop-a\ndeployment:\n  flywayInitContainer:\n    migrationsConfigmap: flyway-test\n');
+  write('b-none', 'name: interop-b\ndeployment:\n  image: x\n');
+  write('c-conflict', 'deployment:\n  flywayInitContainer:\n    migrationsConfigmap: x\n    migrationDomain: y\n');
+  const [legacy, none, conflict] = workloadValuesFiles(data.root, 'dev');
+  const reference = readFlywayReference(legacy);
+  assert.deepEqual([reference.state, reference.workloadName, reference.legacy, reference.domain], ['REFERENCE', 'interop-a', 'flyway-test', 'flyway-test']);
+  assert.equal(readFlywayReference(none).state, 'NO_FLYWAY_INIT_CONTAINER');
+  assert.throws(() => readFlywayReference(conflict), /conflicts with migrationDomain/);
+});

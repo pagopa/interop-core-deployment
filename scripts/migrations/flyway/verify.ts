@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { crc32 } from 'node:zlib';
-import { fail, field, files, keys, mapping, parseOptions, paths, scalarText, yamlDocument } from './common.js';
+import { fail, field, keys, mapping, parseOptions, paths, readSourceConfigMap, scalarText, SourceConfigMapError, sourceConfigMapFiles, yamlDocument, type SourceConfigMap } from './common.js';
 import { extractReportDir, writePhaseReport, type ReportRow, type StatusDefinition } from './phase-report.js';
 
 type ChecksumMode = 'crc32' | 'sha256';
@@ -16,7 +16,7 @@ const DEFINITIONS: Record<string, StatusDefinition> = {
   MISSING_GENERATED_FILE: { severity: 'critical', description: 'The generated migration values file for this ConfigMap does not exist in commons/<env>/migrations; run the generate phase.' },
   INVALID_CONFIGMAP: { severity: 'critical', description: 'Source file is not a valid ConfigMap (kind or metadata.name).' },
   DUPLICATE_CONFIGMAP: { severity: 'critical', description: 'Another source file declares the same metadata.name.' },
-  INVALID_DATA: { severity: 'critical', description: 'Source data or generated migrations.<configMap> is not a YAML mapping.' },
+  INVALID_DATA: { severity: 'critical', description: 'Source data or the generated migrations mapping for this ConfigMap is not a YAML mapping.' },
   NO_MIGRATIONS: { severity: 'critical', description: 'Source ConfigMap has no migration keys.' },
   NO_SOURCE: { severity: 'critical', description: 'No flyway*.yaml/yml ConfigMap was found in commons/<env>/configmaps.' },
   DIRECTORY_MISSING: { severity: 'critical', description: 'commons/<env>/configmaps or commons/<env>/migrations does not exist.' },
@@ -78,19 +78,21 @@ Expected layout: commons/<environment>/configmaps/flyway*.yaml (or .yml)
   let checked = 0;
   const errors: string[] = [];
   const seen = new Set<string>();
-  const sourceFiles = files(directories.configmaps, /^flyway.*\.ya?ml$/);
+  const sourceFiles = sourceConfigMapFiles(directories.configmaps);
 
   for (const sourceFile of sourceFiles) {
     examined += 1;
-    const source = yamlDocument(sourceFile).contents;
-    const kind = scalarText(field(source, 'kind')) ?? '';
-    const configmapName = scalarText(field(field(source, 'metadata'), 'name')) ?? '';
     const sourceLabel = relative(options.root, sourceFile);
-    if (kind !== 'ConfigMap' || !configmapName || configmapName === '.' || configmapName === '..' || configmapName.includes('/')) {
-      errors.push(`Invalid ConfigMap kind or metadata.name in ${sourceLabel}.`);
-      rows.push({ status: 'INVALID_CONFIGMAP', configMap: configmapName, sourceFile: sourceLabel, detail: errors.at(-1)! });
+    let source: SourceConfigMap;
+    try {
+      source = readSourceConfigMap(sourceFile);
+    } catch (error) {
+      if (!(error instanceof SourceConfigMapError)) throw error;
+      errors.push(error.message);
+      rows.push({ status: error.code, sourceFile: sourceLabel, detail: error.message });
       continue;
     }
+    const configmapName = source.name;
     if (seen.has(configmapName)) {
       errors.push(`Duplicate source ConfigMap metadata.name '${configmapName}'.`);
       rows.push({ status: 'DUPLICATE_CONFIGMAP', configMap: configmapName, sourceFile: sourceLabel, detail: errors.at(-1)! });
@@ -108,26 +110,19 @@ Expected layout: commons/<environment>/configmaps/flyway*.yaml (or .yml)
       continue;
     }
 
-    // Extract source and target data for comparison.
-    const sourceData = field(source, 'data');
+    // Extract target data for comparison; source data was validated by readSourceConfigMap.
     const targetData = field(field(yamlDocument(targetFile).contents, 'migrations'), configmapName);
-    if (!mapping(sourceData) || !mapping(targetData)) {
-      errors.push(`${configmapName}: source data and generated migrations must be YAML mappings.`);
+    if (!mapping(targetData)) {
+      errors.push(`${configmapName}: generated migrations must be a YAML mapping.`);
       rows.push({ status: 'INVALID_DATA', ...location, detail: errors.at(-1)! });
       continue;
     }
 
     // Create sets of source and target migration names for comparison.
-    const sourceKeys = keys(sourceData);
+    const sourceKeys = Object.keys(source.data).sort();
     const targetKeys = keys(targetData);
     const sourceSet = new Set(sourceKeys);
     const targetSet = new Set(targetKeys);
-    if (mode === 'sha256' && sourceKeys.length === 0) {
-      errors.push(`${configmapName}: no migrations in source data.`);
-      rows.push({ status: 'NO_MIGRATIONS', ...location, detail: errors.at(-1)! });
-      continue;
-    }
-
     for (const migrationName of sourceKeys) {
       if (!migrationName && mode === 'crc32') continue;
       if (!targetSet.has(migrationName)) {
@@ -135,7 +130,7 @@ Expected layout: commons/<environment>/configmaps/flyway*.yaml (or .yml)
         rows.push({ status: 'MISSING_IN_GENERATED', ...location, key: migrationName, detail: errors.at(-1)! });
         continue;
       }
-      const sourceValue = scalarText(field(sourceData, migrationName));
+      const sourceValue = source.data[migrationName];
       const targetValue = scalarText(field(targetData, migrationName));
       if (sourceValue === undefined || targetValue === undefined) {
         errors.push(`${configmapName}/${migrationName}: both migration values must be strings.`);
