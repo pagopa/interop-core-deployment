@@ -11,6 +11,7 @@ configmap:
   PRIVACY_NOTICES_UPDATER_TERMS_OF_SERVICE_UUID: "6bf8412a-41a7-41a0-82dc-26286ce61b1a"
 
 cronjob:
+  suspend: true
   schedule: "0 */3 * * *"
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 0

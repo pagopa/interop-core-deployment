@@ -14,6 +14,69 @@ configmap:
   RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/risk-analysis/docs"
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui,{{.Values.namespace}}.interop.pagopa.it/m2m,{{.Values.namespace}}.interop.pagopa.it/internal"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/47d068ab-303f-4dcd-a494-9bdc0933b772
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/47d068ab-303f-4dcd-a494-9bdc0933b772
+  app:
+    create: true
+    data:
+      - secretKey: EVENTSTORE_DB_USERNAME
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/47d068ab-303f-4dcd-a494-9bdc0933b772
+      - secretKey: EVENTSTORE_DB_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/47d068ab-303f-4dcd-a494-9bdc0933b772
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/8ad69b0a-b7e4-421c-9421-d818c95b1c9b
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/8ad69b0a-b7e4-421c-9421-d818c95b1c9b
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-qa/users/qa_purpose_process_user
+          property: username
+          version: uuid/terraform-2025050710243277520000001d
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-qa/users/qa_purpose_process_user
+          property: password
+          version: uuid/terraform-2025050710243277520000001d
+      - secretKey: TENANT_KIND_HISTORY_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-qa/users/qa_purpose_process_user
+          property: username
+          version: uuid/terraform-2025050710243277520000001d
+      - secretKey: TENANT_KIND_HISTORY_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-qa/users/qa_purpose_process_user
+          property: password
+          version: uuid/terraform-2025050710243277520000001d
+      - secretKey: SELFCARE_V2_API_KEY
+        remoteRef:
+          key: app/backend/selfcare-v2
+          property: SELFCARE_V2_API_KEY
+          version: uuid/1f3a6db1-0f4f-4dab-b4bc-4c60e946ed3a
+
 deployment:
   flywayInitContainer:
     create: true
@@ -28,9 +91,6 @@ deployment:
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "event-store.POSTGRES_USR"
-      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
   replicas: 2
   env:
     PORT: "8088"
@@ -38,10 +98,7 @@ deployment:
     EVENTSTORE_DB_USE_SSL: "true"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     WELL_KNOWN_URLS: >-
-      {{.Values.local.well_known_url.AUTHSRV}},
-      {{.Values.local.well_known_url.BFF}},
-      {{.Values.local.well_known_url.INTERNAL}},
-      {{.Values.local.well_known_url.MAINTENANCE}}
+      {{.Values.local.well_known_url.AUTHSRV}}, {{.Values.local.well_known_url.BFF}}, {{.Values.local.well_known_url.INTERNAL}}, {{.Values.local.well_known_url.MAINTENANCE}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -84,16 +141,6 @@ deployment:
     TENANT_KIND_HISTORY_DB_SCHEMA: "common-tenant-kind-history-db.DB_SCHEMA"
     FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
     SELFCARE_V2_URL: "common-selfcare.SELFCARE_V2_URL"
-  envFromSecrets:
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-purpose-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-purpose-process-user.password"
-    TENANT_KIND_HISTORY_DB_USERNAME: "platform-data-purpose-process-user.username"
-    TENANT_KIND_HISTORY_DB_PASSWORD: "platform-data-purpose-process-user.password"
-    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
   livenessProbe:
     httpGet:
       path: /status
