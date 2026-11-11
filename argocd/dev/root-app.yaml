@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: interop-core-root-dev
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/tracking-id: interop-core-root-dev:argoproj.io/Application:argocd/interop-core-root-dev
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:pagopa/interop-core-deployment.git
+    targetRevision: HEAD
+    path: argocd/dev
+    directory:
+      include: "{*.yaml}"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=false
