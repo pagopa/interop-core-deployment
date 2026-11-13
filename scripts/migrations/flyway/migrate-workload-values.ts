@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { isMap, isScalar } from 'yaml';
 import { fail, IGNORED_MIGRATION_DOMAINS, readSourceConfigMaps, yamlDocument } from './common.js';
 import { extractReportDir, writePhaseReport, type ReportRow, type StatusDefinition } from './phase-report.js';
-import { LEGACY_KEY, readFlywayReference, TARGET_KEY, workloadValuesFiles, type FlywayReference, type WorkloadValuesFile } from './workloads.js';
+import { flywayConfigMapName, LEGACY_KEY, readFlywayReference, TARGET_KEY, workloadValuesFiles, type FlywayReference, type WorkloadValuesFile } from './workloads.js';
 
 interface Options {
   root: string;
@@ -42,7 +42,7 @@ const DEFINITIONS: Record<string, StatusDefinition> = {
   INVALID_REFERENCE: { severity: 'critical', description: 'Workload reference is invalid (malformed YAML, conflicting keys or domain without generated Flyway source); no file was changed.' },
   WRITE_VERIFICATION_FAILED: { severity: 'critical', description: 'File content read back after writing differs from the expected content.' },
 };
-const COLUMNS = ['workloadType', 'workloadName', 'configMap', 'fromKey', 'toKey', 'valuesFile'];
+const COLUMNS = ['workloadType', 'workloadName', 'configMap', 'fromKey', 'toKey', 'clusterConfigMap', 'valuesFile'];
 
 const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 
@@ -202,13 +202,13 @@ export function migrate(rawArgs: string[]): number {
             NO_MIGRATION_REFERENCE: `${workloadFile.section}.flywayInitContainer has neither migrationsConfigmap nor migrationDomain.`,
             IGNORED: `${result.key}: ${result.domain} left unchanged.`,
           }[result.skipped];
-          rows.push({ status: result.skipped, ...describe(workloadFile, workloadName), configMap: result.domain ?? '', fromKey: result.key ?? '', toKey: result.key ?? '', detail });
+          rows.push({ status: result.skipped, ...describe(workloadFile, workloadName), configMap: result.domain ?? '', fromKey: result.key ?? '', toKey: result.key ?? '', clusterConfigMap: result.domain ?? '', detail });
           continue;
         }
         candidates.push(result);
         const row: ReportRow = result.changed
-          ? { status: options.dryRun ? 'WOULD_UPDATE' : 'NOT_APPLIED', ...describe(workloadFile, workloadName), configMap: result.domain, fromKey: 'migrationsConfigmap', toKey: 'migrationDomain', detail: `${workloadFile.section}.flywayInitContainer.migrationsConfigmap: ${result.domain} -> migrationDomain: ${result.domain}${options.dryRun ? ' (dry run).' : ' not applied: validation failed for other workloads.'}` }
-          : { status: 'ALREADY_MIGRATED', ...describe(workloadFile, workloadName), configMap: result.domain, fromKey: 'migrationDomain', toKey: 'migrationDomain', detail: `${workloadFile.section}.flywayInitContainer.migrationDomain: ${result.domain}.` };
+          ? { status: options.dryRun ? 'WOULD_UPDATE' : 'NOT_APPLIED', ...describe(workloadFile, workloadName), configMap: result.domain, fromKey: 'migrationsConfigmap', toKey: 'migrationDomain', clusterConfigMap: flywayConfigMapName(workloadName, result.domain), detail: `${workloadFile.section}.flywayInitContainer.migrationsConfigmap: ${result.domain} -> migrationDomain: ${result.domain}${options.dryRun ? ' (dry run).' : ' not applied: validation failed for other workloads.'}` }
+          : { status: 'ALREADY_MIGRATED', ...describe(workloadFile, workloadName), configMap: result.domain, fromKey: 'migrationDomain', toKey: 'migrationDomain', clusterConfigMap: flywayConfigMapName(workloadName, result.domain), detail: `${workloadFile.section}.flywayInitContainer.migrationDomain: ${result.domain}.` };
         rows.push(row);
         candidateRows.set(result, row);
       } catch (error) {

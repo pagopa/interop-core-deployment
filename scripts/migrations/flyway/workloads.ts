@@ -80,3 +80,14 @@ export function readFlywayReference(workload: WorkloadValuesFile): FlywayReferen
   if (legacy && target && legacy !== target) fail(`${file}: ${LEGACY_KEY} '${legacy}' conflicts with ${TARGET_KEY} '${target}'.`);
   return { ...base, state: 'REFERENCE', legacyPair, targetPair, legacy, target, domain: target ?? legacy };
 }
+
+/**
+ * Name of the ConfigMap rendered by the workload chart for `migrationDomain`
+ * (interop-eks-microservice-chart / interop-eks-cronjob-chart helper `flywayConfigmapName`:
+ * `<values.name>-<migrationDomain>` when the domain starts with `flyway`, otherwise
+ * `<values.name>-flyway-<migrationDomain>`). With `migrationsConfigmap` the workload mounts the
+ * shared ConfigMap named after the domain instead.
+ */
+export function flywayConfigMapName(workloadName: string, domain: string): string {
+  return domain.startsWith('flyway') ? `${workloadName}-${domain}` : `${workloadName}-flyway-${domain}`;
+}

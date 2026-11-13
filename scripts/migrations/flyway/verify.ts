@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { crc32 } from 'node:zlib';
 import { fail, field, keys, mapping, parseOptions, paths, readSourceConfigMap, scalarText, SourceConfigMapError, sourceConfigMapFiles, yamlDocument, type SourceConfigMap } from './common.js';
@@ -20,6 +20,11 @@ const DEFINITIONS: Record<string, StatusDefinition> = {
   NO_MIGRATIONS: { severity: 'critical', description: 'Source ConfigMap has no migration keys.' },
   NO_SOURCE: { severity: 'critical', description: 'No flyway*.yaml/yml ConfigMap was found in commons/<env>/configmaps.' },
   DIRECTORY_MISSING: { severity: 'critical', description: 'commons/<env>/configmaps or commons/<env>/migrations does not exist.' },
+  UNEXPECTED_GENERATED_FILE: { severity: 'critical', description: 'Generated YAML file has no corresponding source filename <metadata.name>.yaml.' },
+  UNEXPECTED_GENERATED_DOMAIN: { severity: 'critical', description: 'Generated domain has no validated source ConfigMap with that metadata.name.' },
+  MISPLACED_GENERATED_DOMAIN: { severity: 'critical', description: 'Known domain is defined outside its expected <metadata.name>.yaml file.' },
+  DUPLICATE_GENERATED_DOMAIN: { severity: 'critical', description: 'Domain is defined in multiple generated files; Helm would merge or overwrite its values.' },
+  INVALID_GENERATED_FILE: { severity: 'critical', description: 'Generated YAML is invalid or does not contain only a root migrations mapping with domain mappings.' },
 };
 const COLUMNS = ['configMap', 'key', 'sourceChecksum', 'generatedChecksum', 'sourceFile', 'targetFile'];
 
@@ -79,6 +84,7 @@ Expected layout: commons/<environment>/configmaps/flyway*.yaml (or .yml)
   const errors: string[] = [];
   const seen = new Set<string>();
   const sourceFiles = sourceConfigMapFiles(directories.configmaps);
+  const sources: SourceConfigMap[] = [];
 
   for (const sourceFile of sourceFiles) {
     examined += 1;
@@ -87,9 +93,9 @@ Expected layout: commons/<environment>/configmaps/flyway*.yaml (or .yml)
     try {
       source = readSourceConfigMap(sourceFile);
     } catch (error) {
-      if (!(error instanceof SourceConfigMapError)) throw error;
-      errors.push(error.message);
-      rows.push({ status: error.code, sourceFile: sourceLabel, detail: error.message });
+      const message = error instanceof Error ? error.message : String(error);
+      errors.push(message);
+      rows.push({ status: error instanceof SourceConfigMapError ? error.code : 'FATAL_ERROR', sourceFile: sourceLabel, detail: message });
       continue;
     }
     const configmapName = source.name;
@@ -99,7 +105,48 @@ Expected layout: commons/<environment>/configmaps/flyway*.yaml (or .yml)
       continue;
     }
     seen.add(configmapName);
+    sources.push(source);
+  }
 
+  const generated = new Map<string, ReturnType<typeof yamlDocument>>();
+  const domainFiles = new Map<string, string>();
+  for (const filename of readdirSync(directories.migrations).sort()) {
+    const targetFile = join(directories.migrations, filename);
+    if (!/\.ya?ml$/.test(filename) || !statSync(targetFile).isFile()) continue;
+    const targetLabel = relative(options.root, targetFile);
+    const add = (status: string, detail: string, configMap = '') => {
+      errors.push(detail);
+      rows.push({ status, targetFile: targetLabel, configMap, detail });
+    };
+    if (!sources.some(source => filename === `${source.name}.yaml`)) {
+      add('UNEXPECTED_GENERATED_FILE', `${targetLabel}: no source generates this filename (expected <metadata.name>.yaml).`);
+    }
+    let document: ReturnType<typeof yamlDocument>;
+    try {
+      document = yamlDocument(targetFile);
+    } catch (error) {
+      add('INVALID_GENERATED_FILE', error instanceof Error ? error.message : String(error));
+      continue;
+    }
+    const migrations = field(document.contents, 'migrations');
+    if (!mapping(document.contents) || keys(document.contents).some(key => key !== 'migrations') || !mapping(migrations)) {
+      add('INVALID_GENERATED_FILE', `${targetLabel}: expected only a root migrations mapping.`);
+      continue;
+    }
+    generated.set(targetFile, document);
+    for (const domain of keys(migrations)) {
+      if (!seen.has(domain)) add('UNEXPECTED_GENERATED_DOMAIN', `${targetLabel}: domain '${domain}' has no source ConfigMap.`, domain);
+      else if (filename !== `${domain}.yaml`) add('MISPLACED_GENERATED_DOMAIN', `${targetLabel}: domain '${domain}' belongs in ${domain}.yaml.`, domain);
+      const previous = domainFiles.get(domain);
+      if (previous) add('DUPLICATE_GENERATED_DOMAIN', `${targetLabel}: domain '${domain}' is also defined in ${previous}.`, domain);
+      else domainFiles.set(domain, targetLabel);
+      if (!mapping(field(migrations, domain))) add('INVALID_GENERATED_FILE', `${targetLabel}: migrations.${domain} must be a mapping.`, domain);
+    }
+  }
+
+  for (const source of sources) {
+    const configmapName = source.name;
+    const sourceLabel = relative(options.root, source.file);
     // Determine the corresponding target migration file.
     const targetFile = join(directories.migrations, `${configmapName}.yaml`);
     const targetLabel = relative(options.root, targetFile);
@@ -111,7 +158,9 @@ Expected layout: commons/<environment>/configmaps/flyway*.yaml (or .yml)
     }
 
     // Extract target data for comparison; source data was validated by readSourceConfigMap.
-    const targetData = field(field(yamlDocument(targetFile).contents, 'migrations'), configmapName);
+    const document = generated.get(targetFile);
+    if (!document) continue;
+    const targetData = field(field(document.contents, 'migrations'), configmapName);
     if (!mapping(targetData)) {
       errors.push(`${configmapName}: generated migrations must be a YAML mapping.`);
       rows.push({ status: 'INVALID_DATA', ...location, detail: errors.at(-1)! });

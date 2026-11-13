@@ -97,6 +97,53 @@ test('both verifiers report mismatches and extra keys', context => {
   }
 });
 
+test('both verifiers reject extra, misplaced, duplicate and malformed generated catalog entries', async context => {
+  const scenarios = [
+    { name: 'orphan file and unknown domain', filename: 'orphan.yaml', content: 'migrations:\n  unknown:\n    V1.sql: SELECT 1;\n', statuses: ['UNEXPECTED_GENERATED_FILE', 'UNEXPECTED_GENERATED_DOMAIN'] },
+    { name: 'extra domain in canonical file', filename: 'flyway-test.yaml', append: '  unknown:\n    V1.sql: SELECT 1;\n', statuses: ['UNEXPECTED_GENERATED_DOMAIN'] },
+    { name: 'duplicate known domain in extra file', filename: 'copy.yml', content: 'migrations:\n  flyway-test:\n    V1.sql: SELECT 1;\n', statuses: ['UNEXPECTED_GENERATED_FILE', 'MISPLACED_GENERATED_DOMAIN', 'DUPLICATE_GENERATED_DOMAIN'] },
+    { name: 'invalid YAML in extra file', filename: 'invalid.yaml', content: 'migrations: [\n', statuses: ['UNEXPECTED_GENERATED_FILE', 'INVALID_GENERATED_FILE'] },
+    { name: 'missing root map', filename: 'flyway-test.yaml', content: 'data: {}\n', statuses: ['INVALID_GENERATED_FILE'] },
+    { name: 'invalid domain map', filename: 'flyway-test.yaml', content: 'migrations:\n  flyway-test: scalar\n', statuses: ['INVALID_GENERATED_FILE', 'INVALID_DATA'] },
+    { name: 'duplicate YAML keys', filename: 'flyway-test.yaml', content: 'migrations:\n  flyway-test: {}\n  flyway-test: {}\n', statuses: ['INVALID_GENERATED_FILE'] },
+    { name: 'missing canonical domain', filename: 'flyway-test.yaml', content: 'migrations: {}\n', statuses: ['INVALID_DATA'] },
+    { name: 'missing SQL key', filename: 'flyway-test.yaml', content: 'migrations:\n  flyway-test: {}\n', statuses: ['MISSING_IN_GENERATED'] },
+    { name: 'non-string SQL value', filename: 'flyway-test.yaml', content: 'migrations:\n  flyway-test:\n    V1__Init.sql: 1\n', statuses: ['INVALID_VALUE'] },
+    { name: 'renamed canonical file', filename: 'renamed.yml', rename: true, statuses: ['UNEXPECTED_GENERATED_FILE', 'MISPLACED_GENERATED_DOMAIN', 'MISSING_GENERATED_FILE'] },
+  ];
+  for (const scenario of scenarios) {
+    await context.test(scenario.name, child => {
+      const data = fixture();
+      child.after(() => rmSync(data.root, { recursive: true, force: true }));
+      assert.equal(run(entrypoints.generate, data.root).status, 0);
+      const canonical = join(data.migrations, 'flyway-test.yaml');
+      const original = readFileSync(canonical, 'utf8');
+      writeFileSync(join(data.migrations, scenario.filename), scenario.content ?? original + (scenario.append ?? ''));
+      if (scenario.rename) rmSync(canonical);
+      for (const script of [entrypoints.sha256, entrypoints.crc32]) {
+        const reportDir = join(data.root, 'reports');
+        const result = run(script, data.root, '--report-dir', reportDir);
+        assert.equal(result.status, 1, result.stderr);
+        const mode = script === entrypoints.sha256 ? 'sha256' : 'crc32';
+        const report = JSON.parse(readFileSync(join(reportDir, `verify-${mode}-dev.json`), 'utf8'));
+        assert.equal(report.success, false);
+        const statuses = report.items.map((item: { status: string }) => item.status);
+        for (const expected of scenario.statuses) assert.ok(statuses.includes(expected), `${expected}: ${statuses.join(', ')}`);
+      }
+    });
+  }
+});
+
+test('verifiers ignore non-YAML files and subdirectories like the Helm values loader', context => {
+  const data = fixture();
+  context.after(() => rmSync(data.root, { recursive: true, force: true }));
+  assert.equal(run(entrypoints.generate, data.root).status, 0);
+  writeFileSync(join(data.migrations, 'notes.txt'), 'not a Helm values file');
+  mkdirSync(join(data.migrations, 'nested'));
+  writeFileSync(join(data.migrations, 'nested/extra.yaml'), 'migrations: {}');
+  for (const script of [entrypoints.sha256, entrypoints.crc32]) assert.equal(run(script, data.root).status, 0);
+});
+
 test('workload migrator leaves deprecated Scala MongoDB domain unchanged', context => {
   const data = fixture();
   context.after(() => rmSync(data.root, { recursive: true, force: true }));
