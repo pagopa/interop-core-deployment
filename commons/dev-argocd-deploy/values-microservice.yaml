@@ -1,4 +1,4 @@
-namespace: "dev-argocd-deploy"
+namespace: dev-argocd-deploy
 deployMode: "KUBECTL_APPLY"
 
 service:
