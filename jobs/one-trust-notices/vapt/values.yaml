@@ -10,6 +10,21 @@ configmap:
   PRIVACY_NOTICES_UPDATER_PRIVACY_POLICY_UUID: "0df21ff6-3e8f-4320-af8f-23dea9135d57"
   PRIVACY_NOTICES_UPDATER_TERMS_OF_SERVICE_UUID: "6bf8412a-41a7-41a0-82dc-26286ce61b1a"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: ONETRUST_CLIENT_ID
+        remoteRef:
+          key: app/backend/onetrust
+          property: ONETRUST_CLIENT_ID
+          version: uuid/b6a26016-1075-46ff-b0fe-b5a37a07512d
+      - secretKey: ONETRUST_CLIENT_SECRET
+        remoteRef:
+          key: app/backend/onetrust
+          property: ONETRUST_CLIENT_SECRET
+          version: uuid/b6a26016-1075-46ff-b0fe-b5a37a07512d
+
 cronjob:
   schedule: "0 */3 * * *"
   failedJobsHistoryLimit: 1
@@ -19,6 +34,3 @@ cronjob:
     TERMS_OF_SERVICE_NOTICE_ID: ""
     PRIVACY_POLICY_NOTICE_ID: ""
     PRIVACY_NOTICES_DYNAMO_TABLE_NAME: "interop-privacy-notices-{{.Values.namespace}}"
-  envFromSecrets:
-    ONETRUST_CLIENT_ID: "onetrust.ONETRUST_CLIENT_ID"
-    ONETRUST_CLIENT_SECRET: "onetrust.ONETRUST_CLIENT_SECRET"

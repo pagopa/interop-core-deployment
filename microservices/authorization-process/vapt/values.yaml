@@ -14,6 +14,59 @@ configmap:
   MAX_KEYS_PER_PRODUCER_KEYCHAIN: "30"
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_authorization"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/c0f7e74d-1726-4213-83b1-8dcba40fd6a1
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/c0f7e74d-1726-4213-83b1-8dcba40fd6a1
+  app:
+    create: true
+    data:
+      - secretKey: SELFCARE_V2_API_KEY
+        remoteRef:
+          key: app/backend/selfcare-v2
+          property: SELFCARE_V2_API_KEY
+          version: uuid/21e8b751-36df-42bd-aa8f-b5a0adda458f
+      - secretKey: EVENTSTORE_DB_USERNAME
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/c0f7e74d-1726-4213-83b1-8dcba40fd6a1
+      - secretKey: EVENTSTORE_DB_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/c0f7e74d-1726-4213-83b1-8dcba40fd6a1
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/c6922a5c-91d4-4366-ae35-58ca7b1e432b
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/c6922a5c-91d4-4366-ae35-58ca7b1e432b
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-vapt/users/vapt_authorization_process_user
+          property: username
+          version: uuid/terraform-20250826083832205900000046
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-vapt/users/vapt_authorization_process_user
+          property: password
+          version: uuid/terraform-20250826083832205900000046
+
 deployment:
   flywayInitContainer:
     create: true
@@ -28,9 +81,6 @@ deployment:
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "event-store.POSTGRES_USR"
-      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -38,10 +88,7 @@ deployment:
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
     WELL_KNOWN_URLS: >-
-      {{.Values.local.well_known_url.AUTHSRV}},
-      {{.Values.local.well_known_url.BFF}},
-      {{.Values.local.well_known_url.INTERNAL}},
-      {{.Values.local.well_known_url.MAINTENANCE}}
+      {{.Values.local.well_known_url.AUTHSRV}}, {{.Values.local.well_known_url.BFF}}, {{.Values.local.well_known_url.INTERNAL}}, {{.Values.local.well_known_url.MAINTENANCE}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -79,14 +126,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
-  envFromSecrets:
-    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-authorization-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-authorization-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
