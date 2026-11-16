@@ -196,10 +196,14 @@ function deepMerge(target: any, source: any): any {
   }
 
   for (const key of Object.keys(source)) {
+    // Guard against prototype pollution from keys read out of YAML files
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+
     if (Array.isArray(source[key])) {
       target[key] = source[key];
     } else if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
-      target[key] = deepMerge(target[key] || {}, source[key]);
+      const current = Object.prototype.hasOwnProperty.call(target, key) ? target[key] : {};
+      target[key] = deepMerge(current || {}, source[key]);
     } else {
       target[key] = source[key];
     }
