@@ -352,12 +352,19 @@ export function initializeCommonsExternalSecrets(
   dryRun: boolean = false,
   secretStoreName?: string
 ): { success: boolean; error?: string } {
+  // Read and write through the same file descriptor, so the file cannot change between check and write
+  let fd: number | undefined;
   try {
-    if (!fs.existsSync(commonsValuesPath)) {
-      return { success: false, error: `Commons file not found: ${commonsValuesPath}` };
+    try {
+      fd = fs.openSync(commonsValuesPath, dryRun ? 'r' : 'r+');
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return { success: false, error: `Commons file not found: ${commonsValuesPath}` };
+      }
+      throw error;
     }
 
-    const content = fs.readFileSync(commonsValuesPath, 'utf-8');
+    const content = fs.readFileSync(fd, 'utf-8');
     const existingValues: any = parseYaml(content);
 
     const existing: any = normalizeExternalSecrets(existingValues?.externalSecrets);
@@ -416,7 +423,8 @@ export function initializeCommonsExternalSecrets(
     }
 
     if (!dryRun) {
-      fs.writeFileSync(commonsValuesPath, newContent);
+      fs.ftruncateSync(fd, 0);
+      fs.writeSync(fd, newContent, 0);
     }
 
     return { success: true };
@@ -425,6 +433,8 @@ export function initializeCommonsExternalSecrets(
       success: false,
       error: error instanceof Error ? error.message : String(error),
     };
+  } finally {
+    if (fd !== undefined) fs.closeSync(fd);
   }
 }
 
