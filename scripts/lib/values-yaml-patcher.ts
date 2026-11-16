@@ -3,7 +3,8 @@
  */
 
 import * as fs from 'fs';
-import { parse as parseYaml, stringify as stringifyYaml, parseDocument, isMap } from 'yaml';
+import { isDeepStrictEqual } from 'util';
+import { parse as parseYaml, stringify as stringifyYaml, parseDocument, isMap, isScalar } from 'yaml';
 import type { ContainerExternalSecretsConfig, ValuesMergeResult } from './external-secrets-types.js';
 import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from './external-secrets-sections.js';
 
@@ -26,14 +27,14 @@ function normalizeExternalSecrets(externalSecrets: any): any {
 }
 
 /**
- * Remove a top-level YAML block: the `<key>:` line plus all following indented or empty lines.
+ * Locate a top-level YAML block: the `<key>:` line plus all following indented or empty lines.
  * Stops at the next top-level key or boundary comment, skipping comments inside the block.
+ * Returns the [start, end) line range, or null when the key is missing.
  */
-function removeTopLevelBlock(content: string, key: string): string {
-  const lines = content.split('\n');
-  // Match only an unindented key so nested blocks are not removed.
+function findTopLevelBlock(lines: string[], key: string): { start: number; end: number } | null {
+  // Match only an unindented key so nested blocks are not matched.
   const start = lines.findIndex((line) => line.startsWith(`${key}:`));
-  if (start === -1) return content;
+  if (start === -1) return null;
 
   const isInsideBlock = (line: string) => line === '' || line.startsWith(' ') || line.startsWith('\t');
 
@@ -49,10 +50,56 @@ function removeTopLevelBlock(content: string, key: string): string {
     }
     end++;
   }
+  return { start, end };
+}
+
+/**
+ * Remove a top-level YAML block (see findTopLevelBlock).
+ */
+function removeTopLevelBlock(content: string, key: string): string {
+  const lines = content.split('\n');
+  const block = findTopLevelBlock(lines, key);
+  if (!block) return content;
 
   // Remove the selected block while leaving the boundary line and remaining content intact.
-  lines.splice(start, end - start);
+  lines.splice(block.start, block.end - block.start);
   return lines.join('\n');
+}
+
+/**
+ * Remove the given nested keys (e.g. ['deployment', 'envFromSecrets']) by deleting their lines from
+ * the original text, together with the blank lines right above them. The rest of the file is kept
+ * byte-identical: re-serializing the document would reformat it (folded scalars, comments, flow
+ * sequences, whitespace).
+ */
+function removeNestedKeys(content: string, keyPaths: string[][]): { content: string; removed: boolean } {
+  const doc = parseDocument(content);
+  const lines = content.split('\n');
+  const lineOf = (offset: number) => content.slice(0, offset).split('\n').length - 1;
+  const ranges: Array<{ start: number; end: number }> = [];
+
+  for (const keyPath of keyPaths) {
+    const parentPath = keyPath.slice(0, -1);
+    const parent = parentPath.length > 0 ? doc.getIn(parentPath, true) : doc.contents;
+    if (!isMap(parent)) continue;
+
+    const pair = parent.items.find((item) => isScalar(item.key) && item.key.value === keyPath[keyPath.length - 1]);
+    if (!pair || !isScalar(pair.key) || !pair.key.range) continue;
+
+    const keyStart = pair.key.range[0];
+    const valueEnd = (pair.value as { range?: [number, number, number] } | null)?.range?.[1] ?? pair.key.range[1];
+    let start = lineOf(keyStart);
+    const end = lineOf(Math.max(keyStart, valueEnd - 1));
+    while (start > 0 && lines[start - 1].trim() === '') start--;
+    ranges.push({ start, end });
+  }
+
+  if (ranges.length === 0) return { content, removed: false };
+
+  for (const { start, end } of ranges.sort((a, b) => b.start - a.start)) {
+    lines.splice(start, end - start + 1);
+  }
+  return { content: lines.join('\n'), removed: true };
 }
 
 /**
@@ -202,7 +249,6 @@ export function applyExternalSecretsToWorkload(
 ): ValuesMergeResult {
   try {
     const originalContent = fs.readFileSync(valuesPath, 'utf-8');
-    let doc = parseDocument(originalContent);
 
     // Build the externalSecrets structure
     const existingValues = parseYaml(originalContent) || {};
@@ -227,9 +273,8 @@ export function applyExternalSecretsToWorkload(
     if (appMerged || flywayInitContainerMerged) {
       const withoutExisting = removeTopLevelBlock(modifiedContent, 'externalSecrets');
 
-      // Generate YAML for externalSecrets
+      // Generate YAML for externalSecrets (indented sequences, as in the repository values files)
       const externalSecretsYaml = stringifyYaml({ externalSecrets: externalSecretsValue }, {
-        indentSeq: false,
         lineWidth: 0,
       }).trim();
 
@@ -241,42 +286,22 @@ export function applyExternalSecretsToWorkload(
         // No anchor point found, append at end
         modifiedContent = withoutExisting + '\n' + externalSecretsYaml;
       }
-
-      // Reparse the modified content
-      doc = parseDocument(modifiedContent);
     }
 
     if (removeOldRefs) {
-      // Remove root-level envFromSecrets
-      if (doc.has('envFromSecrets')) {
-        doc.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
-      // Remove deployment.envFromSecrets or cronjob.envFromSecrets
-      const deploymentNode = doc.getIn(['deployment'], true);
-      if (deploymentNode && isMap(deploymentNode) && deploymentNode.has('envFromSecrets')) {
-        deploymentNode.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
-      const deploymentFlywayNode = doc.getIn(['deployment', 'flywayInitContainer'], true);
-      if (deploymentFlywayNode && isMap(deploymentFlywayNode) && deploymentFlywayNode.has('envFromSecrets')) {
-        deploymentFlywayNode.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
-      const cronjobNode = doc.getIn(['cronjob'], true);
-      if (cronjobNode && isMap(cronjobNode) && cronjobNode.has('envFromSecrets')) {
-        cronjobNode.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
-      const cronjobFlywayNode = doc.getIn(['cronjob', 'flywayInitContainer'], true);
-      if (cronjobFlywayNode && isMap(cronjobFlywayNode) && cronjobFlywayNode.has('envFromSecrets')) {
-        cronjobFlywayNode.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
+      const result = removeNestedKeys(modifiedContent, [
+        ['envFromSecrets'],
+        ['deployment', 'envFromSecrets'],
+        ['deployment', 'flywayInitContainer', 'envFromSecrets'],
+        ['cronjob', 'envFromSecrets'],
+        ['cronjob', 'flywayInitContainer', 'envFromSecrets'],
+      ]);
+      modifiedContent = result.content;
+      oldRefsRemoved = result.removed;
     }
 
-    if (!dryRun) {
-      fs.writeFileSync(valuesPath, doc.toString({ lineWidth: 0 }));
+    if (!dryRun && modifiedContent !== originalContent) {
+      fs.writeFileSync(valuesPath, modifiedContent);
     }
 
     return {
@@ -315,9 +340,9 @@ export function initializeCommonsExternalSecrets(
     }
 
     const content = fs.readFileSync(commonsValuesPath, 'utf-8');
-    const doc = parseDocument(content);
+    const existingValues: any = parseYaml(content);
 
-    const existing: any = normalizeExternalSecrets((doc.toJS() as any)?.externalSecrets);
+    const existing: any = normalizeExternalSecrets(existingValues?.externalSecrets);
 
     const externalSecretsStructure: any = {};
     for (const key of EXTERNAL_SECRETS_SECTIONS) {
@@ -344,11 +369,31 @@ export function initializeCommonsExternalSecrets(
       };
     }
 
-    // Set the complete structure back to the document
-    doc.setIn(['externalSecrets'], externalSecretsStructure);
+    // Nothing to do when commons already has the expected structure: keep the file untouched
+    if (isDeepStrictEqual(existingValues?.externalSecrets, externalSecretsStructure)) {
+      return { success: true };
+    }
+
+    // Replace (or append) only the externalSecrets block, leaving the rest of the file byte-identical
+    const blockLines = stringifyYaml({ externalSecrets: externalSecretsStructure }, { lineWidth: 0 })
+      .trimEnd()
+      .split('\n');
+    const lines = content.split('\n');
+    const block = findTopLevelBlock(lines, 'externalSecrets');
+    let newContent: string;
+    if (block) {
+      // Keep the blank lines that separate the block from what follows
+      let end = block.end;
+      while (end > block.start + 1 && lines[end - 1].trim() === '') end--;
+      lines.splice(block.start, end - block.start, ...blockLines);
+      newContent = lines.join('\n');
+    } else {
+      const separator = content === '' || content.endsWith('\n') ? '' : '\n';
+      newContent = `${content}${separator}${blockLines.join('\n')}\n`;
+    }
 
     if (!dryRun) {
-      fs.writeFileSync(commonsValuesPath, doc.toString({ lineWidth: 0 }));
+      fs.writeFileSync(commonsValuesPath, newContent);
     }
 
     return { success: true };
