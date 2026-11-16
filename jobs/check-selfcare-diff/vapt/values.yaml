@@ -8,7 +8,7 @@ externalSecrets:
         remoteRef:
           key: app/backend/selfcare-v2
           property: SELFCARE_V2_API_KEY
-          version: uuid/21e8b751-36df-42bd-aa8f-b5a0adda458f
+          version: uuid/e6b4391e-1932-45a8-85bc-cb1bea2af272
       - secretKey: READMODEL_SQL_DB_USERNAME
         remoteRef:
           key: rds/interop-platform-data-vapt/users/vapt_check_selfcare_diff_user

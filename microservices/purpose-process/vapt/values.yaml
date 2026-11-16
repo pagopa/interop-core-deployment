@@ -75,7 +75,7 @@ externalSecrets:
         remoteRef:
           key: app/backend/selfcare-v2
           property: SELFCARE_V2_API_KEY
-          version: uuid/21e8b751-36df-42bd-aa8f-b5a0adda458f
+          version: uuid/e6b4391e-1932-45a8-85bc-cb1bea2af272
 
 deployment:
   flywayInitContainer:
@@ -98,7 +98,10 @@ deployment:
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
     WELL_KNOWN_URLS: >-
-      {{.Values.local.well_known_url.AUTHSRV}}, {{.Values.local.well_known_url.BFF}}, {{.Values.local.well_known_url.INTERNAL}}, {{.Values.local.well_known_url.MAINTENANCE}}
+      {{.Values.local.well_known_url.AUTHSRV}},
+      {{.Values.local.well_known_url.BFF}},
+      {{.Values.local.well_known_url.INTERNAL}},
+      {{.Values.local.well_known_url.MAINTENANCE}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
