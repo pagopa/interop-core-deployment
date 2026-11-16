@@ -1,4 +1,5 @@
 namespace: "vapt"
+deployMode: "KUBECTL_APPLY"
 
 cronjob:
   suspend: true
