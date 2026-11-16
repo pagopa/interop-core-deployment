@@ -2,7 +2,8 @@ name: "interop-be-selfcare-client-users-updater"
 techStack: "nodejs"
 
 serviceAccount:
-  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-selfcare-client-users-updater-{{.Values.namespace}}-es1"
+  roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-selfcare-\
+    client-users-updater-{{.Values.namespace}}-es1"
 
 service:
   create: false
@@ -24,8 +25,8 @@ externalSecrets:
       - secretKey: KAFKA_BROKER_CONNECTION_STRING
         remoteRef:
           key: app/backend/selfcare-v2
-          property: SELFCARE_USERS_BROKER_CONNECTION_STRING
-          version: uuid/21e8b751-36df-42bd-aa8f-b5a0adda458f
+          property: SELFCARE_BROKER_CONNECTION_STRING
+          version: uuid/e6b4391e-1932-45a8-85bc-cb1bea2af272
       - secretKey: READMODEL_DB_USERNAME
         remoteRef:
           key: app/backend/read-model
