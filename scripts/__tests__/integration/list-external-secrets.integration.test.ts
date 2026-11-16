@@ -235,6 +235,19 @@ describe('list-external-secrets integration', () => {
     expect(await runScript()).toBe(FIXTURE);
   });
 
+  it('adds a missing version to a flow-style remoteRef without changing its YAML structure', async () => {
+    const newVersion = 'terraform-20261116100000000000000008';
+    const content = `externalSecrets:\n  app:\n    data:\n      - secretKey: USER\n        remoteRef: { key: ${APP_KEY}, property: username }\n`;
+    setup(content, { [APP_KEY]: awsVersion(newVersion) });
+
+    const patched = await runScript();
+
+    expect(patched).toBe(
+      `externalSecrets:\n  app:\n    data:\n      - secretKey: USER\n        remoteRef: { key: ${APP_KEY}, property: username, version: uuid/${newVersion} }\n`
+    );
+    expect(parseYaml(patched).externalSecrets.app.data[0].remoteRef.version).toBe(`uuid/${newVersion}`);
+  });
+
   it('preserves comments, blank lines, quoting and multi-line scalars in a richer values.yaml', async () => {
     const newVersion = 'terraform-20261116100000000000000007';
     const content = `name: "interop-be-authorization-process"

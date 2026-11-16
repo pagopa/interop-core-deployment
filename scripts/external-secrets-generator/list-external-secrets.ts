@@ -355,6 +355,16 @@ function patchValuesFile(file: string, entries: ExternalSecretEntry[]): void {
         const firstKey = remoteRef.items[0]?.key;
         const lastValue = remoteRef.items[remoteRef.items.length - 1]?.value;
         if (!isScalar(firstKey) || !firstKey.range || !isScalar(lastValue) || !lastValue.range) continue;
+        if (remoteRef.flow && remoteRef.range) {
+          const closeBrace = remoteRef.range[1] - 1;
+          if (content[closeBrace] !== "}") continue;
+          const trailingContent = content.slice(lastValue.range[1], closeBrace);
+          const comma = trailingContent.indexOf(",");
+          const at = comma === -1 ? lastValue.range[1] : lastValue.range[1] + comma + 1;
+          const separator = comma === -1 ? ", " : " ";
+          edits.push({ start: at, end: at, text: `${separator}version: ${version}` });
+          continue;
+        }
         const indent = content.slice(content.lastIndexOf("\n", firstKey.range[0]) + 1, firstKey.range[0]);
         const lineEnd = content.indexOf("\n", lastValue.range[1]);
         const at = lineEnd === -1 ? content.length : lineEnd;
