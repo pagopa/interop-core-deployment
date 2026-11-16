@@ -13,15 +13,30 @@ import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from './extern
  * (chart schema has additionalProperties: false). Legacy keys are migrated and removed:
  * `container` -> `app`, `initContainer` -> `flywayInitContainer`.
  * Values already under the new sections take precedence; any other key is dropped.
+ * Sections keep the order in which they (or their legacy keys) appear in the source, so that
+ * re-running the generator does not reorder an existing block.
  */
 function normalizeExternalSecrets(externalSecrets: any): any {
   const source = externalSecrets && typeof externalSecrets === 'object' ? externalSecrets : {};
 
+  const sections: Record<string, any> = {
+    app: deepMerge(deepMerge({}, source.container || {}), source.app || {}),
+    flywayInitContainer: deepMerge(deepMerge({}, source.initContainer || {}), source.flywayInitContainer || {}),
+  };
+  const sectionOf: Record<string, string> = {
+    app: 'app',
+    container: 'app',
+    flywayInitContainer: 'flywayInitContainer',
+    initContainer: 'flywayInitContainer',
+  };
+
   const normalized: any = {};
-  const app = deepMerge(deepMerge({}, source.container || {}), source.app || {});
-  const flyway = deepMerge(deepMerge({}, source.initContainer || {}), source.flywayInitContainer || {});
-  if (Object.keys(app).length > 0) normalized.app = app;
-  if (Object.keys(flyway).length > 0) normalized.flywayInitContainer = flyway;
+  for (const key of Object.keys(source)) {
+    const section = sectionOf[key];
+    if (section && !(section in normalized) && Object.keys(sections[section]).length > 0) {
+      normalized[section] = sections[section];
+    }
+  }
 
   return normalized;
 }
@@ -270,7 +285,10 @@ export function applyExternalSecretsToWorkload(
 
     let modifiedContent = originalContent;
 
-    if (appMerged || flywayInitContainerMerged) {
+    // Regenerate the block only when its content changes, so re-runs with the same secrets are no-ops
+    const externalSecretsChanged = !isDeepStrictEqual(existingValues.externalSecrets, externalSecretsValue);
+
+    if ((appMerged || flywayInitContainerMerged) && externalSecretsChanged) {
       const withoutExisting = removeTopLevelBlock(modifiedContent, 'externalSecrets');
 
       // Generate YAML for externalSecrets (indented sequences, as in the repository values files)
@@ -345,7 +363,12 @@ export function initializeCommonsExternalSecrets(
     const existing: any = normalizeExternalSecrets(existingValues?.externalSecrets);
 
     const externalSecretsStructure: any = {};
-    for (const key of EXTERNAL_SECRETS_SECTIONS) {
+    // Keep the existing section order; missing sections are appended
+    const sectionOrder = [
+      ...(Object.keys(existing) as ExternalSecretsSection[]),
+      ...EXTERNAL_SECRETS_SECTIONS.filter((key) => !(key in existing)),
+    ];
+    for (const key of sectionOrder) {
       const section = existing[key] && typeof existing[key] === 'object' ? existing[key] : {};
       const existingRef = section.secretStoreRef;
       const existingName: string | undefined = existingRef?.name;

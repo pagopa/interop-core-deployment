@@ -403,6 +403,38 @@ deployment:
       });
     });
 
+    it('appends a missing section after the existing ones, keeping their order', () => {
+      const flywayOnly = `local:
+  env: "dev"
+
+externalSecrets:
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+`;
+      const file = writeTemp('values-microservice.yaml', flywayOnly);
+      expect(initializeCommonsExternalSecrets(file, false, 'app-secret-store').success).toBe(true);
+      expect(read(file)).toBe(`${flywayOnly}  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+`);
+    });
+
+    it('migrates legacy sections keeping their original order', () => {
+      const store = `    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+`;
+      const legacy = `local:\n  env: "dev"\n\nexternalSecrets:\n  initContainer:\n${store}  container:\n${store}`;
+      const file = writeTemp('values-microservice.yaml', legacy);
+      expect(initializeCommonsExternalSecrets(file, false).success).toBe(true);
+      expect(read(file)).toBe(
+        `local:\n  env: "dev"\n\nexternalSecrets:\n  flywayInitContainer:\n${store}  app:\n${store}`
+      );
+    });
+
     it('is idempotent on an uninitialized commons file', () => {
       const once = writeTemp('once.yaml', COMMONS_EMPTY);
       initializeCommonsExternalSecrets(once, false, 'app-secret-store');
