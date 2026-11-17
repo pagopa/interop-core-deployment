@@ -216,3 +216,5 @@ images:
       tag: "develop"
     eservice-descriptors-scheduled-archiver:
       tag: "develop"
+    contact-data-cleaner:
+      tag: "develop"

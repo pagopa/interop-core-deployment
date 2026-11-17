@@ -1,0 +1,21 @@
+name: "interop-be-contact-data-cleaner"
+
+cronjob:
+  suspend: true
+  schedule: "0 3 * * *"
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  restartPolicy: OnFailure
+
+  env:
+    CONTACT_PROTECTION_PERIOD_HOURS: "168"
+    CONTACT_DELETION_ENABLED: "false"
+  envFromConfigmaps:
+    CONTACT_DATA_DB_HOST: "common-contact-data-db.DB_HOST"
+    CONTACT_DATA_DB_NAME: "common-contact-data-db.DB_NAME"
+    CONTACT_DATA_DB_PORT: "common-contact-data-db.DB_PORT"
+    CONTACT_DATA_DB_USE_SSL: "common-contact-data-db.DB_USE_SSL"
+  envFromSecrets:
+    CONTACT_DATA_DB_USERNAME: "platform-data-contact-data-cleaner-user.username"
+    CONTACT_DATA_DB_PASSWORD: "platform-data-contact-data-cleaner-user.password"
