@@ -2,7 +2,7 @@ import { copyFileSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync,
 import { pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { basename, join, relative } from 'node:path';
-import { fail, files, FLYWAY_SOURCE_FILE, parseOptions, paths, readSourceConfigMap, yamlDocument } from './common.js';
+import { fail, field, files, FLYWAY_SOURCE_FILE, keys, mapping, parseOptions, paths, readSourceConfigMap, scalarText, yamlDocument } from './common.js';
 import { extractReportDir, writePhaseReport, type ReportRow, type StatusDefinition } from './phase-report.js';
 
 const usage = `Generate Flyway migration values from Kubernetes ConfigMaps.
@@ -26,7 +26,7 @@ function rawData(source: string, name: string): string {
   const content: string[] = [];
   for (const line of lines.slice(dataIndex + 1)) {
     if (line && !/^\s/.test(line)) break;
-    content.push(/\S/.test(line) ? `  ${line}` : '');
+    content.push(line ? `  ${line}` : '');
   }
   
   return `migrations:\n  ${name}:\n${content.map(line => `${line}\n`).join('')}`;
@@ -37,7 +37,7 @@ const DEFINITIONS: Record<string, StatusDefinition> = {
   UPDATED: { severity: 'ok', description: 'Migration values file existed with different content and has been overwritten from the ConfigMap.' },
   UNCHANGED: { severity: 'ok', description: 'Migration values file already matched the ConfigMap; rewritten with identical content.' },
   NOT_WRITTEN: { severity: 'warning', description: 'Source is valid but nothing was written because other sources failed validation (all-or-nothing).' },
-  INVALID_SOURCE: { severity: 'critical', description: 'Source ConfigMap is invalid (kind, metadata.name or data); no file was written.' },
+  INVALID_SOURCE: { severity: 'critical', description: 'Source ConfigMap is invalid or its decoded data cannot be preserved by generation; no file was written.' },
   DUPLICATE_CONFIGMAP: { severity: 'critical', description: 'Another source file declares the same metadata.name; no file was written.' },
   NO_SOURCE: { severity: 'critical', description: 'No flyway*.yaml/yml ConfigMap was found in commons/<env>/configmaps.' },
   SOURCE_DIR_MISSING: { severity: 'warning', description: 'commons/<env> or commons/<env>/configmaps does not exist or is empty; nothing to generate.' },
@@ -102,7 +102,11 @@ export async function main(): Promise<void> {
         } finally {
           closeSync(fd);
         }
-        yamlDocument(outputFile);
+        const generatedData = yamlDocument(outputFile).getIn(['migrations', name], true);
+        if (!mapping(generatedData) || keys(generatedData).length !== keyCount ||
+            Object.entries(source.data).some(([key, value]) => scalarText(field(generatedData, key)) !== value)) {
+          fail(`${sourceFile}: generated migration values do not preserve source data; unsupported YAML layout.`);
+        }
         valid.push({ status: 'NOT_WRITTEN', configMap: name, keys: keyCount, sourceFile: label(sourceFile), targetFile: label(join(directories.migrations, `${name}.yaml`)), detail: '' });
       } catch (err) {
         rows.push({ status: 'INVALID_SOURCE', configMap: name, sourceFile: label(sourceFile), detail: err instanceof Error ? err.message : String(err) });

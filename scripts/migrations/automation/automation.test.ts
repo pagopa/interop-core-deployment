@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { mkdtempSync } from 'node:fs';
@@ -8,11 +8,36 @@ import { spawnSync } from 'node:child_process';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { run as repositoryInventory } from './repository-inventory.js';
-import { buildClusterReport } from './cluster-inventory.js';
+import { buildClusterReport, workloadReferences } from './cluster-inventory.js';
 import { compare, run as compareInventories } from './compare-inventories.js';
 import { run as validateMigration } from './validate-migration.js';
-import { assertInventoryReport, type InventoryReport } from './inventory-common.js';
+import { assertInventoryReport, sha256, writeReports, type InventoryReport } from './inventory-common.js';
 import { flywayConfigMapName } from '../flyway/workloads.js';
+import { createRequire } from 'node:module';
+
+const directory = dirname(fileURLToPath(import.meta.url));
+const tsxCli = createRequire(import.meta.url).resolve('tsx/cli');
+
+function temporaryRoot(context: { after: (fn: () => void) => void }): string {
+  const root = mkdtempSync(join(tmpdir(), 'migration-coverage-'));
+  context.after(() => rmSync(root, { recursive: true, force: true }));
+  return root;
+}
+
+function put(root: string, file: string, content: string): string {
+  const path = join(root, file);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, content);
+  return path;
+}
+
+function source(root: string, name = 'flyway-test'): void {
+  put(root, `commons/dev/configmaps/${name}.yaml`, `kind: ConfigMap\nmetadata:\n  name: ${name}\ndata:\n  V1__Init.sql: |-\n    SELECT 1;\n`);
+}
+
+function invoke(script: string, args: string[], env: NodeJS.ProcessEnv = process.env) {
+  return spawnSync(process.execPath, [tsxCli, join(directory, script), ...args], { encoding: 'utf8', env });
+}
 
 test('repository inventory emits machine-readable migration data', context => {
   const root = mkdtempSync(join(tmpdir(), 'migration-automation-test-'));
@@ -242,4 +267,359 @@ test('repository inventory and validate report malformed workload values without
   assert.equal(validateMigration(['--root', root, '--environment', 'dev', '--report-dir', join(output, 'validate')]), 1);
   const validation = JSON.parse(readFileSync(join(output, 'validate', 'validate-dev-workloads.json'), 'utf8'));
   assert.deepEqual(validation.items.map((item: { status: string }) => item.status), ['WORKLOAD_INVALID']);
+});
+
+test('repository inventory rejects duplicate sources, malformed YAML and unknown domains', async context => {
+  for (const scenario of ['duplicate', 'invalid-yaml', 'unknown-domain']) await context.test(scenario, child => {
+    const root = temporaryRoot(child);
+    source(root);
+    if (scenario === 'duplicate') put(root, 'commons/dev/configmaps/FLYWAY-duplicate.YML', readFileSync(join(root, 'commons/dev/configmaps/flyway-test.yaml'), 'utf8'));
+    if (scenario === 'invalid-yaml') put(root, 'commons/dev/configmaps/flyway-invalid.yaml', 'data: [');
+    if (scenario === 'unknown-domain') put(root, 'jobs/job/dev/values.yaml', 'cronjob:\n  flywayInitContainer:\n    migrationDomain: missing\n');
+    const result = invoke('repository-inventory.ts', ['--root', root, '--environment', 'dev', '--output-dir', join(root, 'reports')]);
+    assert.equal(result.status, 1, result.stdout);
+    assert.match(result.stderr, scenario === 'duplicate' ? /Duplicate/ : scenario === 'invalid-yaml' ? /YAML|flow|end|Unexpected/i : /no flyway source/);
+  });
+});
+
+test('repository reports are reproducible, read-only and count workloads rather than containers or SQL keys', context => {
+  const root = temporaryRoot(context);
+  source(root);
+  const configmap = join(root, 'commons/dev/configmaps/flyway-test.yaml');
+  writeFileSync(configmap, readFileSync(configmap, 'utf8') + '  V2__Text.sql: "SELECT \'città\';\\n"\n');
+  put(root, 'microservices/svc/dev/values.yaml', 'name: actual-svc\ndeployment:\n  flywayInitContainer:\n    migrationsConfigmap: flyway-test\n');
+  put(root, 'jobs/job/dev/values.yaml', 'cronjob:\n  flywayInitContainer:\n    migrationDomain: flyway-test\n');
+  put(root, 'jobs/job/qa/values.yaml', 'invalid: [');
+  const inputFiles = ['commons/dev/configmaps/flyway-test.yaml', 'microservices/svc/dev/values.yaml', 'jobs/job/dev/values.yaml', 'jobs/job/qa/values.yaml'];
+  const before = inputFiles.map(file => readFileSync(join(root, file), 'utf8'));
+  const output = join(root, 'reports');
+  const args = ['--root', root, '--environment', 'dev', '--namespace', 'custom-ns', '--output-dir', output];
+  assert.equal(repositoryInventory(args), 0);
+  const folder = join(output, 'repository');
+  const original = Object.fromEntries(readdirSync(folder).map(file => {
+    const text = readFileSync(join(folder, file), 'utf8');
+    if (!file.endsWith('.json')) return [file, text];
+    const report = JSON.parse(text);
+    delete report.generatedAt;
+    return [file, report];
+  }));
+  assert.equal(repositoryInventory(args), 0);
+  for (const [file, expected] of Object.entries(original)) {
+    const text = readFileSync(join(folder, file), 'utf8');
+    if (file.endsWith('.json')) {
+      const report = JSON.parse(text);
+      delete report.generatedAt;
+      assert.deepEqual(report, expected);
+    } else assert.equal(text, expected);
+  }
+  const report: InventoryReport = JSON.parse(readFileSync(join(folder, 'repository-migrations-dev.json'), 'utf8'));
+  assert.equal(report.namespace, 'custom-ns');
+  assert.deepEqual(report.consumers.map(item => item.workloadName).sort(), ['actual-svc', 'job']);
+  const unicode = report.migrations.find(item => item.key === 'V2__Text.sql')!;
+  assert.equal(unicode.bytes, Buffer.byteLength("SELECT 'città';\n", 'utf8'));
+  assert.equal(unicode.sha256, sha256("SELECT 'città';\n"));
+  const csv = readFileSync(join(folder, 'repository-migrations-dev-configmaps.csv'), 'utf8').trim().split('\n');
+  assert.ok(csv.slice(1).every(line => line.endsWith(',2')));
+  for (const suffix of ['configmaps', 'workloads']) {
+    const partial = JSON.parse(readFileSync(join(folder, `repository-migrations-dev-${suffix}.json`), 'utf8'));
+    assert.throws(() => assertInventoryReport(partial, suffix), /reportType/);
+  }
+  assert.deepEqual(inputFiles.map(file => readFileSync(join(root, file), 'utf8')), before);
+});
+
+test('CronJob extraction covers direct/projected volumes, regular containers, env references and unused volumes', () => {
+  const pod = {
+    volumes: [
+      { name: 'direct', configMap: { name: 'flyway-direct' } },
+      { name: 'projected', projected: { sources: [{ secret: { name: 'never-read' } }, { configMap: { name: 'flyway-projected' } }] } },
+      { name: 'unused', configMap: { name: 'flyway-unused' } },
+    ],
+    initContainers: [{
+      name: 'migrate-db',
+      volumeMounts: [{ name: 'direct', mountPath: '/flyway/sql/nested' }, { name: 'projected', mountPath: '/flyway/sql' }],
+      envFrom: [{ configMapRef: { name: 'flyway-env' } }, { secretRef: { name: 'never-read' } }],
+      env: [{ name: 'SQL', valueFrom: { configMapKeyRef: { name: 'flyway-env', key: 'V1.sql' } } }],
+    }],
+    containers: [{ name: 'app', volumeMounts: [{ name: 'direct', mountPath: '/copy' }] }],
+  };
+  const cronjob = { kind: 'CronJob', metadata: { name: 'cron' }, spec: { jobTemplate: { spec: { template: { spec: pod } } } } };
+  const references = workloadReferences([cronjob]);
+  assert.equal(references.length, 6);
+  assert.ok(references.every(item => item.workloadType === 'CronJob' && item.workloadName === 'cron'));
+  assert.ok(references.some(item => item.referenceType === 'volume' && item.containerType === 'container' && item.mountPath === '/copy'));
+  assert.ok(references.some(item => item.referenceType === 'projected' && item.containerType === 'initContainer'));
+  assert.ok(references.some(item => item.configMap === 'flyway-unused' && item.containerType === 'none'));
+  assert.ok(references.some(item => item.referenceType === 'envFrom'));
+  assert.ok(references.some(item => item.referenceType === 'env' && item.mountPath === 'env:SQL'));
+  assert.ok(references.every(item => item.configMap !== 'never-read'));
+  const maps = ['flyway-direct', 'flyway-projected', 'flyway-unused', 'flyway-env'].map(name => ({ metadata: { name }, data: { 'V1.sql': 'SELECT 1;' } }));
+  const report = buildClusterReport(maps, [cronjob], 'dev', 'ns');
+  assert.equal(report.consumers.length, 6);
+});
+
+function installKubectl(root: string, responses: Record<string, unknown>, failure = '', malformed = ''): NodeJS.ProcessEnv {
+  const bin = join(root, 'bin');
+  mkdirSync(bin, { recursive: true });
+  const script = `#!${process.execPath}
+const fs = require('node:fs');
+const args = process.argv.slice(2);
+fs.appendFileSync(process.env.KUBE_CALLS, JSON.stringify(args) + '\\n');
+const index = args.indexOf('get');
+if (index < 0 || args.some(a => /secret/i.test(a))) process.exit(99);
+const resource = args[index + 1];
+if (resource === process.env.KUBE_FAIL) { console.error('Forbidden or invalid context'); process.exit(1); }
+if (resource === process.env.KUBE_MALFORMED) { process.stdout.write('{ broken'); process.exit(0); }
+const responses = JSON.parse(fs.readFileSync(process.env.KUBE_RESPONSES, 'utf8'));
+if (!Object.hasOwn(responses, resource)) process.exit(98);
+process.stdout.write(resource === 'namespace' ? 'namespace/test' : JSON.stringify(responses[resource]));
+`;
+  put(root, 'responses.json', JSON.stringify(responses));
+  writeFileSync(join(bin, 'kubectl'), script, { mode: 0o755 });
+  return { ...process.env, PATH: `${bin}:${dirname(process.execPath)}:${process.env.PATH}`, KUBE_CALLS: join(root, 'kube-calls.jsonl'), KUBE_RESPONSES: join(root, 'responses.json'), KUBE_FAIL: failure, KUBE_MALFORMED: malformed };
+}
+
+test('cluster CLI is read-only, scoped explicitly and rejects acquisition/parsing failures', async context => {
+  for (const scenario of ['success', 'namespace', 'configmaps', 'deployments', 'cronjobs', 'malformed', 'missing-items']) await context.test(scenario, child => {
+    const root = temporaryRoot(child);
+    const responses = {
+      namespace: {},
+      configmaps: { items: [{ metadata: { name: 'flyway-test' }, data: { 'V1.sql': 'SELECT 1;' } }] },
+      deployments: scenario === 'missing-items' ? {} : { items: [deployment('svc', 'flyway-test')] },
+      cronjobs: { items: [] },
+    };
+    const env = installKubectl(root, responses, ['success', 'malformed', 'missing-items'].includes(scenario) ? '' : scenario, scenario === 'malformed' ? 'configmaps' : '');
+    const result = invoke('cluster-inventory.ts', ['--environment', 'dev', '--context', 'kind-fixture', '--namespace', 'fixture-ns', '--output-dir', join(root, 'reports')], env);
+    assert.equal(result.status, scenario === 'success' ? 0 : 1, result.stdout + result.stderr);
+    const calls: string[][] = readFileSync(env.KUBE_CALLS!, 'utf8').trim().split('\n').map(line => JSON.parse(line));
+    assert.ok(calls.every(args => args[0] === '--context' && args[1] === 'kind-fixture' && args.includes('get')));
+    assert.ok(calls.every(args => !args.some(arg => /secret|apply|delete|patch/.test(arg))));
+    if (scenario === 'success') {
+      const report = JSON.parse(readFileSync(join(root, 'reports/cluster/cluster-migrations-dev.json'), 'utf8'));
+      assertInventoryReport(report, 'cluster CLI');
+      assert.equal(report.namespace, 'fixture-ns');
+      assert.equal(report.context, 'kind-fixture');
+      assert.equal(calls.length, 4);
+    } else assert.ok(result.stderr.trim(), 'failure must be visible to the operator');
+  });
+});
+
+test('comparison covers missing/extra/mismatched SQL and deduplicates repeated consumer references', context => {
+  const root = temporaryRoot(context);
+  const repository = emptyInventory('repository');
+  repository.configMaps = ['flyway-test'];
+  repository.migrations = ['V1.sql', 'V2.sql'].map(key => ({ configMap: 'flyway-test', key, sha256: 'a'.repeat(64), bytes: 1 }));
+  repository.consumers = [{ workloadType: 'CronJob', workloadName: 'job', configMap: 'flyway-test', referenceType: 'legacy' }];
+  const cluster = emptyInventory('cluster');
+  cluster.configMaps = ['flyway-test'];
+  cluster.migrations = [
+    { configMap: 'flyway-test', key: 'V1.sql', sha256: 'b'.repeat(64), bytes: 1 },
+    { configMap: 'flyway-test', key: 'V3.sql', sha256: 'a'.repeat(64), bytes: 1 },
+  ];
+  cluster.consumers = Array.from({ length: 2 }, () => ({ workloadType: 'CronJob', workloadName: 'other-job', configMap: 'flyway-test', referenceType: 'projected' }));
+  assert.deepEqual(compare(repository, cluster).map(item => item.code).sort(), [
+    'CONSUMER_EXTRA_IN_CLUSTER', 'CONSUMER_MISSING_IN_CLUSTER', 'MIG_CONTENT_MISMATCH', 'MIG_EXTRA_IN_CLUSTER', 'MIG_MISSING_IN_CLUSTER',
+  ]);
+  put(root, 'repo.json', JSON.stringify(repository));
+  put(root, 'cluster.json', JSON.stringify(cluster));
+  assert.equal(compareInventories(['--repository', join(root, 'repo.json'), '--cluster', join(root, 'cluster.json'), '--output', join(root, 'result.json')]), 1);
+  const report = JSON.parse(readFileSync(join(root, 'compare/result.json'), 'utf8'));
+  assert.equal(report.summary.total, 5);
+  assert.equal(report.success, false);
+  cluster.migrations = repository.migrations;
+  assert.ok(compare(repository, cluster).every(item => item.severity === 'warning'));
+  put(root, 'cluster.json', JSON.stringify(cluster));
+  assert.equal(compareInventories(['--repository', join(root, 'repo.json'), '--cluster', join(root, 'cluster.json'), '--output', join(root, 'result.json')]), 1);
+});
+
+test('validate identifies remaining legacy references and excludes workloads with no Flyway reference', context => {
+  const root = temporaryRoot(context);
+  source(root);
+  put(root, 'microservices/legacy/dev/values.yaml', 'deployment:\n  flywayInitContainer:\n    migrationsConfigmap: flyway-test\n');
+  put(root, 'microservices/no-init/dev/values.yaml', 'deployment:\n  replicas: 1\n');
+  put(root, 'jobs/no-reference/dev/values.yaml', 'cronjob:\n  flywayInitContainer:\n    create: false\n');
+  const reports = join(root, 'reports');
+  assert.equal(validateMigration(['--root', root, '--environment', 'dev', '--report-dir', reports]), 1);
+  const report = JSON.parse(readFileSync(join(reports, 'validate-dev-workloads.json'), 'utf8'));
+  assert.equal(report.success, false);
+  assert.deepEqual(report.items.map((item: { status: string }) => item.status), ['WORKLOAD_LEGACY_REMAINS']);
+});
+
+function orchestratorFixture(context: { after: (fn: () => void) => void }) {
+  const root = temporaryRoot(context);
+  for (const folder of ['scripts/migrations/automation', 'scripts/migrations/flyway', 'bin']) mkdirSync(join(root, folder), { recursive: true });
+  const calls = join(root, 'npm-calls.jsonl');
+  writeFileSync(join(root, 'bin/npm'), `#!${process.execPath}
+const fs = require('node:fs');
+const args = process.argv.slice(2);
+fs.appendFileSync(process.env.NPM_CALLS, JSON.stringify({ cwd: process.cwd(), args }) + '\\n');
+if (args.includes(process.env.FAIL_COMMAND)) process.exit(7);
+`, { mode: 0o755 });
+  const env = { ...process.env, PATH: `${join(root, 'bin')}:${dirname(process.execPath)}:${process.env.PATH}`, NPM_CALLS: calls };
+  const run = (args: string[], extra: NodeJS.ProcessEnv = {}) => spawnSync('bash', [join(directory, 'run-migration.sh'), args[0], '--root', root, ...args.slice(1)], { encoding: 'utf8', env: { ...env, ...extra } });
+  const commands = (): Array<{ cwd: string; args: string[] }> => existsSync(calls) ? readFileSync(calls, 'utf8').trim().split('\n').map(line => JSON.parse(line)) : [];
+  return { root, run, commands };
+}
+
+test('orchestrator rejects invalid arguments and protects mutating phases', async context => {
+  const cases = [
+    { args: ['repository'], message: /environment is required/ },
+    { args: ['repository', '-e', '../qa'], message: /Invalid environment/ },
+    { args: ['cluster', '-e', 'dev'], message: /context is required/ },
+    { args: ['generate', '-e', 'dev'], message: /--apply/ },
+    { args: ['migrate', '-e', 'dev'], message: /--apply/ },
+    { args: ['generate', '-e', 'dev', '--apply', '--prune'], message: /Refusing --prune/ },
+    { args: ['unknown', '-e', 'dev'], message: /Unknown phase/ },
+    { args: ['plan', '-e', 'dev', '--unknown'], message: /Unknown option/ },
+    { args: ['plan', '--environment'], message: /Missing environment/ },
+  ];
+  for (const scenario of cases) await context.test(scenario.args.join(' '), child => {
+    const data = orchestratorFixture(child);
+    const result = data.run(scenario.args);
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, scenario.message);
+    assert.deepEqual(data.commands(), []);
+  });
+});
+
+test('orchestrator forwards options without splitting paths and authorizes explicit prune', context => {
+  const data = orchestratorFixture(context);
+  source(data.root);
+  const output = join(data.root, 'reports with spaces');
+  for (const phase of ['generate', 'migrate', 'plan', 'compare']) {
+    const args = [phase, '-e', 'dev', '-n', 'custom-ns', '-c', 'fixture-context', '-o', output];
+    if (phase === 'generate') args.push('--apply', '--prune');
+    if (phase === 'migrate') args.push('--apply');
+    assert.equal(data.run(args).status, 0);
+  }
+  const commands = data.commands();
+  assert.equal(commands.length, 4);
+  assert.ok(commands[0].args.includes('--prune'));
+  assert.ok(commands[0].args.includes(join(output, 'generate')));
+  assert.ok(commands[2].args.includes('--dry-run'));
+  assert.ok(commands[2].args.includes(join(output, 'plan')));
+  assert.ok(commands[3].args.includes('custom-ns') && commands[3].args.includes('fixture-context'));
+});
+
+test('orchestrator propagates simple failures but collects every verify/validate result', async context => {
+  for (const [phase, failing, expected, count] of [
+    ['generate', 'generate', 7, 1],
+    ['verify', 'verify:sha256', 1, 2],
+    ['validate', 'validate:migration', 1, 3],
+  ] as const) await context.test(phase, child => {
+    const data = orchestratorFixture(child);
+    const args = [phase, '-e', 'dev'];
+    if (phase === 'generate') args.push('--apply');
+    const result = data.run(args, { FAIL_COMMAND: failing });
+    assert.equal(result.status, expected);
+    assert.equal(data.commands().length, count);
+    assert.doesNotMatch(result.stdout, /SUCCESS - phase/);
+  });
+});
+
+test('orchestrator preflight checks Flyway before automation and stops on a failed prerequisite', context => {
+  const data = orchestratorFixture(context);
+  assert.equal(data.run(['preflight', '-e', 'dev']).status, 0);
+  assert.deepEqual(data.commands().map(item => [item.cwd.endsWith('/flyway') ? 'flyway' : 'automation', item.args]), [
+    ['flyway', ['ci']], ['flyway', ['run', 'typecheck']], ['flyway', ['test']],
+    ['automation', ['ci']], ['automation', ['run', 'typecheck']], ['automation', ['test']],
+  ]);
+  const count = data.commands().length;
+  assert.equal(data.run(['preflight', '-e', 'dev'], { FAIL_COMMAND: 'typecheck' }).status, 7);
+  assert.equal(data.commands().length - count, 2);
+});
+
+test('orchestrator rejects an unsupported Node runtime before invoking npm', context => {
+  const data = orchestratorFixture(context);
+  writeFileSync(join(data.root, 'bin/node'), '#!/bin/bash\nif [[ "$1" == "--version" ]]; then echo v18.20.6; exit 0; fi\nexit 1\n', { mode: 0o755 });
+  const result = data.run(['plan', '-e', 'dev']);
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /Node.js >=22.2.0 is required/);
+  assert.deepEqual(data.commands(), []);
+});
+
+test('inventory aggregation compares only successful acquisitions and forwards requested scope', async context => {
+  for (const fail of ['', 'inventory:repository', 'inventory:cluster']) await context.test(fail || 'success', child => {
+    const data = orchestratorFixture(child);
+    const result = data.run(['inventory', '-e', 'dev', '-n', 'custom-ns', '-c', 'fixture-context'], { FAIL_COMMAND: fail });
+    assert.equal(result.status, fail ? 1 : 0, result.stderr);
+    assert.deepEqual(data.commands().map(item => item.args[1]), fail ? ['inventory:repository', 'inventory:cluster'] : ['inventory:repository', 'inventory:cluster', 'compare']);
+    if (!fail) {
+      const comparison = data.commands()[2].args;
+      assert.ok(comparison.includes('fixture-context'));
+      assert.ok(comparison.includes('custom-ns'));
+    }
+  });
+});
+
+test('comparison supports both domain prefixes for Deployment and CronJob and ignores deprecated domain', () => {
+  for (const domain of ['flyway-example', 'event-store-migrations']) {
+    const repository = emptyInventory('repository');
+    repository.configMaps = [domain];
+    repository.migrations = [{ configMap: domain, key: 'V1.sql', sha256: 'a'.repeat(64), bytes: 1 }];
+    repository.consumers = [
+      ...['Deployment', 'CronJob'].map(workloadType => ({ workloadType, workloadName: workloadType.toLowerCase(), configMap: domain, referenceType: 'target' })),
+      { workloadType: 'Deployment', workloadName: 'deprecated', configMap: 'common-db-migrations', referenceType: 'ignored' },
+    ];
+    const cluster = emptyInventory('cluster');
+    cluster.configMaps = [domain, ...repository.consumers.slice(0, 2).map(item => flywayConfigMapName(item.workloadName, domain))];
+    cluster.migrations = cluster.configMaps.map(configMap => ({ ...repository.migrations[0], configMap }));
+    cluster.consumers = repository.consumers.slice(0, 2).map(item => ({ ...item, configMap: flywayConfigMapName(item.workloadName, domain), referenceType: 'volume' }));
+    assert.deepEqual(compare(repository, cluster), []);
+  }
+});
+
+test('local porting lifecycle preserves shared SQL for service and CronJob and detects partial rollout', context => {
+  const root = temporaryRoot(context);
+  mkdirSync(join(root, 'scripts/migrations'), { recursive: true });
+  symlinkSync(directory, join(root, 'scripts/migrations/automation'), 'dir');
+  symlinkSync(join(directory, '../flyway'), join(root, 'scripts/migrations/flyway'), 'dir');
+  source(root);
+  put(root, 'microservices/svc/dev/values.yaml', 'name: actual-svc\ndeployment:\n  flywayInitContainer:\n    migrationsConfigmap: flyway-test\n');
+  put(root, 'jobs/job/dev/values.yaml', 'name: actual-job\ncronjob:\n  flywayInitContainer:\n    migrationsConfigmap: flyway-test\n');
+  put(root, 'microservices/ignored/dev/values.yaml', 'deployment:\n  flywayInitContainer:\n    migrationsConfigmap: common-db-migrations\n');
+  const qa = put(root, 'jobs/job/qa/values.yaml', '# outside target\ninvalid: [');
+  const output = join(root, 'reports with spaces');
+  const env = { ...process.env, PATH: `${dirname(process.execPath)}:${process.env.PATH}` };
+  const phase = (name: string, ...args: string[]) => spawnSync('bash', [join(directory, 'run-migration.sh'), name, '--root', root, '--environment', 'dev', '--output-dir', output, ...args], { encoding: 'utf8', env });
+  for (const [name, args] of [
+    ['repository', []], ['generate', ['--apply']], ['verify', []], ['plan', []],
+  ] as const) {
+    const result = phase(name, ...args);
+    assert.equal(result.status, 0, result.stderr + result.stdout);
+  }
+  assert.match(readFileSync(join(root, 'microservices/svc/dev/values.yaml'), 'utf8'), /migrationsConfigmap/);
+  assert.equal(phase('validate').status, 1, 'legacy references must fail before migrate');
+  for (const [name, args] of [['migrate', ['--apply']], ['validate', []], ['repository', []], ['migrate', ['--apply']]] as const) {
+    const result = phase(name, ...args);
+    assert.equal(result.status, 0, result.stderr + result.stdout);
+  }
+  const repository: InventoryReport = JSON.parse(readFileSync(join(output, 'repository/repository-migrations-dev.json'), 'utf8'));
+  assert.deepEqual(repository.consumers.map(item => item.referenceType).sort(), ['ignored', 'target', 'target']);
+  const sql = 'SELECT 1;';
+  const maps = ['flyway-test', 'actual-svc-flyway-test', 'actual-job-flyway-test'].map(name => ({ metadata: { name }, data: { 'V1__Init.sql': sql } }));
+  const job = (configMap: string) => ({
+    kind: 'CronJob', metadata: { name: 'actual-job' },
+    spec: { jobTemplate: { spec: { template: { spec: {
+      volumes: [{ name: 'sql', configMap: { name: configMap } }],
+      initContainers: [{ name: 'migrate-db', volumeMounts: [{ name: 'sql', mountPath: '/flyway/sql' }] }],
+    } } } } },
+  });
+  const partial = { ...buildClusterReport(maps, [deployment('actual-svc', 'actual-svc-flyway-test'), job('flyway-test')], 'dev', 'dev'), context: 'kind-fixture' };
+  assert.ok(compare(repository, partial).some(item => item.code === 'CONSUMER_MISSING_IN_CLUSTER'));
+  const complete = { ...buildClusterReport(maps, [deployment('actual-svc', 'actual-svc-flyway-test'), job('actual-job-flyway-test')], 'dev', 'dev'), context: 'kind-fixture' };
+  assert.deepEqual(compare(repository, complete), []);
+  writeReports(complete, join(output, 'cluster'), 'cluster-migrations-dev');
+  const result = phase('compare', '--context', 'kind-fixture');
+  assert.equal(result.status, 0, result.stderr + result.stdout);
+  assert.equal(readFileSync(qa, 'utf8'), '# outside target\ninvalid: [');
+  for (const [folder, stem] of [
+    ['generate', 'generate-dev'], ['verify', 'verify-sha256-dev'], ['verify', 'verify-crc32-dev'],
+    ['plan', 'plan-dev'], ['migrate', 'migrate-dev'], ['validate', 'validate-dev-workloads'],
+    ['validate', 'verify-sha256-dev'], ['validate', 'verify-crc32-dev'],
+  ]) {
+    const report = JSON.parse(readFileSync(join(output, folder, `${stem}.json`), 'utf8'));
+    assert.equal(report.success, true, stem);
+    assert.ok(report.items.every((item: { detail: string; description: string }) => item.detail && !item.description.includes('<env>')));
+    assert.ok(existsSync(join(output, folder, `${stem}.csv`)));
+  }
 });

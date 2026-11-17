@@ -8,16 +8,24 @@ const WORKLOAD_RESOURCES = ['deployments', 'cronjobs'];
 const FLYWAY_MOUNT_PATH = /^\/flyway\/sql(\/|$)/;
 const SQL_KEY = /\.sql$/i;
 
-function kubectl(context: string, namespace: string, resource: string): any {
+function kubectl(context: string, namespace: string, resource: string): unknown[] {
   const result = spawnSync('kubectl', ['--context', context, '-n', namespace, 'get', resource, '-o', 'json'], { encoding: 'utf8', maxBuffer: 100 * 1024 * 1024 });
-  if (result.status !== 0) throw new Error(`kubectl get ${resource} failed: ${result.stderr.trim()}`);
-  return JSON.parse(result.stdout);
+  
+  if (result.status !== 0)
+    throw new Error(`kubectl get ${resource} failed: ${result.stderr.trim()}`);
+  
+  const response: unknown = JSON.parse(result.stdout);
+  if (!response || typeof response !== 'object' || !('items' in response) || !Array.isArray(response.items)) {
+    throw new Error(`kubectl get ${resource}: expected a JSON list with an items array.`);
+  }
+  return response.items;
 }
 
 /** `kubectl get` on a missing namespace returns an empty list: fail explicitly instead of reporting zero resources. */
 function assertNamespace(context: string, namespace: string): void {
   const result = spawnSync('kubectl', ['--context', context, 'get', 'namespace', namespace, '-o', 'name'], { encoding: 'utf8' });
-  if (result.status !== 0) throw new Error(`Namespace '${namespace}' not found or not readable in context '${context}': ${result.stderr.trim()}`);
+  if (result.status !== 0) 
+    throw new Error(`Namespace '${namespace}' not found or not readable in context '${context}': ${result.stderr.trim()}`);
 }
 
 function podSpec(item: any): any {
@@ -93,8 +101,8 @@ export function run(args: string[]): number {
     return 0;
   }
   assertNamespace(options.context, options.namespace);
-  const configMapItems = kubectl(options.context, options.namespace, 'configmaps').items ?? [];
-  const workloadItems = WORKLOAD_RESOURCES.flatMap(resource => kubectl(options.context, options.namespace, resource).items ?? []);
+  const configMapItems = kubectl(options.context, options.namespace, 'configmaps');
+  const workloadItems = WORKLOAD_RESOURCES.flatMap(resource => kubectl(options.context, options.namespace, resource));
   const report = { ...buildClusterReport(configMapItems, workloadItems, options.environment, options.namespace), context: options.context };
 
   const reportDir = join(options.outputDir, 'cluster');
