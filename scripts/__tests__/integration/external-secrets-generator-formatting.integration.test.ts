@@ -24,8 +24,8 @@ import type { ContainerExternalSecretsConfig } from '../../lib/external-secrets-
 const fixture = (name: string): string =>
   fs.readFileSync(fileURLToPath(new URL(`../fixtures/${name}`, import.meta.url)), 'utf-8');
 
-const MICROSERVICE = fixture('external-secrets-generator/authorization-process-prod.yaml');
-const CRONJOB = fixture('external-secrets-generator/check-selfcare-diff-prod.yaml');
+const MICROSERVICE = fixture('external-secrets-generator/microservice-example.yaml');
+const CRONJOB = fixture('external-secrets-generator/cronjob-example.yaml');
 const MIGRATED = fixture('list-external-secrets/in-app-notification-manager-vapt.yaml');
 const COMMONS_INITIALIZED = fixture('external-secrets-generator/commons-dev-values-microservice.yaml');
 const COMMONS_EMPTY = fixture('external-secrets-generator/commons-prod-values-microservice.yaml');

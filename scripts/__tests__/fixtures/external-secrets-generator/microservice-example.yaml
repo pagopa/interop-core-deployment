@@ -1,4 +1,4 @@
-name: "interop-be-authorization-process"
+name: "microservice-example"
 techStack: "nodejs"
 
 service:
