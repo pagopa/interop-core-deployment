@@ -4,7 +4,7 @@ module "k8s_deployment_monitoring" {
   source = "git::https://github.com/pagopa/interop-infra-commons//terraform/modules/k8s-workload-monitoring?ref=v1.46.2"
 
   eks_cluster_name  = var.eks_cluster_name
-  k8s_namespace     = var.env
+  k8s_namespace     = var.k8s_namespace
   kind              = var.argocd_workload_kind
   k8s_workload_name = var.argocd_workload_name
   sns_topics_arns   = [data.aws_sns_topic.platform_alarms.arn]
