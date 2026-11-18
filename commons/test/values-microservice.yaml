@@ -39,3 +39,13 @@ local:
     MAINTENANCE: "https://interop-private-well-known-test.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
   awsAccountId: "895646477129"
   env: "test"
+
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
