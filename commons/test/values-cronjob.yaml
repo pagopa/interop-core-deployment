@@ -24,6 +24,7 @@ local:
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "895646477129"
   env: "test"
+
 externalSecrets:
   app:
     secretStoreRef:
