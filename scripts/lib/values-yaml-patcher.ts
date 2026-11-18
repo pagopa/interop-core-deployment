@@ -3,7 +3,8 @@
  */
 
 import * as fs from 'fs';
-import { parse as parseYaml, stringify as stringifyYaml, parseDocument, isMap } from 'yaml';
+import { isDeepStrictEqual } from 'util';
+import { parse as parseYaml, stringify as stringifyYaml, parseDocument, isMap, isScalar } from 'yaml';
 import type { ContainerExternalSecretsConfig, ValuesMergeResult } from './external-secrets-types.js';
 import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from './external-secrets-sections.js';
 
@@ -12,28 +13,43 @@ import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from './extern
  * (chart schema has additionalProperties: false). Legacy keys are migrated and removed:
  * `container` -> `app`, `initContainer` -> `flywayInitContainer`.
  * Values already under the new sections take precedence; any other key is dropped.
+ * Sections keep the order in which they (or their legacy keys) appear in the source, so that
+ * re-running the generator does not reorder an existing block.
  */
 function normalizeExternalSecrets(externalSecrets: any): any {
   const source = externalSecrets && typeof externalSecrets === 'object' ? externalSecrets : {};
 
+  const sections: Record<string, any> = {
+    app: deepMerge(deepMerge({}, source.container || {}), source.app || {}),
+    flywayInitContainer: deepMerge(deepMerge({}, source.initContainer || {}), source.flywayInitContainer || {}),
+  };
+  const sectionOf: Record<string, string> = {
+    app: 'app',
+    container: 'app',
+    flywayInitContainer: 'flywayInitContainer',
+    initContainer: 'flywayInitContainer',
+  };
+
   const normalized: any = {};
-  const app = deepMerge(deepMerge({}, source.container || {}), source.app || {});
-  const flyway = deepMerge(deepMerge({}, source.initContainer || {}), source.flywayInitContainer || {});
-  if (Object.keys(app).length > 0) normalized.app = app;
-  if (Object.keys(flyway).length > 0) normalized.flywayInitContainer = flyway;
+  for (const key of Object.keys(source)) {
+    const section = sectionOf[key];
+    if (section && !(section in normalized) && Object.keys(sections[section]).length > 0) {
+      normalized[section] = sections[section];
+    }
+  }
 
   return normalized;
 }
 
 /**
- * Remove a top-level YAML block: the `<key>:` line plus all following indented or empty lines.
+ * Locate a top-level YAML block: the `<key>:` line plus all following indented or empty lines.
  * Stops at the next top-level key or boundary comment, skipping comments inside the block.
+ * Returns the [start, end) line range, or null when the key is missing.
  */
-function removeTopLevelBlock(content: string, key: string): string {
-  const lines = content.split('\n');
-  // Match only an unindented key so nested blocks are not removed.
+function findTopLevelBlock(lines: string[], key: string): { start: number; end: number } | null {
+  // Match only an unindented key so nested blocks are not matched.
   const start = lines.findIndex((line) => line.startsWith(`${key}:`));
-  if (start === -1) return content;
+  if (start === -1) return null;
 
   const isInsideBlock = (line: string) => line === '' || line.startsWith(' ') || line.startsWith('\t');
 
@@ -49,10 +65,56 @@ function removeTopLevelBlock(content: string, key: string): string {
     }
     end++;
   }
+  return { start, end };
+}
+
+/**
+ * Remove a top-level YAML block (see findTopLevelBlock).
+ */
+function removeTopLevelBlock(content: string, key: string): string {
+  const lines = content.split('\n');
+  const block = findTopLevelBlock(lines, key);
+  if (!block) return content;
 
   // Remove the selected block while leaving the boundary line and remaining content intact.
-  lines.splice(start, end - start);
+  lines.splice(block.start, block.end - block.start);
   return lines.join('\n');
+}
+
+/**
+ * Remove the given nested keys (e.g. ['deployment', 'envFromSecrets']) by deleting their lines from
+ * the original text, together with the blank lines right above them. The rest of the file is kept
+ * byte-identical: re-serializing the document would reformat it (folded scalars, comments, flow
+ * sequences, whitespace).
+ */
+function removeNestedKeys(content: string, keyPaths: string[][]): { content: string; removed: boolean } {
+  const doc = parseDocument(content);
+  const lines = content.split('\n');
+  const lineOf = (offset: number) => content.slice(0, offset).split('\n').length - 1;
+  const ranges: Array<{ start: number; end: number }> = [];
+
+  for (const keyPath of keyPaths) {
+    const parentPath = keyPath.slice(0, -1);
+    const parent = parentPath.length > 0 ? doc.getIn(parentPath, true) : doc.contents;
+    if (!isMap(parent)) continue;
+
+    const pair = parent.items.find((item) => isScalar(item.key) && item.key.value === keyPath[keyPath.length - 1]);
+    if (!pair || !isScalar(pair.key) || !pair.key.range) continue;
+
+    const keyStart = pair.key.range[0];
+    const valueEnd = (pair.value as { range?: [number, number, number] } | null)?.range?.[1] ?? pair.key.range[1];
+    let start = lineOf(keyStart);
+    const end = lineOf(Math.max(keyStart, valueEnd - 1));
+    while (start > 0 && lines[start - 1].trim() === '') start--;
+    ranges.push({ start, end });
+  }
+
+  if (ranges.length === 0) return { content, removed: false };
+
+  for (const { start, end } of ranges.sort((a, b) => b.start - a.start)) {
+    lines.splice(start, end - start + 1);
+  }
+  return { content: lines.join('\n'), removed: true };
 }
 
 /**
@@ -134,10 +196,14 @@ function deepMerge(target: any, source: any): any {
   }
 
   for (const key of Object.keys(source)) {
+    // Guard against prototype pollution from keys read out of YAML files
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+
     if (Array.isArray(source[key])) {
       target[key] = source[key];
     } else if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
-      target[key] = deepMerge(target[key] || {}, source[key]);
+      const current = Object.prototype.hasOwnProperty.call(target, key) ? target[key] : {};
+      target[key] = deepMerge(current || {}, source[key]);
     } else {
       target[key] = source[key];
     }
@@ -202,7 +268,6 @@ export function applyExternalSecretsToWorkload(
 ): ValuesMergeResult {
   try {
     const originalContent = fs.readFileSync(valuesPath, 'utf-8');
-    let doc = parseDocument(originalContent);
 
     // Build the externalSecrets structure
     const existingValues = parseYaml(originalContent) || {};
@@ -224,12 +289,14 @@ export function applyExternalSecretsToWorkload(
 
     let modifiedContent = originalContent;
 
-    if (appMerged || flywayInitContainerMerged) {
+    // Regenerate the block only when its content changes, so re-runs with the same secrets are no-ops
+    const externalSecretsChanged = !isDeepStrictEqual(existingValues.externalSecrets, externalSecretsValue);
+
+    if ((appMerged || flywayInitContainerMerged) && externalSecretsChanged) {
       const withoutExisting = removeTopLevelBlock(modifiedContent, 'externalSecrets');
 
-      // Generate YAML for externalSecrets
+      // Generate YAML for externalSecrets (indented sequences, as in the repository values files)
       const externalSecretsYaml = stringifyYaml({ externalSecrets: externalSecretsValue }, {
-        indentSeq: false,
         lineWidth: 0,
       }).trim();
 
@@ -241,42 +308,22 @@ export function applyExternalSecretsToWorkload(
         // No anchor point found, append at end
         modifiedContent = withoutExisting + '\n' + externalSecretsYaml;
       }
-
-      // Reparse the modified content
-      doc = parseDocument(modifiedContent);
     }
 
     if (removeOldRefs) {
-      // Remove root-level envFromSecrets
-      if (doc.has('envFromSecrets')) {
-        doc.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
-      // Remove deployment.envFromSecrets or cronjob.envFromSecrets
-      const deploymentNode = doc.getIn(['deployment'], true);
-      if (deploymentNode && isMap(deploymentNode) && deploymentNode.has('envFromSecrets')) {
-        deploymentNode.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
-      const deploymentFlywayNode = doc.getIn(['deployment', 'flywayInitContainer'], true);
-      if (deploymentFlywayNode && isMap(deploymentFlywayNode) && deploymentFlywayNode.has('envFromSecrets')) {
-        deploymentFlywayNode.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
-      const cronjobNode = doc.getIn(['cronjob'], true);
-      if (cronjobNode && isMap(cronjobNode) && cronjobNode.has('envFromSecrets')) {
-        cronjobNode.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
-      const cronjobFlywayNode = doc.getIn(['cronjob', 'flywayInitContainer'], true);
-      if (cronjobFlywayNode && isMap(cronjobFlywayNode) && cronjobFlywayNode.has('envFromSecrets')) {
-        cronjobFlywayNode.delete('envFromSecrets');
-        oldRefsRemoved = true;
-      }
+      const result = removeNestedKeys(modifiedContent, [
+        ['envFromSecrets'],
+        ['deployment', 'envFromSecrets'],
+        ['deployment', 'flywayInitContainer', 'envFromSecrets'],
+        ['cronjob', 'envFromSecrets'],
+        ['cronjob', 'flywayInitContainer', 'envFromSecrets'],
+      ]);
+      modifiedContent = result.content;
+      oldRefsRemoved = result.removed;
     }
 
-    if (!dryRun) {
-      fs.writeFileSync(valuesPath, doc.toString({ lineWidth: 0 }));
+    if (!dryRun && modifiedContent !== originalContent) {
+      fs.writeFileSync(valuesPath, modifiedContent);
     }
 
     return {
@@ -309,18 +356,30 @@ export function initializeCommonsExternalSecrets(
   dryRun: boolean = false,
   secretStoreName?: string
 ): { success: boolean; error?: string } {
+  // Read and write through the same file descriptor, so the file cannot change between check and write
+  let fd: number | undefined;
   try {
-    if (!fs.existsSync(commonsValuesPath)) {
-      return { success: false, error: `Commons file not found: ${commonsValuesPath}` };
+    try {
+      fd = fs.openSync(commonsValuesPath, dryRun ? 'r' : 'r+');
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return { success: false, error: `Commons file not found: ${commonsValuesPath}` };
+      }
+      throw error;
     }
 
-    const content = fs.readFileSync(commonsValuesPath, 'utf-8');
-    const doc = parseDocument(content);
+    const content = fs.readFileSync(fd, 'utf-8');
+    const existingValues: any = parseYaml(content);
 
-    const existing: any = normalizeExternalSecrets((doc.toJS() as any)?.externalSecrets);
+    const existing: any = normalizeExternalSecrets(existingValues?.externalSecrets);
 
     const externalSecretsStructure: any = {};
-    for (const key of EXTERNAL_SECRETS_SECTIONS) {
+    // Keep the existing section order; missing sections are appended
+    const sectionOrder = [
+      ...(Object.keys(existing) as ExternalSecretsSection[]),
+      ...EXTERNAL_SECRETS_SECTIONS.filter((key) => !(key in existing)),
+    ];
+    for (const key of sectionOrder) {
       const section = existing[key] && typeof existing[key] === 'object' ? existing[key] : {};
       const existingRef = section.secretStoreRef;
       const existingName: string | undefined = existingRef?.name;
@@ -344,11 +403,32 @@ export function initializeCommonsExternalSecrets(
       };
     }
 
-    // Set the complete structure back to the document
-    doc.setIn(['externalSecrets'], externalSecretsStructure);
+    // Nothing to do when commons already has the expected structure: keep the file untouched
+    if (isDeepStrictEqual(existingValues?.externalSecrets, externalSecretsStructure)) {
+      return { success: true };
+    }
+
+    // Replace (or append) only the externalSecrets block, leaving the rest of the file byte-identical
+    const blockLines = stringifyYaml({ externalSecrets: externalSecretsStructure }, { lineWidth: 0 })
+      .trimEnd()
+      .split('\n');
+    const lines = content.split('\n');
+    const block = findTopLevelBlock(lines, 'externalSecrets');
+    let newContent: string;
+    if (block) {
+      // Keep the blank lines that separate the block from what follows
+      let end = block.end;
+      while (end > block.start + 1 && lines[end - 1].trim() === '') end--;
+      lines.splice(block.start, end - block.start, ...blockLines);
+      newContent = lines.join('\n');
+    } else {
+      const separator = content === '' || content.endsWith('\n') ? '' : '\n';
+      newContent = `${content}${separator}${blockLines.join('\n')}\n`;
+    }
 
     if (!dryRun) {
-      fs.writeFileSync(commonsValuesPath, doc.toString({ lineWidth: 0 }));
+      fs.ftruncateSync(fd, 0);
+      fs.writeSync(fd, newContent, 0);
     }
 
     return { success: true };
@@ -357,6 +437,8 @@ export function initializeCommonsExternalSecrets(
       success: false,
       error: error instanceof Error ? error.message : String(error),
     };
+  } finally {
+    if (fd !== undefined) fs.closeSync(fd);
   }
 }
 

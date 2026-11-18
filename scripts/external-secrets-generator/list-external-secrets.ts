@@ -10,12 +10,11 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { parseDocument } from "yaml";
+import { isMap, isScalar, parseDocument } from "yaml";
 import { parse as parseYaml } from "yaml";
 import { createAwsClient, fetchLatestSecretVersion } from "../lib/aws-secrets-manager.js";
 import type { AwsSecretVersion } from "../lib/aws-secrets-manager.js";
 import { EXTERNAL_SECRETS_SECTIONS, type ExternalSecretsSection } from "../lib/external-secrets-sections.js";
-import { walkWorkloads } from "../lib/workload.js";
 import type { WorkloadType } from "../lib/types.js";
 import {
   getWorkloadFilterSuffix,
@@ -300,7 +299,7 @@ function writeJsonReports(entries: ExternalSecretEntry[], outputDir: string, env
 // Version patching
 // ---------------------------------------------------------------------------
 
-type YamlItem = { get: (k: string) => unknown; getIn: (p: string[]) => unknown; setIn: (p: string[], v: unknown) => void };
+type YamlItem = { get: (k: string, keepNode?: boolean) => unknown; getIn: (p: string[]) => unknown };
 
 /** ESO distinguishes explicit version IDs (uuid/) from version stage labels. */
 export function formatSecretVersion(version: string): string {
@@ -310,10 +309,15 @@ export function formatSecretVersion(version: string): string {
     : `uuid/${normalized}`;
 }
 
+/**
+ * Updates only the remoteRef.version values by editing the original text.
+ * The document is parsed just to locate them: re-serializing it with
+ * doc.toString() would reformat the rest of the file (long lines, folded scalars...).
+ */
 function patchValuesFile(file: string, entries: ExternalSecretEntry[]): void {
   const content = fs.readFileSync(file, "utf-8");
   const doc = parseDocument(content);
-  let changed = false;
+  const edits: Array<{ start: number; end: number; text: string }> = [];
 
   for (const section of EXTERNAL_SECRETS_SECTIONS) {
     const data = doc.getIn(["externalSecrets", section, "data"]) as { items: unknown[] } | undefined;
@@ -334,15 +338,48 @@ function patchValuesFile(file: string, entries: ExternalSecretEntry[]): void {
           e.property === property
       );
 
-      if (match?.latestVersion) {
-        item.setIn(["remoteRef", "version"], formatSecretVersion(match.latestVersion));
-        changed = true;
+      const remoteRef = item.get("remoteRef", true);
+      if (!match?.latestVersion || !isMap(remoteRef)) continue;
+
+      const version = formatSecretVersion(match.latestVersion);
+      const versionNode = remoteRef.get("version", true);
+
+      if (isScalar(versionNode) && versionNode.range) {
+        // Replace the existing value, keeping its original quoting
+        const [start, end] = versionNode.range;
+        const original = content.slice(start, end);
+        const quote = original.startsWith('"') || original.startsWith("'") ? original[0] : "";
+        edits.push({ start, end, text: `${quote}${version}${quote}` });
+      } else {
+        // No version yet: add it on a new line after the last remoteRef field, with the same indentation
+        const firstKey = remoteRef.items[0]?.key;
+        const lastValue = remoteRef.items[remoteRef.items.length - 1]?.value;
+        if (!isScalar(firstKey) || !firstKey.range || !isScalar(lastValue) || !lastValue.range) continue;
+        if (remoteRef.flow && remoteRef.range) {
+          const closeBrace = remoteRef.range[1] - 1;
+          if (content[closeBrace] !== "}") continue;
+          const trailingContent = content.slice(lastValue.range[1], closeBrace);
+          const comma = trailingContent.indexOf(",");
+          const at = comma === -1 ? lastValue.range[1] : lastValue.range[1] + comma + 1;
+          const separator = comma === -1 ? ", " : " ";
+          edits.push({ start: at, end: at, text: `${separator}version: ${version}` });
+          continue;
+        }
+        const indent = content.slice(content.lastIndexOf("\n", firstKey.range[0]) + 1, firstKey.range[0]);
+        const lineEnd = content.indexOf("\n", lastValue.range[1]);
+        const at = lineEnd === -1 ? content.length : lineEnd;
+        edits.push({ start: at, end: at, text: `\n${indent}version: ${version}` });
       }
     }
   }
 
-  if (changed) {
-    fs.writeFileSync(file, doc.toString());
+  // Apply from the end of the file so earlier offsets stay valid
+  const patched = edits
+    .sort((a, b) => b.start - a.start)
+    .reduce((text, e) => text.slice(0, e.start) + e.text + text.slice(e.end), content);
+
+  if (patched !== content) {
+    fs.writeFileSync(file, patched);
   }
 }
 
