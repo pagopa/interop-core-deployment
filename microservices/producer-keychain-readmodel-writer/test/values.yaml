@@ -11,6 +11,21 @@ configmap:
   KAFKA_CLIENT_ID: "{{.Values.namespace}}-pagopa-interop-producer-keychain"
   KAFKA_GROUP_ID: "{{.Values.namespace}}-producer-keychain-readmodel-writer"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: PROJECTION_USR
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: PROJECTION_PSW
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+
 deployment:
   replicas: 0
   env:
@@ -27,6 +42,3 @@ deployment:
     READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"
     READMODEL_DB_REPLICA_SET: "common-read-model.READMODEL_REPLICA_SET"
     READMODEL_DB_READ_PREFERENCE: "common-read-model.READMODEL_READ_PREFERENCE"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.PROJECTION_USR"
-    READMODEL_DB_PASSWORD: "read-model.PROJECTION_PSW"

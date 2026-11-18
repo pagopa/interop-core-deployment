@@ -17,6 +17,64 @@ configmap:
   ESERVICE_TEMPLATE_DOCUMENTS_CONTAINER: "interop-application-documents-{{.Values.namespace}}-es1"
   ESERVICE_TEMPLATE_DOCUMENTS_PATH: "eservice-template/docs"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+  app:
+    create: true
+    data:
+      - secretKey: EVENTSTORE_DB_USERNAME
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+      - secretKey: EVENTSTORE_DB_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_catalog_process_user
+          property: username
+          version: uuid/terraform-2025052313093538370000001c
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_catalog_process_user
+          property: password
+          version: uuid/terraform-2025052313093538370000001c
+      - secretKey: TENANT_KIND_HISTORY_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_catalog_process_user
+          property: username
+          version: uuid/terraform-2025052313093538370000001c
+      - secretKey: TENANT_KIND_HISTORY_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_catalog_process_user
+          property: password
+          version: uuid/terraform-2025052313093538370000001c
+
 deployment:
   flywayInitContainer:
     create: true
@@ -31,9 +89,6 @@ deployment:
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "event-store.POSTGRES_USR"
-      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -90,15 +145,6 @@ deployment:
     TENANT_KIND_HISTORY_DB_NAME: "common-tenant-kind-history-db.DB_NAME"
     TENANT_KIND_HISTORY_DB_USE_SSL: "common-tenant-kind-history-db.DB_USE_SSL"
     TENANT_KIND_HISTORY_DB_SCHEMA: "common-tenant-kind-history-db.DB_SCHEMA"
-  envFromSecrets:
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-catalog-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-catalog-process-user.password"
-    TENANT_KIND_HISTORY_DB_USERNAME: "platform-data-catalog-process-user.username"
-    TENANT_KIND_HISTORY_DB_PASSWORD: "platform-data-catalog-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

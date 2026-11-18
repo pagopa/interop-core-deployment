@@ -13,6 +13,21 @@ configmap:
   TOPIC_STARTING_OFFSET: "latest"
   PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-notification-dispatcher-transactional-id"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_email_notification_dispatcher_user
+          property: username
+          version: uuid/terraform-2025112416380711010000000e
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_email_notification_dispatcher_user
+          property: password
+          version: uuid/terraform-2025112416380711010000000e
+
 deployment:
   env:
     BFF_URL: "https://selfcare.uat.interop.pagopa.it/1.0/backend-for-frontend"
@@ -45,9 +60,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-email-notification-dispatcher-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-email-notification-dispatcher-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
