@@ -76,6 +76,21 @@ configmap:
   FRONTEND_BASE_URL: "https://selfcare.pagopa.it"
   DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "568359c2-18e8-4ce9-ace3-1f73cb0df1ff"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: SAML_PUBLIC_KEY
+        remoteRef:
+          key: app/backend/support-saml
+          property: SUPPORT_SAML_PUBLIC_KEY
+          version: uuid/3b8ee87d-e3b3-4c51-9ab1-b988112dd9c4
+      - secretKey: SELFCARE_V2_API_KEY
+        remoteRef:
+          key: app/backend/selfcare-v2
+          property: SELFCARE_V2_API_KEY
+          version: uuid/e68d5bd6-b18c-42d7-bf74-b9c9c26dd8b3
+
 deployment:
   env:
     HOST: "0.0.0.0"
@@ -114,9 +129,6 @@ deployment:
     FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION: "common-feature-flags.FEATURE_FLAG_CLIENT_ASSERTION_STRICT_CLAIMS_VALIDATION"
     FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER: "common-feature-flags.FEATURE_FLAG_DPOP_CLIENT_ASSERTION_DEBUGGER"
     FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
-  envFromSecrets:
-    SAML_PUBLIC_KEY: "support-saml.SUPPORT_SAML_PUBLIC_KEY"
-    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
   livenessProbe:
     httpGet:
       path: "/backend-for-frontend/1.0/status"
