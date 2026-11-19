@@ -44,3 +44,13 @@ local:
     MAINTENANCE: "https://interop-private-well-known-att.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
   awsAccountId: "533267098416"
   env: "att"
+  
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore

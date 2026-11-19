@@ -14,6 +14,54 @@ configmap:
   DELEGATIONS_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT"
   DELEGATIONS_ALLOWED_ATTRIBUTE_ID: "568359c2-18e8-4ce9-ace3-1f73cb0df1ff"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/344db6fe-01df-42eb-926d-c003f7dd1d70
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/344db6fe-01df-42eb-926d-c003f7dd1d70
+  app:
+    create: true
+    data:
+      - secretKey: EVENTSTORE_DB_USERNAME
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/344db6fe-01df-42eb-926d-c003f7dd1d70
+      - secretKey: EVENTSTORE_DB_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/344db6fe-01df-42eb-926d-c003f7dd1d70
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/4a5f6ab5-b676-43d3-be1d-ce45428b127c
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/4a5f6ab5-b676-43d3-be1d-ce45428b127c
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_tenant_process_user
+          property: username
+          version: uuid/terraform-2025060507211318210000001d
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_tenant_process_user
+          property: password
+          version: uuid/terraform-2025060507211318210000001d
+
 deployment:
   flywayInitContainer:
     create: true
@@ -28,9 +76,6 @@ deployment:
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "event-store.POSTGRES_USR"
-      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -78,13 +123,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
     FEATURE_FLAG_ADMIN_CLIENT: "common-feature-flags.FEATURE_FLAG_ADMIN_CLIENT"
-  envFromSecrets:
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-tenant-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-tenant-process-user.password"
   livenessProbe:
     httpGet:
       path: /status
