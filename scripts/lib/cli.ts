@@ -1,5 +1,6 @@
 import * as path from "path";
 import type { CliArgs, OutputFormat, PartialCliArgs } from "./types.js";
+import { validateWorkloadFilterValue } from './workload-filter.js';
 
 const DEFAULT_OUTPUT_DIR = "secret-inventory";
 const OUTPUT_FORMATS: OutputFormat[] = ["csv", "json", "both"];
@@ -31,6 +32,12 @@ export function parseArgs(argv: string[]): CliArgs {
     } else if (arg === "--format" || arg === "-f") {
       args.format = parseOutputFormat(requireValue(arg, next));
       i += 1;
+    } else if (arg === '--microservice') {
+      args.microservice = validateWorkloadFilterValue(arg, requireValue(arg, next));
+      i += 1;
+    } else if (arg === '--cronjob') {
+      args.cronjob = validateWorkloadFilterValue(arg, requireValue(arg, next));
+      i += 1;
     } else if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
@@ -52,6 +59,8 @@ export function parseArgs(argv: string[]): CliArgs {
     root: args.root,
     outputDir: args.outputDir,
     format: args.format,
+    microservice: args.microservice,
+    cronjob: args.cronjob,
   };
 }
 
@@ -80,7 +89,7 @@ export function parseOutputFormat(value: string): OutputFormat {
  */
 function printHelp(): void {
   console.log(`Usage:
-  node scripts/secret-references-repo-inventory.js --env dev [options]
+  node scripts/external-secrets-generator/secret-references-repo-inventory.js --env dev [options]
   npm run secret-references-repo-inventory -- --env dev [options]
 
 Options:
@@ -88,9 +97,11 @@ Options:
   -r, --root <path>         Repository root. Default: current directory
   -o, --output-dir <path>   Output directory, relative to root unless absolute. Default: secret-inventory
   -f, --format <format>     csv, json, or both. Default: csv
+      --microservice <name> Only scan this folder under microservices/
+      --cronjob <name>      Only scan this folder under jobs/
 
 Examples:
-  node scripts/secret-references-repo-inventory.js --env dev
+  node scripts/external-secrets-generator/secret-references-repo-inventory.js --env dev
   npm run secret-references-repo-inventory -- --env qa --format both --output-dir reports/secrets
 `);
 }

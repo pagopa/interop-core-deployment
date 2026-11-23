@@ -1,4 +1,5 @@
 namespace: qa
+deployMode: "KUBECTL_APPLY"
 
 service:
   targetPort: http
@@ -25,9 +26,18 @@ deployment:
 
 local:
   interop_be_commons:
-    RSA_KEYS_IDENTIFIERS: "17d3f3c0-5730-45a9-be8a-655e77bf3555"
+    AUTHSRV_KEY_IDENTIFIER: "17d3f3c0-5730-45a9-be8a-655e77bf3555"
+    INTERNAL_KEY_IDENTIFIER: "e9707f35-f552-4a1c-a57e-c4fad618d57a"
+    BFF_KEY_IDENTIFIER: "d7925a61-a2d1-4f7b-84d1-78b215277ca6"
+    INTEGRITY_REST_KEY_IDENTIFIER: "82c7fd13-fe23-4f03-8810-111c909e05bf"
     DEV_ENDPOINTS_ENABLED: "true"
     ENABLED_PROJECTIONS: "false"
+  well_known_url:
+    AUTHSRV: "https://qa.interop.pagopa.it/.well-known/jwks.json"
+    SELFCARE: "https://uat.selfcare.pagopa.it/.well-known/jwks.json"
+    BFF: "https://interop-private-well-known-qa.s3.eu-south-1.amazonaws.com/.well-known/bff-jwks.json"
+    INTERNAL: "https://interop-private-well-known-qa.s3.eu-south-1.amazonaws.com/.well-known/internal-jwks.json"
+    MAINTENANCE: "https://interop-private-well-known-qa.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
   awsAccountId: "755649575658"
   env: "qa"
 
@@ -37,9 +47,19 @@ autoscaling:
     minReplicaCount: 0 # this must be 0 when using 'cron' trigger for uptime cost optimization
     maxReplicaCount: "{{.Values.deployment.replicas}}" # must be a string
     triggers:
-    - type: cron
-      metadata:
-        timezone: Europe/Rome
-        start: 0 8 * * 1-5
-        end: 59 23 * * 1-5
-        desiredReplicas: "{{.Values.deployment.replicas}}" # must be a string
+      - type: cron
+        metadata:
+          timezone: Europe/Rome
+          start: 0 8 * * 1-5
+          end: 59 23 * * 1-5
+          desiredReplicas: "{{.Values.deployment.replicas}}" # must be a string
+
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore

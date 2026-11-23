@@ -20,6 +20,31 @@ configmap:
   RATE_LIMITER_RATE_INTERVAL_MILLIS: "1000"
   RATE_LIMITER_TIMEOUT_MILLIS: "300"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_api_gateway_user
+          property: username
+          version: uuid/terraform-20250523130935549800000026
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_api_gateway_user
+          property: password
+          version: uuid/terraform-20250523130935549800000026
+
 deployment:
   env:
     HOST: "0.0.0.0"
@@ -27,13 +52,14 @@ deployment:
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
+    WELL_KNOWN_URLS: >-
+      {{.Values.local.well_known_url.AUTHSRV}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
-    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
     ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
     AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
@@ -70,11 +96,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-api-gateway-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-api-gateway-user.password"
   livenessProbe:
     httpGet:
       path: "/api-gateway/1.0/status"

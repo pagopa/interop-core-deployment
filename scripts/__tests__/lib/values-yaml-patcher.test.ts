@@ -5,14 +5,14 @@ import * as os from 'os';
 import {
   readValuesFile,
   writeValuesFile,
-  mergeExternalSecretsContainer,
-  mergeExternalSecretsInitContainer,
+  mergeExternalSecretsSection,
   removeEnvFromSecretsReferences,
   applyExternalSecretsToWorkload,
   listEnvFromSecretsReferences,
   initializeCommonsExternalSecrets,
 } from '../../lib/values-yaml-patcher.js';
 import type { ContainerExternalSecretsConfig } from '../../lib/external-secrets-types.js';
+import { parse as parseYaml } from 'yaml';
 
 describe('values-yaml-patcher', () => {
   let tempDir: string;
@@ -75,41 +75,58 @@ describe('values-yaml-patcher', () => {
     });
   });
 
-  describe('mergeExternalSecretsContainer', () => {
-    it('should merge container config into values', () => {
-      const values = { name: 'test' };
-      mergeExternalSecretsContainer(values, mockExternalSecretsConfig);
+  describe('mergeExternalSecretsSection', () => {
+    it('should merge app config into values', () => {
+      const values: any = { name: 'test' };
+      mergeExternalSecretsSection(values, 'app', mockExternalSecretsConfig);
 
       expect(values.externalSecrets).toBeDefined();
-      expect(values.externalSecrets.container).toBeDefined();
-      expect(values.externalSecrets.container.create).toBe(true);
-      expect(values.externalSecrets.container.data).toHaveLength(1);
+      expect(values.externalSecrets.app).toBeDefined();
+      expect(values.externalSecrets.app.create).toBe(true);
+      expect(values.externalSecrets.app.data).toHaveLength(1);
     });
 
     it('should preserve existing externalSecrets fields', () => {
-      const values = {
+      const values: any = {
         externalSecrets: {
-          container: {
+          app: {
             create: false,
+            refreshInterval: '1h',
           },
         },
       };
 
-      mergeExternalSecretsContainer(values, mockExternalSecretsConfig);
+      mergeExternalSecretsSection(values, 'app', mockExternalSecretsConfig);
 
-      expect(values.externalSecrets.container.create).toBe(true);
-      expect(values.externalSecrets.container.data).toHaveLength(1);
+      expect(values.externalSecrets.app.create).toBe(true);
+      expect(values.externalSecrets.app.refreshInterval).toBe('1h');
+      expect(values.externalSecrets.app.data).toHaveLength(1);
     });
-  });
 
-  describe('mergeExternalSecretsInitContainer', () => {
-    it('should merge initContainer config into values', () => {
-      const values = { name: 'test' };
-      mergeExternalSecretsInitContainer(values, mockExternalSecretsConfig);
+    it('should merge flywayInitContainer config into values', () => {
+      const values: any = { name: 'test' };
+      mergeExternalSecretsSection(values, 'flywayInitContainer', mockExternalSecretsConfig);
 
-      expect(values.externalSecrets).toBeDefined();
-      expect(values.externalSecrets.initContainer).toBeDefined();
-      expect(values.externalSecrets.initContainer.create).toBe(true);
+      expect(values.externalSecrets.flywayInitContainer.create).toBe(true);
+      expect(values.externalSecrets.app).toBeUndefined();
+    });
+
+    it('should not pollute Object.prototype through __proto__ or constructor keys', () => {
+      const malicious = parseYaml(`
+create: true
+__proto__:
+  polluted: true
+constructor:
+  prototype:
+    polluted: true
+data: []
+`);
+      const values: any = {};
+      mergeExternalSecretsSection(values, 'app', malicious);
+
+      expect(({} as any).polluted).toBeUndefined();
+      expect(Object.prototype.hasOwnProperty.call(Object.prototype, 'polluted')).toBe(false);
+      expect(values.externalSecrets.app.create).toBe(true);
     });
   });
 
@@ -198,8 +215,8 @@ describe('values-yaml-patcher', () => {
       );
 
       expect(result.success).toBe(true);
-      expect(result.containerMerged).toBe(true);
-      expect(result.initContainerMerged).toBe(false);
+      expect(result.appMerged).toBe(true);
+      expect(result.flywayInitContainerMerged).toBe(false);
 
       const updated = readValuesFile(testValuesFile);
       expect(updated.externalSecrets.app).toBeDefined();
@@ -215,12 +232,39 @@ describe('values-yaml-patcher', () => {
       );
 
       expect(result.success).toBe(true);
-      expect(result.containerMerged).toBe(true);
-      expect(result.initContainerMerged).toBe(true);
+      expect(result.appMerged).toBe(true);
+      expect(result.flywayInitContainerMerged).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
       expect(updated.externalSecrets.app).toBeDefined();
       expect(updated.externalSecrets.flywayInitContainer).toBeDefined();
+    });
+
+    it('should migrate legacy container/initContainer keys and remove them', () => {
+      writeValuesFile(testValuesFile, {
+        name: 'test-job',
+        externalSecrets: {
+          container: { create: false, refreshInterval: '1h' },
+          initContainer: { create: false, refreshInterval: '2h' },
+        },
+        cronjob: { schedule: '0 0 * * *' },
+      });
+
+      const result = applyExternalSecretsToWorkload(
+        testValuesFile,
+        mockExternalSecretsConfig,
+        mockExternalSecretsConfig,
+        false,
+        false
+      );
+
+      expect(result.success).toBe(true);
+      const updated = readValuesFile(testValuesFile);
+      expect(Object.keys(updated.externalSecrets).sort()).toEqual(['app', 'flywayInitContainer']);
+      expect(updated.externalSecrets.app.refreshInterval).toBe('1h');
+      expect(updated.externalSecrets.app.data).toHaveLength(1);
+      expect(updated.externalSecrets.flywayInitContainer.refreshInterval).toBe('2h');
+      expect(updated.externalSecrets.flywayInitContainer.data).toHaveLength(1);
     });
 
     it('should remove old refs if requested', () => {
@@ -244,6 +288,36 @@ describe('values-yaml-patcher', () => {
       const updated = readValuesFile(testValuesFile);
       expect(updated.envFromSecrets).toBeUndefined();
       expect(updated.externalSecrets.app).toBeDefined();
+    });
+
+    it('should remove Flyway initContainer refs if requested', () => {
+      writeValuesFile(testValuesFile, {
+        name: 'test-app',
+        deployment: {
+          flywayInitContainer: {
+            create: true,
+            envFromSecrets: {
+              FLYWAY_USER: 'event-store.POSTGRES_USR',
+              FLYWAY_PASSWORD: 'event-store.POSTGRES_PSW',
+            },
+          },
+        },
+      });
+
+      const result = applyExternalSecretsToWorkload(
+        testValuesFile,
+        undefined,
+        mockExternalSecretsConfig,
+        true,
+        false
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.oldRefsRemoved).toBe(true);
+
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.deployment.flywayInitContainer.envFromSecrets).toBeUndefined();
+      expect(updated.externalSecrets.flywayInitContainer).toBeDefined();
     });
 
     it('should not modify file in dry-run mode', () => {
@@ -341,6 +415,86 @@ describe('values-yaml-patcher', () => {
       expect(cronjobIndex).toBeGreaterThan(-1);
       expect(externalSecretsIndex).toBeLessThan(cronjobIndex);
     });
+
+    it('should replace an existing externalSecrets block without removing the blocks that follow it', () => {
+      fs.writeFileSync(
+        testValuesFile,
+        `name: test-app
+externalSecrets:
+  app:
+    create: false
+
+    data: []
+serviceAccount:
+  name: test-sa
+# configmap comment
+configmap:
+  FOO: "bar"
+
+deployment:
+  replicas: 1
+`
+      );
+
+      const result = applyExternalSecretsToWorkload(testValuesFile, mockExternalSecretsConfig, undefined, false, false);
+      expect(result.success).toBe(true);
+
+      const fileContent = fs.readFileSync(testValuesFile, 'utf-8');
+      expect(fileContent.match(/^externalSecrets:/gm)).toHaveLength(1);
+      expect(fileContent).toContain('# configmap comment');
+      expect(fileContent.indexOf('externalSecrets:')).toBeLessThan(fileContent.indexOf('deployment:'));
+
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.serviceAccount).toEqual({ name: 'test-sa' });
+      expect(updated.configmap).toEqual({ FOO: 'bar' });
+      expect(updated.deployment).toEqual({ replicas: 1 });
+      expect(updated.externalSecrets.app.create).toBe(true);
+      expect(updated.externalSecrets.app.data).toHaveLength(1);
+    });
+
+    it('should remove the full block across internal column-zero comments and preserve boundary comments', () => {
+      fs.writeFileSync(testValuesFile, `name: test-app
+externalSecrets:
+  app:
+    create: false
+    data: []
+# Foo
+  flywayInitContainer:
+    create: true
+    data: []
+# service account comment
+serviceAccount:
+  name: test-sa
+deployment:
+  replicas: 1
+`);
+
+      const result = applyExternalSecretsToWorkload(testValuesFile, mockExternalSecretsConfig, undefined, false);
+
+      expect(result.success).toBe(true);
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.externalSecrets.app.data).toHaveLength(1);
+      expect(updated.externalSecrets.flywayInitContainer).toEqual({ create: true, data: [] });
+      expect(updated.flywayInitContainer).toBeUndefined();
+      expect(updated.serviceAccount).toEqual({ name: 'test-sa' });
+      const content = fs.readFileSync(testValuesFile, 'utf-8');
+      expect(content).toContain('# service account comment');
+      expect(content.match(/^externalSecrets:/gm)).toHaveLength(1);
+    });
+
+    it('should replace an externalSecrets block placed at the top or bottom of the file', () => {
+      fs.writeFileSync(testValuesFile, `externalSecrets:\n  app:\n    create: false\nname: test-app\n`);
+      expect(applyExternalSecretsToWorkload(testValuesFile, mockExternalSecretsConfig, undefined, false, false).success).toBe(true);
+      let updated = readValuesFile(testValuesFile);
+      expect(updated.name).toBe('test-app');
+      expect(updated.externalSecrets.app.create).toBe(true);
+
+      fs.writeFileSync(testValuesFile, `name: test-app\nexternalSecrets:\n  app:\n    create: false\n`);
+      expect(applyExternalSecretsToWorkload(testValuesFile, mockExternalSecretsConfig, undefined, false, false).success).toBe(true);
+      updated = readValuesFile(testValuesFile);
+      expect(updated.name).toBe('test-app');
+      expect(updated.externalSecrets.app.create).toBe(true);
+    });
   });
 
   describe('initializeCommonsExternalSecrets', () => {
@@ -351,27 +505,31 @@ local:
 `;
       fs.writeFileSync(testValuesFile, commonsContent);
 
-      const result = initializeCommonsExternalSecrets(testValuesFile, false);
+      const result = initializeCommonsExternalSecrets(testValuesFile, false, 'test-secret-store');
       expect(result.success).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
       expect(updated.externalSecrets).toBeDefined();
       expect(updated.externalSecrets.app).toBeDefined();
       expect(updated.externalSecrets.app.secretStoreRef).toBeDefined();
-      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('test-secret-store');
       expect(updated.externalSecrets.app.secretStoreRef.kind).toBe('SecretStore');
       expect(updated.externalSecrets.flywayInitContainer).toBeDefined();
       expect(updated.externalSecrets.flywayInitContainer.secretStoreRef).toBeDefined();
     });
 
-    it('should preserve existing externalSecrets structure', () => {
+    it('should take the secret store from commons when not provided', () => {
       const commonsContent = `
 local:
   env: "dev"
 externalSecrets:
   app:
     secretStoreRef:
-      name: app-secret-store
+      name: commons-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: commons-store
       kind: SecretStore
 `;
       fs.writeFileSync(testValuesFile, commonsContent);
@@ -380,10 +538,56 @@ externalSecrets:
       expect(result.success).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
-      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('commons-store');
+      expect(updated.externalSecrets.flywayInitContainer.secretStoreRef.name).toBe('commons-store');
     });
 
-    it('should add missing secretStoreRef to existing sections', () => {
+    it('should migrate legacy commons sections to app/flywayInitContainer', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+externalSecrets:
+  container:
+    secretStoreRef:
+      name: commons-store
+      kind: SecretStore
+  initContainer:
+    secretStoreRef:
+      name: commons-store
+      kind: SecretStore
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false);
+      expect(result.success).toBe(true);
+
+      const updated = readValuesFile(testValuesFile);
+      expect(Object.keys(updated.externalSecrets).sort()).toEqual(['app', 'flywayInitContainer']);
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('commons-store');
+      expect(updated.externalSecrets.flywayInitContainer.secretStoreRef.name).toBe('commons-store');
+    });
+
+    it('should accept a provided secret store equal to the commons one', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: commons-store
+      kind: SecretStore
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false, 'commons-store');
+      expect(result.success).toBe(true);
+
+      const updated = readValuesFile(testValuesFile);
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('commons-store');
+      expect(updated.externalSecrets.flywayInitContainer.secretStoreRef.name).toBe('commons-store');
+    });
+
+    it('should fail when no secret store is provided nor set in commons', () => {
       const commonsContent = `
 local:
   env: "dev"
@@ -393,11 +597,44 @@ externalSecrets:
       fs.writeFileSync(testValuesFile, commonsContent);
 
       const result = initializeCommonsExternalSecrets(testValuesFile, false);
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Missing secretStoreRef');
+      expect(fs.readFileSync(testValuesFile, 'utf-8')).toBe(commonsContent);
+    });
+
+    it('should fail when the provided secret store conflicts with commons', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: commons-store
+      kind: SecretStore
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false, 'other-store');
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Conflicting secretStoreRef');
+      expect(fs.readFileSync(testValuesFile, 'utf-8')).toBe(commonsContent);
+    });
+
+    it('should use the provided secret store name', () => {
+      const commonsContent = `
+local:
+  env: "dev"
+externalSecrets:
+  app: {}
+`;
+      fs.writeFileSync(testValuesFile, commonsContent);
+
+      const result = initializeCommonsExternalSecrets(testValuesFile, false, 'custom-store');
       expect(result.success).toBe(true);
 
       const updated = readValuesFile(testValuesFile);
-      expect(updated.externalSecrets.app.secretStoreRef).toBeDefined();
-      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('app-secret-store');
+      expect(updated.externalSecrets.app.secretStoreRef.name).toBe('custom-store');
+      expect(updated.externalSecrets.flywayInitContainer.secretStoreRef.name).toBe('custom-store');
     });
 
     it('should handle dry-run mode without writing', () => {
@@ -407,7 +644,7 @@ local:
 `;
       fs.writeFileSync(testValuesFile, commonsContent);
 
-      const result = initializeCommonsExternalSecrets(testValuesFile, true);
+      const result = initializeCommonsExternalSecrets(testValuesFile, true, 'test-secret-store');
       expect(result.success).toBe(true);
 
       // File should remain unchanged

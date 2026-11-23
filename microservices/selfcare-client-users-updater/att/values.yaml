@@ -10,12 +10,42 @@ service:
 configmap:
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.INTERNAL_KEY_IDENTIFIER}}"
   INTERNAL_JWT_SECONDS_DURATION: "3600"
   INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
   INTEROP_PRODUCT: "prod-interop-atst"
   KAFKA_CLIENT_ID: "interop-{{.Values.namespace}}"
   KAFKA_GROUP_ID: "interop-users-{{.Values.namespace}}"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: KAFKA_BROKER_CONNECTION_STRING
+        remoteRef:
+          key: app/backend/selfcare-v2
+          property: SELFCARE_USERS_BROKER_CONNECTION_STRING
+          version: uuid/e68d5bd6-b18c-42d7-bf74-b9c9c26dd8b3
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/4a5f6ab5-b676-43d3-be1d-ce45428b127c
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/4a5f6ab5-b676-43d3-be1d-ce45428b127c
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_selfcare_client_users_updater_user
+          property: username
+          version: uuid/terraform-20250605072113302200000025
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_selfcare_client_users_updater_user
+          property: password
+          version: uuid/terraform-20250605072113302200000025
 
 deployment:
   env:
@@ -47,9 +77,3 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
     SELFCARE_TOPIC: "common-selfcare.SELFCARE_USERS_TOPIC"
-  envFromSecrets:
-    KAFKA_BROKER_CONNECTION_STRING: "selfcare-v2.SELFCARE_USERS_BROKER_CONNECTION_STRING"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-selfcare-client-users-updater-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-selfcare-client-users-updater-user.password"

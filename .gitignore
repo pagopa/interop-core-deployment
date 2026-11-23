@@ -29,3 +29,6 @@ charts/
 Chart.lock
 
 *.compiled.yaml
+
+dist
+node_modules

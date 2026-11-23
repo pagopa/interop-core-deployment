@@ -8,6 +8,44 @@ configmap:
   TOPIC_STARTING_OFFSET: "latest"
   PRODUCER_KAFKA_TRANSACTIONAL_ID: "{{.Values.namespace}}-email-digest-dispatcher-transactional-id"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: username
+          version: uuid/terraform-20250318135026647200000005
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: password
+          version: uuid/terraform-20250318135026647200000005
+  app:
+    create: true
+    data:
+      - secretKey: DIGEST_TRACKING_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
+          property: username
+          version: uuid/terraform-20260212133048976200000002
+      - secretKey: DIGEST_TRACKING_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
+          property: password
+          version: uuid/terraform-20260212133048976200000002
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
+          property: username
+          version: uuid/terraform-20260212133048976200000002
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_email_digest_dispatcher_user
+          property: password
+          version: uuid/terraform-20260212133048976200000002
+
 cronjob:
   schedule: "0 3 * * *"
   failedJobsHistoryLimit: 1
@@ -27,9 +65,6 @@ cronjob:
       POSTGRES_HOST: "common-digest-tracking-db.DB_HOST_RW"
       POSTGRES_PORT: "common-digest-tracking-db.DB_PORT"
       POSTGRES_DB: "common-digest-tracking-db.DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   env:
     BFF_URL: "https://selfcare.dev.interop.pagopa.it/0.0/backend-for-frontend"
@@ -55,11 +90,6 @@ cronjob:
     DIGEST_TRACKING_DB_NAME: "common-digest-tracking-db.DB_NAME"
     DIGEST_TRACKING_DB_USE_SSL: "common-digest-tracking-db.DB_USE_SSL"
     DIGEST_TRACKING_DB_SCHEMA: "common-digest-tracking-db.DB_SCHEMA"
-  envFromSecrets:
-    DIGEST_TRACKING_DB_USERNAME: "platform-data-email-digest-dispatcher-user.username"
-    DIGEST_TRACKING_DB_PASSWORD: "platform-data-email-digest-dispatcher-user.password"
-    READMODEL_SQL_DB_USERNAME: "platform-data-email-digest-dispatcher-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-email-digest-dispatcher-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"

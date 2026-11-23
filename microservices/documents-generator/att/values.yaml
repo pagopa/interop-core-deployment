@@ -15,11 +15,26 @@ configmap:
   AGREEMENT_DOCUMENTS_PATH: "{{.Values.namespace}}/generated-documents/agreement"
   RISK_ANALYSIS_DOCUMENTS_PATH: "{{.Values.namespace}}/generated-documents/risk-analysis"
   RISK_ANALYSIS_TEMPLATE_DOCUMENTS_PATH: "{{.Values.namespace}}/generated-documents/risk-analysis-template"
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.INTERNAL_KEY_IDENTIFIER}}"
   INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-documents-generator"
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_SECONDS_DURATION: "3600"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_documents_generator_user
+          property: username
+          version: uuid/terraform-20260205141516577300000012
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_documents_generator_user
+          property: password
+          version: uuid/terraform-20260205141516577300000012
 
 deployment:
   envFromConfigmaps:
@@ -50,9 +65,6 @@ deployment:
     DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
     PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
     PURPOSE_TEMPLATE_PROCESS_URL: "common-services-urls.PURPOSE_TEMPLATE_PROCESS_URL"
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-documents-generator-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-documents-generator-user.password"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"

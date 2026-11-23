@@ -2,21 +2,26 @@
  * Type definitions for ExternalSecrets configuration generation
  */
 
+import type { ExternalSecretsSection } from './external-secrets-sections.js';
+
 export interface ExternalSecretsGeneratorConfig {
   env: string;
   cluster: string;
   namespace: string;
   scope: 'microservice' | 'cronjob' | 'both';
   keepOldRefs: boolean;
-  validateHelm: boolean;
+  secretStore?: string;
   dryRun: boolean;
+  omitVersion: boolean;
+  microservice?: string;
+  cronjob?: string;
   outputDir?: string;
 }
 
 export interface RemoteRef {
   key: string; // AWS Secrets Manager path (e.g., "rds/interop-platform-data-dev/users/...")
   property: string; // Specific key within the secret (e.g., "password")
-  version?: string; // Version ID from annotation (e.g., "uuid/terraform-...")
+  version?: string; // Explicit IDs use "uuid/" (e.g., "uuid/terraform-..."); stage labels stay unprefixed
 }
 
 export interface ExternalSecretsData {
@@ -41,15 +46,13 @@ export interface ContainerExternalSecretsConfig {
 export interface ExternalSecretsConfigFull {
   app?: ContainerExternalSecretsConfig;
   flywayInitContainer?: ContainerExternalSecretsConfig;
-  container?: ContainerExternalSecretsConfig;
-  initContainer?: ContainerExternalSecretsConfig;
 }
 
 export interface GeneratedExternalSecret {
   workloadType: 'microservice' | 'cronjob';
   workloadName: string;
   workloadPath: string;
-  containerType: 'container' | 'initContainer';
+  section: ExternalSecretsSection;
   secretName: string;
   externalSecretsConfig: ContainerExternalSecretsConfig;
 }
@@ -78,8 +81,8 @@ export interface MigrationReport {
 export interface ValuesMergeResult {
   workloadPath: string;
   success: boolean;
-  containerMerged: boolean;
-  initContainerMerged: boolean;
+  appMerged: boolean;
+  flywayInitContainerMerged: boolean;
   oldRefsRemoved: boolean;
   error?: string;
 }

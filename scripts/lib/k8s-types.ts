@@ -49,6 +49,8 @@ export interface K8sCliArgs {
   namespace: string;
   outputDir?: string;
   format?: 'csv' | 'json' | 'both';
+  microservice?: string;
+  cronjob?: string;
 }
 
 export type WorkloadKind = 'Deployment' | 'StatefulSet' | 'DaemonSet' | 'Job' | 'CronJob' | 'Pod';

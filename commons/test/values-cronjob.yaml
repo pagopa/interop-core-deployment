@@ -1,4 +1,5 @@
 namespace: "test"
+deployMode: "KUBECTL_APPLY"
 
 cronjob:
   image:
@@ -19,8 +20,18 @@ cronjob:
 
 local:
   interop_be_commons:
-    RSA_KEYS_IDENTIFIERS: "cdb52532-dd94-40ef-824d-9c55b10e6bc9"
+    INTERNAL_KEY_IDENTIFIER: "0a1c1d8b-2a80-4dc7-8cdc-2f0d69d5f5bd"
     DEV_ENDPOINTS_ENABLED: "false"
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "895646477129"
   env: "test"
+
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore

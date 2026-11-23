@@ -105,15 +105,15 @@ describe('external-secrets-generator', () => {
 
       expect(groups).toHaveLength(2);
       expect(groups[0].workloadName).toBe('email-digest-dispatcher');
-      expect(groups[0].containerType).toBe('container');
+      expect(groups[0].section).toBe('app');
       expect(groups[1].workloadName).toBe('flyway-migrator');
-      expect(groups[1].containerType).toBe('initContainer');
+      expect(groups[1].section).toBe('flywayInitContainer');
     });
 
     it('should aggregate secrets by name within same container', () => {
       const groups = groupRepoInventoryByWorkload(mockRepoRecords);
       const emailGroup = groups.find(
-        (g) => g.workloadName === 'email-digest-dispatcher' && g.containerType === 'container'
+        (g) => g.workloadName === 'email-digest-dispatcher' && g.section === 'app'
       );
 
       expect(emailGroup).toBeDefined();
@@ -142,6 +142,42 @@ describe('external-secrets-generator', () => {
   });
 
   describe('buildRemoteRef', () => {
+    it.each([
+      ['terraform-version-id', 'uuid/terraform-version-id'],
+      ['uuid/terraform-version-id', 'uuid/terraform-version-id'],
+      ['AWSCURRENT', 'AWSCURRENT'],
+      ['AWSPREVIOUS', 'AWSPREVIOUS'],
+    ])('should format annotation version %s as %s', (annotation, expected) => {
+      const secret = {
+        ...mockClusterSecrets[0],
+        annotations: {
+          ...mockClusterSecrets[0].annotations,
+          'infra.interop.pagopa.it/aws-secretsmanager-version-id': annotation,
+        },
+      };
+      const clusterSecretsMap = new Map([[secret.secretName, secret]]);
+
+      expect(buildRemoteRef(secret.secretName, 'password', clusterSecretsMap)?.version).toBe(expected);
+      expect(buildRemoteRef(secret.secretName, 'password', clusterSecretsMap, true))
+        .not.toHaveProperty('version');
+    });
+
+    it('should preserve absent version annotations', () => {
+      const secret = {
+        ...mockClusterSecrets[0],
+        annotations: {
+          'infra.interop.pagopa.it/aws-secretsmanager-secret-id': 'rds/test',
+        },
+        hasAwsSecretsManagerVersionId: false,
+      };
+      const clusterSecretsMap = new Map([[secret.secretName, secret]]);
+
+      expect(buildRemoteRef(secret.secretName, 'password', clusterSecretsMap)).toEqual({
+        key: 'rds/test',
+        property: 'password',
+      });
+    });
+
     it('should build RemoteRef from cluster annotations', () => {
       const clusterSecretsMap = new Map(mockClusterSecrets.map((s) => [s.secretName, s]));
       const remoteRef = buildRemoteRef('rds-secret', 'password', clusterSecretsMap);
@@ -150,6 +186,17 @@ describe('external-secrets-generator', () => {
       expect(remoteRef?.key).toBe('rds/interop-platform-data-dev/users/email_digest_dispatcher_user');
       expect(remoteRef?.property).toBe('password');
       expect(remoteRef?.version).toBe('uuid/terraform-20260212133048976200000002');
+    });
+
+    it('should omit version when requested', () => {
+      const clusterSecretsMap = new Map(mockClusterSecrets.map((s) => [s.secretName, s]));
+      const remoteRef = buildRemoteRef('rds-secret', 'password', clusterSecretsMap, true);
+
+      expect(remoteRef).toEqual({
+        key: 'rds/interop-platform-data-dev/users/email_digest_dispatcher_user',
+        property: 'password',
+      });
+      expect(remoteRef).not.toHaveProperty('version');
     });
 
     it('should return null if secret not found in cluster', () => {
@@ -174,12 +221,12 @@ describe('external-secrets-generator', () => {
 
   describe('generateTargetSecretName', () => {
     it('should use workload name for container', () => {
-      const name = generateTargetSecretName('email-digest-dispatcher', 'container');
+      const name = generateTargetSecretName('email-digest-dispatcher', 'app');
       expect(name).toBe('email-digest-dispatcher');
     });
 
     it('should append -flyway for initContainer', () => {
-      const name = generateTargetSecretName('email-digest-dispatcher', 'initContainer');
+      const name = generateTargetSecretName('email-digest-dispatcher', 'flywayInitContainer');
       expect(name).toBe('email-digest-dispatcher-flyway');
     });
   });
@@ -191,7 +238,7 @@ describe('external-secrets-generator', () => {
       const emailGroup = groups.find((g) => g.workloadName === 'email-digest-dispatcher');
 
       expect(emailGroup).toBeDefined();
-      const { data, skipped } = generateExternalSecretsData(emailGroup!, clusterSecretsMap, 'aws-secretsmanager');
+      const { data, skipped } = generateExternalSecretsData(emailGroup!, clusterSecretsMap);
 
       expect(data).toHaveLength(2);
       // secretKey should be the envVar name (original variable name)
@@ -224,7 +271,7 @@ describe('external-secrets-generator', () => {
       const groups = groupRepoInventoryByWorkload(repoRecordsWithOldSecret);
       const group = groups[0];
 
-      const { data, skipped } = generateExternalSecretsData(group, clusterSecretsMap, 'aws-secretsmanager');
+      const { data, skipped } = generateExternalSecretsData(group, clusterSecretsMap);
 
       expect(data).toHaveLength(0);
       expect(skipped).toHaveLength(1);
@@ -245,7 +292,7 @@ describe('external-secrets-generator', () => {
         },
       ];
 
-      const config = buildContainerConfig(data, 'my-secret', 'aws-secretsmanager');
+      const config = buildContainerConfig(data);
 
       expect(config.create).toBe(true);
       // secretStoreRef and targetSecret are NOT included - inherited from commons
@@ -256,6 +303,28 @@ describe('external-secrets-generator', () => {
   });
 
   describe('generateExternalSecretsFromWorkloads', () => {
+    it('should prefix raw version IDs in both app and Flyway sections', () => {
+      const clusterSecretsMap = new Map(mockClusterSecrets.map((secret) => [
+        secret.secretName,
+        {
+          ...secret,
+          annotations: {
+            ...secret.annotations,
+            'infra.interop.pagopa.it/aws-secretsmanager-version-id': 'raw-version-id',
+          },
+        },
+      ]));
+      const { generated, skipped } = generateExternalSecretsFromWorkloads(mockRepoRecords, clusterSecretsMap);
+
+      expect(skipped).toEqual([]);
+      expect(generated.map((secret) => secret.section)).toEqual(['app', 'flywayInitContainer']);
+      for (const secret of generated) {
+        for (const entry of secret.externalSecretsConfig.data) {
+          expect(entry.remoteRef.version).toBe('uuid/raw-version-id');
+        }
+      }
+    });
+
     it('should generate all external secrets end-to-end', () => {
       const clusterSecretsMap = new Map(mockClusterSecrets.map((s) => [s.secretName, s]));
       const { generated, skipped } = generateExternalSecretsFromWorkloads(mockRepoRecords, clusterSecretsMap);
@@ -269,7 +338,22 @@ describe('external-secrets-generator', () => {
 
       const flywaySecret = generated.find((g) => g.workloadName === 'flyway-migrator');
       expect(flywaySecret).toBeDefined();
-      expect(flywaySecret?.containerType).toBe('initContainer');
+      expect(flywaySecret?.section).toBe('flywayInitContainer');
+    });
+
+    it('should omit versions from every generated remoteRef when requested', () => {
+      const clusterSecretsMap = new Map(mockClusterSecrets.map((s) => [s.secretName, s]));
+      const { generated } = generateExternalSecretsFromWorkloads(
+        mockRepoRecords,
+        clusterSecretsMap,
+        true
+      );
+
+      for (const externalSecret of generated) {
+        for (const entry of externalSecret.externalSecretsConfig.data) {
+          expect(entry.remoteRef).not.toHaveProperty('version');
+        }
+      }
     });
   });
 });

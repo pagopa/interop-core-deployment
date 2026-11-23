@@ -7,13 +7,53 @@ configmap:
   SFTP_PORT: "22"
   SFTP_PATH: "Esercizio"
   SFTP_FILENAME_PREFIX: "esercizio"
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.INTERNAL_KEY_IDENTIFIER}}"
   INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-m2m"
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
   INTERNAL_JWT_SECONDS_DURATION: "1800"
   ANAC_TENANT_ID: "1c0cde2c-75a7-4cc9-b620-e371bdd0320a"
   RECORDS_PROCESS_BATCH_SIZE: "100"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/4a5f6ab5-b676-43d3-be1d-ce45428b127c
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/4a5f6ab5-b676-43d3-be1d-ce45428b127c
+      - secretKey: SFTP_HOST
+        remoteRef:
+          key: app/backend/anac
+          property: SFTP_HOST
+          version: uuid/37de90cf-df34-4a53-a222-86ec53130f65
+      - secretKey: SFTP_USERNAME
+        remoteRef:
+          key: app/backend/anac
+          property: SFTP_USERNAME
+          version: uuid/37de90cf-df34-4a53-a222-86ec53130f65
+      - secretKey: SFTP_PASSWORD
+        remoteRef:
+          key: app/backend/anac
+          property: SFTP_PASSWORD
+          version: uuid/37de90cf-df34-4a53-a222-86ec53130f65
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_anac_certified_attributes_importer_user
+          property: username
+          version: uuid/terraform-2025062514280909170000000f
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_anac_certified_attributes_importer_user
+          property: password
+          version: uuid/terraform-2025062514280909170000000f
 
 cronjob:
   schedule: "15 5,11,17,23 * * *"
@@ -46,11 +86,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    SFTP_HOST: "anac.SFTP_HOST"
-    SFTP_USERNAME: "anac.SFTP_USERNAME"
-    SFTP_PASSWORD: "anac.SFTP_PASSWORD"
-    READMODEL_SQL_DB_USERNAME: "platform-data-anac-certified-attributes-importer-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-anac-certified-attributes-importer-user.password"

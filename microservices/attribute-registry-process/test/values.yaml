@@ -13,6 +13,54 @@ configmap:
   PRODUCER_ALLOWED_ORIGINS: "IPA,ANAC,IVASS,INFOCAMERE,SELC,SELC-PT,PDND_INFOCAMERE-SCP,PDND_INFOCAMERE-PRV,PDND_INFOCAMERE-PT,INFOCAMERE-PT,PDND_INFOCAMERE"
   ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/ui,uat.interop.pagopa.it/m2m,uat.interop.pagopa.it/internal"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_attribute_registry_process_user
+          property: password
+          version: uuid/terraform-20250523130935550700000029
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_attribute_registry_process_user
+          property: username
+          version: uuid/terraform-20250523130935550700000029
+      - secretKey: EVENTSTORE_DB_USERNAME
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+      - secretKey: EVENTSTORE_DB_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+
 deployment:
   flywayInitContainer:
     create: true
@@ -27,22 +75,23 @@ deployment:
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-    envFromSecrets:
-      FLYWAY_USER: "event-store.POSTGRES_USR"
-      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     FEATURE_FLAG_APPLICATION_AUDIT_STRICT: "false"
+    WELL_KNOWN_URLS: >-
+      {{.Values.local.well_known_url.AUTHSRV}}, 
+      {{.Values.local.well_known_url.BFF}}, 
+      {{.Values.local.well_known_url.INTERNAL}},
+      {{.Values.local.well_known_url.MAINTENANCE}}
   envFromFieldRef:
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
-    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     EVENTSTORE_DB_HOST: "common-event-store.EVENTSTORE_DB_HOST"
     EVENTSTORE_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
     EVENTSTORE_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
@@ -73,13 +122,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"    
-  envFromSecrets:
-    READMODEL_SQL_DB_PASSWORD: "platform-data-attribute-registry-process-user.password"
-    READMODEL_SQL_DB_USERNAME: "platform-data-attribute-registry-process-user.username"
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"    
   livenessProbe:
     httpGet:
       path: /status

@@ -11,6 +11,34 @@ service:
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/m2m"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: username
+          version: uuid/terraform-20250318135026647200000005
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: password
+          version: uuid/terraform-20250318135026647200000005
+  app:
+    create: true
+    data:
+      - secretKey: M2M_EVENT_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_m2m_event_manager_user
+          property: username
+          version: uuid/terraform-20250925074316887200000003
+      - secretKey: M2M_EVENT_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_m2m_event_manager_user
+          property: password
+          version: uuid/terraform-20250925074316887200000003
+
 deployment:
   flywayInitContainer:
     create: true
@@ -25,21 +53,19 @@ deployment:
       POSTGRES_DB: "common-m2m-events-db.DB_NAME"
       POSTGRES_HOST: "common-m2m-events-db.DB_HOST_RW"
       POSTGRES_PORT: "common-m2m-events-db.DB_PORT"
-    envFromSecrets:
-      FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
     EVENTSTORE_DB_USE_SSL: "true"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
+    WELL_KNOWN_URLS: >-
+      {{.Values.local.well_known_url.AUTHSRV}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
   envFromConfigmaps:
-    WELL_KNOWN_URLS: "common-jwt.WELL_KNOWN_URLS"
     APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
     APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
     PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
@@ -48,9 +74,6 @@ deployment:
     M2M_EVENT_DB_PORT: "common-m2m-events-db.DB_PORT"
     M2M_EVENT_DB_USE_SSL: "common-m2m-events-db.DB_USE_SSL"
     M2M_EVENT_DB_SCHEMA: "common-m2m-events-db.DB_SCHEMA"
-  envFromSecrets:
-    M2M_EVENT_DB_USERNAME: "platform-data-m2m-event-manager-user.username"
-    M2M_EVENT_DB_PASSWORD: "platform-data-m2m-event-manager-user.password"
   livenessProbe:
     httpGet:
       path: /status

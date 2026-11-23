@@ -82,6 +82,17 @@ describe('k8s-cli', () => {
       expect(args.outputDir).toBe('./output');
       expect(args.format).toBe('json');
     });
+
+    it('parses both workload folder filters', () => {
+      const args = parseK8sArgs([
+        '--cluster', 'prod',
+        '--namespace', 'dev',
+        '--microservice', 'api-gateway',
+        '--cronjob', 'readmodel-checker',
+      ]);
+      expect(args.microservice).toBe('api-gateway');
+      expect(args.cronjob).toBe('readmodel-checker');
+    });
   });
 
   describe('parseK8sOutputFormat', () => {

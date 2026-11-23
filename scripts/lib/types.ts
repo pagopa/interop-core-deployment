@@ -8,6 +8,8 @@ export interface CliArgs {
   root: string;
   outputDir: string;
   format: OutputFormat;
+  microservice?: string;
+  cronjob?: string;
 }
 
 export interface PartialCliArgs {
@@ -15,9 +17,12 @@ export interface PartialCliArgs {
   root: string;
   outputDir: string;
   format: OutputFormat;
+  microservice?: string;
+  cronjob?: string;
 }
 
 export interface Workload {
+  folderName: string;
   component: string;
   workloadType: WorkloadType;
   valueFiles: string[];

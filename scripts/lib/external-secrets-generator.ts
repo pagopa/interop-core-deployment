@@ -15,17 +15,19 @@ import {
   AWS_SECRETSMANAGER_SECRET_ID_ANNOTATION,
   AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION,
 } from './k8s-inventory.js';
+import { resolveExternalSecretsSection, type ExternalSecretsSection } from './external-secrets-sections.js';
+import { formatSecretVersion } from '../external-secrets-generator/list-external-secrets.js';
 
 interface WorkloadSecretGroup {
   workloadType: 'microservice' | 'cronjob';
   workloadName: string;
   workloadPath: string;
-  containerType: 'container' | 'initContainer';
+  section: ExternalSecretsSection;
   secrets: Map<string, Map<string, string>>; // secretName -> (envVar -> secretKey)
 }
 
 /**
- * Group repo inventory records by (workload, containerType, secretName)
+ * Group repo inventory records by (workload, externalSecrets section, secretName)
  * Preserves mapping between envVar (env variable name) and secretKey (remote property)
  * Supports both individual secret keys and envFromSecrets references
  */
@@ -48,14 +50,9 @@ export function groupRepoInventoryByWorkload(
       secretRefCount++;
     }
 
-    // Determine container type from record
-    const containerType =
-      record.containerPath?.toLowerCase().includes('initcontainer') ||
-      record.yamlPath?.toLowerCase().includes('initcontainer')
-        ? 'initContainer'
-        : 'container';
+    const section = resolveExternalSecretsSection(record.containerPath, record.yamlPath);
 
-    const groupKey = `${record.workloadType}/${record.component}/${containerType}`;
+    const groupKey = `${record.workloadType}/${record.component}/${section}`;
     let group = groups.get(groupKey);
 
     if (!group) {
@@ -63,7 +60,7 @@ export function groupRepoInventoryByWorkload(
         workloadType: record.workloadType as 'microservice' | 'cronjob',
         workloadName: record.component,
         workloadPath: record.sourceFile,
-        containerType,
+        section,
         secrets: new Map(),
       };
       groups.set(groupKey, group);
@@ -98,7 +95,8 @@ export function groupRepoInventoryByWorkload(
 export function buildRemoteRef(
   secretName: string,
   secretKey: string,
-  clusterSecrets: Map<string, SecretInventoryRecord>
+  clusterSecrets: Map<string, SecretInventoryRecord>,
+  omitVersion: boolean = false
 ): RemoteRef | null {
   const secretInfo = clusterSecrets.get(secretName);
   if (!secretInfo) {
@@ -120,12 +118,12 @@ export function buildRemoteRef(
     return null;
   }
 
-  const versionAnnotation = secretInfo.annotations[AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION];
-
   return {
     key: secretIdAnnotation,
     property: secretKey,
-    version: versionAnnotation,
+    ...(!omitVersion && secretInfo.annotations[AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION]
+      ? { version: formatSecretVersion(secretInfo.annotations[AWS_SECRETSMANAGER_VERSION_ID_ANNOTATION]) }
+      : {}),
   };
 }
 
@@ -136,7 +134,7 @@ export function buildRemoteRef(
 export function generateExternalSecretsData(
   group: WorkloadSecretGroup,
   clusterSecrets: Map<string, SecretInventoryRecord>,
-  defaultSecretStoreRef: string
+  omitVersion: boolean = false
 ): { data: ExternalSecretsData[]; skipped: SkippedSecret[] } {
   const data: ExternalSecretsData[] = [];
   const skipped: SkippedSecret[] = [];
@@ -172,7 +170,7 @@ export function generateExternalSecretsData(
         continue;
       }
 
-      const remoteRef = buildRemoteRef(secretName, secretKey, clusterSecrets);
+      const remoteRef = buildRemoteRef(secretName, secretKey, clusterSecrets, omitVersion);
       if (remoteRef) {
         data.push({
           secretKey: envVar,  // Use env variable name as the secretKey
@@ -192,9 +190,7 @@ export function generateExternalSecretsData(
  * Commons templates provide: secretStoreRef for store reference and targetSecret metadata
  */
 export function buildContainerConfig(
-  externalSecretsData: ExternalSecretsData[],
-  targetSecretName: string,
-  defaultSecretStoreRef: string
+  externalSecretsData: ExternalSecretsData[]
 ): ContainerExternalSecretsConfig {
   return {
     create: true,
@@ -203,10 +199,10 @@ export function buildContainerConfig(
 }
 
 /**
- * Generate default target secret name based on workload and container type
+ * Default target secret name for an externalSecrets section (matches the chart defaults)
  */
-export function generateTargetSecretName(workloadName: string, containerType: 'container' | 'initContainer'): string {
-  if (containerType === 'initContainer') {
+export function generateTargetSecretName(workloadName: string, section: ExternalSecretsSection): string {
+  if (section === 'flywayInitContainer') {
     return `${workloadName}-flyway`;
   }
   return workloadName;
@@ -218,7 +214,7 @@ export function generateTargetSecretName(workloadName: string, containerType: 'c
 export function generateExternalSecretsFromWorkloads(
   repoRecords: SecretReferenceRecord[],
   clusterSecrets: Map<string, SecretInventoryRecord>,
-  defaultSecretStoreRef: string = 'aws-secretsmanager'
+  omitVersion: boolean = false
 ): {
   generated: GeneratedExternalSecret[];
   skipped: SkippedSecret[];
@@ -228,16 +224,20 @@ export function generateExternalSecretsFromWorkloads(
   const skipped: SkippedSecret[] = [];
 
   for (const group of groups) {
-    const targetSecretName = generateTargetSecretName(group.workloadName, group.containerType);
-    const { data, skipped: groupSkipped } = generateExternalSecretsData(group, clusterSecrets, defaultSecretStoreRef);
+    const targetSecretName = generateTargetSecretName(group.workloadName, group.section);
+    const { data, skipped: groupSkipped } = generateExternalSecretsData(
+      group,
+      clusterSecrets,
+      omitVersion
+    );
 
     if (data.length > 0) {
-      const config = buildContainerConfig(data, targetSecretName, defaultSecretStoreRef);
+      const config = buildContainerConfig(data);
       generated.push({
         workloadType: group.workloadType,
         workloadName: group.workloadName,
         workloadPath: group.workloadPath,
-        containerType: group.containerType,
+        section: group.section,
         secretName: targetSecretName,
         externalSecretsConfig: config,
       });

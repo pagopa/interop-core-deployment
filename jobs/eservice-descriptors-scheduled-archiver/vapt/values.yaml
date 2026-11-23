@@ -4,7 +4,7 @@ serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-eservice-descriptors-scheduled-archiver-{{.Values.namespace}}-es1"
 
 configmap:
-  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.RSA_KEYS_IDENTIFIERS}}"
+  INTERNAL_JWT_KID: "{{.Values.local.interop_be_commons.INTERNAL_KEY_IDENTIFIER}}"
   INTERNAL_JWT_SUBJECT: "{{.Values.namespace}}.interop-eservice-descriptors-scheduled-archiver"
   INTERNAL_JWT_ISSUER: "{{.Values.namespace}}.interop.pagopa.it"
   INTERNAL_JWT_AUDIENCE: "{{.Values.namespace}}.interop.pagopa.it/internal"
@@ -12,6 +12,21 @@ configmap:
   CATALOG_API_CONCURRENCY: "5"
   DEFAULT_POLLING_RETRY_DELAY: "300"
   DEFAULT_POLLING_MAX_RETRIES: "20"
+
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-vapt/users/vapt_eservice_descriptors_scheduled_archiver_user
+          property: username
+          version: uuid/terraform-2026061208324913210000000d
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-vapt/users/vapt_eservice_descriptors_scheduled_archiver_user
+          property: password
+          version: uuid/terraform-2026061208324913210000000d
 
 cronjob:
   schedule: "30 0 * * *"
@@ -40,7 +55,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-eservice-descriptors-scheduled-archiver-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-eservice-descriptors-scheduled-archiver-user.password"

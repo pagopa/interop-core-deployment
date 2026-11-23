@@ -39,6 +39,7 @@ export function walkWorkloads(root: string, env: string, workloadType: WorkloadT
       const commonFile = path.join(root, "commons", env, commonFileName);
 
       return {
+        folderName: entry.name,
         component: deploymentName,
         workloadType,
         valueFiles: [commonFile, valuesFile].filter((file) => fs.existsSync(file)),

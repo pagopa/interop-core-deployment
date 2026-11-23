@@ -11,6 +11,34 @@ configmap:
   KAFKA_GROUP_ID: "{{.Values.namespace}}-tenant-kind-history-consumer"
   TOPIC_STARTING_OFFSET: "earliest"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: username
+          version: uuid/terraform-20250318135026647200000005
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: password
+          version: uuid/terraform-20250318135026647200000005
+  app:
+    create: true
+    data:
+      - secretKey: TENANT_KIND_HISTORY_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_tenant_kind_history_consumer_user
+          property: username
+          version: uuid/terraform-20260522092912718200000005
+      - secretKey: TENANT_KIND_HISTORY_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_tenant_kind_history_consumer_user
+          property: password
+          version: uuid/terraform-20260522092912718200000005
+
 deployment:
   flywayInitContainer:
     create: true
@@ -25,9 +53,6 @@ deployment:
       POSTGRES_DB: "common-tenant-kind-history-db.DB_NAME"
       POSTGRES_HOST: "common-tenant-kind-history-db.DB_HOST_RW"
       POSTGRES_PORT: "common-tenant-kind-history-db.DB_PORT"
-    envFromSecrets:
-      FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
 
   envFromConfigmaps:
     KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
@@ -40,6 +65,3 @@ deployment:
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
-  envFromSecrets:
-    TENANT_KIND_HISTORY_DB_USERNAME: "platform-data-tenant-kind-history-consumer-user.username"
-    TENANT_KIND_HISTORY_DB_PASSWORD: "platform-data-tenant-kind-history-consumer-user.password"

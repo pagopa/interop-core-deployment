@@ -1,0 +1,46 @@
+namespace: prod
+
+service:
+  targetPort: http
+  portName: http
+
+deployment:
+  enableRolloutAnnotations: true
+  replicas: 1
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: 0%
+      maxSurge: 50%
+  image:
+    repositoryPrefix: "505630707203.dkr.ecr.eu-south-1.amazonaws.com"
+    imagePullPolicy: Always
+    tag: $IMAGE_TAG_PLACEHOLDER
+    digest: $IMAGE_DIGEST_PLACEHOLDER
+  env:
+    LOG_LEVEL: "info"
+    NODE_ENV: "production"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+
+local:
+  interop_be_commons:
+    AUTHSRV_KEY_IDENTIFIER: "9432c16b-7aae-49df-b9c4-ea61b556652b"
+    INTERNAL_KEY_IDENTIFIER: "f514a529-971d-479d-88b8-dc0c48fd7b7f"
+    BFF_KEY_IDENTIFIER: "9f331acb-6e87-47b6-bf4d-f616e4a3db38"
+    INTEGRITY_REST_KEY_IDENTIFIER: "9528a016-bf67-456d-b52a-d33f81c443b4"
+    DEV_ENDPOINTS_ENABLED: "false"
+    ENABLED_PROJECTIONS: "false"
+  well_known_url:
+    AUTHSRV: "https://interop.pagopa.it/.well-known/jwks.json"
+    SELFCARE: "https://selfcare.pagopa.it/.well-known/jwks.json"
+    BFF: "https://interop-private-well-known-prod.s3.eu-south-1.amazonaws.com/.well-known/bff-jwks.json"
+    INTERNAL: "https://interop-private-well-known-prod.s3.eu-south-1.amazonaws.com/.well-known/internal-jwks.json"
+    MAINTENANCE: "https://interop-private-well-known-prod.s3.eu-south-1.amazonaws.com/.well-known/maintenance-jwks.json"
+  awsAccountId: "697818730278"
+  env: "prod"

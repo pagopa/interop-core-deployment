@@ -23,4 +23,5 @@ data:
   PURPOSE_TEMPLATE_TOPIC: "event-store.att_purpose_template.events"
   TENANT_OUTBOUND_TOPIC: "outbound.att_tenant.events"
   TENANT_TOPIC: "event-store.att_tenant.events"
-  TOKEN_AUDITING_TOPIC: "att_authorization-server.generated-jwt"
+  CONSUMER_TOKEN_AUDITING_TOPIC: "att_authorization-server.generated-jwt"
+  API_TOKEN_AUDITING_TOPIC: "att_authorization-server.generated-m2m-jwt"
