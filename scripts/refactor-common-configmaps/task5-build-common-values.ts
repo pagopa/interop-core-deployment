@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import YAML from "yaml";
+import { readCommonConfigMaps, scalarText, writeVerifiedYaml } from "./yaml-source.js";
 import { migrationAssetSignals, readFlywaySourceConfigMaps, readMigrationReferences } from "./migration-assets.js";
 
 type CliArgs = {
@@ -83,25 +84,6 @@ function parseArgs(argv: string[]): CliArgs {
 
 function ensureDir(dirPath: string): void {
   fs.mkdirSync(dirPath, { recursive: true });
-}
-
-function listYamlFiles(dir: string): string[] {
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
-
-  const out: string[] = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const abs = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      out.push(...listYamlFiles(abs));
-      continue;
-    }
-    if (/\.ya?ml$/i.test(entry.name)) {
-      out.push(abs);
-    }
-  }
-  return out;
 }
 
 function parseCsvLine(line: string): string[] {
@@ -347,40 +329,10 @@ function toCoverageMarkdown(rows: CoverageRow[], env: string): string {
 }
 
 function readConfigMapData(root: string, env: string): Map<string, Map<string, string>> {
-  const configmapsDir = path.join(root, "commons", env, "configmaps");
-  const files = listYamlFiles(configmapsDir);
   const out = new Map<string, Map<string, string>>();
-
-  for (const file of files) {
-    const raw = fs.readFileSync(file, "utf8");
-    const docs = YAML.parseAllDocuments(raw);
-
-    for (const doc of docs) {
-      const parsed = doc.toJSON() as
-        | {
-            kind?: string;
-            metadata?: { name?: string };
-            data?: Record<string, unknown>;
-          }
-        | null;
-
-      if (!parsed || parsed.kind !== "ConfigMap") {
-        continue;
-      }
-
-      const name = parsed.metadata?.name;
-      if (!name) {
-        continue;
-      }
-
-      const current = out.get(name) ?? new Map<string, string>();
-      for (const [key, value] of Object.entries(parsed.data ?? {})) {
-        current.set(key, value == null ? "" : String(value));
-      }
-      out.set(name, current);
-    }
+  for (const configMap of readCommonConfigMaps(root, env).values()) {
+    out.set(configMap.name, configMap.data);
   }
-
   return out;
 }
 
@@ -467,6 +419,7 @@ function main(): void {
   const referencedMigrationDomains = new Set(readMigrationReferences(args.root, args.env).map((ref) => ref.domain));
   const documentRoot: Record<string, unknown> = {};
   const expectedPaths = new Set<string>();
+  const expectedValues = new Map<string, string>();
 
   for (const row of migratedRows) {
     const migrationSignals = migrationAssetSignals({
@@ -507,6 +460,7 @@ function main(): void {
     }
 
     expectedPaths.add(row.targetPath);
+    expectedValues.set(row.targetPath, rawValue);
     setNestedString(documentRoot, row.targetPath, rawValue);
   }
 
@@ -533,7 +487,18 @@ function main(): void {
     lineWidth: 0,
     minContentWidth: 0,
   });
-  fs.writeFileSync(args.outputYaml, yamlOutput, "utf8");
+  writeVerifiedYaml(args.outputYaml, yamlOutput, (document) => {
+    const generatedPaths: string[] = [];
+    collectLeafPaths(document.toJS(), "", generatedPaths);
+    if (generatedPaths.length !== expectedValues.size) {
+      throw new Error(`Generated values-commons has ${generatedPaths.length} values, expected ${expectedValues.size}.`);
+    }
+    for (const [targetPath, value] of expectedValues) {
+      if (scalarText(document.getIn(targetPath.split("."), true)) !== value) {
+        throw new Error(`Generated values-commons does not preserve the source value of ${targetPath}.`);
+      }
+    }
+  });
   fs.writeFileSync(args.outputCoverageCsv, `${toCoverageCsv(coverageRows)}\n`, "utf8");
   fs.writeFileSync(args.outputCoverageMd, `${toCoverageMarkdown(coverageRows, args.env)}\n`, "utf8");
 

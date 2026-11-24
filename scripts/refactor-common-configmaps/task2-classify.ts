@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import YAML from "yaml";
+import { readCommonConfigMaps } from "./yaml-source.js";
 import { migrationAssetSignals, readFlywaySourceConfigMaps, readMigrationReferences, type MigrationReference } from "./migration-assets.js";
 
 type CliArgs = {
@@ -197,51 +197,12 @@ function parseCsv(content: string): InventoryRow[] {
   return rows;
 }
 
-function listYamlFiles(dir: string): string[] {
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
-
-  const out: string[] = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const abs = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      out.push(...listYamlFiles(abs));
-      continue;
-    }
-    if (/\.ya?ml$/i.test(entry.name)) {
-      out.push(abs);
-    }
-  }
-
-  return out;
-}
-
 function readConfigMapKeys(root: string, env: string): ConfigMapKey[] {
-  const configMapsDir = path.join(root, "commons", env, "configmaps");
-  const files = listYamlFiles(configMapsDir);
   const out: ConfigMapKey[] = [];
 
-  for (const file of files) {
-    const raw = fs.readFileSync(file, "utf8");
-    const doc = YAML.parse(raw) as {
-      kind?: string;
-      metadata?: { name?: string };
-      data?: Record<string, unknown>;
-    };
-
-    if (!doc || doc.kind !== "ConfigMap") {
-      continue;
-    }
-
-    const configMap = doc.metadata?.name;
-    if (!configMap) {
-      continue;
-    }
-
-    const relPath = path.relative(root, file);
-    for (const key of Object.keys(doc.data ?? {})) {
-      out.push({ configMap, key, sourceFile: relPath });
+  for (const configMap of readCommonConfigMaps(root, env).values()) {
+    for (const key of configMap.data.keys()) {
+      out.push({ configMap: configMap.name, key, sourceFile: configMap.file });
     }
   }
 

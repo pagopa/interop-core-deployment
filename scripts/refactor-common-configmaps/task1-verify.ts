@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import YAML from "yaml";
+import { isMap, isScalar, isSeq } from "yaml";
+import { readCommonConfigMaps, scalarText, yamlDocument } from "./yaml-source.js";
 
 type WorkloadType = "microservice" | "cronjob";
 
@@ -67,67 +68,11 @@ function parseArgs(argv: string[]): CliArgs {
   return { env, root, outputDir };
 }
 
-function listYamlFiles(dir: string): string[] {
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
-
-  const out: string[] = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const abs = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      out.push(...listYamlFiles(abs));
-      continue;
-    }
-    if (/\.ya?ml$/i.test(entry.name)) {
-      out.push(abs);
-    }
-  }
-  return out;
-}
-
-function parseYamlFile(absPath: string): unknown {
-  const raw = fs.readFileSync(absPath, "utf8");
-  return YAML.parse(raw);
-}
-
 function loadConfigMaps(root: string, env: string): Map<string, ConfigMapRecord> {
-  const configMapsDir = path.join(root, "commons", env, "configmaps");
-  const files = listYamlFiles(configMapsDir);
   const index = new Map<string, ConfigMapRecord>();
-
-  for (const file of files) {
-    const doc = parseYamlFile(file) as {
-      kind?: string;
-      metadata?: { name?: string };
-      data?: Record<string, unknown>;
-    };
-
-    if (!doc || doc.kind !== "ConfigMap") {
-      continue;
-    }
-
-    const name = doc.metadata?.name;
-    if (!name) {
-      continue;
-    }
-
-    const data = doc.data ?? {};
-    const keys = new Set(Object.keys(data));
-    const rel = path.relative(root, file);
-
-    if (!index.has(name)) {
-      index.set(name, { name, keys, sourceFile: rel });
-      continue;
-    }
-
-    // If duplicates exist, keep the first and merge keys for conservative validation.
-    const existing = index.get(name)!;
-    for (const key of keys) {
-      existing.keys.add(key);
-    }
+  for (const configMap of readCommonConfigMaps(root, env).values()) {
+    index.set(configMap.name, { name: configMap.name, keys: new Set(configMap.data.keys()), sourceFile: configMap.file });
   }
-
   return index;
 }
 
@@ -158,39 +103,36 @@ function discoverWorkloads(root: string, env: string, workloadType: WorkloadType
   return out;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
 function collectEnvFromConfigmapsRefs(
   node: unknown,
   currentPath: string,
   refs: Array<{ section: string; envVar: string; refValue: string }>,
 ): void {
-  if (Array.isArray(node)) {
-    node.forEach((item, idx) => {
+  if (isSeq(node)) {
+    node.items.forEach((item, idx) => {
       const p = currentPath ? `${currentPath}[${idx}]` : `[${idx}]`;
       collectEnvFromConfigmapsRefs(item, p, refs);
     });
     return;
   }
 
-  if (!isRecord(node)) {
+  if (!isMap(node)) {
     return;
   }
 
-  for (const [key, value] of Object.entries(node)) {
+  for (const item of node.items) {
+    const key = String(isScalar(item.key) ? item.key.value : item.key);
     const nextPath = currentPath ? `${currentPath}.${key}` : key;
-    if (key === "envFromConfigmaps" && isRecord(value)) {
-      for (const [envVar, rawRef] of Object.entries(value)) {
-        if (typeof rawRef === "string") {
-          refs.push({ section: nextPath, envVar, refValue: rawRef });
-        }
+    if (key === "envFromConfigmaps" && isMap(item.value)) {
+      for (const ref of item.value.items) {
+        const envVar = String(isScalar(ref.key) ? ref.key.value : ref.key);
+        // Non-string values are kept as empty references so they are reported as INVALID_REFERENCE.
+        refs.push({ section: nextPath, envVar, refValue: scalarText(ref.value) ?? "" });
       }
       continue;
     }
 
-    collectEnvFromConfigmapsRefs(value, nextPath, refs);
+    collectEnvFromConfigmapsRefs(item.value, nextPath, refs);
   }
 }
 
@@ -356,9 +298,8 @@ function main(): void {
   const rows: InventoryRow[] = [];
 
   for (const wf of workloads) {
-    const doc = parseYamlFile(wf.valuesFileAbs);
     const refs: Array<{ section: string; envVar: string; refValue: string }> = [];
-    collectEnvFromConfigmapsRefs(doc, "", refs);
+    collectEnvFromConfigmapsRefs(yamlDocument(wf.valuesFileAbs).contents, "", refs);
 
     for (const ref of refs) {
       rows.push(evaluateRef(args.env, wf, ref.section, ref.envVar, ref.refValue, configMaps));

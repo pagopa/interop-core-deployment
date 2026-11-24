@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import YAML from "yaml";
+import { configMapFromDocument, fail, field, mapping, scalarText, yamlDocument } from "./yaml-source.js";
 
 // Same criteria as the Flyway migrations toolset (scripts/migrations/flyway, PR #871):
 // FLYWAY_SOURCE_FILE and IGNORED_MIGRATION_DOMAINS mirror common.ts, LEGACY_KEY/TARGET_KEY and the
@@ -37,10 +37,6 @@ export type MigrationReference = {
   domain: string;
 };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
 /** metadata.name of every Flyway source ConfigMap, mapped to its file path relative to root. */
 export function readFlywaySourceConfigMaps(root: string, env: string): Map<string, string> {
   const directory = path.join(root, "commons", env, "configmaps");
@@ -56,11 +52,16 @@ export function readFlywaySourceConfigMaps(root: string, env: string): Map<strin
     .sort();
 
   for (const file of files) {
-    const doc = YAML.parse(fs.readFileSync(file, "utf8")) as { kind?: unknown; metadata?: { name?: unknown } } | null;
-    const name = doc?.metadata?.name;
-    if (doc?.kind === "ConfigMap" && typeof name === "string" && name.length > 0) {
-      sources.set(name, path.relative(root, file));
+    const relative = path.relative(root, file);
+    const configMap = configMapFromDocument(yamlDocument(file), relative);
+    if (!configMap) {
+      continue;
     }
+    const previous = sources.get(configMap.name);
+    if (previous) {
+      fail(`Duplicate Flyway ConfigMap metadata.name '${configMap.name}' in ${previous} and ${relative}.`);
+    }
+    sources.set(configMap.name, relative);
   }
 
   return sources;
@@ -91,39 +92,38 @@ export function readMigrationReferences(root: string, env: string): MigrationRef
       }
 
       const valuesFile = path.relative(root, file);
-      const doc = YAML.parse(fs.readFileSync(file, "utf8")) as unknown;
-      const values = isRecord(doc) ? doc[section] : undefined;
-      if (values === undefined || values === null) {
+      const values = field(yamlDocument(file).contents, section);
+      if (values === undefined) {
         continue;
       }
-      if (!isRecord(values)) {
-        throw new Error(`${valuesFile}: '${section}' must be a mapping.`);
+      if (!mapping(values)) {
+        fail(`${valuesFile}: '${section}' must be a mapping.`);
       }
 
-      const flyway = values.flywayInitContainer;
-      if (flyway === undefined || flyway === null) {
+      const flyway = field(values, "flywayInitContainer");
+      if (flyway === undefined) {
         continue;
       }
-      if (!isRecord(flyway)) {
-        throw new Error(`${valuesFile}: '${section}.flywayInitContainer' must be a mapping.`);
+      if (!mapping(flyway)) {
+        fail(`${valuesFile}: '${section}.flywayInitContainer' must be a mapping.`);
       }
 
-      const hasLegacy = Object.prototype.hasOwnProperty.call(flyway, LEGACY_KEY);
-      const hasTarget = Object.prototype.hasOwnProperty.call(flyway, TARGET_KEY);
+      const hasLegacy = flyway.has(LEGACY_KEY);
+      const hasTarget = flyway.has(TARGET_KEY);
       if (!hasLegacy && !hasTarget) {
         continue;
       }
 
-      const legacy = typeof flyway[LEGACY_KEY] === "string" ? (flyway[LEGACY_KEY] as string) : "";
-      const target = typeof flyway[TARGET_KEY] === "string" ? (flyway[TARGET_KEY] as string) : "";
+      const legacy = scalarText(field(flyway, LEGACY_KEY)) ?? "";
+      const target = scalarText(field(flyway, TARGET_KEY)) ?? "";
       if (hasLegacy && !legacy) {
-        throw new Error(`${valuesFile}: '${LEGACY_KEY}' must be a non-empty string.`);
+        fail(`${valuesFile}: '${LEGACY_KEY}' must be a non-empty string.`);
       }
       if (hasTarget && !target) {
-        throw new Error(`${valuesFile}: '${TARGET_KEY}' must be a non-empty string.`);
+        fail(`${valuesFile}: '${TARGET_KEY}' must be a non-empty string.`);
       }
       if (legacy && target && legacy !== target) {
-        throw new Error(`${valuesFile}: ${LEGACY_KEY} '${legacy}' conflicts with ${TARGET_KEY} '${target}'.`);
+        fail(`${valuesFile}: ${LEGACY_KEY} '${legacy}' conflicts with ${TARGET_KEY} '${target}'.`);
       }
 
       const referenceKey: MigrationReferenceKey = target ? TARGET_KEY : LEGACY_KEY;

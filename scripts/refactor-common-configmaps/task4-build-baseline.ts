@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import YAML from "yaml";
+import { readCommonConfigMaps } from "./yaml-source.js";
 
 type CliArgs = {
   env: string;
@@ -176,58 +176,11 @@ function parseInventoryCsv(content: string): InventoryRow[] {
   return rows;
 }
 
-function listYamlFiles(dir: string): string[] {
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
-
-  const out: string[] = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const abs = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      out.push(...listYamlFiles(abs));
-      continue;
-    }
-    if (/\.ya?ml$/i.test(entry.name)) {
-      out.push(abs);
-    }
-  }
-
-  return out;
-}
-
 function readConfigMapData(root: string, env: string): Map<string, Map<string, string>> {
-  const configmapsDir = path.join(root, "commons", env, "configmaps");
-  const files = listYamlFiles(configmapsDir);
   const mapByName = new Map<string, Map<string, string>>();
-
-  for (const file of files) {
-    const raw = fs.readFileSync(file, "utf8");
-    const docs = YAML.parseAllDocuments(raw);
-
-    for (const doc of docs) {
-      const parsed = doc.toJSON() as Record<string, unknown> | null;
-      if (!parsed || parsed.kind !== "ConfigMap") {
-        continue;
-      }
-
-      const metadata = (parsed.metadata ?? {}) as Record<string, unknown>;
-      const name = typeof metadata.name === "string" ? metadata.name : "";
-      if (!name) {
-        continue;
-      }
-
-      const data = (parsed.data ?? {}) as Record<string, unknown>;
-      const values = new Map<string, string>();
-
-      for (const [key, value] of Object.entries(data)) {
-        values.set(key, value === undefined || value === null ? "" : String(value));
-      }
-
-      mapByName.set(name, values);
-    }
+  for (const configMap of readCommonConfigMaps(root, env).values()) {
+    mapByName.set(configMap.name, configMap.data);
   }
-
   return mapByName;
 }
 

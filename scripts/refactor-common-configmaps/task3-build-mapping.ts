@@ -1,5 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
+import YAML from "yaml";
+import { scalarText, writeVerifiedYaml } from "./yaml-source.js";
 
 type CliArgs = {
   env: string;
@@ -241,38 +243,34 @@ function toYaml(rows: MappingRow[], sourceCsv: string): string {
     return acc;
   }, {});
 
-  const yamlRows = rows
-    .map((row) => {
-      const note = row.classificationReason.replace(/"/g, '\\"');
-      return [
-        `  - environment: ${row.environment}`,
-        `    sourceConfigMap: ${row.sourceConfigMap}`,
-        `    sourceKey: ${row.sourceKey}`,
-        `    sourceFile: ${row.sourceFile}`,
-        `    classification: ${row.classification}`,
-        `    destinationType: ${row.destinationType}`,
-        `    targetPath: ${row.targetPath}`,
-        `    targetRef: \"${row.targetRef}\"`,
-        `    consumerCount: ${row.consumerCount}`,
-        `    note: \"${note}\"`,
-      ].join("\n");
-    })
-    .join("\n");
+  // Serialized by the YAML library so every value is quoted and escaped correctly.
+  const document = {
+    version: 1,
+    sourceClassificationFile: sourceCsv,
+    generatedBy: "task-3-build-mapping",
+    summary: {
+      totalKeys: rows.length,
+      commonValueKeys: counts.COMMON_VALUE ?? 0,
+      workloadValueKeys: counts.WORKLOAD_VALUE ?? 0,
+      migrationAssetKeys: counts.MIGRATION_ASSET ?? 0,
+      keepAsConfigMapKeys: counts.KEEP_AS_CONFIGMAP ?? 0,
+      obsoleteKeys: counts.OBSOLETE ?? 0,
+    },
+    mappings: rows.map((row) => ({
+      environment: row.environment,
+      sourceConfigMap: row.sourceConfigMap,
+      sourceKey: row.sourceKey,
+      sourceFile: row.sourceFile,
+      classification: row.classification,
+      destinationType: row.destinationType,
+      targetPath: row.targetPath,
+      targetRef: row.targetRef,
+      consumerCount: row.consumerCount,
+      note: row.classificationReason,
+    })),
+  };
 
-  return [
-    "version: 1",
-    `sourceClassificationFile: ${sourceCsv}`,
-    "generatedBy: task-3-build-mapping",
-    "summary:",
-    `  totalKeys: ${rows.length}`,
-    `  commonValueKeys: ${counts.COMMON_VALUE ?? 0}`,
-    `  workloadValueKeys: ${counts.WORKLOAD_VALUE ?? 0}`,
-    `  migrationAssetKeys: ${counts.MIGRATION_ASSET ?? 0}`,
-    `  keepAsConfigMapKeys: ${counts.KEEP_AS_CONFIGMAP ?? 0}`,
-    `  obsoleteKeys: ${counts.OBSOLETE ?? 0}`,
-    "mappings:",
-    yamlRows,
-  ].join("\n");
+  return YAML.stringify(document, { lineWidth: 0 }).trimEnd();
 }
 
 function toCsv(rows: MappingRow[]): string {
@@ -404,10 +402,25 @@ function main(): void {
   ensureDir(path.dirname(args.outputYaml));
   ensureDir(path.dirname(args.outputCsv));
 
-  fs.writeFileSync(
+  writeVerifiedYaml(
     args.outputYaml,
     `${toYaml(mappingRows, path.relative(args.root, args.classificationCsv))}\n`,
-    "utf8",
+    (document) => {
+      const fields = ["environment", "sourceConfigMap", "sourceKey", "sourceFile", "classification", "destinationType", "targetPath", "targetRef"] as const;
+      mappingRows.forEach((row, index) => {
+        const generated = (name: string) => document.getIn(["mappings", index, name], true);
+        const preserved =
+          fields.every((name) => scalarText(generated(name)) === row[name]) &&
+          scalarText(generated("note")) === row.classificationReason &&
+          document.getIn(["mappings", index, "consumerCount"]) === row.consumerCount;
+        if (!preserved) {
+          throw new Error(`Generated mapping YAML does not preserve row ${row.sourceConfigMap}.${row.sourceKey}.`);
+        }
+      });
+      if (document.getIn(["mappings", mappingRows.length]) !== undefined) {
+        throw new Error("Generated mapping YAML contains unexpected rows.");
+      }
+    },
   );
   fs.writeFileSync(args.outputCsv, `${toCsv(mappingRows)}\n`, "utf8");
 

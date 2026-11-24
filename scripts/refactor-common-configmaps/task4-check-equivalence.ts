@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 import { spawnSync } from "child_process";
-import YAML from "yaml";
+import type { Document } from "yaml";
+import { configMapFromDocument, readCommonConfigMaps, yamlDocuments } from "./yaml-source.js";
 
 type CliArgs = {
   env: string;
@@ -257,66 +258,23 @@ function parseBaselineCsv(content: string): BaselineRow[] {
   }));
 }
 
-function listYamlFiles(dir: string): string[] {
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
-
-  const out: string[] = [];
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const abs = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      out.push(...listYamlFiles(abs));
-      continue;
-    }
-    if (/\.ya?ml$/i.test(entry.name)) {
-      out.push(abs);
-    }
-  }
-
-  return out;
-}
-
-function readConfigMapDataFromDocs(docs: Array<Record<string, unknown> | null>): Map<string, Map<string, string>> {
+function readConfigMapDataFromDocs(docs: Document.Parsed[], label: string): Map<string, Map<string, string>> {
   const mapByName = new Map<string, Map<string, string>>();
-
-  for (const parsed of docs) {
-    if (!parsed || parsed.kind !== "ConfigMap") {
-      continue;
+  for (const doc of docs) {
+    const configMap = configMapFromDocument(doc, label);
+    if (configMap) {
+      mapByName.set(configMap.name, configMap.data);
     }
-
-    const metadata = (parsed.metadata ?? {}) as Record<string, unknown>;
-    const name = typeof metadata.name === "string" ? metadata.name : "";
-    if (!name) {
-      continue;
-    }
-
-    const data = (parsed.data ?? {}) as Record<string, unknown>;
-    const values = new Map<string, string>();
-    for (const [key, value] of Object.entries(data)) {
-      values.set(key, value === undefined || value === null ? "" : String(value));
-    }
-
-    mapByName.set(name, values);
   }
-
   return mapByName;
 }
 
 function readConfigMapData(root: string, env: string): Map<string, Map<string, string>> {
-  const configmapsDir = path.join(root, "commons", env, "configmaps");
-  const files = listYamlFiles(configmapsDir);
-  const docs: Array<Record<string, unknown> | null> = [];
-
-  for (const file of files) {
-    const raw = fs.readFileSync(file, "utf8");
-    const parsedDocs = YAML.parseAllDocuments(raw).map(
-      (doc) => doc.toJSON() as Record<string, unknown> | null,
-    );
-    docs.push(...parsedDocs);
+  const mapByName = new Map<string, Map<string, string>>();
+  for (const configMap of readCommonConfigMaps(root, env).values()) {
+    mapByName.set(configMap.name, configMap.data);
   }
-
-  return readConfigMapDataFromDocs(docs);
+  return mapByName;
 }
 
 function keyForRow(row: {
@@ -354,7 +312,7 @@ function renderWorkload(
   workloadType: string,
   workload: string,
   workloadValuesFile: string,
-): Array<Record<string, unknown> | null> {
+): Document.Parsed[] {
   const chartPath = chartPathFor(workloadType);
   const baseValues = baseValuesFileFor(args.root, args.env, workloadType);
   const imagesValues = path.join(args.root, "commons", args.env, "images.yaml");
@@ -393,9 +351,7 @@ function renderWorkload(
     );
   }
 
-  return YAML.parseAllDocuments(result.stdout).map(
-    (doc) => doc.toJSON() as Record<string, unknown> | null,
-  );
+  return yamlDocuments(result.stdout, `helm template ${workloadType}/${workload}`);
 }
 
 function getMainContainerEnv(doc: Record<string, unknown>, workloadType: string): unknown[] {
@@ -575,8 +531,11 @@ function renderAndExtractForWorkload(
   dependencyIssues: string[];
 } {
   const docs = renderWorkload(args, workloadType, workload, workloadValuesFile);
-  const workloadDoc = findWorkloadDoc(docs, workloadType);
-  const renderedConfigMaps = readConfigMapDataFromDocs(docs);
+  const workloadDoc = findWorkloadDoc(
+    docs.map((doc) => doc.toJSON() as Record<string, unknown> | null),
+    workloadType,
+  );
+  const renderedConfigMaps = readConfigMapDataFromDocs(docs, `helm template ${workloadType}/${workload}`);
   const context: RenderContext = { commonsConfigMaps, renderedConfigMaps };
 
   const mainEnv = getMainContainerEnv(workloadDoc, workloadType);
