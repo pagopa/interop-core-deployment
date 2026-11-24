@@ -340,24 +340,34 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+const TARGET_PATH_SEGMENT = /^[A-Za-z0-9_]+$/;
+const FORBIDDEN_TARGET_PATH_SEGMENTS = new Set(["__proto__", "constructor", "prototype"]);
+
 function setNestedString(root: Record<string, unknown>, targetPath: string, value: string): void {
   const parts = targetPath.split(".");
   if (parts.length < 2 || parts[0] !== "commons") {
     throw new Error(`Invalid commons target path: ${targetPath}`);
   }
 
+  // The path comes from the mapping CSV: reject segments that could reach Object.prototype.
+  for (const part of parts) {
+    if (!TARGET_PATH_SEGMENT.test(part) || FORBIDDEN_TARGET_PATH_SEGMENTS.has(part)) {
+      throw new Error(`Invalid commons target path segment '${part}' in ${targetPath}`);
+    }
+  }
+
   let cursor: Record<string, unknown> = root;
   for (let i = 0; i < parts.length - 1; i += 1) {
     const part = parts[i];
-    const next = cursor[part];
 
-    if (next === undefined) {
+    if (!Object.hasOwn(cursor, part)) {
       const created: Record<string, unknown> = {};
       cursor[part] = created;
       cursor = created;
       continue;
     }
 
+    const next = cursor[part];
     if (!isRecord(next)) {
       throw new Error(`Cannot create nested path ${targetPath}: ${part} is not an object`);
     }
@@ -366,7 +376,7 @@ function setNestedString(root: Record<string, unknown>, targetPath: string, valu
   }
 
   const leaf = parts[parts.length - 1];
-  if (cursor[leaf] !== undefined) {
+  if (Object.hasOwn(cursor, leaf)) {
     throw new Error(`Duplicate target path in output: ${targetPath}`);
   }
 
