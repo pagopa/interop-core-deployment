@@ -12,5 +12,5 @@
     "types": ["node"]
   },
   "include": ["scripts/**/*.ts"],
-  "exclude": ["scripts/__tests__/**", "vitest.config.ts"]
+  "exclude": ["scripts/__tests__/**", "scripts/refactor-common-configmaps/**", "vitest.config.ts"]
 }

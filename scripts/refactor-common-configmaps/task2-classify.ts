@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import YAML from "yaml";
+import { migrationAssetSignals, readFlywaySourceConfigMaps, readMigrationReferences, type MigrationReference } from "./migration-assets.js";
 
 type CliArgs = {
   env: string;
@@ -8,21 +9,6 @@ type CliArgs = {
   inventoryCsv: string;
   outputCsv: string;
   outputSummaryCsv: string;
-};
-
-type WorkloadFile = {
-  workloadType: "microservice" | "cronjob";
-  workload: string;
-  valuesFileAbs: string;
-  valuesFileRel: string;
-};
-
-type MigrationConfigMapRef = {
-  workloadType: "microservice" | "cronjob";
-  workload: string;
-  valuesFile: string;
-  section: string;
-  configMap: string;
 };
 
 function resolveInventoryCsv(root: string, env: string, cliValue?: string): string {
@@ -231,95 +217,6 @@ function listYamlFiles(dir: string): string[] {
   return out;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function discoverWorkloads(root: string, env: string, workloadType: "microservice" | "cronjob"): WorkloadFile[] {
-  const baseDir = path.join(root, workloadType === "microservice" ? "microservices" : "jobs");
-  if (!fs.existsSync(baseDir)) {
-    return [];
-  }
-
-  const out: WorkloadFile[] = [];
-  for (const entry of fs.readdirSync(baseDir, { withFileTypes: true })) {
-    if (!entry.isDirectory()) {
-      continue;
-    }
-
-    const workload = entry.name;
-    const valuesFileAbs = path.join(baseDir, workload, env, "values.yaml");
-    if (!fs.existsSync(valuesFileAbs)) {
-      continue;
-    }
-
-    out.push({
-      workloadType,
-      workload,
-      valuesFileAbs,
-      valuesFileRel: path.relative(root, valuesFileAbs),
-    });
-  }
-
-  return out;
-}
-
-function collectMigrationConfigMapRefs(
-  node: unknown,
-  currentPath: string,
-  refs: Array<{ section: string; configMap: string }>,
-): void {
-  if (Array.isArray(node)) {
-    node.forEach((item, idx) => {
-      const nextPath = currentPath ? `${currentPath}[${idx}]` : `[${idx}]`;
-      collectMigrationConfigMapRefs(item, nextPath, refs);
-    });
-    return;
-  }
-
-  if (!isRecord(node)) {
-    return;
-  }
-
-  for (const [key, value] of Object.entries(node)) {
-    const nextPath = currentPath ? `${currentPath}.${key}` : key;
-    if (key === "migrationsConfigmap" && typeof value === "string" && value.trim().length > 0) {
-      refs.push({ section: nextPath, configMap: value.trim() });
-      continue;
-    }
-
-    collectMigrationConfigMapRefs(value, nextPath, refs);
-  }
-}
-
-function discoverMigrationConfigMapRefs(root: string, env: string): MigrationConfigMapRef[] {
-  const workloadFiles = [
-    ...discoverWorkloads(root, env, "microservice"),
-    ...discoverWorkloads(root, env, "cronjob"),
-  ];
-
-  const refs: MigrationConfigMapRef[] = [];
-
-  for (const workloadFile of workloadFiles) {
-    const raw = fs.readFileSync(workloadFile.valuesFileAbs, "utf8");
-    const doc = YAML.parse(raw);
-    const localRefs: Array<{ section: string; configMap: string }> = [];
-    collectMigrationConfigMapRefs(doc, "", localRefs);
-
-    for (const ref of localRefs) {
-      refs.push({
-        workloadType: workloadFile.workloadType,
-        workload: workloadFile.workload,
-        valuesFile: workloadFile.valuesFileRel,
-        section: ref.section,
-        configMap: ref.configMap,
-      });
-    }
-  }
-
-  return refs;
-}
-
 function readConfigMapKeys(root: string, env: string): ConfigMapKey[] {
   const configMapsDir = path.join(root, "commons", env, "configmaps");
   const files = listYamlFiles(configMapsDir);
@@ -388,8 +285,8 @@ function classifyRow(row: InventoryRow, consumerCount: number): { classification
   };
 }
 
-function migrationAssetReason(configMap: string, consumerCount: number): string {
-  return `Referenced by ${consumerCount} workload(s) via migrationsConfigmap mount; keep as migration asset outside commons values (${configMap})`;
+function migrationAssetReason(configMap: string, signals: string[], consumerCount: number): string {
+  return `Migration asset (${signals.join("; ")}); referenced by ${consumerCount} workload(s); owned by the Flyway migrations flow, never moved to commons values nor removed by this refactoring (${configMap})`;
 }
 
 function toCsv(rows: OutputRow[]): string {
@@ -484,7 +381,10 @@ function toSummaryCsv(summary: {
       return "Row with valid reference: ConfigMap and key exist and were resolved correctly";
     }
     if (status === "MIGRATION_CONFIGMAP_REF") {
-      return "ConfigMap mounted through migrationsConfigmap and tracked as migration asset";
+      return "ConfigMap referenced by flywayInitContainer.migrationsConfigmap/migrationDomain and tracked as migration asset";
+    }
+    if (status === "MIGRATION_SOURCE_NO_MOUNT") {
+      return "Flyway source ConfigMap or ignored migration domain not referenced by any workload; still owned by the Flyway migrations flow";
     }
     if (status === "NO_CONSUMER") {
       return "ConfigMap key with no consumers detected in TASK 1 inventory";
@@ -531,14 +431,14 @@ function main(): void {
     throw new Error(`No ConfigMap keys found in commons/${args.env}/configmaps`);
   }
 
-  const migrationRefs = discoverMigrationConfigMapRefs(args.root, args.env);
-  const migrationRefsByConfigMap = new Map<string, MigrationConfigMapRef[]>();
-  for (const ref of migrationRefs) {
-    const existing = migrationRefsByConfigMap.get(ref.configMap);
+  const flywaySourceConfigMaps = readFlywaySourceConfigMaps(args.root, args.env);
+  const migrationRefsByConfigMap = new Map<string, MigrationReference[]>();
+  for (const ref of readMigrationReferences(args.root, args.env)) {
+    const existing = migrationRefsByConfigMap.get(ref.domain);
     if (existing) {
       existing.push(ref);
     } else {
-      migrationRefsByConfigMap.set(ref.configMap, [ref]);
+      migrationRefsByConfigMap.set(ref.domain, [ref]);
     }
   }
 
@@ -564,28 +464,70 @@ function main(): void {
       migrationConsumers.map((ref) => `${ref.workloadType}/${ref.workload}/${ref.valuesFile}`),
     ).size;
 
-    if (refs.length === 0) {
-      if (migrationConsumers.length > 0) {
-        for (const migrationRef of migrationConsumers) {
-          outputRows.push({
-            environment: args.env,
-            configMap: cmKey.configMap,
-            key: cmKey.key,
-            sourceFile: cmKey.sourceFile,
-            workloadType: migrationRef.workloadType,
-            workload: migrationRef.workload,
-            valuesFile: migrationRef.valuesFile,
-            section: migrationRef.section,
-            envVar: "migrationsConfigmap",
-            status: "MIGRATION_CONFIGMAP_REF",
-            consumerCount: migrationConsumerCount,
-            classificationReason: migrationAssetReason(cmKey.configMap, migrationConsumerCount),
-            classification: "MIGRATION_ASSET",
-          });
-        }
-        continue;
-      }
+    const migrationSignals = migrationAssetSignals({
+      configMap: cmKey.configMap,
+      flywaySourceConfigMaps,
+      referencedByWorkloads: migrationConsumers.length > 0,
+    });
 
+    // Migration assets take precedence over any other rule so they never become COMMON_VALUE or OBSOLETE.
+    if (migrationSignals.length > 0) {
+      const reason = migrationAssetReason(cmKey.configMap, migrationSignals, migrationConsumerCount);
+      for (const migrationRef of migrationConsumers) {
+        outputRows.push({
+          environment: args.env,
+          configMap: cmKey.configMap,
+          key: cmKey.key,
+          sourceFile: cmKey.sourceFile,
+          workloadType: migrationRef.workloadType,
+          workload: migrationRef.workload,
+          valuesFile: migrationRef.valuesFile,
+          section: migrationRef.section,
+          envVar: migrationRef.referenceKey,
+          status: "MIGRATION_CONFIGMAP_REF",
+          consumerCount: migrationConsumerCount,
+          classificationReason: reason,
+          classification: "MIGRATION_ASSET",
+        });
+      }
+      for (const ref of refs) {
+        outputRows.push({
+          environment: args.env,
+          configMap: cmKey.configMap,
+          key: cmKey.key,
+          sourceFile: cmKey.sourceFile,
+          workloadType: ref.workloadType,
+          workload: ref.workload,
+          valuesFile: ref.valuesFile,
+          section: ref.section,
+          envVar: ref.envVar,
+          status: ref.status,
+          consumerCount: migrationConsumerCount,
+          classificationReason: `${reason}; also read through envFromConfigmaps: requires manual review`,
+          classification: "MIGRATION_ASSET",
+        });
+      }
+      if (migrationConsumers.length === 0 && refs.length === 0) {
+        outputRows.push({
+          environment: args.env,
+          configMap: cmKey.configMap,
+          key: cmKey.key,
+          sourceFile: cmKey.sourceFile,
+          workloadType: "none",
+          workload: "none",
+          valuesFile: "",
+          section: "",
+          envVar: "",
+          status: "MIGRATION_SOURCE_NO_MOUNT",
+          consumerCount: 0,
+          classificationReason: reason,
+          classification: "MIGRATION_ASSET",
+        });
+      }
+      continue;
+    }
+
+    if (refs.length === 0) {
       outputRows.push({
         environment: args.env,
         configMap: cmKey.configMap,

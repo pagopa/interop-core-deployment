@@ -1,0 +1,28 @@
+{
+  "name": "refactor-common-configmaps",
+  "private": true,
+  "type": "module",
+  "description": "Migration of the common ConfigMaps to Helm common values",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "refactor": "bash run-refactor.sh",
+    "refactor:inventory": "tsx task1-verify.ts --root ../..",
+    "refactor:classify": "tsx task2-classify.ts --root ../..",
+    "refactor:mapping": "tsx task3-build-mapping.ts --root ../..",
+    "refactor:baseline": "tsx task4-build-baseline.ts --root ../..",
+    "refactor:equivalence": "tsx task4-check-equivalence.ts --root ../..",
+    "refactor:build-values": "tsx task5-build-common-values.ts --root ../.."
+  },
+  "dependencies": {
+    "yaml": "^2.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

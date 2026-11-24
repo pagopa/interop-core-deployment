@@ -12,12 +12,6 @@
     "secret-references-compare": "npm run build:secret-references && node dist/scripts/external-secrets-generator/secret-references-compare.js",
     "secret-references-external-secrets-generator": "npm run build:secret-references && node dist/scripts/external-secrets-generator/secret-references-external-secrets-generator.js",
     "secret-references-external-secrets-validator": "npm run build:secret-references && node dist/scripts/external-secrets-generator/secret-references-external-secrets-validator.js",
-    "refactor-common-configmaps:task1-verify": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task1-verify.js",
-    "refactor-common-configmaps:task2-classify": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task2-classify.js",
-    "refactor-common-configmaps:task3-build-mapping": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task3-build-mapping.js",
-    "refactor-common-configmaps:task4-build-baseline": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task4-build-baseline.js",
-    "refactor-common-configmaps:task4-check-equivalence": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task4-check-equivalence.js",
-    "refactor-common-configmaps:task5-build-common-values": "npm run build:secret-references && node dist/scripts/refactor-common-configmaps/task5-build-common-values.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },

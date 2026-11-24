@@ -531,6 +531,38 @@ function findWorkloadDoc(
   return doc;
 }
 
+// Kubernetes expands $(VAR) only when VAR is defined earlier in the same container env list; moving a
+// variable between env sections can change that order without changing any value.
+function findDependentEnvIssues(envEntries: unknown[], container: string): string[] {
+  const names = envEntries.map((entry) =>
+    entry && typeof entry === "object" && typeof (entry as Record<string, unknown>).name === "string"
+      ? ((entry as Record<string, unknown>).name as string)
+      : "",
+  );
+  const issues: string[] = [];
+
+  envEntries.forEach((entry, index) => {
+    const value = entry && typeof entry === "object" ? (entry as Record<string, unknown>).value : undefined;
+    if (typeof value !== "string") {
+      return;
+    }
+
+    for (const match of value.matchAll(/(?<!\$)\$\(([A-Za-z_][A-Za-z0-9_]*)\)/g)) {
+      const dependency = match[1];
+      const dependencyIndex = names.indexOf(dependency);
+      if (dependencyIndex < 0) {
+        issues.push(`${container}: ${names[index]} references $(${dependency}), which is not defined in the container env`);
+      } else if (dependencyIndex > index) {
+        issues.push(
+          `${container}: ${names[index]} references $(${dependency}), which is defined after it and will not be expanded`,
+        );
+      }
+    }
+  });
+
+  return issues;
+}
+
 function renderAndExtractForWorkload(
   args: CliArgs,
   workloadType: string,
@@ -540,6 +572,7 @@ function renderAndExtractForWorkload(
 ): {
   main: Map<string, TargetValue>;
   init: Map<string, TargetValue>;
+  dependencyIssues: string[];
 } {
   const docs = renderWorkload(args, workloadType, workload, workloadValuesFile);
   const workloadDoc = findWorkloadDoc(docs, workloadType);
@@ -552,6 +585,10 @@ function renderAndExtractForWorkload(
   return {
     main: extractEnvValues(mainEnv, context),
     init: extractEnvValues(initEnv, context),
+    dependencyIssues: [
+      ...findDependentEnvIssues(mainEnv, "container"),
+      ...findDependentEnvIssues(initEnv, "initContainer"),
+    ],
   };
 }
 
@@ -675,6 +712,7 @@ function main(): void {
   }
 
   const extractedByWorkload = new Map<string, { main: Map<string, TargetValue>; init: Map<string, TargetValue> }>();
+  const errors: string[] = [];
   for (const group of groups.values()) {
     const absoluteValuesFile = path.resolve(args.root, group.valuesFile);
     if (!fs.existsSync(absoluteValuesFile)) {
@@ -690,11 +728,13 @@ function main(): void {
     );
 
     extractedByWorkload.set(`${group.workloadType}|${group.workload}`, extracted);
+    for (const issue of extracted.dependencyIssues) {
+      errors.push(`${args.env}/${group.workload}: ${issue}`);
+    }
   }
 
   const targetRows: TargetRow[] = [];
   const comparisonRows: ComparisonRow[] = [];
-  const errors: string[] = [];
 
   for (const row of inventoryRows) {
     const workloadKey = `${row.workloadType}|${row.workload}`;

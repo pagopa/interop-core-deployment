@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import YAML from "yaml";
+import { migrationAssetSignals, readFlywaySourceConfigMaps, readMigrationReferences } from "./migration-assets.js";
 
 type CliArgs = {
   env: string;
@@ -462,10 +463,23 @@ function main(): void {
   }
 
   const configMaps = readConfigMapData(args.root, args.env);
+  const flywaySourceConfigMaps = readFlywaySourceConfigMaps(args.root, args.env);
+  const referencedMigrationDomains = new Set(readMigrationReferences(args.root, args.env).map((ref) => ref.domain));
   const documentRoot: Record<string, unknown> = {};
   const expectedPaths = new Set<string>();
 
   for (const row of migratedRows) {
+    const migrationSignals = migrationAssetSignals({
+      configMap: row.sourceConfigMap,
+      flywaySourceConfigMaps,
+      referencedByWorkloads: referencedMigrationDomains.has(row.sourceConfigMap),
+    });
+    if (migrationSignals.length > 0) {
+      throw new Error(
+        `Migration asset cannot be materialized in values-commons: ${row.sourceConfigMap}.${row.sourceKey} (${migrationSignals.join("; ")})`,
+      );
+    }
+
     if (!row.targetPath.startsWith("commons.")) {
       throw new Error(`COMMON_VALUE row does not target commons.*: ${row.targetPath}`);
     }
