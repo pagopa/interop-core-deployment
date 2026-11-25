@@ -1,17 +1,34 @@
 import * as fs from "fs";
 import * as path from "path";
 import YAML from "yaml";
-import { readCommonConfigMaps, scalarText, writeVerifiedYaml } from "./yaml-source.js";
-import { migrationAssetSignals, readFlywaySourceConfigMaps, readMigrationReferences } from "./migration-assets.js";
+import { csvEscape } from "./csv.js";
+import { readJsonRecords, writeJsonReport } from "./json-report.js";
+import { scalarText, writeVerifiedYaml } from "./yaml-source.js";
+import { readApplicationConfigMaps } from "./migration-assets.js";
 
 type CliArgs = {
   env: string;
   root: string;
-  mappingCsv: string;
+  mappingJson: string;
   outputYaml: string;
   outputCoverageCsv: string;
+  outputCoverageJson: string;
   outputCoverageMd: string;
 };
+
+/** Fields of the TASK 3 mapping JSON. */
+const MAPPING_SCHEMA = {
+  environment: "string",
+  sourceConfigMap: "string",
+  sourceKey: "string",
+  targetPath: "string",
+  targetRef: "string",
+  classification: "string",
+  destinationType: "string",
+  consumerCount: "number",
+  sourceFile: "string",
+  note: "string",
+} as const;
 
 type MappingRow = {
   environment: string;
@@ -66,8 +83,8 @@ function parseArgs(argv: string[]): CliArgs {
 
   const root = path.resolve(arg.get("root") ?? process.cwd());
   const reportsDir = path.join(root, "reports", "refactor-common-configmaps");
-  const mappingCsv = path.resolve(
-    arg.get("mapping-csv") ?? path.join(reportsDir, `task-3-common-values-mapping-${env}.csv`),
+  const mappingJson = path.resolve(
+    arg.get("mapping-json") ?? path.join(reportsDir, `task-3-common-values-mapping-${env}.json`),
   );
   const outputYaml = path.resolve(
     arg.get("output-yaml") ?? path.join(root, "commons", env, "values-commons.yaml"),
@@ -75,117 +92,33 @@ function parseArgs(argv: string[]): CliArgs {
   const outputCoverageCsv = path.resolve(
     arg.get("output-coverage-csv") ?? path.join(reportsDir, `task-5-migration-coverage-${env}.csv`),
   );
+  const outputCoverageJson = path.resolve(
+    arg.get("output-coverage-json") ?? path.join(reportsDir, `task-5-migration-coverage-${env}.json`),
+  );
   const outputCoverageMd = path.resolve(
     arg.get("output-coverage-md") ?? path.join(reportsDir, `task-5-migration-coverage-${env}.md`),
   );
 
-  return { env, root, mappingCsv, outputYaml, outputCoverageCsv, outputCoverageMd };
+  return { env, root, mappingJson, outputYaml, outputCoverageCsv, outputCoverageJson, outputCoverageMd };
 }
 
 function ensureDir(dirPath: string): void {
   fs.mkdirSync(dirPath, { recursive: true });
 }
 
-function parseCsvLine(line: string): string[] {
-  const out: string[] = [];
-  let current = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < line.length; i += 1) {
-    const ch = line[i];
-
-    if (inQuotes) {
-      if (ch === '"') {
-        if (line[i + 1] === '"') {
-          current += '"';
-          i += 1;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        current += ch;
-      }
-      continue;
-    }
-
-    if (ch === '"') {
-      inQuotes = true;
-      continue;
-    }
-
-    if (ch === ",") {
-      out.push(current);
-      current = "";
-      continue;
-    }
-
-    current += ch;
-  }
-
-  out.push(current);
-  return out;
-}
-
-function parseCsvRows(content: string): { header: string[]; rows: string[][] } {
-  const lines = content
-    .split(/\r?\n/)
-    .map((line) => line.trimEnd())
-    .filter((line) => line.length > 0);
-
-  if (lines.length === 0) {
-    return { header: [], rows: [] };
-  }
-
-  const header = parseCsvLine(lines[0]);
-  const rows = lines.slice(1).map(parseCsvLine);
-  return { header, rows };
-}
-
-function csvEscape(value: string): string {
-  if (/[",\n]/.test(value)) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-}
-
-function idx(header: string[], name: string): number {
-  const index = header.indexOf(name);
-  if (index < 0) {
-    throw new Error(`Missing expected CSV header column: ${name}`);
-  }
-  return index;
-}
-
-function parseMappingCsv(content: string): MappingRow[] {
-  const { header, rows } = parseCsvRows(content);
-  if (header.length === 0) {
-    return [];
-  }
-
-  const indices = {
-    environment: idx(header, "environment"),
-    sourceConfigMap: idx(header, "sourceConfigMap"),
-    sourceKey: idx(header, "sourceKey"),
-    targetPath: idx(header, "targetPath"),
-    targetRef: idx(header, "targetRef"),
-    classification: idx(header, "classification"),
-    destinationType: idx(header, "destinationType"),
-    consumerCount: idx(header, "consumerCount"),
-    sourceFile: idx(header, "sourceFile"),
-    note: idx(header, "note"),
-  };
-
-  return rows.map((fields) => ({
-    environment: fields[indices.environment] ?? "",
-    sourceConfigMap: fields[indices.sourceConfigMap] ?? "",
-    sourceKey: fields[indices.sourceKey] ?? "",
-    targetPath: fields[indices.targetPath] ?? "",
-    targetRef: fields[indices.targetRef] ?? "",
-    classification: fields[indices.classification] ?? "",
-    destinationType: fields[indices.destinationType] ?? "",
-    sourceFile: fields[indices.sourceFile] ?? "",
-    consumerCount: Number(fields[indices.consumerCount] ?? "0"),
-    note: fields[indices.note] ?? "",
+/** Coverage records for the JSON report: same fields and order as the CSV. */
+function toCoverageJson(rows: CoverageRow[]): object[] {
+  return rows.map((row) => ({
+    environment: row.environment,
+    sourceConfigMap: row.sourceConfigMap,
+    sourceKey: row.sourceKey,
+    classification: row.classification,
+    destinationType: row.destinationType,
+    targetPath: row.targetPath,
+    consumerCount: row.consumerCount,
+    migrationStatus: row.migrationStatus,
+    exclusionReason: row.exclusionReason,
+    note: row.note,
   }));
 }
 
@@ -196,10 +129,6 @@ function exclusionReasonFor(row: MappingRow): string {
 
   if (row.classification === "OBSOLETE") {
     return "No active consumers in TASK 1 inventory; excluded from commons";
-  }
-
-  if (row.classification === "MIGRATION_ASSET") {
-    return "Migration asset; intentionally kept outside runtime commons values";
   }
 
   if (row.classification === "KEEP_AS_CONFIGMAP") {
@@ -328,14 +257,6 @@ function toCoverageMarkdown(rows: CoverageRow[], env: string): string {
   ].join("\n");
 }
 
-function readConfigMapData(root: string, env: string): Map<string, Map<string, string>> {
-  const out = new Map<string, Map<string, string>>();
-  for (const configMap of readCommonConfigMaps(root, env).values()) {
-    out.set(configMap.name, configMap.data);
-  }
-  return out;
-}
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -401,19 +322,13 @@ function containsTemplate(value: string): boolean {
   return value.includes("{{") || value.includes("}}");
 }
 
-function isSensitiveName(value: string): boolean {
-  return /(password|passwd|secret|private.?key|client.?secret|access.?key|bearer|credential)/i.test(value);
-}
-
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
 
-  if (!fs.existsSync(args.mappingCsv)) {
-    throw new Error(`Mapping CSV not found: ${args.mappingCsv}`);
-  }
 
-  const mappingRows = parseMappingCsv(fs.readFileSync(args.mappingCsv, "utf8"))
-    .filter((row) => row.environment === args.env);
+  const mappingRows: MappingRow[] = readJsonRecords(args.mappingJson, MAPPING_SCHEMA).filter(
+    (row) => row.environment === args.env,
+  );
 
   const coverageRows = buildCoverageRows(mappingRows, args.env);
   const migratedRows = coverageRows
@@ -424,22 +339,17 @@ function main(): void {
     throw new Error(`No COMMON_VALUE rows found for environment: ${args.env}`);
   }
 
-  const configMaps = readConfigMapData(args.root, args.env);
-  const flywaySourceConfigMaps = readFlywaySourceConfigMaps(args.root, args.env);
-  const referencedMigrationDomains = new Set(readMigrationReferences(args.root, args.env).map((ref) => ref.domain));
+  const { configMaps: applicationConfigMaps, excluded: migrationConfigMaps } = readApplicationConfigMaps(args.root, args.env);
+  const configMaps = new Map([...applicationConfigMaps].map(([name, configMap]) => [name, configMap.data]));
   const documentRoot: Record<string, unknown> = {};
   const expectedPaths = new Set<string>();
   const expectedValues = new Map<string, string>();
 
   for (const row of migratedRows) {
-    const migrationSignals = migrationAssetSignals({
-      configMap: row.sourceConfigMap,
-      flywaySourceConfigMaps,
-      referencedByWorkloads: referencedMigrationDomains.has(row.sourceConfigMap),
-    });
-    if (migrationSignals.length > 0) {
+    const migrationConfigMap = migrationConfigMaps.get(row.sourceConfigMap);
+    if (migrationConfigMap) {
       throw new Error(
-        `Migration asset cannot be materialized in values-commons: ${row.sourceConfigMap}.${row.sourceKey} (${migrationSignals.join("; ")})`,
+        `Migration ConfigMap cannot be materialized in values-commons: ${row.sourceConfigMap}.${row.sourceKey} (${migrationConfigMap.signals.join("; ")})`,
       );
     }
 
@@ -449,10 +359,6 @@ function main(): void {
 
     if (containsTemplate(row.targetRef)) {
       // Mapping targetRef is templated by design; reject only if targetPath itself is malformed.
-    }
-
-    if (isSensitiveName(row.sourceKey) || isSensitiveName(row.targetPath)) {
-      throw new Error(`Sensitive-like key cannot be materialized in values-commons: ${row.sourceConfigMap}.${row.sourceKey}`);
     }
 
     const configMapData = configMaps.get(row.sourceConfigMap);
@@ -490,8 +396,9 @@ function main(): void {
   }
 
   ensureDir(path.dirname(args.outputYaml));
-  ensureDir(path.dirname(args.outputCoverageCsv));
-  ensureDir(path.dirname(args.outputCoverageMd));
+  for (const file of [args.outputCoverageCsv, args.outputCoverageJson, args.outputCoverageMd]) {
+    ensureDir(path.dirname(file));
+  }
   const yamlOutput = YAML.stringify(documentRoot, {
     indent: 2,
     lineWidth: 0,
@@ -510,12 +417,14 @@ function main(): void {
     }
   });
   fs.writeFileSync(args.outputCoverageCsv, `${toCoverageCsv(coverageRows)}\n`, "utf8");
+  writeJsonReport(args.outputCoverageJson, toCoverageJson(coverageRows));
   fs.writeFileSync(args.outputCoverageMd, `${toCoverageMarkdown(coverageRows, args.env)}\n`, "utf8");
 
   console.log(`Environment: ${args.env}`);
-  console.log(`Input mapping: ${path.relative(args.root, args.mappingCsv)}`);
+  console.log(`Input mapping: ${path.relative(args.root, args.mappingJson)}`);
   console.log(`Output YAML: ${path.relative(args.root, args.outputYaml)}`);
   console.log(`Output coverage CSV: ${path.relative(args.root, args.outputCoverageCsv)}`);
+  console.log(`Output coverage JSON: ${path.relative(args.root, args.outputCoverageJson)}`);
   console.log(`Output coverage MD: ${path.relative(args.root, args.outputCoverageMd)}`);
   console.log(`COMMON_VALUE rows materialized: ${migratedRows.length}`);
   console.log(`Validated paths: ${actualPaths.length}`);

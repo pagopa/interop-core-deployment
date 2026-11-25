@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { configMapFromDocument, fail, field, mapping, scalarText, yamlDocument } from "./yaml-source.js";
+import { configMapFromDocument, fail, field, mapping, readCommonConfigMaps, scalarText, yamlDocument, type ConfigMapSource } from "./yaml-source.js";
 
 // Same criteria as the Flyway migrations toolset (scripts/migrations/flyway, PR #871):
 // FLYWAY_SOURCE_FILE and IGNORED_MIGRATION_DOMAINS mirror common.ts, LEGACY_KEY/TARGET_KEY and the
@@ -159,4 +159,38 @@ export function migrationAssetSignals(input: {
     signals.push(`migration domain ignored by the Flyway toolset: ${ignoredReason}`);
   }
   return signals;
+}
+
+export type ExcludedMigrationConfigMap = {
+  file: string;
+  signals: string[];
+};
+
+/**
+ * Common ConfigMaps in scope for the refactoring: every ConfigMap of commons/<env>/configmaps except the
+ * migration ones, which belong to the Flyway migrations flow and are never inventoried, classified or migrated.
+ */
+export function readApplicationConfigMaps(
+  root: string,
+  env: string,
+): { configMaps: Map<string, ConfigMapSource>; excluded: Map<string, ExcludedMigrationConfigMap> } {
+  const flywaySourceConfigMaps = readFlywaySourceConfigMaps(root, env);
+  const referencedDomains = new Set(readMigrationReferences(root, env).map((reference) => reference.domain));
+  const configMaps = new Map<string, ConfigMapSource>();
+  const excluded = new Map<string, ExcludedMigrationConfigMap>();
+
+  for (const [name, configMap] of readCommonConfigMaps(root, env)) {
+    const signals = migrationAssetSignals({
+      configMap: name,
+      flywaySourceConfigMaps,
+      referencedByWorkloads: referencedDomains.has(name),
+    });
+    if (signals.length > 0) {
+      excluded.set(name, { file: configMap.file, signals });
+    } else {
+      configMaps.set(name, configMap);
+    }
+  }
+
+  return { configMaps, excluded };
 }

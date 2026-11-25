@@ -1,7 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import { isMap, isScalar, isSeq } from "yaml";
-import { readCommonConfigMaps, scalarText, yamlDocument } from "./yaml-source.js";
+import { csvEscape, summaryMetricsToCsv, type SummaryMetric } from "./csv.js";
+import { writeJsonReport } from "./json-report.js";
+import { readApplicationConfigMaps } from "./migration-assets.js";
+import { scalarText, yamlDocument } from "./yaml-source.js";
 
 type WorkloadType = "microservice" | "cronjob";
 
@@ -9,6 +12,8 @@ type CliArgs = {
   env: string;
   root: string;
   outputDir: string;
+  outputSummaryCsv: string;
+  outputSummaryJson: string;
 };
 
 type ConfigMapRecord = {
@@ -17,7 +22,28 @@ type ConfigMapRecord = {
   sourceFile: string;
 };
 
-type InventoryStatus = "OK" | "TEMPLATE_REFERENCE" | "INVALID_REFERENCE" | "CONFIGMAP_NOT_FOUND" | "KEY_NOT_FOUND";
+const INVENTORY_STATUSES = [
+  "OK",
+  "TEMPLATE_REFERENCE",
+  "INVALID_REFERENCE",
+  "MIGRATION_CONFIGMAP",
+  "CONFIGMAP_NOT_FOUND",
+  "KEY_NOT_FOUND",
+] as const;
+
+type InventoryStatus = (typeof INVENTORY_STATUSES)[number];
+
+const STATUS_DESCRIPTIONS: Record<InventoryStatus, string> = {
+  OK: "References resolved to an existing key of a ConfigMap in scope",
+  TEMPLATE_REFERENCE: "Templated references (e.g. {{.Values.name}}.KEY, the chart-local ConfigMap) not statically resolvable; reported only",
+  INVALID_REFERENCE: "References not in the ConfigMap.key format, or not a string; blocking",
+  MIGRATION_CONFIGMAP: "References to a migration ConfigMap, which is excluded from the refactoring; blocking",
+  CONFIGMAP_NOT_FOUND: "References to a ConfigMap not found in commons/<env>/configmaps; blocking",
+  KEY_NOT_FOUND: "References to a key missing from an existing ConfigMap; blocking",
+};
+
+/** Statuses reported without failing the inventory. */
+const NON_BLOCKING_STATUSES = new Set<InventoryStatus>(["OK", "TEMPLATE_REFERENCE"]);
 
 type InventoryRow = {
   environment: string;
@@ -64,16 +90,25 @@ function parseArgs(argv: string[]): CliArgs {
 
   const root = path.resolve(arg.get("root") ?? process.cwd());
   const outputDir = path.resolve(arg.get("output-dir") ?? path.join(root, "reports", "refactor-common-configmaps"));
+  const outputSummaryCsv = path.resolve(
+    arg.get("output-summary-csv") ?? path.join(outputDir, `task-1-inventory-summary-${env}.csv`),
+  );
 
-  return { env, root, outputDir };
+  const outputSummaryJson = path.resolve(
+    arg.get("output-summary-json") ?? path.join(outputDir, `task-1-inventory-summary-${env}.json`),
+  );
+
+  return { env, root, outputDir, outputSummaryCsv, outputSummaryJson };
 }
 
-function loadConfigMaps(root: string, env: string): Map<string, ConfigMapRecord> {
+function loadConfigMaps(root: string, env: string): { index: Map<string, ConfigMapRecord>; migrationConfigMaps: Map<string, string> } {
+  const { configMaps, excluded } = readApplicationConfigMaps(root, env);
   const index = new Map<string, ConfigMapRecord>();
-  for (const configMap of readCommonConfigMaps(root, env).values()) {
+  for (const configMap of configMaps.values()) {
     index.set(configMap.name, { name: configMap.name, keys: new Set(configMap.data.keys()), sourceFile: configMap.file });
   }
-  return index;
+  const migrationConfigMaps = new Map([...excluded].map(([name, migration]) => [name, migration.file]));
+  return { index, migrationConfigMaps };
 }
 
 function discoverWorkloads(root: string, env: string, workloadType: WorkloadType): WorkloadFile[] {
@@ -161,6 +196,7 @@ function evaluateRef(
   envVar: string,
   refValue: string,
   configMaps: Map<string, ConfigMapRecord>,
+  migrationConfigMaps: Map<string, string>,
 ): InventoryRow {
   if (isTemplateReference(refValue)) {
     return {
@@ -191,6 +227,22 @@ function evaluateRef(
       key: "",
       sourceFile: "",
       status: "INVALID_REFERENCE",
+    };
+  }
+
+  const migrationSourceFile = migrationConfigMaps.get(parsed.configMap);
+  if (migrationSourceFile !== undefined) {
+    return {
+      environment: env,
+      workloadType: wf.workloadType,
+      workload: wf.workload,
+      valuesFile: wf.valuesFileRel,
+      section,
+      envVar,
+      configMap: parsed.configMap,
+      key: parsed.key,
+      sourceFile: migrationSourceFile,
+      status: "MIGRATION_CONFIGMAP",
     };
   }
 
@@ -239,11 +291,46 @@ function evaluateRef(
   };
 }
 
-function csvEscape(value: string): string {
-  if (/[",\n]/.test(value)) {
-    return `"${value.replace(/"/g, '""')}"`;
+type InventorySummary = {
+  environment: string;
+  outputCsv: string;
+  outputJson: string;
+  configMapsInScope: number;
+  configMapKeysInScope: number;
+  excludedMigrationConfigMaps: number;
+  microserviceFiles: number;
+  cronjobFiles: number;
+  workloadsWithReferences: number;
+  references: number;
+  configMapsReferenced: number;
+  configMapKeysReferenced: number;
+  blockingReferences: number;
+  statusCounts: Map<InventoryStatus, number>;
+};
+
+function summaryMetrics(summary: InventorySummary): SummaryMetric[] {
+  const metrics: Array<[string, string | number, string]> = [
+    ["environment", summary.environment, "Environment name used for this run"],
+    ["outputCsv", summary.outputCsv, "Inventory CSV generated by TASK 1"],
+    ["outputJson", summary.outputJson, "Inventory JSON generated by TASK 1"],
+    ["configMapsInScope", summary.configMapsInScope, "ConfigMaps of commons/<env>/configmaps in scope (migration ConfigMaps excluded)"],
+    ["configMapKeysInScope", summary.configMapKeysInScope, "Keys of the ConfigMaps in scope"],
+    ["excludedMigrationConfigMaps", summary.excludedMigrationConfigMaps, "Migration ConfigMaps excluded from the refactoring (owned by the Flyway migrations flow)"],
+    ["workloadFiles", summary.microserviceFiles + summary.cronjobFiles, "Workload values files scanned (microservices/<name>/<env>/values.yaml and jobs/<name>/<env>/values.yaml)"],
+    ["workloadFiles.microservice", summary.microserviceFiles, "Microservice values files scanned"],
+    ["workloadFiles.cronjob", summary.cronjobFiles, "Cronjob values files scanned"],
+    ["workloadsWithReferences", summary.workloadsWithReferences, "Workload values files with at least one envFromConfigmaps reference"],
+    ["references", summary.references, "envFromConfigmaps references found (one per workload, section and variable)"],
+    ["configMapsReferenced", summary.configMapsReferenced, "ConfigMaps in scope referenced by at least one workload (status OK)"],
+    ["configMapKeysReferenced", summary.configMapKeysReferenced, "ConfigMap keys in scope referenced by at least one workload (status OK)"],
+    ["configMapKeysUnreferenced", summary.configMapKeysInScope - summary.configMapKeysReferenced, "ConfigMap keys in scope without any envFromConfigmaps reference (classified OBSOLETE by TASK 2)"],
+    ["blockingReferences", summary.blockingReferences, "References with a blocking status; TASK 1 fails when greater than zero"],
+  ];
+
+  for (const status of INVENTORY_STATUSES) {
+    metrics.push([`status.${status}`, summary.statusCounts.get(status) ?? 0, STATUS_DESCRIPTIONS[status]]);
   }
-  return value;
+  return metrics.map(([metric, value, description]) => ({ metric, value, description }));
 }
 
 function toCsv(rows: InventoryRow[]): string {
@@ -289,7 +376,7 @@ function ensureDir(dir: string): void {
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
 
-  const configMaps = loadConfigMaps(args.root, args.env);
+  const { index: configMaps, migrationConfigMaps } = loadConfigMaps(args.root, args.env);
   const workloads = [
     ...discoverWorkloads(args.root, args.env, "microservice"),
     ...discoverWorkloads(args.root, args.env, "cronjob"),
@@ -302,7 +389,7 @@ function main(): void {
     collectEnvFromConfigmapsRefs(yamlDocument(wf.valuesFileAbs).contents, "", refs);
 
     for (const ref of refs) {
-      rows.push(evaluateRef(args.env, wf, ref.section, ref.envVar, ref.refValue, configMaps));
+      rows.push(evaluateRef(args.env, wf, ref.section, ref.envVar, ref.refValue, configMaps, migrationConfigMaps));
     }
   }
 
@@ -321,26 +408,51 @@ function main(): void {
   const jsonPath = path.join(args.outputDir, `task-1-inventory-${args.env}.json`);
 
   fs.writeFileSync(csvPath, `${toCsv(rows)}\n`, "utf8");
-  fs.writeFileSync(jsonPath, `${JSON.stringify(rows, null, 2)}\n`, "utf8");
+  writeJsonReport(jsonPath, rows);
 
-  const issues = rows.filter((r) => r.status !== "OK");
   const byStatus = new Map<InventoryStatus, number>();
   for (const row of rows) {
     byStatus.set(row.status, (byStatus.get(row.status) ?? 0) + 1);
   }
+  const blockingIssues = rows.filter((r) => !NON_BLOCKING_STATUSES.has(r.status));
+  const resolvedRows = rows.filter((r) => r.status === "OK");
+
+  // Written before the validation outcome so the summary is available also when blocking references are found.
+  const metrics = summaryMetrics({
+      environment: args.env,
+      outputCsv: path.relative(args.root, csvPath),
+      outputJson: path.relative(args.root, jsonPath),
+      configMapsInScope: configMaps.size,
+      configMapKeysInScope: [...configMaps.values()].reduce((total, configMap) => total + configMap.keys.size, 0),
+      excludedMigrationConfigMaps: migrationConfigMaps.size,
+      microserviceFiles: workloads.filter((wf) => wf.workloadType === "microservice").length,
+      cronjobFiles: workloads.filter((wf) => wf.workloadType === "cronjob").length,
+      workloadsWithReferences: new Set(rows.map((r) => r.valuesFile)).size,
+      references: rows.length,
+      configMapsReferenced: new Set(resolvedRows.map((r) => r.configMap)).size,
+      configMapKeysReferenced: new Set(resolvedRows.map((r) => `${r.configMap}.${r.key}`)).size,
+      blockingReferences: blockingIssues.length,
+      statusCounts: byStatus,
+  });
+  ensureDir(path.dirname(args.outputSummaryCsv));
+  ensureDir(path.dirname(args.outputSummaryJson));
+  fs.writeFileSync(args.outputSummaryCsv, `${summaryMetricsToCsv(metrics)}\n`, "utf8");
+  writeJsonReport(args.outputSummaryJson, metrics);
 
   console.log(`Environment: ${args.env}`);
-  console.log(`ConfigMaps discovered: ${configMaps.size}`);
+  console.log(`ConfigMaps in scope: ${configMaps.size}`);
+  console.log(`Migration ConfigMaps excluded: ${migrationConfigMaps.size}`);
   console.log(`Workload files scanned: ${workloads.length}`);
   console.log(`envFromConfigmaps references found: ${rows.length}`);
   console.log(`CSV report: ${path.relative(args.root, csvPath)}`);
   console.log(`JSON report: ${path.relative(args.root, jsonPath)}`);
+  console.log(`Summary report: ${path.relative(args.root, args.outputSummaryCsv)}`);
+  console.log(`Summary JSON report: ${path.relative(args.root, args.outputSummaryJson)}`);
 
-  for (const status of ["OK", "TEMPLATE_REFERENCE", "INVALID_REFERENCE", "CONFIGMAP_NOT_FOUND", "KEY_NOT_FOUND"] as const) {
+  for (const status of INVENTORY_STATUSES) {
     console.log(`${status}: ${byStatus.get(status) ?? 0}`);
   }
 
-  const blockingIssues = issues.filter((r) => r.status !== "TEMPLATE_REFERENCE");
   if (blockingIssues.length > 0) {
     console.error("Validation failed: unresolved references detected.");
     process.exit(1);

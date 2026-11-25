@@ -1,23 +1,31 @@
 import * as fs from "fs";
 import * as path from "path";
-import { readCommonConfigMaps } from "./yaml-source.js";
-import { migrationAssetSignals, readFlywaySourceConfigMaps, readMigrationReferences, type MigrationReference } from "./migration-assets.js";
+import { csvEscape, summaryMetricsToCsv, type SummaryMetric } from "./csv.js";
+import { readJsonReport, writeJsonReport } from "./json-report.js";
+import { readApplicationConfigMaps, type ExcludedMigrationConfigMap } from "./migration-assets.js";
 
 type CliArgs = {
   env: string;
   root: string;
-  inventoryCsv: string;
+  inventoryJson: string;
   outputCsv: string;
+  outputJson: string;
   outputSummaryCsv: string;
+  outputSummaryJson: string;
 };
 
-function resolveInventoryCsv(root: string, env: string, cliValue?: string): string {
-  if (cliValue) {
-    return path.resolve(cliValue);
-  }
-
-  return path.join(root, "reports", "refactor-common-configmaps", `task-1-inventory-${env}.csv`);
-}
+const INVENTORY_FIELDS = [
+  "environment",
+  "workloadType",
+  "workload",
+  "valuesFile",
+  "section",
+  "envVar",
+  "configMap",
+  "key",
+  "sourceFile",
+  "status",
+] as const;
 
 type InventoryRow = {
   environment: string;
@@ -38,7 +46,9 @@ type ConfigMapKey = {
   sourceFile: string;
 };
 
-type Classification = "COMMON_VALUE" | "WORKLOAD_VALUE" | "MIGRATION_ASSET" | "KEEP_AS_CONFIGMAP" | "OBSOLETE";
+type Classification = "COMMON_VALUE" | "WORKLOAD_VALUE" | "KEEP_AS_CONFIGMAP" | "OBSOLETE";
+
+const CLASSIFICATIONS: Classification[] = ["COMMON_VALUE", "WORKLOAD_VALUE", "KEEP_AS_CONFIGMAP", "OBSOLETE"];
 
 type OutputRow = {
   environment: string;
@@ -51,10 +61,75 @@ type OutputRow = {
   section: string;
   envVar: string;
   status: string;
-  consumerCount: number;
+  distinctWorkloadCount: number;
   classificationReason: string;
   classification: Classification;
 };
+
+/** Rows of the classification report: workloads sharing every other column are merged into one row. */
+type GroupedRow = Omit<OutputRow, "workload" | "valuesFile"> & {
+  /** References merged into this row (one per workload, section and variable). */
+  referenceCount: number;
+  /** References of the key across all its rows. */
+  keyReferenceCount: number;
+  workloads: string[];
+  valuesFiles: string[];
+};
+
+// Separator of the merged workload and valuesFile cells; both lists keep the same order.
+const CELL_SEPARATOR = "\n";
+
+function groupRows(rows: OutputRow[]): GroupedRow[] {
+  const groups = new Map<string, GroupedRow>();
+
+  for (const row of rows) {
+    const id = JSON.stringify([
+      row.environment,
+      row.configMap,
+      row.key,
+      row.sourceFile,
+      row.workloadType,
+      row.section,
+      row.envVar,
+      row.status,
+      row.distinctWorkloadCount,
+      row.classificationReason,
+      row.classification,
+    ]);
+    const { workload, valuesFile, ...shared } = row;
+    const group = groups.get(id) ?? { ...shared, referenceCount: 0, keyReferenceCount: 0, workloads: [], valuesFiles: [] };
+    groups.set(id, group);
+
+    // Rows without consumers (workloadType "none") describe the key only and are not counted as workloads.
+    group.workloads.push(workload);
+    group.valuesFiles.push(valuesFile);
+    if (row.workloadType !== "none") {
+      group.referenceCount += 1;
+    }
+  }
+
+  const referencesByKey = new Map<string, number>();
+  for (const group of groups.values()) {
+    const key = `${group.configMap}.${group.key}`;
+    referencesByKey.set(key, (referencesByKey.get(key) ?? 0) + group.referenceCount);
+  }
+
+  for (const group of groups.values()) {
+    group.keyReferenceCount = referencesByKey.get(`${group.configMap}.${group.key}`) ?? 0;
+    const order = group.workloads.map((_, index) => index).sort((a, b) => group.workloads[a].localeCompare(group.workloads[b]));
+    group.workloads = order.map((index) => group.workloads[index]);
+    group.valuesFiles = order.map((index) => group.valuesFiles[index]);
+  }
+
+  return [...groups.values()].sort(
+    (a, b) =>
+      a.configMap.localeCompare(b.configMap) ||
+      a.key.localeCompare(b.key) ||
+      a.workloadType.localeCompare(b.workloadType) ||
+      a.section.localeCompare(b.section) ||
+      a.envVar.localeCompare(b.envVar),
+  );
+}
 
 function parseArgs(argv: string[]): CliArgs {
   const arg = new Map<string, string>();
@@ -80,127 +155,30 @@ function parseArgs(argv: string[]): CliArgs {
   }
 
   const root = path.resolve(arg.get("root") ?? process.cwd());
-  const inventoryCsv = resolveInventoryCsv(root, env, arg.get("inventory-csv"));
-  const outputCsv = path.resolve(
-    arg.get("output-csv") ??
-      path.join(root, "reports", "refactor-common-configmaps", `task-2-common-configmaps-classification-${env}.csv`),
-  );
-  const outputSummaryCsv = path.resolve(
-    arg.get("output-summary-csv") ??
-      path.join(root, "reports", "refactor-common-configmaps", `task-2-classification-summary-${env}.csv`),
-  );
+  const reportsDir = path.join(root, "reports", "refactor-common-configmaps");
+  const report = (option: string, file: string) => path.resolve(arg.get(option) ?? path.join(reportsDir, file));
 
-  return { env, root, inventoryCsv, outputCsv, outputSummaryCsv };
+  return {
+    env,
+    root,
+    inventoryJson: report("inventory-json", `task-1-inventory-${env}.json`),
+    outputCsv: report("output-csv", `task-2-classification-common-configmaps-${env}.csv`),
+    outputJson: report("output-json", `task-2-classification-common-configmaps-${env}.json`),
+    outputSummaryCsv: report("output-summary-csv", `task-2-classification-summary-${env}.csv`),
+    outputSummaryJson: report("output-summary-json", `task-2-classification-summary-${env}.json`),
+  };
 }
 
 function ensureDir(dirPath: string): void {
   fs.mkdirSync(dirPath, { recursive: true });
 }
 
-function csvEscape(value: string): string {
-  if (/[",\n]/.test(value)) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-}
 
-function parseCsvLine(line: string): string[] {
-  const out: string[] = [];
-  let current = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < line.length; i += 1) {
-    const char = line[i];
-
-    if (inQuotes) {
-      if (char === '"') {
-        if (line[i + 1] === '"') {
-          current += '"';
-          i += 1;
-          continue;
-        }
-        inQuotes = false;
-        continue;
-      }
-      current += char;
-      continue;
-    }
-
-    if (char === '"') {
-      inQuotes = true;
-      continue;
-    }
-
-    if (char === ",") {
-      out.push(current);
-      current = "";
-      continue;
-    }
-
-    current += char;
-  }
-
-  out.push(current);
-  return out;
-}
-
-function parseCsv(content: string): InventoryRow[] {
-  const lines = content
-    .split(/\r?\n/)
-    .map((line) => line.trimEnd())
-    .filter((line) => line.length > 0);
-
-  if (lines.length === 0) {
-    return [];
-  }
-
-  const header = parseCsvLine(lines[0]);
-  const idx = (name: string): number => {
-    const index = header.indexOf(name);
-    if (index < 0) {
-      throw new Error(`Missing expected CSV header column: ${name}`);
-    }
-    return index;
-  };
-
-  const indices = {
-    environment: idx("environment"),
-    workloadType: idx("workloadType"),
-    workload: idx("workload"),
-    valuesFile: idx("valuesFile"),
-    section: idx("section"),
-    envVar: idx("envVar"),
-    configMap: idx("configMap"),
-    key: idx("key"),
-    sourceFile: idx("sourceFile"),
-    status: idx("status"),
-  };
-
-  const rows: InventoryRow[] = [];
-
-  for (let i = 1; i < lines.length; i += 1) {
-    const fields = parseCsvLine(lines[i]);
-    rows.push({
-      environment: fields[indices.environment] ?? "",
-      workloadType: fields[indices.workloadType] ?? "",
-      workload: fields[indices.workload] ?? "",
-      valuesFile: fields[indices.valuesFile] ?? "",
-      section: fields[indices.section] ?? "",
-      envVar: fields[indices.envVar] ?? "",
-      configMap: fields[indices.configMap] ?? "",
-      key: fields[indices.key] ?? "",
-      sourceFile: fields[indices.sourceFile] ?? "",
-      status: fields[indices.status] ?? "",
-    });
-  }
-
-  return rows;
-}
-
-function readConfigMapKeys(root: string, env: string): ConfigMapKey[] {
+function readConfigMapKeys(root: string, env: string): { keys: ConfigMapKey[]; excluded: Map<string, ExcludedMigrationConfigMap> } {
+  const { configMaps, excluded } = readApplicationConfigMaps(root, env);
   const out: ConfigMapKey[] = [];
 
-  for (const configMap of readCommonConfigMaps(root, env).values()) {
+  for (const configMap of configMaps.values()) {
     for (const key of configMap.data.keys()) {
       out.push({ configMap: configMap.name, key, sourceFile: configMap.file });
     }
@@ -210,14 +188,14 @@ function readConfigMapKeys(root: string, env: string): ConfigMapKey[] {
     return a.configMap.localeCompare(b.configMap) || a.key.localeCompare(b.key);
   });
 
-  return out;
+  return { keys: out, excluded };
 }
 
 function keyId(configMap: string, key: string): string {
   return `${configMap}::${key}`;
 }
 
-function classifyRow(row: InventoryRow, consumerCount: number): { classification: Classification; reason: string } {
+function classifyRow(row: InventoryRow, distinctWorkloadCount: number): { classification: Classification; reason: string } {
   if (row.status !== "OK") {
     return {
       classification: "KEEP_AS_CONFIGMAP",
@@ -225,15 +203,7 @@ function classifyRow(row: InventoryRow, consumerCount: number): { classification
     };
   }
 
-  const sensitiveRegex = /password|passwd|secret|private.?key|api.?key|token/i;
-  if (sensitiveRegex.test(row.envVar) || sensitiveRegex.test(row.key) || sensitiveRegex.test(row.configMap)) {
-    return {
-      classification: "WORKLOAD_VALUE",
-      reason: "Sensitive-like naming pattern, kept workload-scoped pending owner review",
-    };
-  }
-
-  if (consumerCount <= 1) {
+  if (distinctWorkloadCount <= 1) {
     return {
       classification: "WORKLOAD_VALUE",
       reason: "Referenced by a single consumer",
@@ -246,23 +216,21 @@ function classifyRow(row: InventoryRow, consumerCount: number): { classification
   };
 }
 
-function migrationAssetReason(configMap: string, signals: string[], consumerCount: number): string {
-  return `Migration asset (${signals.join("; ")}); referenced by ${consumerCount} workload(s); owned by the Flyway migrations flow, never moved to commons values nor removed by this refactoring (${configMap})`;
-}
-
-function toCsv(rows: OutputRow[]): string {
+function toCsv(rows: GroupedRow[]): string {
   const header = [
     "environment",
     "configMap",
     "key",
     "sourceFile",
     "workloadType",
+    "referenceCount",
     "workload",
     "valuesFile",
     "section",
     "envVar",
     "status",
-    "consumerCount",
+    "distinctWorkloadCount",
+    "keyReferenceCount",
     "classificationReason",
     "classification",
   ];
@@ -276,12 +244,14 @@ function toCsv(rows: OutputRow[]): string {
         row.key,
         row.sourceFile,
         row.workloadType,
-        row.workload,
-        row.valuesFile,
+        String(row.referenceCount),
+        row.workloads.join(CELL_SEPARATOR),
+        row.valuesFiles.join(CELL_SEPARATOR),
         row.section,
         row.envVar,
         row.status,
-        String(row.consumerCount),
+        String(row.distinctWorkloadCount),
+        String(row.keyReferenceCount),
         row.classificationReason,
         row.classification,
       ]
@@ -293,26 +263,48 @@ function toCsv(rows: OutputRow[]): string {
   return lines.join("\n");
 }
 
-function toSummaryCsv(summary: {
+/** Classification records for the JSON report: same fields as the CSV, with typed counts and workload lists. */
+function toJsonRecords(rows: GroupedRow[]): object[] {
+  return rows.map((row) => ({
+    environment: row.environment,
+    configMap: row.configMap,
+    key: row.key,
+    sourceFile: row.sourceFile,
+    workloadType: row.workloadType,
+    referenceCount: row.referenceCount,
+    workload: row.workloads,
+    valuesFile: row.valuesFiles,
+    section: row.section,
+    envVar: row.envVar,
+    status: row.status,
+    distinctWorkloadCount: row.distinctWorkloadCount,
+    keyReferenceCount: row.keyReferenceCount,
+    classificationReason: row.classificationReason,
+    classification: row.classification,
+  }));
+}
+
+function summaryMetrics(summary: {
   environment: string;
-  inventoryCsv: string;
+  inventoryJson: string;
   outputCsv: string;
+  outputJson: string;
   configMapKeys: number;
+  excludedMigrationConfigMaps: number;
+  references: number;
   rows: number;
   classificationCounts: Record<string, number>;
   statusCounts: Record<string, number>;
-}): string {
-  const lines: string[] = ["metric,value,description"];
+}): SummaryMetric[] {
+  const metrics: SummaryMetric[] = [];
+  const add = (metric: string, value: string | number, description: string) => metrics.push({ metric, value, description });
 
   const classificationDescription = (classification: string): string => {
     if (classification === "COMMON_VALUE") {
-      return "Rows for keys that should be promoted to shared common values because they are reused by multiple consumers and do not look sensitive";
+      return "Rows for keys that should be promoted to shared common values because they are reused by multiple consumers";
     }
     if (classification === "WORKLOAD_VALUE") {
-      return "Rows for keys that should remain workload-scoped, typically because they are used by only one consumer or their naming suggests sensitive or context-specific usage";
-    }
-    if (classification === "MIGRATION_ASSET") {
-      return "Rows for keys that are temporary migration support assets and should be tracked separately from steady-state configuration";
+      return "Rows for keys that should remain workload-scoped because they are used by only one consumer";
     }
     if (classification === "KEEP_AS_CONFIGMAP") {
       return "Rows for keys that should stay as ConfigMap entries because automatic classification was not safe or the reference needs explicit manual handling";
@@ -323,29 +315,22 @@ function toSummaryCsv(summary: {
     return `Rows classified as ${classification}`;
   };
 
-  lines.push(`environment,${csvEscape(summary.environment)},${csvEscape("Environment name used for this run")}`);
-  lines.push(`inventoryCsv,${csvEscape(summary.inventoryCsv)},${csvEscape("Input inventory file generated by TASK 1")}`);
-  lines.push(`outputCsv,${csvEscape(summary.outputCsv)},${csvEscape("Output classification file generated by TASK 2")}`);
-  lines.push(`configMapKeys,${summary.configMapKeys},${csvEscape("Total ConfigMap keys scanned in commons/<env>/configmaps")}`);
-  lines.push(`rows,${summary.rows},${csvEscape("Total rows written in classification output")}`);
+  add("environment", summary.environment, "Environment name used for this run");
+  add("inventoryJson", summary.inventoryJson, "Input inventory JSON generated by TASK 1");
+  add("outputCsv", summary.outputCsv, "Output classification CSV generated by TASK 2");
+  add("outputJson", summary.outputJson, "Output classification JSON generated by TASK 2");
+  add("configMapKeys", summary.configMapKeys, "Total keys of the ConfigMaps in scope in commons/<env>/configmaps (migration ConfigMaps excluded)");
+  add("excludedMigrationConfigMaps", summary.excludedMigrationConfigMaps, "Migration ConfigMaps excluded from the refactoring (owned by the Flyway migrations flow)");
+  add("references", summary.references, "Total workload references (one per workload, section and variable) aggregated in the classification output");
+  add("rows", summary.rows, "Total rows written in classification output; workloads sharing ConfigMap, key, workload type, section and variable are merged into one row");
 
-  for (const classification of ["COMMON_VALUE", "WORKLOAD_VALUE", "MIGRATION_ASSET", "KEEP_AS_CONFIGMAP", "OBSOLETE"]) {
-    lines.push(
-      `classification.${classification},${summary.classificationCounts[classification] ?? 0},${csvEscape(
-        classificationDescription(classification),
-      )}`,
-    );
+  for (const classification of CLASSIFICATIONS) {
+    add(`classification.${classification}`, summary.classificationCounts[classification] ?? 0, classificationDescription(classification));
   }
 
   const statusDescription = (status: string): string => {
     if (status === "OK") {
       return "Row with valid reference: ConfigMap and key exist and were resolved correctly";
-    }
-    if (status === "MIGRATION_CONFIGMAP_REF") {
-      return "ConfigMap referenced by flywayInitContainer.migrationsConfigmap/migrationDomain and tracked as migration asset";
-    }
-    if (status === "MIGRATION_SOURCE_NO_MOUNT") {
-      return "Flyway source ConfigMap or ignored migration domain not referenced by any workload; still owned by the Flyway migrations flow";
     }
     if (status === "NO_CONSUMER") {
       return "ConfigMap key with no consumers detected in TASK 1 inventory";
@@ -367,40 +352,26 @@ function toSummaryCsv(summary: {
 
   const statusKeys = Object.keys(summary.statusCounts).sort((a, b) => a.localeCompare(b));
   for (const status of statusKeys) {
-    lines.push(`status.${status},${summary.statusCounts[status]},${csvEscape(statusDescription(status))}`);
+    add(`status.${status}`, summary.statusCounts[status], statusDescription(status));
   }
 
-  return lines.join("\n");
+  return metrics;
 }
 
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
 
-  if (!fs.existsSync(args.inventoryCsv)) {
-    throw new Error(`Inventory CSV not found: ${args.inventoryCsv}`);
-  }
-
-  const inventoryRaw = fs.readFileSync(args.inventoryCsv, "utf8");
-  const inventoryRows = parseCsv(inventoryRaw).filter((row) => row.environment === args.env);
+  const inventoryRows: InventoryRow[] = readJsonReport(args.inventoryJson, INVENTORY_FIELDS).filter(
+    (row) => row.environment === args.env,
+  );
 
   if (inventoryRows.length === 0) {
     throw new Error(`No inventory rows found for environment: ${args.env}`);
   }
 
-  const cmKeys = readConfigMapKeys(args.root, args.env);
+  const { keys: cmKeys, excluded: excludedMigrationConfigMaps } = readConfigMapKeys(args.root, args.env);
   if (cmKeys.length === 0) {
     throw new Error(`No ConfigMap keys found in commons/${args.env}/configmaps`);
-  }
-
-  const flywaySourceConfigMaps = readFlywaySourceConfigMaps(args.root, args.env);
-  const migrationRefsByConfigMap = new Map<string, MigrationReference[]>();
-  for (const ref of readMigrationReferences(args.root, args.env)) {
-    const existing = migrationRefsByConfigMap.get(ref.domain);
-    if (existing) {
-      existing.push(ref);
-    } else {
-      migrationRefsByConfigMap.set(ref.domain, [ref]);
-    }
   }
 
   const rowsByKey = new Map<string, InventoryRow[]>();
@@ -419,74 +390,7 @@ function main(): void {
   for (const cmKey of cmKeys) {
     const id = keyId(cmKey.configMap, cmKey.key);
     const refs = rowsByKey.get(id) ?? [];
-    const consumerCount = new Set(refs.map((ref) => `${ref.workloadType}/${ref.workload}/${ref.valuesFile}`)).size;
-    const migrationConsumers = migrationRefsByConfigMap.get(cmKey.configMap) ?? [];
-    const migrationConsumerCount = new Set(
-      migrationConsumers.map((ref) => `${ref.workloadType}/${ref.workload}/${ref.valuesFile}`),
-    ).size;
-
-    const migrationSignals = migrationAssetSignals({
-      configMap: cmKey.configMap,
-      flywaySourceConfigMaps,
-      referencedByWorkloads: migrationConsumers.length > 0,
-    });
-
-    // Migration assets take precedence over any other rule so they never become COMMON_VALUE or OBSOLETE.
-    if (migrationSignals.length > 0) {
-      const reason = migrationAssetReason(cmKey.configMap, migrationSignals, migrationConsumerCount);
-      for (const migrationRef of migrationConsumers) {
-        outputRows.push({
-          environment: args.env,
-          configMap: cmKey.configMap,
-          key: cmKey.key,
-          sourceFile: cmKey.sourceFile,
-          workloadType: migrationRef.workloadType,
-          workload: migrationRef.workload,
-          valuesFile: migrationRef.valuesFile,
-          section: migrationRef.section,
-          envVar: migrationRef.referenceKey,
-          status: "MIGRATION_CONFIGMAP_REF",
-          consumerCount: migrationConsumerCount,
-          classificationReason: reason,
-          classification: "MIGRATION_ASSET",
-        });
-      }
-      for (const ref of refs) {
-        outputRows.push({
-          environment: args.env,
-          configMap: cmKey.configMap,
-          key: cmKey.key,
-          sourceFile: cmKey.sourceFile,
-          workloadType: ref.workloadType,
-          workload: ref.workload,
-          valuesFile: ref.valuesFile,
-          section: ref.section,
-          envVar: ref.envVar,
-          status: ref.status,
-          consumerCount: migrationConsumerCount,
-          classificationReason: `${reason}; also read through envFromConfigmaps: requires manual review`,
-          classification: "MIGRATION_ASSET",
-        });
-      }
-      if (migrationConsumers.length === 0 && refs.length === 0) {
-        outputRows.push({
-          environment: args.env,
-          configMap: cmKey.configMap,
-          key: cmKey.key,
-          sourceFile: cmKey.sourceFile,
-          workloadType: "none",
-          workload: "none",
-          valuesFile: "",
-          section: "",
-          envVar: "",
-          status: "MIGRATION_SOURCE_NO_MOUNT",
-          consumerCount: 0,
-          classificationReason: reason,
-          classification: "MIGRATION_ASSET",
-        });
-      }
-      continue;
-    }
+    const distinctWorkloadCount = new Set(refs.map((ref) => `${ref.workloadType}/${ref.workload}/${ref.valuesFile}`)).size;
 
     if (refs.length === 0) {
       outputRows.push({
@@ -500,7 +404,7 @@ function main(): void {
         section: "",
         envVar: "",
         status: "NO_CONSUMER",
-        consumerCount: 0,
+        distinctWorkloadCount: 0,
         classificationReason: "Key has no consumers in task1 inventory",
         classification: "OBSOLETE",
       });
@@ -508,7 +412,7 @@ function main(): void {
     }
 
     for (const ref of refs) {
-      const decision = classifyRow(ref, consumerCount);
+      const decision = classifyRow(ref, distinctWorkloadCount);
       outputRows.push({
         environment: args.env,
         configMap: cmKey.configMap,
@@ -520,60 +424,61 @@ function main(): void {
         section: ref.section,
         envVar: ref.envVar,
         status: ref.status,
-        consumerCount,
+        distinctWorkloadCount,
         classificationReason: decision.reason,
         classification: decision.classification,
       });
     }
   }
 
-  outputRows.sort((a, b) => {
-    return (
-      a.configMap.localeCompare(b.configMap) ||
-      a.key.localeCompare(b.key) ||
-      a.workloadType.localeCompare(b.workloadType) ||
-      a.workload.localeCompare(b.workload) ||
-      a.envVar.localeCompare(b.envVar)
-    );
-  });
+  const groupedRows = groupRows(outputRows);
 
-  ensureDir(path.dirname(args.outputCsv));
-  ensureDir(path.dirname(args.outputSummaryCsv));
+  for (const file of [args.outputCsv, args.outputJson, args.outputSummaryCsv, args.outputSummaryJson]) {
+    ensureDir(path.dirname(file));
+  }
 
-  fs.writeFileSync(args.outputCsv, `${toCsv(outputRows)}\n`, "utf8");
+  fs.writeFileSync(args.outputCsv, `${toCsv(groupedRows)}\n`, "utf8");
+  writeJsonReport(args.outputJson, toJsonRecords(groupedRows));
 
   const summary = {
     environment: args.env,
-    inventoryCsv: path.relative(args.root, args.inventoryCsv),
+    inventoryJson: path.relative(args.root, args.inventoryJson),
     outputCsv: path.relative(args.root, args.outputCsv),
+    outputJson: path.relative(args.root, args.outputJson),
     configMapKeys: cmKeys.length,
-    rows: outputRows.length,
-    classificationCounts: outputRows.reduce<Record<string, number>>((acc, row) => {
+    excludedMigrationConfigMaps: excludedMigrationConfigMaps.size,
+    references: outputRows.filter((row) => row.workloadType !== "none").length,
+    rows: groupedRows.length,
+    classificationCounts: groupedRows.reduce<Record<string, number>>((acc, row) => {
       acc[row.classification] = (acc[row.classification] ?? 0) + 1;
       return acc;
     }, {}),
-    statusCounts: outputRows.reduce<Record<string, number>>((acc, row) => {
+    statusCounts: groupedRows.reduce<Record<string, number>>((acc, row) => {
       acc[row.status] = (acc[row.status] ?? 0) + 1;
       return acc;
     }, {}),
   };
 
-  fs.writeFileSync(args.outputSummaryCsv, `${toSummaryCsv(summary)}\n`, "utf8");
+  const metrics = summaryMetrics(summary);
+  fs.writeFileSync(args.outputSummaryCsv, `${summaryMetricsToCsv(metrics)}\n`, "utf8");
+  writeJsonReport(args.outputSummaryJson, metrics);
 
-  const emptyClassifications = outputRows.filter((row) => row.classification.trim() === "").length;
+  const emptyClassifications = groupedRows.filter((row) => row.classification.trim() === "").length;
   if (emptyClassifications > 0) {
     console.error(`Validation failed: ${emptyClassifications} rows with empty classification`);
     process.exit(1);
   }
 
   console.log(`Environment: ${args.env}`);
-  console.log(`Input inventory: ${path.relative(args.root, args.inventoryCsv)}`);
-  console.log(`Output classification: ${path.relative(args.root, args.outputCsv)}`);
-  console.log(`Output summary: ${path.relative(args.root, args.outputSummaryCsv)}`);
+  console.log(`Input inventory: ${path.relative(args.root, args.inventoryJson)}`);
+  console.log(`Output classification: ${path.relative(args.root, args.outputCsv)}, ${path.relative(args.root, args.outputJson)}`);
+  console.log(`Output summary: ${path.relative(args.root, args.outputSummaryCsv)}, ${path.relative(args.root, args.outputSummaryJson)}`);
   console.log(`ConfigMap keys scanned: ${cmKeys.length}`);
-  console.log(`Rows generated: ${outputRows.length}`);
+  console.log(`Migration ConfigMaps excluded: ${excludedMigrationConfigMaps.size}`);
+  console.log(`Workload references: ${summary.references}`);
+  console.log(`Rows generated: ${groupedRows.length}`);
 
-  for (const classification of ["COMMON_VALUE", "WORKLOAD_VALUE", "MIGRATION_ASSET", "KEEP_AS_CONFIGMAP", "OBSOLETE"]) {
+  for (const classification of CLASSIFICATIONS) {
     console.log(`${classification}: ${summary.classificationCounts[classification] ?? 0}`);
   }
 }

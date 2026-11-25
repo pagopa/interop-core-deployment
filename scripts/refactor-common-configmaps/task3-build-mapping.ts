@@ -1,15 +1,29 @@
 import * as fs from "fs";
 import * as path from "path";
 import YAML from "yaml";
+import { csvEscape } from "./csv.js";
+import { readJsonRecords, writeJsonReport } from "./json-report.js";
 import { scalarText, writeVerifiedYaml } from "./yaml-source.js";
 
 type CliArgs = {
   env: string;
   root: string;
-  classificationCsv: string;
+  classificationJson: string;
   outputYaml: string;
   outputCsv: string;
+  outputJson: string;
 };
+
+/** Fields of the TASK 2 classification JSON used to build the mapping. */
+const CLASSIFICATION_SCHEMA = {
+  environment: "string",
+  configMap: "string",
+  key: "string",
+  sourceFile: "string",
+  classification: "string",
+  classificationReason: "string",
+  distinctWorkloadCount: "number",
+} as const;
 
 type Task2Row = {
   environment: string;
@@ -61,115 +75,48 @@ function parseArgs(argv: string[]): CliArgs {
   const root = path.resolve(arg.get("root") ?? process.cwd());
   const outDir = path.resolve(arg.get("output-dir") ?? path.join(root, "reports", "refactor-common-configmaps"));
 
-  const classificationCsv = path.resolve(
-    arg.get("classification-csv") ??
-      path.join(root, "reports", "refactor-common-configmaps", `task-2-common-configmaps-classification-${env}.csv`),
+  const classificationJson = path.resolve(
+    arg.get("classification-json") ??
+      path.join(root, "reports", "refactor-common-configmaps", `task-2-classification-common-configmaps-${env}.json`),
   );
 
   const outputYaml = path.resolve(arg.get("output-yaml") ?? path.join(outDir, `task-3-common-values-mapping-${env}.yaml`));
   const outputCsv = path.resolve(arg.get("output-csv") ?? path.join(outDir, `task-3-common-values-mapping-${env}.csv`));
+  const outputJson = path.resolve(arg.get("output-json") ?? path.join(outDir, `task-3-common-values-mapping-${env}.json`));
 
-  return { env, root, classificationCsv, outputYaml, outputCsv };
+  return { env, root, classificationJson, outputYaml, outputCsv, outputJson };
 }
 
 function ensureDir(dirPath: string): void {
   fs.mkdirSync(dirPath, { recursive: true });
 }
 
-function parseCsvLine(line: string): string[] {
-  const out: string[] = [];
-  let current = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < line.length; i += 1) {
-    const ch = line[i];
-
-    if (inQuotes) {
-      if (ch === '"') {
-        if (line[i + 1] === '"') {
-          current += '"';
-          i += 1;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        current += ch;
-      }
-      continue;
-    }
-
-    if (ch === '"') {
-      inQuotes = true;
-      continue;
-    }
-
-    if (ch === ",") {
-      out.push(current);
-      current = "";
-      continue;
-    }
-
-    current += ch;
-  }
-
-  out.push(current);
-  return out;
+function readClassification(file: string): Task2Row[] {
+  return readJsonRecords(file, CLASSIFICATION_SCHEMA).map((record) => ({
+    environment: record.environment,
+    configMap: record.configMap,
+    key: record.key,
+    sourceFile: record.sourceFile,
+    classification: record.classification,
+    classificationReason: record.classificationReason,
+    consumerCount: record.distinctWorkloadCount,
+  }));
 }
 
-function csvEscape(value: string): string {
-  if (/[",\n]/.test(value)) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-}
-
-function parseClassificationCsv(content: string): Task2Row[] {
-  const lines = content
-    .split(/\r?\n/)
-    .map((line) => line.trimEnd())
-    .filter((line) => line.length > 0);
-
-  if (lines.length === 0) {
-    return [];
-  }
-
-  const header = parseCsvLine(lines[0]);
-  const idx = (name: string): number => {
-    const index = header.indexOf(name);
-    if (index < 0) {
-      throw new Error(`Missing expected CSV header column: ${name}`);
-    }
-    return index;
-  };
-
-  const indices = {
-    environment: idx("environment"),
-    configMap: idx("configMap"),
-    key: idx("key"),
-    sourceFile: idx("sourceFile"),
-    classification: idx("classification"),
-    classificationReason: idx("classificationReason"),
-    consumerCount: idx("consumerCount"),
-  };
-
-  const rows: Task2Row[] = [];
-
-  for (let i = 1; i < lines.length; i += 1) {
-    const fields = parseCsvLine(lines[i]);
-    const consumerCount = Number(fields[indices.consumerCount] ?? "0");
-
-    rows.push({
-      environment: fields[indices.environment] ?? "",
-      configMap: fields[indices.configMap] ?? "",
-      key: fields[indices.key] ?? "",
-      sourceFile: fields[indices.sourceFile] ?? "",
-      classification: fields[indices.classification] ?? "",
-      classificationReason: fields[indices.classificationReason] ?? "",
-      consumerCount: Number.isFinite(consumerCount) ? consumerCount : 0,
-    });
-  }
-
-  return rows;
+/** Mapping records for the JSON report: same fields and order as the CSV. */
+function toJsonRecords(rows: MappingRow[]): object[] {
+  return rows.map((row) => ({
+    environment: row.environment,
+    sourceConfigMap: row.sourceConfigMap,
+    sourceKey: row.sourceKey,
+    targetPath: row.targetPath,
+    targetRef: row.targetRef,
+    classification: row.classification,
+    destinationType: row.destinationType,
+    consumerCount: row.consumerCount,
+    sourceFile: row.sourceFile,
+    note: row.classificationReason,
+  }));
 }
 
 function toCamel(value: string): string {
@@ -214,14 +161,6 @@ function buildTarget(row: MappingRow): { destinationType: string; targetPath: st
     };
   }
 
-  if (row.classification === "MIGRATION_ASSET") {
-    return {
-      destinationType: "MIGRATION_ASSET",
-      targetPath: `migrationAsset.${domain}.${keyCamel}`,
-      targetRef: "keep-outside-common-values",
-    };
-  }
-
   if (row.classification === "KEEP_AS_CONFIGMAP") {
     return {
       destinationType: "KEEP_AS_CONFIGMAP",
@@ -230,11 +169,18 @@ function buildTarget(row: MappingRow): { destinationType: string; targetPath: st
     };
   }
 
-  return {
-    destinationType: "OBSOLETE",
-    targetPath: `obsolete.${domain}.${keyCamel}`,
-    targetRef: "candidate-removal",
-  };
+  if (row.classification === "OBSOLETE") {
+    return {
+      destinationType: "OBSOLETE",
+      targetPath: `obsolete.${domain}.${keyCamel}`,
+      targetRef: "candidate-removal",
+    };
+  }
+
+  // An unknown value (for example MIGRATION_ASSET from an old classification report) must never become a removal candidate.
+  throw new Error(
+    `Unsupported classification '${row.classification}' for ${row.sourceConfigMap}.${row.sourceKey}; regenerate the classification report with task 2.`,
+  );
 }
 
 function toYaml(rows: MappingRow[], sourceCsv: string): string {
@@ -252,7 +198,6 @@ function toYaml(rows: MappingRow[], sourceCsv: string): string {
       totalKeys: rows.length,
       commonValueKeys: counts.COMMON_VALUE ?? 0,
       workloadValueKeys: counts.WORKLOAD_VALUE ?? 0,
-      migrationAssetKeys: counts.MIGRATION_ASSET ?? 0,
       keepAsConfigMapKeys: counts.KEEP_AS_CONFIGMAP ?? 0,
       obsoleteKeys: counts.OBSOLETE ?? 0,
     },
@@ -387,24 +332,20 @@ function buildMappingRows(classificationRows: Task2Row[], env: string): MappingR
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
 
-  if (!fs.existsSync(args.classificationCsv)) {
-    throw new Error(`Classification CSV not found: ${args.classificationCsv}`);
-  }
-
-  const classificationRaw = fs.readFileSync(args.classificationCsv, "utf8");
-  const classificationRows = parseClassificationCsv(classificationRaw);
+  const classificationRows = readClassification(args.classificationJson);
   const mappingRows = buildMappingRows(classificationRows, args.env);
 
   if (mappingRows.length === 0) {
     throw new Error(`No mapping rows generated for environment: ${args.env}`);
   }
 
-  ensureDir(path.dirname(args.outputYaml));
-  ensureDir(path.dirname(args.outputCsv));
+  for (const file of [args.outputYaml, args.outputCsv, args.outputJson]) {
+    ensureDir(path.dirname(file));
+  }
 
   writeVerifiedYaml(
     args.outputYaml,
-    `${toYaml(mappingRows, path.relative(args.root, args.classificationCsv))}\n`,
+    `${toYaml(mappingRows, path.relative(args.root, args.classificationJson))}\n`,
     (document) => {
       const fields = ["environment", "sourceConfigMap", "sourceKey", "sourceFile", "classification", "destinationType", "targetPath", "targetRef"] as const;
       mappingRows.forEach((row, index) => {
@@ -423,11 +364,13 @@ function main(): void {
     },
   );
   fs.writeFileSync(args.outputCsv, `${toCsv(mappingRows)}\n`, "utf8");
+  writeJsonReport(args.outputJson, toJsonRecords(mappingRows));
 
   console.log(`Environment: ${args.env}`);
-  console.log(`Input classification: ${path.relative(args.root, args.classificationCsv)}`);
+  console.log(`Input classification: ${path.relative(args.root, args.classificationJson)}`);
   console.log(`Output YAML: ${path.relative(args.root, args.outputYaml)}`);
   console.log(`Output CSV: ${path.relative(args.root, args.outputCsv)}`);
+  console.log(`Output JSON: ${path.relative(args.root, args.outputJson)}`);
   console.log(`Rows generated: ${mappingRows.length}`);
 }
 

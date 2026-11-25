@@ -2,15 +2,20 @@ import * as fs from "fs";
 import * as path from "path";
 import { spawnSync } from "child_process";
 import type { Document } from "yaml";
-import { configMapFromDocument, readCommonConfigMaps, yamlDocuments } from "./yaml-source.js";
+import { csvEscape } from "./csv.js";
+import { readJsonReport, writeJsonReport } from "./json-report.js";
+import { readApplicationConfigMaps } from "./migration-assets.js";
+import { configMapFromDocument, yamlDocuments } from "./yaml-source.js";
 
 type CliArgs = {
   env: string;
   root: string;
-  inventoryCsv: string;
-  baselineCsv: string;
+  inventoryJson: string;
+  baselineJson: string;
   outputTargetCsv: string;
+  outputTargetJson: string;
   outputComparisonCsv: string;
+  outputComparisonJson: string;
   commonValuesFile?: string;
 };
 
@@ -35,6 +40,21 @@ type BaselineRow = {
   envVar: string;
   expectedValue: string;
 };
+
+const INVENTORY_FIELDS = [
+  "environment",
+  "workloadType",
+  "workload",
+  "valuesFile",
+  "section",
+  "envVar",
+  "configMap",
+  "key",
+  "sourceFile",
+  "status",
+] as const;
+
+const BASELINE_FIELDS = ["environment", "workloadType", "workload", "section", "envVar", "expectedValue"] as const;
 
 type TargetValue = {
   actualValue: string;
@@ -96,17 +116,23 @@ function parseArgs(argv: string[]): CliArgs {
   const root = path.resolve(arg.get("root") ?? process.cwd());
   const reportsDir = path.join(root, "reports", "refactor-common-configmaps");
 
-  const inventoryCsv = path.resolve(
-    arg.get("inventory-csv") ?? path.join(reportsDir, `task-1-inventory-${env}.csv`),
+  const inventoryJson = path.resolve(
+    arg.get("inventory-json") ?? path.join(reportsDir, `task-1-inventory-${env}.json`),
   );
-  const baselineCsv = path.resolve(
-    arg.get("baseline-csv") ?? path.join(reportsDir, `task-4-baseline-${env}.csv`),
+  const baselineJson = path.resolve(
+    arg.get("baseline-json") ?? path.join(reportsDir, `task-4-baseline-${env}.json`),
   );
   const outputTargetCsv = path.resolve(
     arg.get("output-target-csv") ?? path.join(reportsDir, `task-4-target-${env}.csv`),
   );
   const outputComparisonCsv = path.resolve(
     arg.get("output-comparison-csv") ?? path.join(reportsDir, `task-4-equivalence-${env}.csv`),
+  );
+  const outputTargetJson = path.resolve(
+    arg.get("output-target-json") ?? path.join(reportsDir, `task-4-target-${env}.json`),
+  );
+  const outputComparisonJson = path.resolve(
+    arg.get("output-comparison-json") ?? path.join(reportsDir, `task-4-equivalence-${env}.json`),
   );
 
   const commonValuesCandidate = arg.get("common-values")
@@ -118,144 +144,18 @@ function parseArgs(argv: string[]): CliArgs {
   return {
     env,
     root,
-    inventoryCsv,
-    baselineCsv,
+    inventoryJson,
+    baselineJson,
     outputTargetCsv,
+    outputTargetJson,
     outputComparisonCsv,
+    outputComparisonJson,
     commonValuesFile,
   };
 }
 
 function ensureDir(dirPath: string): void {
   fs.mkdirSync(dirPath, { recursive: true });
-}
-
-function parseCsvLine(line: string): string[] {
-  const out: string[] = [];
-  let current = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < line.length; i += 1) {
-    const ch = line[i];
-
-    if (inQuotes) {
-      if (ch === '"') {
-        if (line[i + 1] === '"') {
-          current += '"';
-          i += 1;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        current += ch;
-      }
-      continue;
-    }
-
-    if (ch === '"') {
-      inQuotes = true;
-      continue;
-    }
-
-    if (ch === ",") {
-      out.push(current);
-      current = "";
-      continue;
-    }
-
-    current += ch;
-  }
-
-  out.push(current);
-  return out;
-}
-
-function csvEscape(value: string): string {
-  if (/[",\n]/.test(value)) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-}
-
-function parseCsvRows(content: string): { header: string[]; rows: string[][] } {
-  const lines = content
-    .split(/\r?\n/)
-    .map((line) => line.trimEnd())
-    .filter((line) => line.length > 0);
-
-  if (lines.length === 0) {
-    return { header: [], rows: [] };
-  }
-
-  const header = parseCsvLine(lines[0]);
-  const rows = lines.slice(1).map(parseCsvLine);
-  return { header, rows };
-}
-
-function idx(header: string[], name: string): number {
-  const index = header.indexOf(name);
-  if (index < 0) {
-    throw new Error(`Missing expected CSV header column: ${name}`);
-  }
-  return index;
-}
-
-function parseInventoryCsv(content: string): InventoryRow[] {
-  const { header, rows } = parseCsvRows(content);
-  if (header.length === 0) {
-    return [];
-  }
-
-  const indices = {
-    environment: idx(header, "environment"),
-    workloadType: idx(header, "workloadType"),
-    workload: idx(header, "workload"),
-    valuesFile: idx(header, "valuesFile"),
-    section: idx(header, "section"),
-    envVar: idx(header, "envVar"),
-    configMap: idx(header, "configMap"),
-    key: idx(header, "key"),
-    sourceFile: idx(header, "sourceFile"),
-    status: idx(header, "status"),
-  };
-
-  return rows.map((fields) => ({
-    environment: fields[indices.environment] ?? "",
-    workloadType: fields[indices.workloadType] ?? "",
-    workload: fields[indices.workload] ?? "",
-    valuesFile: fields[indices.valuesFile] ?? "",
-    section: fields[indices.section] ?? "",
-    envVar: fields[indices.envVar] ?? "",
-    configMap: fields[indices.configMap] ?? "",
-    key: fields[indices.key] ?? "",
-    sourceFile: fields[indices.sourceFile] ?? "",
-    status: fields[indices.status] ?? "",
-  }));
-}
-
-function parseBaselineCsv(content: string): BaselineRow[] {
-  const { header, rows } = parseCsvRows(content);
-  if (header.length === 0) {
-    return [];
-  }
-
-  const indices = {
-    environment: idx(header, "environment"),
-    workloadType: idx(header, "workloadType"),
-    workload: idx(header, "workload"),
-    section: idx(header, "section"),
-    envVar: idx(header, "envVar"),
-    expectedValue: idx(header, "expectedValue"),
-  };
-
-  return rows.map((fields) => ({
-    environment: fields[indices.environment] ?? "",
-    workloadType: fields[indices.workloadType] ?? "",
-    workload: fields[indices.workload] ?? "",
-    section: fields[indices.section] ?? "",
-    envVar: fields[indices.envVar] ?? "",
-    expectedValue: fields[indices.expectedValue] ?? "",
-  }));
 }
 
 function readConfigMapDataFromDocs(docs: Document.Parsed[], label: string): Map<string, Map<string, string>> {
@@ -271,7 +171,7 @@ function readConfigMapDataFromDocs(docs: Document.Parsed[], label: string): Map<
 
 function readConfigMapData(root: string, env: string): Map<string, Map<string, string>> {
   const mapByName = new Map<string, Map<string, string>>();
-  for (const configMap of readCommonConfigMaps(root, env).values()) {
+  for (const configMap of readApplicationConfigMaps(root, env).configMaps.values()) {
     mapByName.set(configMap.name, configMap.data);
   }
   return mapByName;
@@ -627,16 +527,11 @@ function toComparisonCsv(rows: ComparisonRow[]): string {
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
 
-  if (!fs.existsSync(args.inventoryCsv)) {
-    throw new Error(`Inventory CSV not found: ${args.inventoryCsv}`);
-  }
-  if (!fs.existsSync(args.baselineCsv)) {
-    throw new Error(
-      `Baseline CSV not found: ${args.baselineCsv}. Run task4-build-baseline first.`,
-    );
+  if (!fs.existsSync(args.baselineJson)) {
+    throw new Error(`Baseline JSON not found: ${args.baselineJson}. Run task4-build-baseline first.`);
   }
 
-  const inventoryRows = parseInventoryCsv(fs.readFileSync(args.inventoryCsv, "utf8")).filter(
+  const inventoryRows = (readJsonReport(args.inventoryJson, INVENTORY_FIELDS) as InventoryRow[]).filter(
     (row) => row.environment === args.env && row.status === "OK",
   );
 
@@ -644,7 +539,7 @@ function main(): void {
     throw new Error(`No inventory rows found for environment: ${args.env}`);
   }
 
-  const baselineRows = parseBaselineCsv(fs.readFileSync(args.baselineCsv, "utf8")).filter(
+  const baselineRows = (readJsonReport(args.baselineJson, BASELINE_FIELDS) as BaselineRow[]).filter(
     (row) => row.environment === args.env,
   );
   if (baselineRows.length === 0) {
@@ -787,10 +682,13 @@ function main(): void {
       a.envVar.localeCompare(b.envVar),
   );
 
-  ensureDir(path.dirname(args.outputTargetCsv));
-  ensureDir(path.dirname(args.outputComparisonCsv));
+  for (const file of [args.outputTargetCsv, args.outputTargetJson, args.outputComparisonCsv, args.outputComparisonJson]) {
+    ensureDir(path.dirname(file));
+  }
   fs.writeFileSync(args.outputTargetCsv, `${toTargetCsv(targetRows)}\n`, "utf8");
+  writeJsonReport(args.outputTargetJson, targetRows);
   fs.writeFileSync(args.outputComparisonCsv, `${toComparisonCsv(comparisonRows)}\n`, "utf8");
+  writeJsonReport(args.outputComparisonJson, comparisonRows);
 
   const matches = comparisonRows.filter((row) => row.status === "MATCH").length;
   const mismatches = comparisonRows.filter((row) => row.status === "MISMATCH").length;
@@ -803,6 +701,8 @@ function main(): void {
   console.log(`MATCH: ${matches}, MISMATCH: ${mismatches}, MISSING_TARGET: ${missing}`);
   console.log(`Output target CSV: ${path.relative(args.root, args.outputTargetCsv)}`);
   console.log(`Output comparison CSV: ${path.relative(args.root, args.outputComparisonCsv)}`);
+  console.log(`Output target JSON: ${path.relative(args.root, args.outputTargetJson)}`);
+  console.log(`Output comparison JSON: ${path.relative(args.root, args.outputComparisonJson)}`);
   console.log(
     `Common values file used: ${args.commonValuesFile ? path.relative(args.root, args.commonValuesFile) : "<not provided / not found>"}`,
   );

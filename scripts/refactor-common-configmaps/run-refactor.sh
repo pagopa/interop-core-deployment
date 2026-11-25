@@ -98,10 +98,12 @@ elif [[ "$VALUES_FILE" != /* ]]; then
   VALUES_FILE="$ROOT/$VALUES_FILE"
 fi
 
-INVENTORY_CSV="$OUTPUT_DIR/task-1-inventory-$ENVIRONMENT.csv"
-CLASSIFICATION_CSV="$OUTPUT_DIR/task-2-common-configmaps-classification-$ENVIRONMENT.csv"
-MAPPING_CSV="$OUTPUT_DIR/task-3-common-values-mapping-$ENVIRONMENT.csv"
+INVENTORY_JSON="$OUTPUT_DIR/task-1-inventory-$ENVIRONMENT.json"
+CLASSIFICATION_CSV="$OUTPUT_DIR/task-2-classification-common-configmaps-$ENVIRONMENT.csv"
+CLASSIFICATION_JSON="$OUTPUT_DIR/task-2-classification-common-configmaps-$ENVIRONMENT.json"
+MAPPING_JSON="$OUTPUT_DIR/task-3-common-values-mapping-$ENVIRONMENT.json"
 BASELINE_CSV="$OUTPUT_DIR/task-4-baseline-$ENVIRONMENT.csv"
+BASELINE_JSON="$OUTPUT_DIR/task-4-baseline-$ENVIRONMENT.json"
 TASKS_DIR="$SCRIPT_DIR/dist"
 
 case "$PHASE" in
@@ -151,37 +153,43 @@ run_inventory() {
 
 run_classification() {
   run_task task2-classify \
-    --inventory-csv "$INVENTORY_CSV" \
+    --inventory-json "$INVENTORY_JSON" \
     --output-csv "$CLASSIFICATION_CSV" \
-    --output-summary-csv "$OUTPUT_DIR/task-2-classification-summary-$ENVIRONMENT.csv"
+    --output-json "$CLASSIFICATION_JSON" \
+    --output-summary-csv "$OUTPUT_DIR/task-2-classification-summary-$ENVIRONMENT.csv" \
+    --output-summary-json "$OUTPUT_DIR/task-2-classification-summary-$ENVIRONMENT.json"
 }
 
 run_mapping() {
   run_task task3-build-mapping \
-    --classification-csv "$CLASSIFICATION_CSV" \
+    --classification-json "$CLASSIFICATION_JSON" \
     --output-dir "$OUTPUT_DIR"
 }
 
 run_baseline() {
   run_task task4-build-baseline \
-    --inventory-csv "$INVENTORY_CSV" \
-    --output-csv "$BASELINE_CSV"
+    --inventory-json "$INVENTORY_JSON" \
+    --output-csv "$BASELINE_CSV" \
+    --output-json "$BASELINE_JSON"
 }
 
 run_equivalence() {
   run_task task4-check-equivalence \
-    --inventory-csv "$INVENTORY_CSV" \
-    --baseline-csv "$BASELINE_CSV" \
+    --inventory-json "$INVENTORY_JSON" \
+    --baseline-json "$BASELINE_JSON" \
     --output-target-csv "$OUTPUT_DIR/task-4-target-$ENVIRONMENT.csv" \
+    --output-target-json "$OUTPUT_DIR/task-4-target-$ENVIRONMENT.json" \
     --output-comparison-csv "$OUTPUT_DIR/task-4-equivalence-$ENVIRONMENT.csv" \
+    --output-comparison-json "$OUTPUT_DIR/task-4-equivalence-$ENVIRONMENT.json" \
     --common-values "$VALUES_FILE"
 }
 
 run_build_values() {
   run_task task5-build-common-values \
-    --mapping-csv "$MAPPING_CSV" \
+    --mapping-json "$MAPPING_JSON" \
     --output-yaml "$VALUES_FILE" \
     --output-coverage-csv "$OUTPUT_DIR/task-5-migration-coverage-$ENVIRONMENT.csv" \
+    --output-coverage-json "$OUTPUT_DIR/task-5-migration-coverage-$ENVIRONMENT.json" \
     --output-coverage-md "$OUTPUT_DIR/task-5-migration-coverage-$ENVIRONMENT.md"
 }
 
