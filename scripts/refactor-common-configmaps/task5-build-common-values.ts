@@ -90,13 +90,13 @@ function parseArgs(argv: string[]): CliArgs {
     arg.get("output-yaml") ?? path.join(root, "commons", env, "values-commons.yaml"),
   );
   const outputCoverageCsv = path.resolve(
-    arg.get("output-coverage-csv") ?? path.join(reportsDir, `task-5-migration-coverage-${env}.csv`),
+    arg.get("output-coverage-csv") ?? path.join(reportsDir, `task-5-common-values-coverage-${env}.csv`),
   );
   const outputCoverageJson = path.resolve(
-    arg.get("output-coverage-json") ?? path.join(reportsDir, `task-5-migration-coverage-${env}.json`),
+    arg.get("output-coverage-json") ?? path.join(reportsDir, `task-5-common-values-coverage-${env}.json`),
   );
   const outputCoverageMd = path.resolve(
-    arg.get("output-coverage-md") ?? path.join(reportsDir, `task-5-migration-coverage-${env}.md`),
+    arg.get("output-coverage-md") ?? path.join(reportsDir, `task-5-common-values-coverage-${env}.md`),
   );
 
   return { env, root, mappingJson, outputYaml, outputCoverageCsv, outputCoverageJson, outputCoverageMd };
@@ -226,7 +226,7 @@ function toCoverageMarkdown(rows: CoverageRow[], env: string): string {
     );
 
   return [
-    `# TASK 5 - Migration Coverage (${env})`,
+    `# TASK 5 - Common Values Coverage (${env})`,
     "",
     "## Summary",
     "",
@@ -252,7 +252,7 @@ function toCoverageMarkdown(rows: CoverageRow[], env: string): string {
     "## Notes",
     "",
     "- This report reflects TASK 3 approved mapping categories, not runtime adoption by consumers.",
-    "- Rows classified as COMMON_VALUE are the ones materialized into commons/dev/values-commons.yaml.",
+    `- Rows classified as COMMON_VALUE are the ones materialized into commons/${env}/values-commons.yaml.`,
     "- Rows outside COMMON_VALUE remain intentionally out of commons in TASK 5.",
   ].join("\n");
 }

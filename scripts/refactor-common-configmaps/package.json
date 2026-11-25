@@ -14,8 +14,10 @@
     "refactor:classify": "tsx task2-classify.ts --root ../..",
     "refactor:mapping": "tsx task3-build-mapping.ts --root ../..",
     "refactor:baseline": "tsx task4-build-baseline.ts --root ../..",
-    "refactor:equivalence": "tsx task4-check-equivalence.ts --root ../..",
-    "refactor:build-values": "tsx task5-build-common-values.ts --root ../.."
+    "refactor:build-values": "tsx task5-build-common-values.ts --root ../..",
+    "refactor:validate": "tsx task6-validate-common-values.ts --root ../..",
+    "refactor:migrate": "tsx task7-migrate-workloads.ts --root ../..",
+    "refactor:equivalence": "tsx task8-check-equivalence.ts --root ../.."
   },
   "dependencies": {
     "yaml": "^2.8.3"

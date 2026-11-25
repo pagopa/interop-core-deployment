@@ -5,7 +5,7 @@ import type { Document } from "yaml";
 import { csvEscape } from "./csv.js";
 import { readJsonReport, writeJsonReport } from "./json-report.js";
 import { readApplicationConfigMaps } from "./migration-assets.js";
-import { configMapFromDocument, yamlDocuments } from "./yaml-source.js";
+import { configMapFromDocument, scalarText, yamlDocument, yamlDocuments } from "./yaml-source.js";
 
 type CliArgs = {
   env: string;
@@ -16,7 +16,7 @@ type CliArgs = {
   outputTargetJson: string;
   outputComparisonCsv: string;
   outputComparisonJson: string;
-  commonValuesFile?: string;
+  commonValuesFile: string;
 };
 
 type InventoryRow = {
@@ -123,23 +123,21 @@ function parseArgs(argv: string[]): CliArgs {
     arg.get("baseline-json") ?? path.join(reportsDir, `task-4-baseline-${env}.json`),
   );
   const outputTargetCsv = path.resolve(
-    arg.get("output-target-csv") ?? path.join(reportsDir, `task-4-target-${env}.csv`),
+    arg.get("output-target-csv") ?? path.join(reportsDir, `task-8-target-${env}.csv`),
   );
   const outputComparisonCsv = path.resolve(
-    arg.get("output-comparison-csv") ?? path.join(reportsDir, `task-4-equivalence-${env}.csv`),
+    arg.get("output-comparison-csv") ?? path.join(reportsDir, `task-8-equivalence-${env}.csv`),
   );
   const outputTargetJson = path.resolve(
-    arg.get("output-target-json") ?? path.join(reportsDir, `task-4-target-${env}.json`),
+    arg.get("output-target-json") ?? path.join(reportsDir, `task-8-target-${env}.json`),
   );
   const outputComparisonJson = path.resolve(
-    arg.get("output-comparison-json") ?? path.join(reportsDir, `task-4-equivalence-${env}.json`),
+    arg.get("output-comparison-json") ?? path.join(reportsDir, `task-8-equivalence-${env}.json`),
   );
 
-  const commonValuesCandidate = arg.get("common-values")
+  const commonValuesFile = arg.get("common-values")
     ? path.resolve(arg.get("common-values") as string)
     : path.join(root, "commons", env, "values-commons.yaml");
-
-  const commonValuesFile = fs.existsSync(commonValuesCandidate) ? commonValuesCandidate : undefined;
 
   return {
     env,
@@ -217,10 +215,7 @@ function renderWorkload(
   const baseValues = baseValuesFileFor(args.root, args.env, workloadType);
   const imagesValues = path.join(args.root, "commons", args.env, "images.yaml");
 
-  const valuesFiles = [baseValues, imagesValues, workloadValuesFile];
-  if (args.commonValuesFile) {
-    valuesFiles.splice(1, 0, args.commonValuesFile);
-  }
+  const valuesFiles = [args.commonValuesFile, baseValues, workloadValuesFile, imagesValues];
 
   for (const file of valuesFiles) {
     if (!fs.existsSync(file)) {
@@ -551,23 +546,35 @@ function main(): void {
     baselineByKey.set(keyForRow(row), row);
   }
 
-  const commonsConfigMaps = readConfigMapData(args.root, args.env);
-
-  const groups = new Map<string, { workloadType: string; workload: string; valuesFile: string }>();
+  const groups = new Map<string, InventoryRow[]>();
   for (const row of inventoryRows) {
     const groupKey = `${row.workloadType}|${row.workload}|${row.valuesFile}`;
-    if (!groups.has(groupKey)) {
-      groups.set(groupKey, {
-        workloadType: row.workloadType,
-        workload: row.workload,
-        valuesFile: row.valuesFile,
-      });
-    }
+    const group = groups.get(groupKey) ?? [];
+    group.push(row);
+    groups.set(groupKey, group);
   }
+
+  const hasMigratedReference = [...groups.values()].some((rows) => {
+    const document = yamlDocument(path.resolve(args.root, rows[0].valuesFile));
+    return rows.some((row) => {
+      const section = row.section.replace(/envFromConfigmaps$/, "env");
+      const segments = section.split(".").flatMap((segment) => {
+        const [key, ...indexes] = segment.split("[");
+        return [...(key ? [key] : []), ...indexes.map((index) => Number.parseInt(index, 10))];
+      });
+      const value = scalarText(document.getIn([...segments, row.envVar], true));
+      return /^\{\{\s*\.Values\.commons(?:\.[A-Za-z0-9_]+)+\s*\}\}$/.test(value ?? "");
+    });
+  });
+  if (!hasMigratedReference) {
+    throw new Error("No migrated common values references found in the inventoried workloads. Run task 7 (migrate) first.");
+  }
+
+  const commonsConfigMaps = readConfigMapData(args.root, args.env);
 
   const extractedByWorkload = new Map<string, { main: Map<string, TargetValue>; init: Map<string, TargetValue> }>();
   const errors: string[] = [];
-  for (const group of groups.values()) {
+  for (const [group] of groups.values()) {
     const absoluteValuesFile = path.resolve(args.root, group.valuesFile);
     if (!fs.existsSync(absoluteValuesFile)) {
       throw new Error(`Workload values file not found: ${group.valuesFile}`);
@@ -704,8 +711,20 @@ function main(): void {
   console.log(`Output target JSON: ${path.relative(args.root, args.outputTargetJson)}`);
   console.log(`Output comparison JSON: ${path.relative(args.root, args.outputComparisonJson)}`);
   console.log(
-    `Common values file used: ${args.commonValuesFile ? path.relative(args.root, args.commonValuesFile) : "<not provided / not found>"}`,
+    `Common values file used: ${path.relative(args.root, args.commonValuesFile)}`,
   );
+
+  const migratedVariables = targetRows.filter((row) => row.source === "value").length;
+  console.log(`Migrated variables (value rendered from the workload values): ${migratedVariables}`);
+
+  if (migratedVariables === 0) {
+    // Without migrated references every value is read from the same ConfigMaps as the baseline: the check would be meaningless.
+    console.error(
+      "\nNo migrated variable found in the rendered workloads: run the workload migration (task 7) first. " +
+        "Without it the check only compares the current configuration with itself.",
+    );
+    process.exit(1);
+  }
 
   if (errors.length > 0) {
     console.error("\nEquivalence check failed. First mismatches:");
