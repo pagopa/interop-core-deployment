@@ -12,6 +12,36 @@ configmap:
   REPORT_SENDER_MAIL: "noreply@reports.{{.Values.namespace}}.interop.pagopa.it"
   REPORT_SENDER_LABEL: "noreply-{{.Values.namespace}}"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/4a5f6ab5-b676-43d3-be1d-ce45428b127c
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/4a5f6ab5-b676-43d3-be1d-ce45428b127c
+      - secretKey: MAIL_RECIPIENTS
+        remoteRef:
+          key: app/backend/pn-consumers
+          property: MAIL_RECIPIENTS
+          version: uuid/d6f4fc29-192f-4e1c-a525-2af7cbc501d2
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_pn_consumers_user
+          property: username
+          version: uuid/terraform-20250625142809091700000010
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-att/users/att_pn_consumers_user
+          property: password
+          version: uuid/terraform-20250625142809091700000010
+
 cronjob:
   schedule: "0 7 */2 * *"
   failedJobsHistoryLimit: 1
@@ -42,9 +72,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    MAIL_RECIPIENTS: "pn-consumers.MAIL_RECIPIENTS"
-    READMODEL_SQL_DB_USERNAME: "platform-data-pn-consumers-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-pn-consumers-user.password"

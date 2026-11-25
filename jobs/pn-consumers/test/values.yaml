@@ -12,6 +12,46 @@ configmap:
   REPORT_SENDER_MAIL: "noreply@reports.uat.interop.pagopa.it"
   REPORT_SENDER_LABEL: "noreply-test"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: MAIL_RECIPIENTS
+        remoteRef:
+          key: app/backend/pn-consumers
+          property: MAIL_RECIPIENTS
+          version: uuid/85e11955-55fd-4fb9-b48b-cad20a473f14
+      - secretKey: SMTP_USER
+        remoteRef:
+          key: app/backend/smtp-reports
+          property: SMTP_USER
+          version: uuid/f9567665-3e0e-4447-8909-6feb8edc554d
+      - secretKey: SMTP_PASSWORD
+        remoteRef:
+          key: app/backend/smtp-reports
+          property: SMTP_PASSWORD
+          version: uuid/f9567665-3e0e-4447-8909-6feb8edc554d
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_pn_consumers_user
+          property: username
+          version: uuid/terraform-20250618153823477900000012
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_pn_consumers_user
+          property: password
+          version: uuid/terraform-20250618153823477900000012
+
 cronjob:
   schedule: "0 7 */2 * *"
   failedJobsHistoryLimit: 1
@@ -42,11 +82,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    MAIL_RECIPIENTS: "pn-consumers.MAIL_RECIPIENTS"
-    SMTP_USER: "smtp-reports.SMTP_USER"
-    SMTP_PASSWORD: "smtp-reports.SMTP_PASSWORD"
-    READMODEL_SQL_DB_USERNAME: "platform-data-pn-consumers-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-pn-consumers-user.password"

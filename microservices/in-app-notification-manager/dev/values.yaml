@@ -11,6 +11,34 @@ service:
 configmap:
   ACCEPTED_AUDIENCES: "{{.Values.namespace}}.interop.pagopa.it/ui"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: username
+          version: uuid/terraform-20250318135026647200000005
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/flyway_user
+          property: password
+          version: uuid/terraform-20250318135026647200000005
+  app:
+    create: true
+    data:
+      - secretKey: IN_APP_NOTIFICATION_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_manager_user
+          property: username
+          version: uuid/terraform-20250930083517549100000002
+      - secretKey: IN_APP_NOTIFICATION_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-dev/users/dev_in_app_notification_manager_user
+          property: password
+          version: uuid/terraform-20250930083517549100000002
+
 deployment:
   flywayInitContainer:
     create: true
@@ -25,16 +53,12 @@ deployment:
       POSTGRES_HOST: "common-in-app-notification-db.DB_HOST"
       POSTGRES_PORT: "common-in-app-notification-db.DB_PORT"
       POSTGRES_DB: "common-in-app-notification-db.DB_NAME"
-    envFromSecrets:
-      FLYWAY_USER: "platform-data-flyway-user.username"
-      FLYWAY_PASSWORD: "platform-data-flyway-user.password"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     WELL_KNOWN_URLS: >-
-      {{.Values.local.well_known_url.AUTHSRV}},
-      {{.Values.local.well_known_url.BFF}}
+      {{.Values.local.well_known_url.AUTHSRV}}, {{.Values.local.well_known_url.BFF}}
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
@@ -49,9 +73,6 @@ deployment:
     IN_APP_NOTIFICATION_DB_NAME: "common-in-app-notification-db.DB_NAME"
     IN_APP_NOTIFICATION_DB_USE_SSL: "common-in-app-notification-db.DB_USE_SSL"
     IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"
-  envFromSecrets:
-    IN_APP_NOTIFICATION_DB_USERNAME: "platform-data-in-app-notification-manager-user.username"
-    IN_APP_NOTIFICATION_DB_PASSWORD: "platform-data-in-app-notification-manager-user.password"
   livenessProbe:
     httpGet:
       path: /status

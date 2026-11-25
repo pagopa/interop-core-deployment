@@ -1,4 +1,5 @@
 namespace: dev
+deployMode: "KUBECTL_APPLY"
 
 service:
   targetPort: http
@@ -42,7 +43,7 @@ local:
 
 argocd:
   appMonitoring:
-    enable: true
+    enable: false
     projectRepositoryURL: "https://github.com/pagopa/interop-core-deployment"
     projectRepositoryRef: "main"
     jobNamespace: "argocd-app-monitoring"
@@ -56,9 +57,19 @@ autoscaling:
     minReplicaCount: 0 # this must be 0 when using 'cron' trigger for uptime cost optimization
     maxReplicaCount: "{{.Values.deployment.replicas}}" # must be a string
     triggers:
-    - type: cron
-      metadata:
-        timezone: Europe/Rome
-        start: 0 8 * * 1-5
-        end: 0 20 * * 1-5
-        desiredReplicas: "{{.Values.deployment.replicas}}" # must be a string
+      - type: cron
+        metadata:
+          timezone: Europe/Rome
+          start: 0 8 * * 1-5
+          end: 0 20 * * 1-5
+          desiredReplicas: "{{.Values.deployment.replicas}}" # must be a string
+          
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore

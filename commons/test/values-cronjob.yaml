@@ -1,4 +1,5 @@
 namespace: "test"
+deployMode: "KUBECTL_APPLY"
 
 cronjob:
   image:
@@ -24,3 +25,13 @@ local:
     ENABLED_PROJECTIONS: "false"
   awsAccountId: "895646477129"
   env: "test"
+
+externalSecrets:
+  app:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
+  flywayInitContainer:
+    secretStoreRef:
+      name: app-secret-store
+      kind: SecretStore
