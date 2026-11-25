@@ -1,5 +1,25 @@
 name: "interop-be-check-selfcare-diff"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: SELFCARE_V2_API_KEY
+        remoteRef:
+          key: app/backend/selfcare-v2
+          property: SELFCARE_V2_API_KEY
+          version: uuid/77bb5551-f686-4360-a26b-831e284672f7
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_check_selfcare_diff_user
+          property: username
+          version: uuid/terraform-20260211085823661400000002
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_check_selfcare_diff_user
+          property: password
+          version: uuid/terraform-20260211085823661400000002
+
 cronjob:
   suspend: true
   schedule: "0 2 * * *"  # Daily at 2 AM UTC
@@ -20,8 +40,3 @@ cronjob:
     READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     READMODEL_SQL_DB_SCHEMA_NOTIFICATION_CONFIG: "common-read-model-sql.DB_SCHEMA_NOTIFICATION_CONFIG"
-
-  envFromSecrets:
-    SELFCARE_V2_API_KEY: "selfcare-v2.SELFCARE_V2_API_KEY"
-    READMODEL_SQL_DB_USERNAME: "platform-data-check-selfcare-diff-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-check-selfcare-diff-user.password"

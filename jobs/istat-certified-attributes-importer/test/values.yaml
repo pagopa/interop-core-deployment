@@ -17,6 +17,21 @@ configmap:
   DEFAULT_POLLING_RETRY_DELAY: "1000"
   DEFAULT_POLLING_MAX_RETRIES: "5"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_istat_certified_attributes_importer_user
+          property: username
+          version: uuid/terraform-20260629073314549100000002
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_istat_certified_attributes_importer_user
+          property: password
+          version: uuid/terraform-20260629073314549100000002
+
 cronjob:
   schedule: "30 8 * * *"
   timezone: "Europe/Rome"
@@ -36,7 +51,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
-
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-istat-certified-attributes-importer-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-istat-certified-attributes-importer-user.password"

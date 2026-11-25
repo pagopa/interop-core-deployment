@@ -12,6 +12,7 @@ import {
   initializeCommonsExternalSecrets,
 } from '../../lib/values-yaml-patcher.js';
 import type { ContainerExternalSecretsConfig } from '../../lib/external-secrets-types.js';
+import { parse as parseYaml } from 'yaml';
 
 describe('values-yaml-patcher', () => {
   let tempDir: string;
@@ -108,6 +109,24 @@ describe('values-yaml-patcher', () => {
 
       expect(values.externalSecrets.flywayInitContainer.create).toBe(true);
       expect(values.externalSecrets.app).toBeUndefined();
+    });
+
+    it('should not pollute Object.prototype through __proto__ or constructor keys', () => {
+      const malicious = parseYaml(`
+create: true
+__proto__:
+  polluted: true
+constructor:
+  prototype:
+    polluted: true
+data: []
+`);
+      const values: any = {};
+      mergeExternalSecretsSection(values, 'app', malicious);
+
+      expect(({} as any).polluted).toBeUndefined();
+      expect(Object.prototype.hasOwnProperty.call(Object.prototype, 'polluted')).toBe(false);
+      expect(values.externalSecrets.app.create).toBe(true);
     });
   });
 

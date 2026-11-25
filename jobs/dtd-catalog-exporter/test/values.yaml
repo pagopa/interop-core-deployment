@@ -14,6 +14,36 @@ configmap:
   GITHUB_REPO: "interop-metrics-deploy-test"
   GITHUB_REPO_OWNER: "pagopa"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_DB_USERNAME
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_USR
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: READMODEL_DB_PASSWORD
+        remoteRef:
+          key: app/backend/read-model
+          property: READONLY_PSW
+          version: uuid/f6b7670e-bb01-4eae-ba5a-7c22f320f60b
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_dtd_catalog_exporter_user
+          property: username
+          version: uuid/terraform-20250618153823478000000013
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_dtd_catalog_exporter_user
+          property: password
+          version: uuid/terraform-20250618153823478000000013
+      - secretKey: GITHUB_ACCESS_TOKEN
+        remoteRef:
+          key: app/backend/metrics-reports
+          property: BOT_DTD_OPENDATA_GITHUB_ACCESS_TOKEN
+          version: uuid/ac8dba97-0b85-4a11-89ab-3932596193de
+
 cronjob:
   schedule: "0 4 * * *"
   suspend: true
@@ -45,9 +75,3 @@ cronjob:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     FEATURE_FLAG_SQL: "common-feature-flags.FEATURE_FLAG_SQL"
-  envFromSecrets:
-    READMODEL_DB_USERNAME: "read-model.READONLY_USR"
-    READMODEL_DB_PASSWORD: "read-model.READONLY_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-dtd-catalog-exporter-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-dtd-catalog-exporter-user.password"
-    GITHUB_ACCESS_TOKEN: "metrics-reports.BOT_DTD_OPENDATA_GITHUB_ACCESS_TOKEN"

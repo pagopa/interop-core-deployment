@@ -13,6 +13,44 @@ configmap:
   EVENTSTORE_DB_SCHEMA: "{{.Values.namespace}}_notification_config"
   ACCEPTED_AUDIENCES: "uat.interop.pagopa.it/ui,uat.interop.pagopa.it/internal"
 
+externalSecrets:
+  flywayInitContainer:
+    create: true
+    data:
+      - secretKey: FLYWAY_USER
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+      - secretKey: FLYWAY_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+  app:
+    create: true
+    data:
+      - secretKey: EVENTSTORE_DB_USERNAME
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_USR
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+      - secretKey: EVENTSTORE_DB_PASSWORD
+        remoteRef:
+          key: app/backend/event-store
+          property: POSTGRES_PSW
+          version: uuid/acb3a3ca-73a9-4375-a27f-7ff40407d896
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_notification_config_process_user
+          property: username
+          version: uuid/terraform-20251124163807266900000017
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_notification_config_process_user
+          property: password
+          version: uuid/terraform-20251124163807266900000017
+
 deployment:
   flywayInitContainer:
     create: true
@@ -27,9 +65,6 @@ deployment:
       POSTGRES_DB: "common-event-store.EVENTSTORE_DB_NAME"
       POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
       POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-    envFromSecrets:
-      FLYWAY_USER: "event-store.POSTGRES_USR"
-      FLYWAY_PASSWORD: "event-store.POSTGRES_PSW"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
@@ -68,11 +103,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-  envFromSecrets:
-    EVENTSTORE_DB_USERNAME: "event-store.POSTGRES_USR"
-    EVENTSTORE_DB_PASSWORD: "event-store.POSTGRES_PSW"
-    READMODEL_SQL_DB_USERNAME: "platform-data-notification-config-process-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-notification-config-process-user.password"
   livenessProbe:
     httpGet:
       path: /status

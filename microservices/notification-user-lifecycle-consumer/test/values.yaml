@@ -19,6 +19,26 @@ configmap:
   # TODO: verify INTEROP_PRODUCT value for test environment
   INTEROP_PRODUCT: "prod-interop-coll"
 
+externalSecrets:
+  app:
+    create: true
+    data:
+      - secretKey: READMODEL_SQL_DB_USERNAME
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_notification_user_lifecycle_consumer_user
+          property: username
+          version: uuid/terraform-20251124163807110500000013
+      - secretKey: READMODEL_SQL_DB_PASSWORD
+        remoteRef:
+          key: rds/interop-platform-data-test/users/test_notification_user_lifecycle_consumer_user
+          property: password
+          version: uuid/terraform-20251124163807110500000013
+      - secretKey: KAFKA_BROKER_CONNECTION_STRING
+        remoteRef:
+          key: app/backend/selfcare-v2
+          property: SELFCARE_USERS_BROKER_CONNECTION_STRING
+          version: uuid/77bb5551-f686-4360-a26b-831e284672f7
+
 deployment:
   envFromConfigmaps:
     KAFKA_BROKERS: "common-selfcare.SELFCARE_KAFKA_BROKERS"
@@ -41,10 +61,6 @@ deployment:
     READMODEL_SQL_DB_SCHEMA_PURPOSE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_PURPOSE_TEMPLATE"
     READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
     SELFCARE_TOPIC: "common-selfcare.SELFCARE_USERS_TOPIC"
-  envFromSecrets:
-    READMODEL_SQL_DB_USERNAME: "platform-data-notification-user-lifecycle-consumer-user.username"
-    READMODEL_SQL_DB_PASSWORD: "platform-data-notification-user-lifecycle-consumer-user.password"
-    KAFKA_BROKER_CONNECTION_STRING: "selfcare-v2.SELFCARE_USERS_BROKER_CONNECTION_STRING"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"
