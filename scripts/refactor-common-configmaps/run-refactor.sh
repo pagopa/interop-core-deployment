@@ -17,7 +17,7 @@ Phases, in execution order:
   build-values  Run task 5: generate values-commons.yaml (requires --apply)
   validate      Run task 6: check values-commons.yaml against the ConfigMaps and their classification
   plan          Optional, run task 7 without changes: show the workload migration plan
-  migrate       Optional, run task 7: move COMMON_VALUE references to env in the workload values (requires --apply)
+  migrate       Optional, run task 7: replace COMMON_VALUE ConfigMap references in workload values (requires --apply)
   equivalence   Optional, run task 8 after migrate: compare the rendered workloads with the baseline (requires Helm)
 
 Options:
