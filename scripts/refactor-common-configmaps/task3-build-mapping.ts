@@ -286,6 +286,13 @@ function buildMappingRows(classificationRows: Task2Row[], env: string): MappingR
       continue;
     }
 
+    if (row.classification !== existing.classification) {
+      throw new Error(
+        `Conflicting classifications for ${env}/${row.configMap}.${row.key}: ` +
+        [existing.classification, row.classification].sort().join(", "),
+      );
+    }
+
     if (row.consumerCount > existing.consumerCount) {
       existing.consumerCount = row.consumerCount;
     }

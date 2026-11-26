@@ -72,6 +72,7 @@ type GroupedRow = Omit<OutputRow, "workload" | "valuesFile"> & {
   referenceCount: number;
   /** References of the key across all its rows. */
   keyReferenceCount: number;
+  classificationConflict: boolean;
   workloads: string[];
   valuesFiles: string[];
 };
@@ -97,7 +98,7 @@ function groupRows(rows: OutputRow[]): GroupedRow[] {
       row.classification,
     ]);
     const { workload, valuesFile, ...shared } = row;
-    const group = groups.get(id) ?? { ...shared, referenceCount: 0, keyReferenceCount: 0, workloads: [], valuesFiles: [] };
+    const group = groups.get(id) ?? { ...shared, referenceCount: 0, keyReferenceCount: 0, classificationConflict: false, workloads: [], valuesFiles: [] };
     groups.set(id, group);
 
     // Rows without consumers (workloadType "none") describe the key only and are not counted as workloads.
@@ -108,14 +109,19 @@ function groupRows(rows: OutputRow[]): GroupedRow[] {
     }
   }
 
-  const referencesByKey = new Map<string, number>();
+  const countsByKey = new Map<string, { references: number; classifications: Set<Classification> }>();
   for (const group of groups.values()) {
-    const key = `${group.configMap}.${group.key}`;
-    referencesByKey.set(key, (referencesByKey.get(key) ?? 0) + group.referenceCount);
+    const id = keyId(group.configMap, group.key);
+    const counts = countsByKey.get(id) ?? { references: 0, classifications: new Set<Classification>() };
+    counts.references += group.referenceCount;
+    counts.classifications.add(group.classification);
+    countsByKey.set(id, counts);
   }
 
   for (const group of groups.values()) {
-    group.keyReferenceCount = referencesByKey.get(`${group.configMap}.${group.key}`) ?? 0;
+    const counts = countsByKey.get(keyId(group.configMap, group.key))!;
+    group.keyReferenceCount = counts.references;
+    group.classificationConflict = counts.classifications.size > 1;
     const order = group.workloads.map((_, index) => index).sort((a, b) => group.workloads[a].localeCompare(group.workloads[b]));
     group.workloads = order.map((index) => group.workloads[index]);
     group.valuesFiles = order.map((index) => group.valuesFiles[index]);
@@ -233,6 +239,7 @@ function toCsv(rows: GroupedRow[]): string {
     "keyReferenceCount",
     "classificationReason",
     "classification",
+    "classificationConflict",
   ];
 
   const lines = [header.join(",")];
@@ -254,6 +261,7 @@ function toCsv(rows: GroupedRow[]): string {
         String(row.keyReferenceCount),
         row.classificationReason,
         row.classification,
+        String(row.classificationConflict),
       ]
         .map(csvEscape)
         .join(","),
@@ -281,6 +289,7 @@ function toJsonRecords(rows: GroupedRow[]): object[] {
     keyReferenceCount: row.keyReferenceCount,
     classificationReason: row.classificationReason,
     classification: row.classification,
+    classificationConflict: row.classificationConflict,
   }));
 }
 
@@ -294,6 +303,7 @@ function summaryMetrics(summary: {
   references: number;
   rows: number;
   classificationCounts: Record<string, number>;
+  conflictingClassificationKeys: number;
   statusCounts: Record<string, number>;
 }): SummaryMetric[] {
   const metrics: SummaryMetric[] = [];
@@ -323,6 +333,8 @@ function summaryMetrics(summary: {
   add("excludedMigrationConfigMaps", summary.excludedMigrationConfigMaps, "Migration ConfigMaps excluded from the refactoring (owned by the Flyway migrations flow)");
   add("references", summary.references, "Total workload references (one per workload, section and variable) aggregated in the classification output");
   add("rows", summary.rows, "Total rows written in classification output; workloads sharing ConfigMap, key, workload type, section and variable are merged into one row");
+
+  add("conflictingClassificationKeys", summary.conflictingClassificationKeys, "Distinct ConfigMap keys with more than one classification in this environment");
 
   for (const classification of CLASSIFICATIONS) {
     add(`classification.${classification}`, summary.classificationCounts[classification] ?? 0, classificationDescription(classification));
@@ -449,6 +461,9 @@ function main(): void {
     excludedMigrationConfigMaps: excludedMigrationConfigMaps.size,
     references: outputRows.filter((row) => row.workloadType !== "none").length,
     rows: groupedRows.length,
+    conflictingClassificationKeys: new Set(groupedRows
+      .filter((row) => row.classificationConflict)
+      .map((row) => keyId(row.configMap, row.key))).size,
     classificationCounts: groupedRows.reduce<Record<string, number>>((acc, row) => {
       acc[row.classification] = (acc[row.classification] ?? 0) + 1;
       return acc;
