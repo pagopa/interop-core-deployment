@@ -18,11 +18,10 @@ configmap:
 deployment:
   env:
     TOPIC_STARTING_OFFSET: "earliest"
+    CATALOG_TOPIC: "{{.Values.commons.kafka.catalogTopic}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-  envFromConfigmaps:
-    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
   resources:
     limits:
       cpu: "500m"

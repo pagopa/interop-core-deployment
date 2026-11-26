@@ -78,13 +78,13 @@ deployment:
     env:
       FLYWAY_CREATE_SCHEMAS: "true"
       FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
-      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_URL: "jdbc:postgresql://{{.Values.commons.eventStore.eventstoreDbHost}}:{{.Values.commons.eventStore.eventstoreDbPort}}/$(POSTGRES_DB)"
+      POSTGRES_HOST: "{{.Values.commons.eventStore.eventstoreDbHost}}"
+      POSTGRES_PORT: "{{.Values.commons.eventStore.eventstoreDbPort}}"
     envFromConfigmaps:
       FLYWAY_SCHEMAS: "{{.Values.name}}.POSTGRES_SCHEMA"
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.POSTGRES_SCHEMA"
       POSTGRES_DB: "{{.Values.name}}.POSTGRES_DB"
-      POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
-      POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
     resources:
       limits:
         cpu: "500m"
@@ -101,12 +101,11 @@ deployment:
     PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/persistence-events.fifo"
     WELL_KNOWN_URLS: >-
       {{.Values.local.well_known_url.AUTHSRV}}, {{.Values.local.well_known_url.BFF}}, {{.Values.local.well_known_url.INTERNAL}}, {{.Values.local.well_known_url.MAINTENANCE}}
-  envFromConfigmaps:
-    POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
-    POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-    CQRS_PROJECTION_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    CQRS_PROJECTION_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-    CQRS_PROJECTION_DB_PORT: "common-read-model.READMODEL_DB_PORT"
+    POSTGRES_HOST: "{{.Values.commons.eventStore.eventstoreDbHost}}"
+    POSTGRES_PORT: "{{.Values.commons.eventStore.eventstoreDbPort}}"
+    CQRS_PROJECTION_DB_HOST: "{{.Values.commons.readModel.readmodelDbHost}}"
+    CQRS_PROJECTION_DB_NAME: "{{.Values.commons.readModel.readmodelDbName}}"
+    CQRS_PROJECTION_DB_PORT: "{{.Values.commons.readModel.readmodelDbPort}}"
   livenessProbe:
     httpGet:
       path: "/alive"

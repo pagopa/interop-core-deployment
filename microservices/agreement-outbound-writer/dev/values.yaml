@@ -14,11 +14,11 @@ configmap:
 deployment:
   env:
     TOPIC_STARTING_OFFSET: "earliest"
+    AGREEMENT_TOPIC: "{{.Values.commons.kafka.agreementTopic}}"
+    PRODUCER_KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
     PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
-    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
     AGREEMENT_OUTBOUND_TOPIC: "common-kafka.AGREEMENT_OUTBOUND_TOPIC"
-    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"

@@ -20,8 +20,7 @@ deployment:
     repositoryName: "interop-be-token-details-persister"
   env:
     TOPIC_STARTING_OFFSET: "earliest"
+    TOKEN_AUDITING_TOPIC: "{{.Values.commons.kafka.consumerTokenAuditingTopic}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-  envFromConfigmaps:
-    TOKEN_AUDITING_TOPIC: "common-kafka.CONSUMER_TOKEN_AUDITING_TOPIC"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"

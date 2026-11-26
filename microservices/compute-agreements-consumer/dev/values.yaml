@@ -19,10 +19,9 @@ configmap:
 deployment:
   env:
     TOPIC_STARTING_OFFSET: "latest"
+    AGREEMENT_PROCESS_URL: "{{.Values.commons.servicesUrls.agreementProcessUrl}}"
+    TENANT_TOPIC: "{{.Values.commons.kafka.tenantTopic}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "{{.Values.commons.featureFlags.featureFlagAttributeCertifiedDiscrete}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-  envFromConfigmaps:
-    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
-    TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"

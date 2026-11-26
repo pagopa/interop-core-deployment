@@ -47,21 +47,22 @@ deployment:
       FLYWAY_CREATE_SCHEMAS: "true"
       FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
       FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
-      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_URL: "jdbc:postgresql://$(POSTGRES_HOST):{{.Values.commons.tenantKindHistoryDb.dbPort}}/{{.Values.commons.tenantKindHistoryDb.dbName}}"
+      FLYWAY_SCHEMAS: "{{.Values.commons.tenantKindHistoryDb.dbSchema}}"
+      POSTGRES_DB: "{{.Values.commons.tenantKindHistoryDb.dbName}}"
+      POSTGRES_PORT: "{{.Values.commons.tenantKindHistoryDb.dbPort}}"
     envFromConfigmaps:
-      FLYWAY_SCHEMAS: "common-tenant-kind-history-db.DB_SCHEMA"
-      POSTGRES_DB: "common-tenant-kind-history-db.DB_NAME"
       POSTGRES_HOST: "common-tenant-kind-history-db.DB_HOST_RW"
-      POSTGRES_PORT: "common-tenant-kind-history-db.DB_PORT"
 
+  env:
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    TENANT_TOPIC: "{{.Values.commons.kafka.tenantTopic}}"
+    TENANT_KIND_HISTORY_DB_PORT: "{{.Values.commons.tenantKindHistoryDb.dbPort}}"
+    TENANT_KIND_HISTORY_DB_NAME: "{{.Values.commons.tenantKindHistoryDb.dbName}}"
+    TENANT_KIND_HISTORY_DB_USE_SSL: "{{.Values.commons.tenantKindHistoryDb.dbUseSsl}}"
+    TENANT_KIND_HISTORY_DB_SCHEMA: "{{.Values.commons.tenantKindHistoryDb.dbSchema}}"
   envFromConfigmaps:
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
     TENANT_KIND_HISTORY_DB_HOST: "common-tenant-kind-history-db.DB_HOST_RW"
-    TENANT_KIND_HISTORY_DB_PORT: "common-tenant-kind-history-db.DB_PORT"
-    TENANT_KIND_HISTORY_DB_NAME: "common-tenant-kind-history-db.DB_NAME"
-    TENANT_KIND_HISTORY_DB_USE_SSL: "common-tenant-kind-history-db.DB_USE_SSL"
-    TENANT_KIND_HISTORY_DB_SCHEMA: "common-tenant-kind-history-db.DB_SCHEMA"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"

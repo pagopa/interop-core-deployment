@@ -47,32 +47,30 @@ deployment:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
       FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
-      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_URL: "jdbc:postgresql://{{.Values.commons.inAppNotificationDb.dbHost}}:{{.Values.commons.inAppNotificationDb.dbPort}}/{{.Values.commons.inAppNotificationDb.dbName}}"
       FLYWAY_SCHEMAS: "{{.Values.namespace}}_notification"
-    envFromConfigmaps:
-      POSTGRES_HOST: "common-in-app-notification-db.DB_HOST"
-      POSTGRES_PORT: "common-in-app-notification-db.DB_PORT"
-      POSTGRES_DB: "common-in-app-notification-db.DB_NAME"
+      POSTGRES_HOST: "{{.Values.commons.inAppNotificationDb.dbHost}}"
+      POSTGRES_PORT: "{{.Values.commons.inAppNotificationDb.dbPort}}"
+      POSTGRES_DB: "{{.Values.commons.inAppNotificationDb.dbName}}"
   env:
     PORT: "8088"
     HOST: "0.0.0.0"
     SERVICE_VERSION: "{{.Values.deployment.image.tag}}"
     WELL_KNOWN_URLS: >-
       {{.Values.local.well_known_url.AUTHSRV}}, {{.Values.local.well_known_url.BFF}}
+    APPLICATION_AUDIT_TOPIC: "{{.Values.commons.kafka.applicationAuditTopic}}"
+    APPLICATION_AUDIT_FALLBACK_SQS_URL: "{{.Values.commons.sqs.applicationAuditFallbackSqsUrl}}"
+    PRODUCER_KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    IN_APP_NOTIFICATION_DB_HOST: "{{.Values.commons.inAppNotificationDb.dbHost}}"
+    IN_APP_NOTIFICATION_DB_PORT: "{{.Values.commons.inAppNotificationDb.dbPort}}"
+    IN_APP_NOTIFICATION_DB_NAME: "{{.Values.commons.inAppNotificationDb.dbName}}"
+    IN_APP_NOTIFICATION_DB_USE_SSL: "{{.Values.commons.inAppNotificationDb.dbUseSsl}}"
+    IN_APP_NOTIFICATION_DB_SCHEMA: "{{.Values.commons.inAppNotificationDb.dbSchema}}"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
-  envFromConfigmaps:
-    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
-    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
-    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    IN_APP_NOTIFICATION_DB_HOST: "common-in-app-notification-db.DB_HOST"
-    IN_APP_NOTIFICATION_DB_PORT: "common-in-app-notification-db.DB_PORT"
-    IN_APP_NOTIFICATION_DB_NAME: "common-in-app-notification-db.DB_NAME"
-    IN_APP_NOTIFICATION_DB_USE_SSL: "common-in-app-notification-db.DB_USE_SSL"
-    IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"
   livenessProbe:
     httpGet:
       path: /status

@@ -34,15 +34,15 @@ externalSecrets:
           version: uuid/5ee4c5b8-5efa-43a2-9fe9-7768484451a6
 
 deployment:
-  envFromConfigmaps:
-    SAFE_STORAGE_BASE_URL: "common-safe-storage.BASE_URL"
-    SAFE_STORAGE_DOC_TYPE: "common-safe-storage.DOC_TYPE"
-    SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"
-    SIGNATURE_REFERENCES_TABLE_NAME: "common-safe-storage.LIVE_REQUESTS_DYNAMO_TABLE_NAME"
-    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
-    DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
-    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
-    PURPOSE_TEMPLATE_PROCESS_URL: "common-services-urls.PURPOSE_TEMPLATE_PROCESS_URL"
+  env:
+    SAFE_STORAGE_BASE_URL: "{{.Values.commons.safeStorage.baseUrl}}"
+    SAFE_STORAGE_DOC_TYPE: "{{.Values.commons.safeStorage.docType}}"
+    SAFE_STORAGE_DOC_STATUS: "{{.Values.commons.safeStorage.docStatus}}"
+    SIGNATURE_REFERENCES_TABLE_NAME: "{{.Values.commons.safeStorage.liveRequestsDynamoTableName}}"
+    AGREEMENT_PROCESS_URL: "{{.Values.commons.servicesUrls.agreementProcessUrl}}"
+    DELEGATION_PROCESS_URL: "{{.Values.commons.servicesUrls.delegationProcessUrl}}"
+    PURPOSE_PROCESS_URL: "{{.Values.commons.servicesUrls.purposeProcessUrl}}"
+    PURPOSE_TEMPLATE_PROCESS_URL: "{{.Values.commons.servicesUrls.purposeTemplateProcessUrl}}"
 
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"

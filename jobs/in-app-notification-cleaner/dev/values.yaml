@@ -23,11 +23,10 @@ cronjob:
 
   env:
     DELETE_OLDER_THAN_DAYS: "3"
-  envFromConfigmaps:
-    IN_APP_NOTIFICATION_DB_HOST: "common-in-app-notification-db.DB_HOST"
-    IN_APP_NOTIFICATION_DB_NAME: "common-in-app-notification-db.DB_NAME"
-    IN_APP_NOTIFICATION_DB_PORT: "common-in-app-notification-db.DB_PORT"
-    IN_APP_NOTIFICATION_DB_SCHEMA: "common-in-app-notification-db.DB_SCHEMA"
-    IN_APP_NOTIFICATION_DB_USE_SSL: "common-in-app-notification-db.DB_USE_SSL"
+    IN_APP_NOTIFICATION_DB_HOST: "{{.Values.commons.inAppNotificationDb.dbHost}}"
+    IN_APP_NOTIFICATION_DB_NAME: "{{.Values.commons.inAppNotificationDb.dbName}}"
+    IN_APP_NOTIFICATION_DB_PORT: "{{.Values.commons.inAppNotificationDb.dbPort}}"
+    IN_APP_NOTIFICATION_DB_SCHEMA: "{{.Values.commons.inAppNotificationDb.dbSchema}}"
+    IN_APP_NOTIFICATION_DB_USE_SSL: "{{.Values.commons.inAppNotificationDb.dbUseSsl}}"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"

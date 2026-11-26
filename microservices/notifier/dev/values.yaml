@@ -90,15 +90,15 @@ deployment:
     create: true
     migrationsConfigmap: "common-db-migrations"
     env:
-      FLYWAY_URL: "jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+      FLYWAY_URL: "jdbc:postgresql://{{.Values.commons.eventStore.eventstoreDbHost}}:{{.Values.commons.eventStore.eventstoreDbPort}}/$(POSTGRES_DB)"
       FLYWAY_CREATE_SCHEMAS: "true"
       FLYWAY_PLACEHOLDER_REPLACEMENT: "true"
+      POSTGRES_HOST: "{{.Values.commons.eventStore.eventstoreDbHost}}"
+      POSTGRES_PORT: "{{.Values.commons.eventStore.eventstoreDbPort}}"
     envFromConfigmaps:
       FLYWAY_PLACEHOLDERS_APPLICATIONSCHEMA: "{{.Values.name}}.POSTGRES_SCHEMA"
       POSTGRES_DB: "{{.Values.name}}.POSTGRES_DB"
       FLYWAY_SCHEMAS: "{{.Values.name}}.POSTGRES_SCHEMA"
-      POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
-      POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
     resources:
       limits:
         cpu: "500m"
@@ -118,20 +118,19 @@ deployment:
     PERSISTENCE_EVENTS_QUEUE_URL: "https://sqs.eu-south-1.amazonaws.com/{{.Values.local.awsAccountId}}/persistence-events.fifo"
     WELL_KNOWN_URLS: >-
       {{.Values.local.well_known_url.AUTHSRV}}, {{.Values.local.well_known_url.BFF}}, {{.Values.local.well_known_url.INTERNAL}}, {{.Values.local.well_known_url.MAINTENANCE}}
+    CATALOG_PROCESS_URL: "{{.Values.commons.servicesUrls.catalogProcessUrl}}"
+    AUTHORIZATION_MANAGEMENT_URL: "{{.Values.commons.servicesUrls.authorizationManagementUrl}}"
+    NOTIFIER_URL: "{{.Values.commons.servicesUrls.notifierUrl}}"
+    POSTGRES_HOST: "{{.Values.commons.eventStore.eventstoreDbHost}}"
+    POSTGRES_PORT: "{{.Values.commons.eventStore.eventstoreDbPort}}"
+    NOTIFICATION_DB_NAME: "{{.Values.commons.eventStore.eventstoreDbName}}"
+    NOTIFICATION_DB_SERVER_NAME: "{{.Values.commons.eventStore.eventstoreDbHost}}"
+    NOTIFICATION_DB_PORT: "{{.Values.commons.eventStore.eventstoreDbPort}}"
+    CQRS_PROJECTION_DB_HOST: "{{.Values.commons.readModel.readmodelDbHost}}"
+    CQRS_PROJECTION_DB_PORT: "{{.Values.commons.readModel.readmodelDbPort}}"
+    CQRS_PROJECTION_DB_NAME: "{{.Values.commons.readModel.readmodelDbName}}"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
-  envFromConfigmaps:
-    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
-    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
-    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
-    POSTGRES_HOST: "common-event-store.EVENTSTORE_DB_HOST"
-    POSTGRES_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-    NOTIFICATION_DB_NAME: "common-event-store.EVENTSTORE_DB_NAME"
-    NOTIFICATION_DB_SERVER_NAME: "common-event-store.EVENTSTORE_DB_HOST"
-    NOTIFICATION_DB_PORT: "common-event-store.EVENTSTORE_DB_PORT"
-    CQRS_PROJECTION_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    CQRS_PROJECTION_DB_PORT: "common-read-model.READMODEL_DB_PORT"
-    CQRS_PROJECTION_DB_NAME: "common-read-model.READMODEL_DB_NAME"
   readinessProbe:
     httpGet:
       path: /ready

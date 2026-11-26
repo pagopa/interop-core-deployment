@@ -50,21 +50,20 @@ deployment:
       FLYWAY_CREATE_SCHEMAS: true
       FLYWAY_PLACEHOLDER_REPLACEMENT: true
       FLYWAY_PLACEHOLDERS_NAMESPACE: "{{.Values.namespace}}"
-      FLYWAY_URL: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+      FLYWAY_URL: "jdbc:postgresql://{{.Values.commons.scheduledNotificationDb.dbHost}}:{{.Values.commons.scheduledNotificationDb.dbPort}}/{{.Values.commons.scheduledNotificationDb.dbName}}"
       FLYWAY_SCHEMAS: "{{.Values.namespace}}_scheduled_notification"
-    envFromConfigmaps:
-      POSTGRES_HOST: "common-scheduled-notification-db.DB_HOST"
-      POSTGRES_PORT: "common-scheduled-notification-db.DB_PORT"
-      POSTGRES_DB: "common-scheduled-notification-db.DB_NAME"
+      POSTGRES_HOST: "{{.Values.commons.scheduledNotificationDb.dbHost}}"
+      POSTGRES_PORT: "{{.Values.commons.scheduledNotificationDb.dbPort}}"
+      POSTGRES_DB: "{{.Values.commons.scheduledNotificationDb.dbName}}"
 
-  envFromConfigmaps:
-    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    SCHEDULED_NOTIFICATION_DB_HOST: "common-scheduled-notification-db.DB_HOST"
-    SCHEDULED_NOTIFICATION_DB_PORT: "common-scheduled-notification-db.DB_PORT"
-    SCHEDULED_NOTIFICATION_DB_NAME: "common-scheduled-notification-db.DB_NAME"
-    SCHEDULED_NOTIFICATION_DB_USE_SSL: "common-scheduled-notification-db.DB_USE_SSL"
-    SCHEDULED_NOTIFICATION_DB_SCHEMA: "common-scheduled-notification-db.DB_SCHEMA"
+  env:
+    CATALOG_TOPIC: "{{.Values.commons.kafka.catalogTopic}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    SCHEDULED_NOTIFICATION_DB_HOST: "{{.Values.commons.scheduledNotificationDb.dbHost}}"
+    SCHEDULED_NOTIFICATION_DB_PORT: "{{.Values.commons.scheduledNotificationDb.dbPort}}"
+    SCHEDULED_NOTIFICATION_DB_NAME: "{{.Values.commons.scheduledNotificationDb.dbName}}"
+    SCHEDULED_NOTIFICATION_DB_USE_SSL: "{{.Values.commons.scheduledNotificationDb.dbUseSsl}}"
+    SCHEDULED_NOTIFICATION_DB_SCHEMA: "{{.Values.commons.scheduledNotificationDb.dbSchema}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"

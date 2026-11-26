@@ -27,18 +27,18 @@ externalSecrets:
           version: uuid/5ee4c5b8-5efa-43a2-9fe9-7768484451a6
 
 deployment:
-  envFromConfigmaps:
-    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
-    AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
-    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
-    DELEGATION_TOPIC: "common-kafka.DELEGATION_TOPIC"
-    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
-    PURPOSE_TEMPLATE_TOPIC: "common-kafka.PURPOSE_TEMPLATE_TOPIC"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    SAFE_STORAGE_BASE_URL: "common-safe-storage.BASE_URL"
-    SAFE_STORAGE_DOC_TYPE: "common-safe-storage.DOC_TYPE"
-    SAFE_STORAGE_DOC_STATUS: "common-safe-storage.DOC_STATUS"
-    SIGNATURE_REFERENCES_TABLE_NAME: "common-safe-storage.LIVE_REQUESTS_DYNAMO_TABLE_NAME"
+  env:
+    AGREEMENT_TOPIC: "{{.Values.commons.kafka.agreementTopic}}"
+    AUTHORIZATION_TOPIC: "{{.Values.commons.kafka.authorizationTopic}}"
+    CATALOG_TOPIC: "{{.Values.commons.kafka.catalogTopic}}"
+    DELEGATION_TOPIC: "{{.Values.commons.kafka.delegationTopic}}"
+    PURPOSE_TOPIC: "{{.Values.commons.kafka.purposeTopic}}"
+    PURPOSE_TEMPLATE_TOPIC: "{{.Values.commons.kafka.purposeTemplateTopic}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    SAFE_STORAGE_BASE_URL: "{{.Values.commons.safeStorage.baseUrl}}"
+    SAFE_STORAGE_DOC_TYPE: "{{.Values.commons.safeStorage.docType}}"
+    SAFE_STORAGE_DOC_STATUS: "{{.Values.commons.safeStorage.docStatus}}"
+    SIGNATURE_REFERENCES_TABLE_NAME: "{{.Values.commons.safeStorage.liveRequestsDynamoTableName}}"
 
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"

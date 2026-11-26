@@ -14,12 +14,12 @@ configmap:
 deployment:
   env:
     TOPIC_STARTING_OFFSET: "earliest"
+    PURPOSE_TOPIC: "{{.Values.commons.kafka.purposeTopic}}"
+    PRODUCER_KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
   envFromConfigmaps:
-    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
     PURPOSE_OUTBOUND_TOPIC: "common-kafka.PURPOSE_OUTBOUND_TOPIC"
     PRODUCER_KAFKA_CLIENT_ID: "{{.Values.name}}.KAFKA_CLIENT_ID"
-    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
    
