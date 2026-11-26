@@ -5,8 +5,10 @@ usage() {
   cat <<'EOF'
 Usage:
   run-refactor.sh <phase> --environment <env> [options]
+  run-refactor.sh compare [--root <path>] [--output-dir <path>]
 
 Phases, in execution order:
+  compare       Optional task 0: compare inventories and classifications across all environments
   prepare       Run tasks 1-4: inventory, classify, mapping, baseline
   inventory     Run task 1: verify ConfigMap references
   classify      Run task 2: classify ConfigMap keys
@@ -19,7 +21,7 @@ Phases, in execution order:
   equivalence   Optional, run task 8 after migrate: compare the rendered workloads with the baseline (requires Helm)
 
 Options:
-  --environment, -e  Target environment (required)
+  --environment, -e  Target environment (required except for compare)
   --root, -r         Repository root (default: auto-detected)
   --output-dir, -o   Report directory (default: reports/refactor-common-configmaps)
   --values-file      Common values file (default: commons/<env>/values-commons.yaml)
@@ -93,11 +95,18 @@ while (($#)); do
   esac
 done
 
-[[ -n "$ENVIRONMENT" ]] || { echo "--environment is required" >&2; exit 2; }
-[[ "$ENVIRONMENT" =~ ^[A-Za-z0-9][A-Za-z0-9_-]*$ ]] || {
-  echo "Invalid environment: $ENVIRONMENT" >&2
-  exit 2
-}
+if [[ "$PHASE" == "compare" ]]; then
+  if [[ -n "$ENVIRONMENT" || -n "$VALUES_FILE" ]]; then
+    echo "compare discovers all environments and accepts only --root and --output-dir." >&2
+    exit 2
+  fi
+else
+  [[ -n "$ENVIRONMENT" ]] || { echo "--environment is required" >&2; exit 2; }
+  [[ "$ENVIRONMENT" =~ ^[A-Za-z0-9][A-Za-z0-9_-]*$ ]] || {
+    echo "Invalid environment: $ENVIRONMENT" >&2
+    exit 2
+  }
+fi
 
 ROOT="$(cd "$ROOT" && pwd)"
 if [[ "$OUTPUT_DIR" != /* ]]; then
@@ -118,7 +127,7 @@ BASELINE_JSON="$OUTPUT_DIR/task-4-baseline-$ENVIRONMENT.json"
 TASKS_DIR="$SCRIPT_DIR/dist"
 
 case "$PHASE" in
-  prepare|inventory|classify|mapping|baseline|build-values|validate|plan|migrate|equivalence) ;;
+  compare|prepare|inventory|classify|mapping|baseline|build-values|validate|plan|migrate|equivalence) ;;
   *)
     echo "Unknown phase: $PHASE" >&2
     usage >&2
@@ -232,6 +241,11 @@ run_equivalence() {
 }
 
 case "$PHASE" in
+  compare)
+    node "$TASKS_DIR/task0-compare-environments.js" --root "$ROOT" --output-dir "$OUTPUT_DIR"
+    echo "SUCCESS - phase compare completed."
+    exit 0
+    ;;
   prepare)
     run_inventory
     run_classification
