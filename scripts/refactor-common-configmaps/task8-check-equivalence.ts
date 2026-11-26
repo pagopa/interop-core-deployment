@@ -527,7 +527,7 @@ function main(): void {
   }
 
   const inventoryRows = (readJsonReport(args.inventoryJson, INVENTORY_FIELDS) as InventoryRow[]).filter(
-    (row) => row.environment === args.env && row.status === "OK",
+    (row) => row.environment === args.env && row.status === "OK" && /(?:^|\.)envFromConfigmaps$/.test(row.section),
   );
 
   if (inventoryRows.length === 0) {

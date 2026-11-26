@@ -138,7 +138,7 @@ function discoverWorkloads(root: string, env: string, workloadType: WorkloadType
   return out;
 }
 
-function collectEnvFromConfigmapsRefs(
+function collectConfigMapRefs(
   node: unknown,
   currentPath: string,
   refs: Array<{ section: string; envVar: string; refValue: string }>,
@@ -146,7 +146,7 @@ function collectEnvFromConfigmapsRefs(
   if (isSeq(node)) {
     node.items.forEach((item, idx) => {
       const p = currentPath ? `${currentPath}[${idx}]` : `[${idx}]`;
-      collectEnvFromConfigmapsRefs(item, p, refs);
+      collectConfigMapRefs(item, p, refs);
     });
     return;
   }
@@ -158,7 +158,8 @@ function collectEnvFromConfigmapsRefs(
   for (const item of node.items) {
     const key = String(isScalar(item.key) ? item.key.value : item.key);
     const nextPath = currentPath ? `${currentPath}.${key}` : key;
-    if (key === "envFromConfigmaps" && isMap(item.value)) {
+    const isReferenceSection = key === "envFromConfigmaps" || nextPath === "frontend.env.js.window.pagopa_env.fromConfigmaps";
+    if (isReferenceSection && isMap(item.value)) {
       for (const ref of item.value.items) {
         const envVar = String(isScalar(ref.key) ? ref.key.value : ref.key);
         // Non-string values are kept as empty references so they are reported as INVALID_REFERENCE.
@@ -167,7 +168,7 @@ function collectEnvFromConfigmapsRefs(
       continue;
     }
 
-    collectEnvFromConfigmapsRefs(item.value, nextPath, refs);
+    collectConfigMapRefs(item.value, nextPath, refs);
   }
 }
 
@@ -386,7 +387,7 @@ function main(): void {
 
   for (const wf of workloads) {
     const refs: Array<{ section: string; envVar: string; refValue: string }> = [];
-    collectEnvFromConfigmapsRefs(yamlDocument(wf.valuesFileAbs).contents, "", refs);
+    collectConfigMapRefs(yamlDocument(wf.valuesFileAbs).contents, "", refs);
 
     for (const ref of refs) {
       rows.push(evaluateRef(args.env, wf, ref.section, ref.envVar, ref.refValue, configMaps, migrationConfigMaps));
