@@ -210,6 +210,7 @@ function renderWorkload(
   workloadType: string,
   workload: string,
   workloadValuesFile: string,
+  offlineFrontend: boolean,
 ): Document.Parsed[] {
   const chartPath = chartPathFor(workloadType);
   const baseValues = baseValuesFileFor(args.root, args.env, workloadType);
@@ -226,6 +227,10 @@ function renderWorkload(
   const templateArgs = ["template", workload, chartPath];
   for (const file of valuesFiles) {
     templateArgs.push("-f", file);
+  }
+
+  if (offlineFrontend) {
+    templateArgs.push("--set", "enableLookup=false");
   }
 
   const result = spawnSync("helm", templateArgs, {
@@ -414,18 +419,63 @@ function findDependentEnvIssues(envEntries: unknown[], container: string): strin
   return issues;
 }
 
+const FRONTEND_PATH = ["frontend", "env.js", "window.pagopa_env"];
+const FRONTEND_SECTION = [...FRONTEND_PATH, "fromConfigmaps"].join(".");
+
+function extractFrontendValues(
+  renderedConfigMaps: Map<string, Map<string, string>>,
+  workloadValuesFile: string,
+  context: RenderContext,
+  rows: InventoryRow[],
+): Map<string, TargetValue> {
+  const out = new Map<string, TargetValue>();
+  if (rows.length === 0) {
+    return out;
+  }
+
+  const scripts = [...renderedConfigMaps.values()].flatMap((data) => {
+    const script = data.get("env.js");
+    const match = script?.match(/^window\.pagopa_env\s*=\s*(\{[\s\S]*?^\s*\})/m);
+    return match ? [match[1]] : [];
+  });
+  if (scripts.length !== 1) {
+    throw new Error(`Expected exactly one rendered window.pagopa_env object for ${workloadValuesFile}`);
+  }
+  const values = JSON.parse(scripts[0]) as Record<string, unknown>;
+  const workloadValues = yamlDocument(workloadValuesFile);
+  for (const row of rows) {
+    const value = Object.hasOwn(values, row.envVar) ? values[row.envVar] : undefined;
+    if (typeof value !== "string") {
+      continue;
+    }
+    const ref = scalarText(workloadValues.getIn([...FRONTEND_PATH, "fromConfigmaps", row.envVar], true));
+    if (ref && value === "LOOKUP_PLACEHOLDER") {
+      const dot = ref.indexOf(".");
+      const actualValue = dot > 0 ? resolveFromConfigMapRef(ref.slice(0, dot), ref.slice(dot + 1), context) : undefined;
+      if (actualValue !== undefined) {
+        out.set(row.envVar, { actualValue, source: "configMapRef", sourceRef: ref });
+      }
+    } else {
+      out.set(row.envVar, { actualValue: value, source: "value", sourceRef: "env.js" });
+    }
+  }
+  return out;
+}
+
 function renderAndExtractForWorkload(
   args: CliArgs,
   workloadType: string,
   workload: string,
   workloadValuesFile: string,
   commonsConfigMaps: Map<string, Map<string, string>>,
+  frontendRows: InventoryRow[],
 ): {
+  frontend: Map<string, TargetValue>;
   main: Map<string, TargetValue>;
   init: Map<string, TargetValue>;
   dependencyIssues: string[];
 } {
-  const docs = renderWorkload(args, workloadType, workload, workloadValuesFile);
+  const docs = renderWorkload(args, workloadType, workload, workloadValuesFile, frontendRows.length > 0);
   const workloadDoc = findWorkloadDoc(
     docs.map((doc) => doc.toJSON() as Record<string, unknown> | null),
     workloadType,
@@ -437,6 +487,7 @@ function renderAndExtractForWorkload(
   const initEnv = getInitContainerEnv(workloadDoc, workloadType);
 
   return {
+    frontend: extractFrontendValues(renderedConfigMaps, workloadValuesFile, context, frontendRows),
     main: extractEnvValues(mainEnv, context),
     init: extractEnvValues(initEnv, context),
     dependencyIssues: [
@@ -448,8 +499,11 @@ function renderAndExtractForWorkload(
 
 function chooseEnvMapForSection(
   section: string,
-  extracted: { main: Map<string, TargetValue>; init: Map<string, TargetValue> },
+  extracted: { frontend: Map<string, TargetValue>; main: Map<string, TargetValue>; init: Map<string, TargetValue> },
 ): Map<string, TargetValue> {
+  if (section === FRONTEND_SECTION) {
+    return extracted.frontend;
+  }
   return section.includes("flywayInitContainer") ? extracted.init : extracted.main;
 }
 
@@ -527,7 +581,8 @@ function main(): void {
   }
 
   const inventoryRows = (readJsonReport(args.inventoryJson, INVENTORY_FIELDS) as InventoryRow[]).filter(
-    (row) => row.environment === args.env && row.status === "OK" && /(?:^|\.)envFromConfigmaps$/.test(row.section),
+    (row) => row.environment === args.env && row.status === "OK" &&
+      (row.section === FRONTEND_SECTION || /(?:^|\.)envFromConfigmaps$/.test(row.section)),
   );
 
   if (inventoryRows.length === 0) {
@@ -558,7 +613,7 @@ function main(): void {
     const document = yamlDocument(path.resolve(args.root, rows[0].valuesFile));
     return rows.some((row) => {
       const section = row.section.replace(/envFromConfigmaps$/, "env");
-      const segments = section.split(".").flatMap((segment) => {
+      const segments = row.section === FRONTEND_SECTION ? FRONTEND_PATH : section.split(".").flatMap((segment) => {
         const [key, ...indexes] = segment.split("[");
         return [...(key ? [key] : []), ...indexes.map((index) => Number.parseInt(index, 10))];
       });
@@ -572,9 +627,10 @@ function main(): void {
 
   const commonsConfigMaps = readConfigMapData(args.root, args.env);
 
-  const extractedByWorkload = new Map<string, { main: Map<string, TargetValue>; init: Map<string, TargetValue> }>();
+  const extractedByWorkload = new Map<string, ReturnType<typeof renderAndExtractForWorkload>>();
   const errors: string[] = [];
-  for (const [group] of groups.values()) {
+  for (const rows of groups.values()) {
+    const [group] = rows;
     const absoluteValuesFile = path.resolve(args.root, group.valuesFile);
     if (!fs.existsSync(absoluteValuesFile)) {
       throw new Error(`Workload values file not found: ${group.valuesFile}`);
@@ -586,6 +642,7 @@ function main(): void {
       group.workload,
       absoluteValuesFile,
       commonsConfigMaps,
+      rows.filter((row) => row.section === FRONTEND_SECTION),
     );
 
     extractedByWorkload.set(`${group.workloadType}|${group.workload}`, extracted);

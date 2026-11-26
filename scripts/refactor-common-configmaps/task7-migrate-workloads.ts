@@ -6,7 +6,7 @@ import { csvEscape } from "./csv.js";
 import { readJsonRecords, writeJsonReport } from "./json-report.js";
 import { fail, scalarText, writeVerifiedYaml } from "./yaml-source.js";
 
-// TASK 7 (optional): moves the envFromConfigmaps references classified COMMON_VALUE to env with the {{.Values.commons.*}}
+// TASK 7 (optional): replaces COMMON_VALUE ConfigMap references with {{.Values.commons.*}}
 // reference of the TASK 3 mapping. Files are edited as text (only the affected lines change) and every result is
 // parsed back and compared with the expected transformation; nothing is written unless every file is valid.
 
@@ -70,8 +70,8 @@ const TARGET_REF = /^\{\{\.Values\.commons(\.[A-Za-z0-9_]+)+\}\}$/;
 const DEPENDENT_VARIABLE = /(?<!\$)\$\(([A-Za-z_][A-Za-z0-9_]*)\)/g;
 
 const STATUS_DESCRIPTIONS: Record<Status, string> = {
-  MIGRATE: "Would be moved from envFromConfigmaps to env (plan; rerun with --apply)",
-  MIGRATED: "Moved from envFromConfigmaps to env; file written and verified",
+  MIGRATE: "Would be replaced with a common values reference (plan; rerun with --apply)",
+  MIGRATED: "Replaced with a common values reference; file written and verified",
   SKIPPED_DEPENDENT_ENV: "Left unchanged: another variable of the same container uses $(VAR) on it; migrate manually",
   SKIPPED_NOT_COMMON_VALUE: "Left unchanged: the key is not classified COMMON_VALUE",
   ERROR: "File not migrated because of an error; no file was written",
@@ -221,7 +221,7 @@ function applyEdits(text: string, edits: Edit[], label: string): string {
   return out;
 }
 
-type Container = { path: Array<string | number>; section: string; node: YAMLMap };
+type Container = { path: Array<string | number>; section: string; node: YAMLMap; frontend?: boolean };
 
 function findContainers(node: unknown, pathParts: Array<string | number>, label: string, out: Container[]): void {
   if (isSeq(node)) {
@@ -230,6 +230,9 @@ function findContainers(node: unknown, pathParts: Array<string | number>, label:
   }
   if (!isMap(node)) {
     return;
+  }
+  if (label === "frontend.env.js.window.pagopa_env" && node.has("fromConfigmaps")) {
+    out.push({ path: pathParts, section: `${label}.fromConfigmaps`, node, frontend: true });
   }
   if (node.has("envFromConfigmaps")) {
     out.push({ path: pathParts, section: label ? `${label}.envFromConfigmaps` : "envFromConfigmaps", node });
@@ -265,9 +268,10 @@ function planFile(workload: WorkloadFile, env: string, mapping: Map<string, Mapp
 
   for (const container of containers) {
     const sectionLabel = `${label}: ${container.section}`;
-    const efcPair = container.node.items.find((item) => keyText(item) === "envFromConfigmaps")!;
+    const referenceKey = container.frontend ? "fromConfigmaps" : "envFromConfigmaps";
+    const efcPair = container.node.items.find((item) => keyText(item) === referenceKey)!;
     const efc = blockMap(efcPair.value, sectionLabel);
-    const envPair = container.node.items.find((item) => keyText(item) === "env");
+    const envPair = !container.frontend && container.node.items.find((item) => keyText(item) === "env");
     const envMap = envPair ? blockMap(envPair.value, `${label}: ${container.section.replace(/envFromConfigmaps$/, "env")}`) : undefined;
 
     const candidates: Array<{ pair: Pair; envVar: string; mappingEntry: MappingEntry }> = [];
@@ -292,13 +296,13 @@ function planFile(workload: WorkloadFile, env: string, mapping: Map<string, Mapp
         targetRef: mappingEntry.classification === "COMMON_VALUE" ? mappingEntry.targetRef : "",
       };
       if (mappingEntry.classification !== "COMMON_VALUE") {
-        rows.push({ ...base, status: "SKIPPED_NOT_COMMON_VALUE", detail: `${mappingEntry.classification} keys stay on envFromConfigmaps` });
+        rows.push({ ...base, status: "SKIPPED_NOT_COMMON_VALUE", detail: `${mappingEntry.classification} keys stay on ${referenceKey}` });
         continue;
       }
       if (!TARGET_REF.test(mappingEntry.targetRef)) {
         fail(`${sectionLabel}: invalid targetRef '${mappingEntry.targetRef}' for ${ref} in the mapping.`);
       }
-      rows.push({ ...base, status: apply ? "MIGRATED" : "MIGRATE", detail: `${envVar}: "${ref}" -> env.${envVar}: "${mappingEntry.targetRef}"` });
+      rows.push({ ...base, status: apply ? "MIGRATED" : "MIGRATE", detail: `${envVar}: "${ref}" -> ${container.frontend ? "" : "env."}${envVar}: "${mappingEntry.targetRef}"` });
       candidates.push({ pair, envVar, mappingEntry });
     }
 
@@ -326,12 +330,12 @@ function planFile(workload: WorkloadFile, env: string, mapping: Map<string, Mapp
     }
 
     for (const candidate of candidates) {
-      if (envMap?.has(candidate.envVar)) {
-        fail(`${sectionLabel}: ${candidate.envVar} is already defined in env.`);
+      if ((container.frontend ? container.node : envMap)?.has(candidate.envVar)) {
+        fail(`${sectionLabel}: ${candidate.envVar} is already defined at the destination.`);
       }
     }
 
-    // Text edits: remove the migrated items and add them to env.
+    // Remove the migrated references and insert direct Helm values at the destination.
     for (const candidate of candidates) {
       const [start, end] = itemLines(original, candidate.pair, sectionLabel);
       edits.push({ start, end, text: "" });
@@ -343,8 +347,10 @@ function planFile(workload: WorkloadFile, env: string, mapping: Map<string, Mapp
     }
 
     const newLines = (indent: string) =>
-      candidates.map((candidate) => `${indent}${candidate.envVar}: ${JSON.stringify(candidate.mappingEntry.targetRef)}\n`).join("");
-    if (envMap) {
+      candidates.map((candidate) => `${indent}${container.frontend ? JSON.stringify(candidate.envVar) : candidate.envVar}: ${JSON.stringify(candidate.mappingEntry.targetRef)}\n`).join("");
+    if (container.frontend) {
+      edits.push({ start: efcKeyLine.start, end: efcKeyLine.start, text: newLines(efcKeyLine.indent) });
+    } else if (envMap) {
       let lastContent = nodeRange(envMap, sectionLabel)[1];
       while (lastContent > 0 && /\s/.test(original[lastContent - 1])) {
         lastContent -= 1;
@@ -359,16 +365,18 @@ function planFile(workload: WorkloadFile, env: string, mapping: Map<string, Mapp
 
     // Expected result, used to verify the text edits.
     const target = getIn(expected, container.path);
-    const efcValues = target.envFromConfigmaps as Record<string, unknown>;
-    const envValues = (target.env as Record<string, unknown> | undefined) ?? {};
+    const efcValues = target[referenceKey] as Record<string, unknown>;
+    const envValues = container.frontend ? target : (target.env as Record<string, unknown> | undefined) ?? {};
     for (const candidate of candidates) {
       delete efcValues[candidate.envVar];
       envValues[candidate.envVar] = candidate.mappingEntry.targetRef;
     }
     if (allMigrated) {
-      delete target.envFromConfigmaps;
+      delete target[referenceKey];
     }
-    target.env = envValues;
+    if (!container.frontend) {
+      target.env = envValues;
+    }
   }
 
   const output = edits.length > 0 ? applyEdits(original, edits, label) : original;
