@@ -46,7 +46,7 @@ function main(): void {
         path.join(import.meta.dirname, `${task}.js`), "--root", root, "--env", environment, ...args,
       ], { stdio: "inherit" });
       const inventoryFile = path.join(scratch, `task-1-inventory-${environment}.json`);
-      const classificationFile = path.join(scratch, `task-2-classification-common-configmaps-${environment}.json`);
+      const classificationFile = path.join(scratch, `task-2-classify-common-configmaps-${environment}.json`);
       run("task1-verify", ["--output-dir", scratch]);
       run("task2-classify", [
         "--inventory-json", inventoryFile,
@@ -120,9 +120,9 @@ function main(): void {
     });
 
     fs.mkdirSync(output, { recursive: true });
-    writeReports(output, "task-0-cross-environment-classification", details);
-    writeReports(output, "task-0-cross-environment-inventory", inventory);
-    writeReports(output, "task-0-cross-environment-summary", summary);
+    writeReports(output, "task-0-compare-cross-environment-classification", details);
+    writeReports(output, "task-0-compare-cross-environment-inventory", inventory);
+    writeReports(output, "task-0-compare-cross-environment-summary", summary);
     console.log(`Compared ${environments.length} environments and ${keys.size} ConfigMap keys. Reports: ${output}`);
   } finally {
     fs.rmSync(scratch, { recursive: true, force: true });

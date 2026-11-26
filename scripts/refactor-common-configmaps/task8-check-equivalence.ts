@@ -123,13 +123,13 @@ function parseArgs(argv: string[]): CliArgs {
     arg.get("baseline-json") ?? path.join(reportsDir, `task-4-baseline-${env}.json`),
   );
   const outputTargetCsv = path.resolve(
-    arg.get("output-target-csv") ?? path.join(reportsDir, `task-8-target-${env}.csv`),
+    arg.get("output-target-csv") ?? path.join(reportsDir, `task-8-equivalence-target-${env}.csv`),
   );
   const outputComparisonCsv = path.resolve(
     arg.get("output-comparison-csv") ?? path.join(reportsDir, `task-8-equivalence-${env}.csv`),
   );
   const outputTargetJson = path.resolve(
-    arg.get("output-target-json") ?? path.join(reportsDir, `task-8-target-${env}.json`),
+    arg.get("output-target-json") ?? path.join(reportsDir, `task-8-equivalence-target-${env}.json`),
   );
   const outputComparisonJson = path.resolve(
     arg.get("output-comparison-json") ?? path.join(reportsDir, `task-8-equivalence-${env}.json`),

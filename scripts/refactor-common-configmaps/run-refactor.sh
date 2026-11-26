@@ -119,9 +119,9 @@ elif [[ "$VALUES_FILE" != /* ]]; then
 fi
 
 INVENTORY_JSON="$OUTPUT_DIR/task-1-inventory-$ENVIRONMENT.json"
-CLASSIFICATION_CSV="$OUTPUT_DIR/task-2-classification-common-configmaps-$ENVIRONMENT.csv"
-CLASSIFICATION_JSON="$OUTPUT_DIR/task-2-classification-common-configmaps-$ENVIRONMENT.json"
-MAPPING_JSON="$OUTPUT_DIR/task-3-common-values-mapping-$ENVIRONMENT.json"
+CLASSIFICATION_CSV="$OUTPUT_DIR/task-2-classify-common-configmaps-$ENVIRONMENT.csv"
+CLASSIFICATION_JSON="$OUTPUT_DIR/task-2-classify-common-configmaps-$ENVIRONMENT.json"
+MAPPING_JSON="$OUTPUT_DIR/task-3-mapping-common-values-$ENVIRONMENT.json"
 BASELINE_CSV="$OUTPUT_DIR/task-4-baseline-$ENVIRONMENT.csv"
 BASELINE_JSON="$OUTPUT_DIR/task-4-baseline-$ENVIRONMENT.json"
 TASKS_DIR="$SCRIPT_DIR/dist"
@@ -167,61 +167,62 @@ cd "$ROOT"
 
 run_task() {
   local script="$1"
-  shift
+  local task_phase="$2"
+  shift 2
   local task_number="${script#task}"
   task_number="${task_number%%-*}"
   node "$TASKS_DIR/run-task.js" "$TASKS_DIR/$script.js" "$OUTPUT_DIR" \
-    "task-$task_number-execution-$ENVIRONMENT" --env "$ENVIRONMENT" --root "$ROOT" "$@"
+    "task-$task_number-$task_phase-execution-$ENVIRONMENT" --env "$ENVIRONMENT" --root "$ROOT" "$@"
 }
 
 run_inventory() {
-  run_task task1-verify --output-dir "$OUTPUT_DIR"
+  run_task task1-verify inventory --output-dir "$OUTPUT_DIR"
 }
 
 run_classification() {
-  run_task task2-classify \
+  run_task task2-classify classify \
     --inventory-json "$INVENTORY_JSON" \
     --output-csv "$CLASSIFICATION_CSV" \
     --output-json "$CLASSIFICATION_JSON" \
-    --output-summary-csv "$OUTPUT_DIR/task-2-classification-summary-$ENVIRONMENT.csv" \
-    --output-summary-json "$OUTPUT_DIR/task-2-classification-summary-$ENVIRONMENT.json"
+    --output-summary-csv "$OUTPUT_DIR/task-2-classify-summary-$ENVIRONMENT.csv" \
+    --output-summary-json "$OUTPUT_DIR/task-2-classify-summary-$ENVIRONMENT.json"
 }
 
 run_mapping() {
-  run_task task3-build-mapping \
+  run_task task3-build-mapping mapping \
     --classification-json "$CLASSIFICATION_JSON" \
     --output-dir "$OUTPUT_DIR"
 }
 
 run_baseline() {
-  run_task task4-build-baseline \
+  run_task task4-build-baseline baseline \
     --inventory-json "$INVENTORY_JSON" \
     --output-csv "$BASELINE_CSV" \
     --output-json "$BASELINE_JSON"
 }
 
 run_build_values() {
-  run_task task5-build-common-values \
+  run_task task5-build-common-values build-values \
     --mapping-json "$MAPPING_JSON" \
     --output-yaml "$VALUES_FILE" \
-    --output-coverage-csv "$OUTPUT_DIR/task-5-common-values-coverage-$ENVIRONMENT.csv" \
-    --output-coverage-json "$OUTPUT_DIR/task-5-common-values-coverage-$ENVIRONMENT.json" \
-    --output-coverage-md "$OUTPUT_DIR/task-5-common-values-coverage-$ENVIRONMENT.md"
+    --output-coverage-csv "$OUTPUT_DIR/task-5-build-values-coverage-$ENVIRONMENT.csv" \
+    --output-coverage-json "$OUTPUT_DIR/task-5-build-values-coverage-$ENVIRONMENT.json" \
+    --output-coverage-md "$OUTPUT_DIR/task-5-build-values-coverage-$ENVIRONMENT.md"
 }
 
 run_validate() {
-  run_task task6-validate-common-values \
+  run_task task6-validate-common-values validate \
     --mapping-json "$MAPPING_JSON" \
     --common-values "$VALUES_FILE" \
-    --output-csv "$OUTPUT_DIR/task-6-common-values-validation-$ENVIRONMENT.csv" \
-    --output-json "$OUTPUT_DIR/task-6-common-values-validation-$ENVIRONMENT.json"
+    --output-csv "$OUTPUT_DIR/task-6-validate-common-values-$ENVIRONMENT.csv" \
+    --output-json "$OUTPUT_DIR/task-6-validate-common-values-$ENVIRONMENT.json"
 }
 
 run_workload_migration() {
   local args=(
     --mapping-json "$MAPPING_JSON"
-    --output-csv "$OUTPUT_DIR/task-7-workload-migration-$ENVIRONMENT.csv"
-    --output-json "$OUTPUT_DIR/task-7-workload-migration-$ENVIRONMENT.json"
+    --output-csv "$OUTPUT_DIR/task-7-$PHASE-workloads-$ENVIRONMENT.csv"
+    --output-json "$OUTPUT_DIR/task-7-$PHASE-workloads-$ENVIRONMENT.json"
   )
   if [[ -n "$WORKLOADS" ]]; then
     args+=(--workloads "$WORKLOADS")
@@ -229,15 +230,15 @@ run_workload_migration() {
   if [[ "$PHASE" == "migrate" ]]; then
     args+=(--apply)
   fi
-  run_task task7-migrate-workloads "${args[@]}"
+  run_task task7-migrate-workloads "$PHASE" "${args[@]}"
 }
 
 run_equivalence() {
-  run_task task8-check-equivalence \
+  run_task task8-check-equivalence equivalence \
     --inventory-json "$INVENTORY_JSON" \
     --baseline-json "$BASELINE_JSON" \
-    --output-target-csv "$OUTPUT_DIR/task-8-target-$ENVIRONMENT.csv" \
-    --output-target-json "$OUTPUT_DIR/task-8-target-$ENVIRONMENT.json" \
+    --output-target-csv "$OUTPUT_DIR/task-8-equivalence-target-$ENVIRONMENT.csv" \
+    --output-target-json "$OUTPUT_DIR/task-8-equivalence-target-$ENVIRONMENT.json" \
     --output-comparison-csv "$OUTPUT_DIR/task-8-equivalence-$ENVIRONMENT.csv" \
     --output-comparison-json "$OUTPUT_DIR/task-8-equivalence-$ENVIRONMENT.json" \
     --common-values "$VALUES_FILE"
@@ -246,7 +247,7 @@ run_equivalence() {
 case "$PHASE" in
   compare)
     node "$TASKS_DIR/run-task.js" "$TASKS_DIR/task0-compare-environments.js" "$OUTPUT_DIR" \
-      task-0-execution --root "$ROOT" --output-dir "$OUTPUT_DIR"
+      task-0-compare-execution --root "$ROOT" --output-dir "$OUTPUT_DIR"
     echo "SUCCESS - phase compare completed."
     exit 0
     ;;

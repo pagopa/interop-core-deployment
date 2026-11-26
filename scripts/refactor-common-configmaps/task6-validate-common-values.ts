@@ -85,10 +85,10 @@ function parseArgs(argv: string[]): CliArgs {
   return {
     env,
     root,
-    mappingJson: report("mapping-json", `task-3-common-values-mapping-${env}.json`),
+    mappingJson: report("mapping-json", `task-3-mapping-common-values-${env}.json`),
     commonValues: path.resolve(arg.get("common-values") ?? path.join(root, "commons", env, "values-commons.yaml")),
-    outputCsv: report("output-csv", `task-6-common-values-validation-${env}.csv`),
-    outputJson: report("output-json", `task-6-common-values-validation-${env}.json`),
+    outputCsv: report("output-csv", `task-6-validate-common-values-${env}.csv`),
+    outputJson: report("output-json", `task-6-validate-common-values-${env}.json`),
   };
 }
 

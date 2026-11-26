@@ -84,19 +84,19 @@ function parseArgs(argv: string[]): CliArgs {
   const root = path.resolve(arg.get("root") ?? process.cwd());
   const reportsDir = path.join(root, "reports", "refactor-common-configmaps");
   const mappingJson = path.resolve(
-    arg.get("mapping-json") ?? path.join(reportsDir, `task-3-common-values-mapping-${env}.json`),
+    arg.get("mapping-json") ?? path.join(reportsDir, `task-3-mapping-common-values-${env}.json`),
   );
   const outputYaml = path.resolve(
     arg.get("output-yaml") ?? path.join(root, "commons", env, "values-commons.yaml"),
   );
   const outputCoverageCsv = path.resolve(
-    arg.get("output-coverage-csv") ?? path.join(reportsDir, `task-5-common-values-coverage-${env}.csv`),
+    arg.get("output-coverage-csv") ?? path.join(reportsDir, `task-5-build-values-coverage-${env}.csv`),
   );
   const outputCoverageJson = path.resolve(
-    arg.get("output-coverage-json") ?? path.join(reportsDir, `task-5-common-values-coverage-${env}.json`),
+    arg.get("output-coverage-json") ?? path.join(reportsDir, `task-5-build-values-coverage-${env}.json`),
   );
   const outputCoverageMd = path.resolve(
-    arg.get("output-coverage-md") ?? path.join(reportsDir, `task-5-common-values-coverage-${env}.md`),
+    arg.get("output-coverage-md") ?? path.join(reportsDir, `task-5-build-values-coverage-${env}.md`),
   );
 
   return { env, root, mappingJson, outputYaml, outputCoverageCsv, outputCoverageJson, outputCoverageMd };
@@ -325,10 +325,14 @@ function containsTemplate(value: string): boolean {
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
 
-
   const mappingRows: MappingRow[] = readJsonRecords(args.mappingJson, MAPPING_SCHEMA).filter(
     (row) => row.environment === args.env,
   );
+
+  const mappingPath = path.relative(args.root, args.mappingJson);
+  if (mappingRows.length === 0) {
+    throw new Error(`Mapping ${mappingPath} contains no rows for environment ${args.env}.`);
+  }
 
   const coverageRows = buildCoverageRows(mappingRows, args.env);
   const migratedRows = coverageRows
@@ -336,7 +340,10 @@ function main(): void {
     .sort((a, b) => a.targetPath.localeCompare(b.targetPath));
 
   if (migratedRows.length === 0) {
-    throw new Error(`No COMMON_VALUE rows found for environment: ${args.env}`);
+    throw new Error(
+      `Mapping ${mappingPath} contains no COMMON_VALUE entries for ${args.env}. ` +
+      "If the workloads were already migrated, use the mapping generated before migration.",
+    );
   }
 
   const { configMaps: applicationConfigMaps, excluded: migrationConfigMaps } = readApplicationConfigMaps(args.root, args.env);

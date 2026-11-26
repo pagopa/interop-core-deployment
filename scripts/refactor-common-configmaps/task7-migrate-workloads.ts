@@ -108,14 +108,15 @@ function parseArgs(argv: string[]): CliArgs {
   const reportsDir = path.join(root, "reports", "refactor-common-configmaps");
   const report = (option: string, file: string) => path.resolve(arg.get(option) ?? path.join(reportsDir, file));
   const workloads = arg.get("workloads");
+  const phase = apply ? "migrate" : "plan";
 
   return {
     env,
     root,
     apply,
-    mappingJson: report("mapping-json", `task-3-common-values-mapping-${env}.json`),
-    outputCsv: report("output-csv", `task-7-workload-migration-${env}.csv`),
-    outputJson: report("output-json", `task-7-workload-migration-${env}.json`),
+    mappingJson: report("mapping-json", `task-3-mapping-common-values-${env}.json`),
+    outputCsv: report("output-csv", `task-7-${phase}-workloads-${env}.csv`),
+    outputJson: report("output-json", `task-7-${phase}-workloads-${env}.json`),
     workloads: workloads ? new Set(workloads.split(",").map((name) => name.trim()).filter(Boolean)) : undefined,
   };
 }

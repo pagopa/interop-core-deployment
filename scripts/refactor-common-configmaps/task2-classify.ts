@@ -168,10 +168,10 @@ function parseArgs(argv: string[]): CliArgs {
     env,
     root,
     inventoryJson: report("inventory-json", `task-1-inventory-${env}.json`),
-    outputCsv: report("output-csv", `task-2-classification-common-configmaps-${env}.csv`),
-    outputJson: report("output-json", `task-2-classification-common-configmaps-${env}.json`),
-    outputSummaryCsv: report("output-summary-csv", `task-2-classification-summary-${env}.csv`),
-    outputSummaryJson: report("output-summary-json", `task-2-classification-summary-${env}.json`),
+    outputCsv: report("output-csv", `task-2-classify-common-configmaps-${env}.csv`),
+    outputJson: report("output-json", `task-2-classify-common-configmaps-${env}.json`),
+    outputSummaryCsv: report("output-summary-csv", `task-2-classify-summary-${env}.csv`),
+    outputSummaryJson: report("output-summary-json", `task-2-classify-summary-${env}.json`),
   };
 }
 
