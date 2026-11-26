@@ -58,6 +58,13 @@ type InventoryRow = {
   status: InventoryStatus;
 };
 
+type CollectedReference = {
+  section: string;
+  envVar: string;
+  refValue: string;
+  usedByEnv: string[];
+};
+
 type WorkloadFile = {
   workloadType: WorkloadType;
   workload: string;
@@ -141,7 +148,7 @@ function discoverWorkloads(root: string, env: string, workloadType: WorkloadType
 function collectConfigMapRefs(
   node: unknown,
   currentPath: string,
-  refs: Array<{ section: string; envVar: string; refValue: string }>,
+  refs: CollectedReference[],
 ): void {
   if (isSeq(node)) {
     node.items.forEach((item, idx) => {
@@ -160,10 +167,25 @@ function collectConfigMapRefs(
     const nextPath = currentPath ? `${currentPath}.${key}` : key;
     const isReferenceSection = key === "envFromConfigmaps" || nextPath === "frontend.env.js.window.pagopa_env.fromConfigmaps";
     if (isReferenceSection && isMap(item.value)) {
+      const env = key === "envFromConfigmaps" ? node.get("env", true) : undefined;
+      const usedBy = new Map<string, Set<string>>();
+      if (isMap(env)) {
+        for (const variable of env.items) {
+          const name = String(isScalar(variable.key) ? variable.key.value : variable.key);
+          for (const match of (scalarText(variable.value) ?? "").matchAll(/\$\$|\$\(([A-Za-z_][A-Za-z0-9_]*)\)/g)) {
+            const dependency = match[1];
+            if (dependency) {
+              const consumers = usedBy.get(dependency) ?? new Set<string>();
+              consumers.add(name);
+              usedBy.set(dependency, consumers);
+            }
+          }
+        }
+      }
       for (const ref of item.value.items) {
         const envVar = String(isScalar(ref.key) ? ref.key.value : ref.key);
         // Non-string values are kept as empty references so they are reported as INVALID_REFERENCE.
-        refs.push({ section: nextPath, envVar, refValue: scalarText(ref.value) ?? "" });
+        refs.push({ section: nextPath, envVar, refValue: scalarText(ref.value) ?? "", usedByEnv: [...(usedBy.get(envVar) ?? [])].sort() });
       }
       continue;
     }
@@ -334,7 +356,7 @@ function summaryMetrics(summary: InventorySummary): SummaryMetric[] {
   return metrics.map(([metric, value, description]) => ({ metric, value, description }));
 }
 
-function toCsv(rows: InventoryRow[]): string {
+function toCsv(rows: Array<InventoryRow & { usedByEnv: string[] }>): string {
   const header = [
     "environment",
     "workloadType",
@@ -346,6 +368,7 @@ function toCsv(rows: InventoryRow[]): string {
     "key",
     "sourceFile",
     "status",
+    "usedByEnv",
   ];
 
   const lines = [header.join(",")];
@@ -362,6 +385,7 @@ function toCsv(rows: InventoryRow[]): string {
         row.key,
         row.sourceFile,
         row.status,
+        row.usedByEnv.join("\n"),
       ]
         .map(csvEscape)
         .join(","),
@@ -383,14 +407,17 @@ function main(): void {
     ...discoverWorkloads(args.root, args.env, "cronjob"),
   ];
 
-  const rows: InventoryRow[] = [];
+  const rows: Array<InventoryRow & { usedByEnv: string[] }> = [];
 
   for (const wf of workloads) {
-    const refs: Array<{ section: string; envVar: string; refValue: string }> = [];
+    const refs: CollectedReference[] = [];
     collectConfigMapRefs(yamlDocument(wf.valuesFileAbs).contents, "", refs);
 
     for (const ref of refs) {
-      rows.push(evaluateRef(args.env, wf, ref.section, ref.envVar, ref.refValue, configMaps, migrationConfigMaps));
+      rows.push({
+        ...evaluateRef(args.env, wf, ref.section, ref.envVar, ref.refValue, configMaps, migrationConfigMaps),
+        usedByEnv: ref.usedByEnv,
+      });
     }
   }
 
@@ -442,6 +469,12 @@ function main(): void {
       blockingReferences: blockingIssues.length,
       statusCounts: byStatus,
   });
+  const attention = rows.filter((row) => row.usedByEnv.length > 0);
+  metrics.push(
+    { metric: "referencesRequiringEnvOrderReview", value: attention.length, description: "ConfigMap references used by a sibling env value via $(VAR)" },
+    { metric: "workloadsRequiringEnvOrderReview", value: new Set(attention.map((row) => row.valuesFile)).size, description: "Workload values files with order-sensitive ConfigMap references" },
+  );
+  console.log(`ConfigMap references requiring env order review: ${attention.length}. See usedByEnv in the inventory.`);
   metrics.unshift(
     { metric: "status", value: blockingIssues.length > 0 ? "FAILED" : "SUCCESS", description: "Inventory validation outcome" },
     { metric: "reason", value: reason, description: "Inventory validation details" },
