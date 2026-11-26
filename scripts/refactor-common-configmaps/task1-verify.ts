@@ -416,6 +416,13 @@ function main(): void {
     byStatus.set(row.status, (byStatus.get(row.status) ?? 0) + 1);
   }
   const blockingIssues = rows.filter((r) => !NON_BLOCKING_STATUSES.has(r.status));
+  const blockingDetails = INVENTORY_STATUSES
+    .filter((status) => !NON_BLOCKING_STATUSES.has(status) && byStatus.has(status))
+    .map((status) => `${status}: ${byStatus.get(status)}`)
+    .join(", ");
+  const reason = blockingIssues.length > 0
+    ? `Blocking ConfigMap references (${blockingDetails}).`
+    : "No blocking ConfigMap references found.";
   const resolvedRows = rows.filter((r) => r.status === "OK");
 
   // Written before the validation outcome so the summary is available also when blocking references are found.
@@ -435,6 +442,10 @@ function main(): void {
       blockingReferences: blockingIssues.length,
       statusCounts: byStatus,
   });
+  metrics.unshift(
+    { metric: "status", value: blockingIssues.length > 0 ? "FAILED" : "SUCCESS", description: "Inventory validation outcome" },
+    { metric: "reason", value: reason, description: "Inventory validation details" },
+  );
   ensureDir(path.dirname(args.outputSummaryCsv));
   ensureDir(path.dirname(args.outputSummaryJson));
   fs.writeFileSync(args.outputSummaryCsv, `${summaryMetricsToCsv(metrics)}\n`, "utf8");
@@ -455,7 +466,7 @@ function main(): void {
   }
 
   if (blockingIssues.length > 0) {
-    console.error("Validation failed: unresolved references detected.");
+    console.error(reason);
     process.exit(1);
   }
 }

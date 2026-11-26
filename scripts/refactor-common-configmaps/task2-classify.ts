@@ -201,14 +201,7 @@ function keyId(configMap: string, key: string): string {
   return `${configMap}::${key}`;
 }
 
-function classifyRow(row: InventoryRow, distinctWorkloadCount: number): { classification: Classification; reason: string } {
-  if (row.status !== "OK") {
-    return {
-      classification: "KEEP_AS_CONFIGMAP",
-      reason: `Inventory status ${row.status} requires conservative keep-as-configmap handling`,
-    };
-  }
-
+function classifyKey(distinctWorkloadCount: number): { classification: Classification; reason: string } {
   if (distinctWorkloadCount <= 1) {
     return {
       classification: "WORKLOAD_VALUE",
@@ -370,6 +363,17 @@ function summaryMetrics(summary: {
   return metrics;
 }
 
+function writeClassificationSummary(args: CliArgs, metrics: SummaryMetric[], status: string, reason: string): void {
+  metrics.unshift(
+    { metric: "status", value: status, description: "Classification outcome" },
+    { metric: "reason", value: reason, description: "Classification outcome details" },
+  );
+  ensureDir(path.dirname(args.outputSummaryCsv));
+  ensureDir(path.dirname(args.outputSummaryJson));
+  fs.writeFileSync(args.outputSummaryCsv, `${summaryMetricsToCsv(metrics)}\n`, "utf8");
+  writeJsonReport(args.outputSummaryJson, metrics);
+}
+
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
 
@@ -381,13 +385,36 @@ function main(): void {
     throw new Error(`No inventory rows found for environment: ${args.env}`);
   }
 
+  const blockingRows = inventoryRows.filter((row) => row.status !== "OK" && row.status !== "TEMPLATE_REFERENCE");
+  if (blockingRows.length > 0) {
+    const counts = new Map<string, number>();
+    for (const row of blockingRows) {
+      counts.set(row.status, (counts.get(row.status) ?? 0) + 1);
+    }
+    const reason = `Inventory contains blocking references (${[...counts].map(([status, count]) => `${status}: ${count}`).join(", ")}). Resolve them and rerun task 1.`;
+    writeClassificationSummary(args, [], "FAILED", reason);
+    throw new Error(reason);
+  }
+
   const { keys: cmKeys, excluded: excludedMigrationConfigMaps } = readConfigMapKeys(args.root, args.env);
   if (cmKeys.length === 0) {
     throw new Error(`No ConfigMap keys found in commons/${args.env}/configmaps`);
   }
 
+  const knownKeys = new Set(cmKeys.map(({ configMap, key }) => keyId(configMap, key)));
+  const staleRows = inventoryRows.filter((row) => row.status === "OK" && !knownKeys.has(keyId(row.configMap, row.key)));
+  if (staleRows.length > 0) {
+    const { configMap, key } = staleRows[0];
+    const reason = `Inventory contains ${staleRows.length} references to keys missing from the current ConfigMaps (first: ${configMap}.${key}). Rerun task 1.`;
+    writeClassificationSummary(args, [], "FAILED", reason);
+    throw new Error(reason);
+  }
+
   const rowsByKey = new Map<string, InventoryRow[]>();
   for (const row of inventoryRows) {
+    if (row.status !== "OK") {
+      continue;
+    }
     const id = keyId(row.configMap, row.key);
     const arr = rowsByKey.get(id);
     if (arr) {
@@ -423,8 +450,8 @@ function main(): void {
       continue;
     }
 
+    const decision = classifyKey(distinctWorkloadCount);
     for (const ref of refs) {
-      const decision = classifyRow(ref, distinctWorkloadCount);
       outputRows.push({
         environment: args.env,
         configMap: cmKey.configMap,
@@ -474,15 +501,7 @@ function main(): void {
     }, {}),
   };
 
-  const metrics = summaryMetrics(summary);
-  fs.writeFileSync(args.outputSummaryCsv, `${summaryMetricsToCsv(metrics)}\n`, "utf8");
-  writeJsonReport(args.outputSummaryJson, metrics);
-
-  const emptyClassifications = groupedRows.filter((row) => row.classification.trim() === "").length;
-  if (emptyClassifications > 0) {
-    console.error(`Validation failed: ${emptyClassifications} rows with empty classification`);
-    process.exit(1);
-  }
+  writeClassificationSummary(args, summaryMetrics(summary), "SUCCESS", "Classification report generated. Task 3 checks for classification conflicts.");
 
   console.log(`Environment: ${args.env}`);
   console.log(`Input inventory: ${path.relative(args.root, args.inventoryJson)}`);
