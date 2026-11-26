@@ -168,7 +168,10 @@ cd "$ROOT"
 run_task() {
   local script="$1"
   shift
-  node "$TASKS_DIR/$script.js" --env "$ENVIRONMENT" --root "$ROOT" "$@"
+  local task_number="${script#task}"
+  task_number="${task_number%%-*}"
+  node "$TASKS_DIR/run-task.js" "$TASKS_DIR/$script.js" "$OUTPUT_DIR" \
+    "task-$task_number-execution-$ENVIRONMENT" --env "$ENVIRONMENT" --root "$ROOT" "$@"
 }
 
 run_inventory() {
@@ -242,7 +245,8 @@ run_equivalence() {
 
 case "$PHASE" in
   compare)
-    node "$TASKS_DIR/task0-compare-environments.js" --root "$ROOT" --output-dir "$OUTPUT_DIR"
+    node "$TASKS_DIR/run-task.js" "$TASKS_DIR/task0-compare-environments.js" "$OUTPUT_DIR" \
+      task-0-execution --root "$ROOT" --output-dir "$OUTPUT_DIR"
     echo "SUCCESS - phase compare completed."
     exit 0
     ;;
