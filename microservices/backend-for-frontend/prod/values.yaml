@@ -3,7 +3,7 @@ techStack: "nodejs"
 
 serviceAccount:
   roleArn: "arn:aws:iam::{{.Values.local.awsAccountId}}:role/interop-be-backend-for-frontend-{{.Values.namespace}}-es1"
-
+  
 service:
   create: true
   containerPort: 8088
