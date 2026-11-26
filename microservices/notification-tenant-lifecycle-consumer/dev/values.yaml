@@ -18,10 +18,10 @@ configmap:
 
 deployment:
   replicas: 0
-  envFromConfigmaps:
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
-    NOTIFICATION_CONFIG_PROCESS_URL: "common-services-urls.NOTIFICATION_CONFIG_PROCESS_URL"
+  env:
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    TENANT_TOPIC: "{{.Values.commons.kafka.tenantTopic}}"
+    NOTIFICATION_CONFIG_PROCESS_URL: "{{.Values.commons.servicesUrls.notificationConfigProcessUrl}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
     KAFKA_CLIENT_ID: "metadata.name"

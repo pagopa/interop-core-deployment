@@ -23,13 +23,12 @@ cronjob:
 
   env:
     DELETE_OLDER_THAN_DAYS: "3"
+    SCHEDULED_NOTIFICATION_DB_HOST: "{{.Values.commons.scheduledNotificationDb.dbHost}}"
+    SCHEDULED_NOTIFICATION_DB_NAME: "{{.Values.commons.scheduledNotificationDb.dbName}}"
+    SCHEDULED_NOTIFICATION_DB_PORT: "{{.Values.commons.scheduledNotificationDb.dbPort}}"
+    SCHEDULED_NOTIFICATION_DB_SCHEMA: "{{.Values.commons.scheduledNotificationDb.dbSchema}}"
+    SCHEDULED_NOTIFICATION_DB_USE_SSL: "{{.Values.commons.scheduledNotificationDb.dbUseSsl}}"
 
-  envFromConfigmaps:
-    SCHEDULED_NOTIFICATION_DB_HOST: "common-scheduled-notification-db.DB_HOST"
-    SCHEDULED_NOTIFICATION_DB_NAME: "common-scheduled-notification-db.DB_NAME"
-    SCHEDULED_NOTIFICATION_DB_PORT: "common-scheduled-notification-db.DB_PORT"
-    SCHEDULED_NOTIFICATION_DB_SCHEMA: "common-scheduled-notification-db.DB_SCHEMA"
-    SCHEDULED_NOTIFICATION_DB_USE_SSL: "common-scheduled-notification-db.DB_USE_SSL"
 
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"

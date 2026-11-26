@@ -14,11 +14,10 @@ configmap:
 deployment:
   env:
     TOPIC_STARTING_OFFSET: "earliest"
+    AUTHORIZATION_TOPIC: "{{.Values.commons.kafka.authorizationTopic}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    TOKEN_GENERATION_READMODEL_TABLE_NAME_PLATFORM: "{{.Values.commons.tokenGenerationReadModel.tokenReadmodelPlatformStatesTableName}}"
+    TOKEN_GENERATION_READMODEL_TABLE_NAME_TOKEN_GENERATION: "{{.Values.commons.tokenGenerationReadModel.tokenReadmodelTokenStatesTableName}}"
+    PRODUCER_KEYCHAIN_PLATFORM_STATES_TABLE_NAME: "{{.Values.commons.tokenGenerationReadModel.producerKeychainPlatformStatesTableName}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-  envFromConfigmaps:
-    AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    TOKEN_GENERATION_READMODEL_TABLE_NAME_PLATFORM: "common-token-generation-read-model.TOKEN_READMODEL_PLATFORM_STATES_TABLE_NAME"
-    TOKEN_GENERATION_READMODEL_TABLE_NAME_TOKEN_GENERATION: "common-token-generation-read-model.TOKEN_READMODEL_TOKEN_STATES_TABLE_NAME"
-    PRODUCER_KEYCHAIN_PLATFORM_STATES_TABLE_NAME: "common-token-generation-read-model.PRODUCER_KEYCHAIN_PLATFORM_STATES_TABLE_NAME"

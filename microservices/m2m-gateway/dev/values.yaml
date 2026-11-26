@@ -41,27 +41,26 @@ deployment:
     KEEP_ALIVE_TIMEOUT_MILLIS: "61000"
     WELL_KNOWN_URLS: >-
       {{.Values.local.well_known_url.AUTHSRV}}
+    AGREEMENT_PROCESS_URL: "{{.Values.commons.servicesUrls.agreementProcessUrl}}"
+    ATTRIBUTE_REGISTRY_PROCESS_URL: "{{.Values.commons.servicesUrls.attributeRegistryProcessUrl}}"
+    AUTHORIZATION_PROCESS_URL: "{{.Values.commons.servicesUrls.authorizationProcessUrl}}"
+    CATALOG_PROCESS_URL: "{{.Values.commons.servicesUrls.catalogProcessUrl}}"
+    DELEGATION_PROCESS_URL: "{{.Values.commons.servicesUrls.delegationProcessUrl}}"
+    ESERVICE_TEMPLATE_PROCESS_URL: "{{.Values.commons.servicesUrls.eserviceTemplateProcessUrl}}"
+    PURPOSE_PROCESS_URL: "{{.Values.commons.servicesUrls.purposeProcessUrl}}"
+    PURPOSE_TEMPLATE_PROCESS_URL: "{{.Values.commons.servicesUrls.purposeTemplateProcessUrl}}"
+    TENANT_PROCESS_URL: "{{.Values.commons.servicesUrls.tenantProcessUrl}}"
+    EVENT_MANAGER_URL: "{{.Values.commons.servicesUrls.eventManagerUrl}}"
+    APPLICATION_AUDIT_TOPIC: "{{.Values.commons.kafka.applicationAuditTopic}}"
+    APPLICATION_AUDIT_FALLBACK_SQS_URL: "{{.Values.commons.sqs.applicationAuditFallbackSqsUrl}}"
+    PRODUCER_KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    RATE_LIMITER_REDIS_HOST: "{{.Values.commons.redis.redisHost}}"
+    RATE_LIMITER_REDIS_PORT: "{{.Values.commons.redis.redisPort}}"
   envFromFieldRef:
     POD_NAME: "metadata.name"
     NODE_IP: "status.hostIP"
     AWS_ROLE_SESSION_NAME: "metadata.name"
     PRODUCER_KAFKA_CLIENT_ID: "metadata.name"
-  envFromConfigmaps:
-    AGREEMENT_PROCESS_URL: "common-services-urls.AGREEMENT_PROCESS_URL"
-    ATTRIBUTE_REGISTRY_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
-    AUTHORIZATION_PROCESS_URL: "common-services-urls.AUTHORIZATION_PROCESS_URL"
-    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
-    DELEGATION_PROCESS_URL: "common-services-urls.DELEGATION_PROCESS_URL"
-    ESERVICE_TEMPLATE_PROCESS_URL: "common-services-urls.ESERVICE_TEMPLATE_PROCESS_URL"
-    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
-    PURPOSE_TEMPLATE_PROCESS_URL: "common-services-urls.PURPOSE_TEMPLATE_PROCESS_URL"
-    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
-    EVENT_MANAGER_URL: "common-services-urls.EVENT_MANAGER_URL"
-    APPLICATION_AUDIT_TOPIC: "common-kafka.APPLICATION_AUDIT_TOPIC"
-    APPLICATION_AUDIT_FALLBACK_SQS_URL: "common-sqs.APPLICATION_AUDIT_FALLBACK_SQS_URL"
-    PRODUCER_KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
-    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
 
   livenessProbe:
     httpGet:

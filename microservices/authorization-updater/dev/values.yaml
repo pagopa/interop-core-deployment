@@ -35,15 +35,14 @@ deployment:
   replicas: 0
   env:
     TOPIC_STARTING_OFFSET: "latest"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    AGREEMENT_TOPIC: "{{.Values.commons.kafka.agreementTopic}}"
+    CATALOG_TOPIC: "{{.Values.commons.kafka.catalogTopic}}"
+    PURPOSE_TOPIC: "{{.Values.commons.kafka.purposeTopic}}"
+    AUTHORIZATION_TOPIC: "{{.Values.commons.kafka.authorizationTopic}}"
+    AUTHORIZATION_MANAGEMENT_URL: "{{.Values.commons.servicesUrls.authorizationManagementUrl}}"
+    READMODEL_DB_HOST: "{{.Values.commons.readModel.readmodelDbHost}}"
+    READMODEL_DB_NAME: "{{.Values.commons.readModel.readmodelDbName}}"
+    READMODEL_DB_PORT: "{{.Values.commons.readModel.readmodelDbPort}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-  envFromConfigmaps:
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
-    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
-    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
-    AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
-    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
-    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"

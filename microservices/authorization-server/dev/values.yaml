@@ -51,13 +51,12 @@ deployment:
     REQUIRED_CONTACT_POINT_NR: "1"    
     WELL_KNOWN_URLS: >-
       {{.Values.local.well_known_url.AUTHSRV}}
+    AUTHORIZATION_MANAGEMENT_URL: "{{.Values.commons.servicesUrls.authorizationManagementUrl}}"
+    NOTIFIER_URL: "{{.Values.commons.servicesUrls.notifierUrl}}"
+    RATE_LIMITER_REDIS_HOST: "{{.Values.commons.redis.redisHost}}"
+    RATE_LIMITER_REDIS_PORT: "{{.Values.commons.redis.redisPort}}"
   envFromFieldRef:
     NAMESPACE: "metadata.namespace"
-  envFromConfigmaps:
-    AUTHORIZATION_MANAGEMENT_URL: "common-services-urls.AUTHORIZATION_MANAGEMENT_URL"
-    NOTIFIER_URL: "common-services-urls.NOTIFIER_URL"
-    RATE_LIMITER_REDIS_HOST: "common-redis.REDIS_HOST"
-    RATE_LIMITER_REDIS_PORT: "common-redis.REDIS_PORT"
   livenessProbe:
     httpGet:
       path: "/alive"

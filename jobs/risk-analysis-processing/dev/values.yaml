@@ -33,14 +33,14 @@ cronjob:
   restartPolicy: OnFailure
   automountServiceAccountToken: false
   suspend: true
-  envFromConfigmaps:
-    CATALOG_PROCESS_URL: "common-services-urls.CATALOG_PROCESS_URL"
-    PURPOSE_PROCESS_URL: "common-services-urls.PURPOSE_PROCESS_URL"
-    ESERVICE_TEMPLATE_PROCESS_URL: "common-services-urls.ESERVICE_TEMPLATE_PROCESS_URL"
-    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
-    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
-    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
-    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
-    READMODEL_SQL_DB_SCHEMA_CATALOG: "common-read-model-sql.DB_SCHEMA_CATALOG"
-    READMODEL_SQL_DB_SCHEMA_PURPOSE: "common-read-model-sql.DB_SCHEMA_PURPOSE"
-    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "common-read-model-sql.DB_SCHEMA_ESERVICE_TEMPLATE"
+  env:
+    CATALOG_PROCESS_URL: "{{.Values.commons.servicesUrls.catalogProcessUrl}}"
+    PURPOSE_PROCESS_URL: "{{.Values.commons.servicesUrls.purposeProcessUrl}}"
+    ESERVICE_TEMPLATE_PROCESS_URL: "{{.Values.commons.servicesUrls.eserviceTemplateProcessUrl}}"
+    READMODEL_SQL_DB_HOST: "{{.Values.commons.readModelSql.dbHostRo}}"
+    READMODEL_SQL_DB_PORT: "{{.Values.commons.readModelSql.dbPort}}"
+    READMODEL_SQL_DB_NAME: "{{.Values.commons.readModelSql.dbName}}"
+    READMODEL_SQL_DB_USE_SSL: "{{.Values.commons.readModelSql.dbUseSsl}}"
+    READMODEL_SQL_DB_SCHEMA_CATALOG: "{{.Values.commons.readModelSql.dbSchemaCatalog}}"
+    READMODEL_SQL_DB_SCHEMA_PURPOSE: "{{.Values.commons.readModelSql.dbSchemaPurpose}}"
+    READMODEL_SQL_DB_SCHEMA_ESERVICE_TEMPLATE: "{{.Values.commons.readModelSql.dbSchemaEserviceTemplate}}"

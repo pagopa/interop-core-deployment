@@ -15,11 +15,10 @@ configmap:
 deployment:
   env:
     TOPIC_STARTING_OFFSET: "latest"
+    AGREEMENT_TOPIC: "{{.Values.commons.kafka.agreementTopic}}"
+    AUTHORIZATION_TOPIC: "{{.Values.commons.kafka.authorizationTopic}}"
+    CATALOG_TOPIC: "{{.Values.commons.kafka.catalogTopic}}"
+    PURPOSE_TOPIC: "{{.Values.commons.kafka.purposeTopic}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-  envFromConfigmaps:
-    AGREEMENT_TOPIC: "common-kafka.AGREEMENT_TOPIC"
-    AUTHORIZATION_TOPIC: "common-kafka.AUTHORIZATION_TOPIC"
-    CATALOG_TOPIC: "common-kafka.CATALOG_TOPIC"
-    PURPOSE_TOPIC: "common-kafka.PURPOSE_TOPIC"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"

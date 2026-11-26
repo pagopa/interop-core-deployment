@@ -32,11 +32,10 @@ deployment:
     PORT: "8088"
     HOST: "0.0.0.0"
     TOPIC_STARTING_OFFSET: "earliest"
+    TENANT_TOPIC: "{{.Values.commons.kafka.tenantTopic}}"
+    KAFKA_BROKERS: "{{.Values.commons.kafka.kafkaBrokers}}"
+    READMODEL_DB_HOST: "{{.Values.commons.readModel.readmodelDbHost}}"
+    READMODEL_DB_NAME: "{{.Values.commons.readModel.readmodelDbName}}"
+    READMODEL_DB_PORT: "{{.Values.commons.readModel.readmodelDbPort}}"
   envFromFieldRef:
     AWS_ROLE_SESSION_NAME: "metadata.name"
-  envFromConfigmaps:
-    TENANT_TOPIC: "common-kafka.TENANT_TOPIC"
-    KAFKA_BROKERS: "common-kafka.KAFKA_BROKERS"
-    READMODEL_DB_HOST: "common-read-model.READMODEL_DB_HOST"
-    READMODEL_DB_NAME: "common-read-model.READMODEL_DB_NAME"
-    READMODEL_DB_PORT: "common-read-model.READMODEL_DB_PORT"

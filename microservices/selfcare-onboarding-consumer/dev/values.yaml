@@ -32,8 +32,8 @@ externalSecrets:
           version: uuid/833a6680-7f16-45ed-ba65-55c3bd4407d1
 
 deployment:
-  envFromConfigmaps:
-    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
+  env:
+    TENANT_PROCESS_URL: "{{.Values.commons.servicesUrls.tenantProcessUrl}}"
   resources:
     limits:
       cpu: "250m"

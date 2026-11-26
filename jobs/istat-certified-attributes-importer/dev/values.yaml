@@ -38,13 +38,13 @@ cronjob:
   backoffLimit: 0
   automountServiceAccountToken: false
   suspend: true
-  envFromConfigmaps:
-    TENANT_PROCESS_URL: "common-services-urls.TENANT_PROCESS_URL"
-    ATTRIBUTE_PROCESS_URL: "common-services-urls.ATTRIBUTE_REGISTRY_PROCESS_URL"
-    READMODEL_SQL_DB_HOST: "common-read-model-sql.DB_HOST_RO"
-    READMODEL_SQL_DB_PORT: "common-read-model-sql.DB_PORT"
-    READMODEL_SQL_DB_NAME: "common-read-model-sql.DB_NAME"
-    READMODEL_SQL_DB_USE_SSL: "common-read-model-sql.DB_USE_SSL"
-    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "common-read-model-sql.DB_SCHEMA_ATTRIBUTE"
-    READMODEL_SQL_DB_SCHEMA_TENANT: "common-read-model-sql.DB_SCHEMA_TENANT"
-    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "common-feature-flags.FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE"
+  env:
+    TENANT_PROCESS_URL: "{{.Values.commons.servicesUrls.tenantProcessUrl}}"
+    ATTRIBUTE_PROCESS_URL: "{{.Values.commons.servicesUrls.attributeRegistryProcessUrl}}"
+    READMODEL_SQL_DB_HOST: "{{.Values.commons.readModelSql.dbHostRo}}"
+    READMODEL_SQL_DB_PORT: "{{.Values.commons.readModelSql.dbPort}}"
+    READMODEL_SQL_DB_NAME: "{{.Values.commons.readModelSql.dbName}}"
+    READMODEL_SQL_DB_USE_SSL: "{{.Values.commons.readModelSql.dbUseSsl}}"
+    READMODEL_SQL_DB_SCHEMA_ATTRIBUTE: "{{.Values.commons.readModelSql.dbSchemaAttribute}}"
+    READMODEL_SQL_DB_SCHEMA_TENANT: "{{.Values.commons.readModelSql.dbSchemaTenant}}"
+    FEATURE_FLAG_ATTRIBUTE_CERTIFIED_DISCRETE: "{{.Values.commons.featureFlags.featureFlagAttributeCertifiedDiscrete}}"
