@@ -22,7 +22,7 @@ type CliArgs = {
   workloads?: Set<string>;
 };
 
-type Status = "MIGRATE" | "MIGRATED" | "SKIPPED_DEPENDENT_ENV" | "SKIPPED_NOT_COMMON_VALUE" | "ERROR";
+type Status = "MIGRATE" | "MIGRATED" | "SKIPPED_NOT_COMMON_VALUE" | "ERROR";
 
 type ReportRow = {
   environment: string;
@@ -67,12 +67,11 @@ const MAPPING_SCHEMA = {
 } as const;
 
 const TARGET_REF = /^\{\{\.Values\.commons(\.[A-Za-z0-9_]+)+\}\}$/;
-const DEPENDENT_VARIABLE = /(?<!\$)\$\(([A-Za-z_][A-Za-z0-9_]*)\)/g;
+const DEPENDENT_VARIABLE = /\$\$|\$\(([A-Za-z_][A-Za-z0-9_]*)\)/g;
 
 const STATUS_DESCRIPTIONS: Record<Status, string> = {
   MIGRATE: "Would be replaced with a common values reference (plan; rerun with --apply)",
   MIGRATED: "Replaced with a common values reference; file written and verified",
-  SKIPPED_DEPENDENT_ENV: "Left unchanged: another variable of the same container uses $(VAR) on it; migrate manually",
   SKIPPED_NOT_COMMON_VALUE: "Left unchanged: the key is not classified COMMON_VALUE",
   ERROR: "File not migrated because of an error; no file was written",
 };
@@ -310,28 +309,44 @@ function planFile(workload: WorkloadFile, env: string, mapping: Map<string, Mapp
       continue;
     }
 
-    // Kubernetes expands $(VAR) only for variables defined earlier in the container: moving VAR to env may change that order.
-    const names = new Set(candidates.map((candidate) => candidate.envVar));
-    const dependencies: string[] = [];
-    for (const item of envMap?.items ?? []) {
-      for (const match of (scalarText(item.value) ?? "").matchAll(DEPENDENT_VARIABLE)) {
-        if (names.has(match[1])) {
-          dependencies.push(`${keyText(item)} uses $(${match[1]})`);
-        }
-      }
-    }
-    if (dependencies.length > 0) {
-      const sectionRows = rows.filter((row) => row.section === container.section && (row.status === "MIGRATE" || row.status === "MIGRATED"));
-      for (const row of sectionRows) {
-        row.status = "SKIPPED_DEPENDENT_ENV";
-        row.detail = `${dependencies.join(", ")}; whole container left unchanged`;
-      }
-      continue;
-    }
-
     for (const candidate of candidates) {
       if ((container.frontend ? container.node : envMap)?.has(candidate.envVar)) {
         fail(`${sectionLabel}: ${candidate.envVar} is already defined at the destination.`);
+      }
+    }
+
+    const target = getIn(expected, container.path);
+    const efcValues = target[referenceKey] as Record<string, unknown>;
+    const envValues = container.frontend ? target : (target.env as Record<string, unknown> | undefined) ?? {};
+    const targetsByVariable = new Map(candidates.map(({ envVar, mappingEntry }) => [envVar, mappingEntry.targetRef]));
+    const rewrittenByVariable = new Map<string, Set<string>>();
+    for (const item of envMap?.items ?? []) {
+      const originalValue = scalarText(item.value);
+      if (originalValue === undefined) {
+        continue;
+      }
+      const name = keyText(item);
+      const updatedValue = originalValue.replace(DEPENDENT_VARIABLE, (token, variable: string | undefined) => {
+        const targetRef = variable && targetsByVariable.get(variable);
+        if (!variable || !targetRef) {
+          return token;
+        }
+        const consumers = rewrittenByVariable.get(variable) ?? new Set<string>();
+        consumers.add(name);
+        rewrittenByVariable.set(variable, consumers);
+        return targetRef;
+      });
+      if (updatedValue !== originalValue) {
+        const [start, end] = nodeRange(item.value, sectionLabel);
+        const trailingLineBreak = original.slice(start, end).match(/\r?\n$/)?.[0] ?? "";
+        edits.push({ start, end, text: JSON.stringify(updatedValue) + trailingLineBreak });
+        envValues[name] = updatedValue;
+      }
+    }
+    for (const row of rows.filter((row) => row.section === container.section)) {
+      const rewritten = rewrittenByVariable.get(row.envVar);
+      if (rewritten) {
+        row.detail += `; rewrites $(${row.envVar}) in ${[...rewritten].join(", ")}`;
       }
     }
 
@@ -364,9 +379,6 @@ function planFile(workload: WorkloadFile, env: string, mapping: Map<string, Mapp
     }
 
     // Expected result, used to verify the text edits.
-    const target = getIn(expected, container.path);
-    const efcValues = target[referenceKey] as Record<string, unknown>;
-    const envValues = container.frontend ? target : (target.env as Record<string, unknown> | undefined) ?? {};
     for (const candidate of candidates) {
       delete efcValues[candidate.envVar];
       envValues[candidate.envVar] = candidate.mappingEntry.targetRef;
@@ -496,9 +508,7 @@ function main(): void {
     console.log(`${status}: ${count(status)}`);
   }
   console.log(`Output report: ${path.relative(args.root, args.outputCsv)}, ${path.relative(args.root, args.outputJson)}`);
-  if (count("SKIPPED_DEPENDENT_ENV") > 0) {
-    console.log(`Some containers were left unchanged because of $(VAR) dependencies: see SKIPPED_DEPENDENT_ENV rows and migrate them manually.`);
-  }
+
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
